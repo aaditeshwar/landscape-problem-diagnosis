@@ -1,0 +1,221 @@
+You are an agro-ecological diagnosis assistant for Indian micro-watersheds. Diagnose
+causal stress pathways from the variable values provided. Reason step by step before
+writing the final JSON.
+
+[LOCATION CONTEXT]
+MWS UID: 18_31133 | Tehsil: Hungund | District: Bagalkot | State: Karnataka
+AER zone: AER-6 (Deccan Plateau, hot semi-arid) | Aquifer: crystalline_basement (Banded Gneissic Complex, 100%)
+Terrain: Mostly Plains (cluster 1) | Area: 4545.8 ha
+Intersecting villages: Hirehunakunti, Jambaladinni, Turamari, Nidasanur, Tumba, Tariwal,
+Kesarabhavi, Chatnihal, Hemawadgi, Konnur, Malagihal, Palti, Budihal (S.K.), Manmathanal,
+Jalakamaladinni, Karadi, Pochapur, Gadisunkapur, Binjawadgi, Chintakamaladinni
+
+[USER PROBLEM]
+Report what stresses this landscape faces
+
+[MWS VARIABLE VALUES]
+Groundwater:
+  soge_dev_percent: 56.86  |  soge_class_name: "Safe"
+  annual_delta_g_mm: {2017:94.33, 2018:83.70, 2019:98.49, 2020:45.71,
+                      2021:55.56, 2022:9.32, 2023:-4.16, 2024:13.23}
+  trend_annual_delta_g_mm: -15.06  [linear trend slope mm/year, computed by system]
+  nrega_swc_count (cumulative): 82
+  MISSING: annual_well_depth_m, borewell_density, groundwater_salinity
+
+Rainfed / irrigation:
+  lulc_single_kharif_ha: {2017:990.7, 2018:647.5, 2019:1910.5, 2020:2367.4,
+                           2021:3607.3, 2022:1530.2, 2023:1043.6, 2024:3113.6}
+  lulc_double_crop_ha:   {2017:63.2, 2018:146.6, 2019:113.0, 2020:587.7,
+                           2021:293.4, 2022:80.6, 2023:55.2, 2024:623.2}
+  cropping_intensity:    {2017:0.98, 2018:1.00, 2019:0.99, 2020:1.09,
+                          2021:1.00, 2022:0.97, 2023:0.95, 2024:1.08}
+  swb_rabi_area_ha:      {2017:0.42, 2018:0.02, 2019:0.42, 2020:1.27,
+                           2021:1.08, 2022:5.98, 2023:3.71, 2024:0.66}
+  canal_name: "Ramthal lift"
+  nrega_irrigation_count: 252
+  annual_runoff_mm: {2017:86.2, 2018:161.7, 2019:106.3, 2020:172.8,
+                     2021:147.9, 2022:92.9, 2023:116.2, 2024:108.4}
+  MISSING: irrigated_area_ha
+
+Forest / encroachment:
+  cd_forest_to_farm_ha: 35.32
+  cd_total_urbanization_ha: 10.75
+  village_st_percent: 2.73
+
+Socio-economic:
+  village_sc_percent: 22.05
+  village_literacy_rate: 58.86
+  village_total_population: 17237
+  dist_bank_km: 0.145
+  dist_apmc_km: 5.761
+  dist_dairy_km: 37.669
+  drought_weeks_severe: {2017:0, 2018:0, 2019:0, 2020:0, 2021:0, 2022:0, 2023:8, 2024:0}
+  nrega_community_assets_count: 137
+  lulc_cropland_ha: {2017:0, 2018:0, ..., 2024:0}  [NOTE: all zeros — likely a data gap,
+                                                      not literal absence of cropland]
+  MISSING: landholding_distribution, household_income_inr, migrant_household_percent,
+           market_price_crop, organization_domains
+
+[CANDIDATE PATHWAYS AND CONFIRMATION RULES]
+Evaluate each pathway. For each signal expression, first state TRUE or FALSE, then
+apply the confirmation rule.
+
+──────────────────────────────────────────────────────────
+PATHWAY 1: groundwater_stress
+Confirmation rule: needs ≥2 of signals A, B, C TRUE; D and E amplify only.
+
+Signal A [SOGE elevated]:
+  Expression: soge_dev_percent > 70 OR soge_class_name != "Safe"
+  → Evaluate against: soge_dev_percent=56.86, soge_class_name="Safe"
+
+Signal B [Well depth declining]:
+  Expression: annual_well_depth_m trend > 3m increase over record
+  → MISSING variable — cannot evaluate
+
+Signal C [Negative delta_g trend]:
+  Expression: trend_annual_delta_g_mm < 0
+  → Evaluate against: trend_annual_delta_g_mm = -15.06
+
+Signal D [Hard rock aquifer amplifier]:
+  Expression: aquifer_class == "crystalline_basement"
+  → Evaluate against: aquifer_class = "crystalline_basement"
+
+Signal E [Low recharge investment amplifier]:
+  Expression: nrega_swc_count < 5 (cumulative)
+  → Evaluate against: nrega_swc_count = 82
+
+Key context: Block-level SOGE=Safe can mask micro-watershed depletion in hard rock terrain.
+delta_g values show a clear declining trend from +94mm (2017) to -4mm (2023); 2023 was
+the first year with negative recharge.
+Confounder to check: Is negative trend driven by the single severe-drought year 2023
+(drought_weeks_severe=8) or is it a multi-year structural trend?
+──────────────────────────────────────────────────────────
+PATHWAY 2: rainfed_risk
+Confirmation rule: needs ≥2 of signals A, B, C TRUE; D amplifies only.
+
+Signal A [Single-kharif dominance]:
+  Expression: lulc_single_kharif_ha / (lulc_single_kharif_ha + lulc_double_crop_ha) > 0.75
+  → Evaluate for each year or use 2024 values: single=3113.6, double=623.2
+
+Signal B [Low cropping intensity]:
+  Expression: cropping_intensity ≤ 1.15 (consistently across years)
+  → Evaluate against: range 0.95–1.09 across 2017–2024
+
+Signal C [Irrigation infrastructure absent]:
+  Expression: swb_rabi_area_ha < 50 AND annual_runoff_mm > 100 (most years)
+  → Evaluate: swb_rabi_area_ha max=5.98 (2022), runoff range 86–173mm
+  Note: canal_name="Ramthal lift" exists — assess whether this contradicts rainfed_risk
+
+Signal D [Plains terrain with high runoff]:
+  Expression: terrain_cluster_id == 1 (plains) AND annual_runoff_mm > 80
+  → Evaluate against: terrain_cluster_id=1, runoff values above
+──────────────────────────────────────────────────────────
+PATHWAY 3: encroachment
+Confirmation rule: needs signal A TRUE + (B or C); C amplifies only.
+
+Signal A [Forest-to-farm conversion]:
+  Expression: cd_forest_to_farm_ha > 0
+  → Evaluate against: cd_forest_to_farm_ha = 35.32
+
+Signal B [Settlement expansion]:
+  Expression: cd_total_urbanization_ha > 0
+  → Evaluate against: cd_total_urbanization_ha = 10.75
+
+Signal C [ST community amplifier]:
+  Expression: village_st_percent > 10
+  → Evaluate against: village_st_percent = 2.73
+
+Context: AER-6 (Bagalkot, Karnataka) is Deccan semi-arid — remaining forest patches
+are small and threatened. 35 ha forest-to-farm conversion is meaningful at this scale.
+Low ST% means social amplifier is weak; do not conflate with Indo-Gangetic context.
+──────────────────────────────────────────────────────────
+PATHWAY 4: multi_sector_vulnerability
+Confirmation rule: needs ≥2 of signals A, C, D TRUE; B amplifies only.
+
+Signal A [SC/ST marginalisation]:
+  Expression: village_sc_percent > 25 OR village_st_percent > 20
+  → Evaluate against: sc=22.05, st=2.73
+
+Signal B [Low literacy amplifier]:
+  Expression: village_literacy_rate < 55
+  → Evaluate against: literacy=58.86
+
+Signal C [Financial exclusion]:
+  Expression: dist_bank_km > 10
+  → Evaluate against: dist_bank_km = 0.145
+
+Signal D [Drought + MGNREGA gap]:
+  Expression: drought_weeks_severe > 6 in any year AND nrega_swc_count < 20
+  → Evaluate: drought_weeks_severe 2023=8; nrega_swc_count=82
+──────────────────────────────────────────────────────────
+PATHWAY 5: small_landholding
+Confirmation rule: needs signal A TRUE + ≥1 of B, C.
+DATA QUALITY NOTE: lulc_cropland_ha is zero for all years — treat as a data gap,
+not as literal zero cropland. Signal A cannot be evaluated reliably. Do NOT confirm
+this pathway from this signal.
+
+Signal A [Low per-capita cropland]:
+  Expression: (lulc_cropland_ha / village_total_population) < 0.2
+  → UNRELIABLE: lulc_cropland_ha=0 for all years (data gap)
+
+Signal B [Low cropping intensity]:
+  Expression: cropping_intensity < 1.30
+  → Evaluate against: range 0.95–1.09
+
+Signal C [APMC access]:
+  Expression: dist_apmc_km > 20
+  → Evaluate against: dist_apmc_km = 5.761
+──────────────────────────────────────────────────────────
+
+[SOLUTIONS AVAILABLE]
+groundwater_stress: ["Panchayat-NGO partnership for groundwater governance",
+  "MGNREGA SWC works: check dams, recharge trenches, percolation ponds",
+  "Participatory hydrological mapping to identify recharge zones",
+  "Community pond repair and desilting", "Farm bunds and contour trenching"]
+rainfed_risk: ["In-situ water harvesting: farm ponds, broad-bed furrows, bunds",
+  "Drought-tolerant short-duration kharif variety promotion",
+  "Rainwater harvesting structures matched to slope and drainage density",
+  "Crop insurance enrolment and risk advisory services"]
+encroachment: ["Forest Rights Act claim filing support for individual and community rights",
+  "Boundary demarcation and signage of forest land",
+  "Livelihood alternatives for encroacher households"]
+multi_sector_vulnerability: ["MGNREGA saturation for lean-season wage employment",
+  "Convergence of PM-KISAN, PMAY, NFSA at village level",
+  "BC Sakhi, Jan Dhan, crop insurance enrolment drives",
+  "SHG and FPO formation as platform for collective action"]
+small_landholding: ["FPO formation for collective input procurement and marketing",
+  "Lease-land or cooperative farming models on common land",
+  "Diversification into livestock, fishery, NTFP to supplement farm income",
+  "Kisan Credit Card and institutional credit access"]
+
+[QUESTIONS ALREADY ASKED]
+(none)
+
+[DATA ALREADY PROVIDED BY USER]
+(none)
+
+[TASK]
+1. For each pathway, write the signal evaluation (TRUE/FALSE) and apply the confirmation
+   rule. Then classify as: confirmed / suggested / ruled_out.
+2. confirmed_pathways: include only pathways where the confirmation rule is met or
+   nearly met. Confidence: high = rule clearly met; medium = partially met or one
+   signal missing; low = suggested only by context.
+3. In each reasoning string, mention MWS UID 18_31133 and relevant village names.
+4. uncertain_pathways: only when a MISSING variable is the deciding factor.
+   Do NOT ask for any variable listed under present values above.
+5. follow_up_question: only from MISSING variables; pick the one that would most
+   change the diagnosis. Never ask for variables already shown above.
+6. panel_update_explanation: 1–3 sentences on why the charts for your confirmed
+   pathways help interpret this specific diagnosis — relate to what the variable
+   values show.
+
+IMPORTANT: Output ONLY the JSON object below. No preamble, no markdown fences, no
+explanation outside the JSON. First character must be '{', last must be '}'.
+
+{
+  "confirmed_pathways": [{"pathway_id": "...", "confidence": "high|medium|low", "reasoning": "..."}],
+  "uncertain_pathways": [{"pathway_id": "...", "confidence": "high|medium|low", "missing_variable_questions": [{"variable": "...", "question": "..."}]}],
+  "solutions": ["..."],
+  "panel_update_explanation": "...",
+  "follow_up_question": "..." 
+}

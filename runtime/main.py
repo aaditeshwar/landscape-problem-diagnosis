@@ -7,13 +7,17 @@ from fastapi.staticfiles import StaticFiles
 
 from config import CORS_ORIGINS
 from db import get_client
-from routers import execute, locate, map as map_router, mws, query, village
+from logging_setup import configure_logging, log_startup_config
+from routers import execute, locate, logs, map as map_router, mws, query, village
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
+
+configure_logging()
 
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
+    log_startup_config()
     get_client().admin.command("ping")
     yield
     get_client().close()
@@ -39,6 +43,7 @@ app.include_router(village.router)
 app.include_router(locate.router)
 app.include_router(query.router)
 app.include_router(execute.router)
+app.include_router(logs.router)
 
 if STATIC_DIR.exists():
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")

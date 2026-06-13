@@ -1,0 +1,280 @@
+You are extracting one evidence card for an agro-ecological diagnosis system in India.
+
+Return ONLY a single JSON object (no markdown fences) matching the EvidenceCard schema.
+
+Required card_id: agriculture__water_scarcity__drought__014
+Production system: Agriculture
+Observed stress: water_scarcity
+Causal pathway: drought
+
+Pathway description: Meteorological or agricultural drought reducing water availability during the cropping season.
+Stress description: Farmers report insufficient water for crop production, particularly for rabi and zaid seasons or during dry spells in kharif.
+
+Target context (use exactly these context field values):
+{
+  "agro_climatic_zones": [
+    "semi-arid"
+  ],
+  "aquifer_types": [
+    "hard_rock"
+  ],
+  "terrain_types": [
+    "plateau",
+    "plains"
+  ],
+  "rainfall_regime": "semi-arid",
+  "geographic_examples": [
+    "Madhya Pradesh Malwa",
+    "Gujarat"
+  ]
+}
+
+AER reference for this context:
+AER-5: Central Malwa Highlands, Gujarat Plains and Kathiawar Peninsula, hot semi-arid ecoregion | states=['Madhya Pradesh (Malwa)', 'Gujarat'] | rainfall=500-740mm | aquifer=volcanic
+
+Diagnostic variables from the framework (use these variable names in signals):
+[
+  {
+    "variable": "drought_weeks_severe",
+    "rationale": "Count of kharif weeks under severe drought conditions; persistent severe weeks directly cause crop failure",
+    "availability": "available"
+  },
+  {
+    "variable": "drought_weeks_moderate",
+    "rationale": "Moderate drought weeks indicate stress periods",
+    "availability": "available"
+  },
+  {
+    "variable": "dry_spell_weeks",
+    "rationale": "Number of weeks under defined dry spell (4-week moving window with <50% historical rainfall); long dry spells disrupt crop growth stages",
+    "availability": "available"
+  },
+  {
+    "variable": "drought_causality_json",
+    "rationale": "SPI indicates meteorological drought severity; MAI measures soil moisture adequacy; VCI captures vegetation stress; together they classify drought type and severity per India Drought Manual",
+    "availability": "available"
+  },
+  {
+    "variable": "annual_precipitation_mm",
+    "rationale": "Annual rainfall quantum and inter-annual variability; below-normal years confirm drought risk",
+    "availability": "available"
+  },
+  {
+    "variable": "seasonal_precipitation_mm",
+    "rationale": "Seasonal breakdown reveals whether deficit is in kharif (monsoon) or rabi (post-monsoon irrigation dependent)",
+    "availability": "available"
+  },
+  {
+    "variable": "monsoon_onset_date",
+    "rationale": "Delayed onset shortens effective kharif season and increases crop failure risk",
+    "availability": "available"
+  }
+]
+
+Recommended solutions for this pathway:
+[
+  "Check dam repair using community labour ahead of monsoon",
+  "Emergency pre-monsoon water harvesting structure construction",
+  "Drought-tolerant variety promotion for kharif"
+]
+
+Rules:
+- Include 3-5 diagnostic_signals using available variables where possible.
+- For variables marked availability not_available, add missing_variable_questions.
+- Include 1-2 confounders distinguishing this pathway from alternatives.
+- Ground claims in the paper excerpts below; cite sources with realistic source_id citekeys.
+- Each source source_type must be exactly one of: peer_reviewed_journal, government_report, ngo_report, grey_literature, expert_guideline, book_chapter (use grey_literature for theses/working papers).
+- Each diagnostic_signals[].condition.type must be exactly one of: quantitative, qualitative, trend, composite (use composite for multi-part conditions, not "compound").
+- Set metadata.created_by to "llm_extraction_v1", reviewed_by_expert to false,
+  extraction_model to "claude-sonnet-4-6", confidence_overall to medium/high/low as appropriate,
+  created_at and last_updated to today's date.
+- At embedding time, semantic aliases from metadata/semantic_aliases.json are appended
+  automatically for pathway "drought" — do not duplicate alias
+  phrases in overall_reasoning_note.
+
+Example card (structure reference):
+{
+  "card_id": "agriculture__water_scarcity__groundwater_stress__001",
+  "production_system": "Agriculture",
+  "observed_stress": "water_scarcity",
+  "causal_pathway": "groundwater_stress",
+  "context": {
+    "agro_climatic_zones": [
+      "semi-arid",
+      "sub-humid"
+    ],
+    "aquifer_types": [
+      "hard_rock"
+    ],
+    "terrain_types": [
+      "plateau",
+      "plains"
+    ],
+    "rainfall_regime": "semi-arid",
+    "crop_systems": [
+      "kharif rainfed",
+      "cotton",
+      "soybean"
+    ],
+    "geographic_examples": [
+      "Vidarbha Maharashtra",
+      "Telangana",
+      "Karnataka Deccan Plateau"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "soge_dev_percent",
+        "soge_class_name"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "soge_dev_percent > 70 or soge_class_name in ['Semi-critical', 'Critical', 'Over-exploited']",
+        "threshold_confidence": "high",
+        "context_sensitivity": "global"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "CGWB defines groundwater stress classes based on extraction as a percentage of net annual recharge. In hard rock aquifers, even 'Safe' SOGE values above 60% can indicate localised stress because storativity is low and recharge is spatially heterogeneous \u2014 a block-level Safe classification may mask critical depletion at the micro-watershed scale."
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "annual_well_depth_m"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "annual_well_depth_m[-1] - annual_well_depth_m[0] > 3",
+        "qualitative_description": "Well depth has increased by more than 3 metres over the available multi-year record (2017\u20132025), indicating declining static water level.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Deepening well depth is a direct proxy for declining groundwater table. A 3m decline over 8 years (~0.4m/year) is considered significant in hard rock aquifers where storage is limited to weathered and fractured zones typically 10\u201330m deep. Faster rates indicate imminent failure of shallow dug wells.",
+      "interaction_with": [
+        "sig_01",
+        "sig_03"
+      ]
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "annual_delta_g_mm"
+      ],
+      "condition": {
+        "type": "trend",
+        "qualitative_description": "Annual delta_g (P - ET - Runoff) is negative in more than 4 of the last 8 years, indicating chronic excess extraction over recharge.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "A consistently negative delta_g across multiple years means outflows (ET + runoff) persistently exceed precipitation, leaving no surplus for groundwater recharge. In semi-arid hard rock settings, even small negative balances accumulate quickly due to low aquifer storage."
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "nrega_swc_count"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "sum(nrega_swc_count.values()) < 5",
+        "qualitative_description": "Fewer than 5 cumulative SWC works in the MWS over the MGNREGA record, indicating low investment in recharge infrastructure.",
+        "threshold_confidence": "low",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Low historical SWC investment means natural recharge opportunities (check dams, percolation ponds, farm bunds) have not been exploited, amplifying the depletion caused by extraction. It also signals an opportunity for intervention rather than a terminal condition.",
+      "interaction_with": [
+        "sig_03"
+      ]
+    }
+  ],
+  "overall_reasoning_note": "Groundwater stress in hard rock aquifers should be confirmed by at least two of the three primary signals: elevated SOGE, deepening well trend, or chronic negative delta_g. A single signal may reflect data noise or spatial mismatch (SOGE is block-level). The absence of SWC investment (sig_04) amplifies the other signals but does not confirm stress on its own. If SOGE is Safe but well depth is increasing rapidly, prioritise the well depth trend \u2014 block-level SOGE masks micro-watershed heterogeneity in hard rock terrain. Always ask the user about borewell density and crop water demand (irrigated vs rainfed) before finalising diagnosis.",
+  "confounders": [
+    {
+      "confounder": "drought (meteorological) causing apparent groundwater stress through reduced recharge rather than over-extraction",
+      "how_to_distinguish": "Compare drought_weeks_severe and annual_precipitation_mm against historical baseline. If drought years co-occur with the delta_g decline, drought is the primary driver and groundwater stress is secondary. Check soge_dev_percent \u2014 if it is low (<50%) but delta_g is still negative, drought rather than extraction is likely primary."
+    },
+    {
+      "confounder": "Seasonal variation in well depth misread as multi-year trend",
+      "how_to_distinguish": "Ensure well depth comparisons are made for the same season (preferably pre-monsoon) across years, not across seasons."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "borewell_density",
+      "question_to_user": "Roughly how many borewells or tubewells are there in your village or nearby villages? Would you say there are very few (less than 10), a moderate number (10\u201350), or a large number (more than 50)?",
+      "how_answer_updates_diagnosis": "High borewell density in a hard rock aquifer with low SOGE confirms localised over-extraction not captured by the block-level SOGE figure, strongly confirming the groundwater stress pathway."
+    },
+    {
+      "missing_variable": "groundwater_salinity",
+      "question_to_user": "Have farmers noticed that borewell or well water has become saltier, leaves white deposits, or is no longer suitable for certain crops?",
+      "how_answer_updates_diagnosis": "Salinity in hard rock aquifers can indicate deep borewell penetration into saline zones, a secondary consequence of over-extraction, or a different causal pathway (saline intrusion) that changes solution recommendations."
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Shah2009",
+      "title": "Taming the anarchy: Groundwater governance in South Asia",
+      "authors": [
+        "Shah, Tushaar"
+      ],
+      "year": 2009,
+      "source_type": "book_chapter",
+      "relevance_note": "Documents hard rock aquifer depletion dynamics and the inadequacy of block-level SOGE to capture local depletion in peninsular India"
+    },
+    {
+      "source_id": "CGWB2023",
+      "title": "National Compilation of Dynamic Ground Water Resources of India 2022",
+      "authors": [
+        "Central Ground Water Board"
+      ],
+      "year": 2023,
+      "url": "https://cgwb.gov.in",
+      "source_type": "government_report",
+      "relevance_note": "Defines SOGE class thresholds (Safe <70%, Semi-critical 70\u201390%, Critical 90\u2013100%, Over-exploited >100%) used in sig_01"
+    },
+    {
+      "source_id": "Fishman2011",
+      "title": "Can the groundwater crisis in rural India be attributed to well deepening?",
+      "authors": [
+        "Fishman, R.",
+        "Devineni, N.",
+        "Raman, S."
+      ],
+      "year": 2011,
+      "doi": "10.1029/2011WR010477",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents well deepening as a reliable proxy for groundwater table decline in Indian hard rock and alluvial settings"
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2026-06-07",
+    "last_updated": "2026-06-07",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium"
+  }
+}
+
+Paper excerpts:
+[Chunk 1] paper=doi__10.1007_s13593-015-0283-4 type=abstract title=Management of crop water under drought: a review
+Drought is a predominant cause of low yields worldwide. There is an urgent need for more water efficient cropping systems facing large water consumption of irrigated agriculture and high unproductive losses via runoff and evaporation. Identification of yield-limiting constraints in the plant–soil–atmosphere continuum are the key to improved management of plant water stress. Crop ecology provides a systematic approach for this purpose integrating soil hydrology and plant physiology into the context of crop production. We review main climate, soil and plant properties and processes that determine yield in different water-limited environments. From this analysis, management measures for cropping systems under specific drought conditions are derived. Major findings from literature analysis are as follows. (1) Unproductive water losses such as evaporation and runoff increase from continental in-season rainfall climates to storage-dependent winter rainfall climates. Highest losses occur under tropical residual moisture regimes with short intense rainy season. (2) Sites with a climatic dry season require adaptation via phenology and water saving to ensure stable yields. Intermittent droughts can be buffered via the root system, which is still largely underutilised for better stress resistance. (3) At short-term better management options such as mulching and date of seeding allow to adjust cropping systems to site constraints. Adapted cultivars can improve the synchronisation between crop water demand and soil supply. At long term, soil hydraulic and plant physiological constraints can be overcome by changing tillage systems and breeding new varieties with higher stress resistance. (4) Interactions between plant and soil, particularly in the rhizosphere, are a way towards better crop water supply. Targeted management of such plant–soil interactions is still at infancy. We conclude that understanding site-specific stress hydrology is imperative to select the most efficient measures to mitigate stress. Major progress in future can be expected from crop ecology focussing on the management of complex plant (root)–soil interactions.
+
+[Chunk 2] paper=doi__10.54386_jam.v21i2.230 type=abstract title=Drought assessment for kharif rice using standardized precipitation index (SPI) and vegetation condition index (VCI)
+The monthly weather data for 31 years from 1985-2015 was used to analyze the extent of meteorological drought using standardized precipitation index (SPI) over Allahabad, Kanpur and Lucknow. MODIS NDVI data from 2000-2015 was used for monitoring of agricultural drought through NDVI based vegetation condition index (VCI) for all the three districts. The monthly SPI and VCI values from July to October were correlated with productivity index (PI) of kharif rice.Both the indices (SPI and VCI) were positively correlated with PI for all the districts. In Allahabad SPI and VCI during September month showed a significant correlation (0.70**& 0.61*) while in Kanpur VCI during October and SPI of July and August were significantly correlated with PI of kharif Rice. The multiple regression equation developed for predicting kharif rice PI in Allahabad, Kanpur and Lucknow districts explained 69 to 76 per cent variabilityin PI.
+
+[Chunk 3] paper=doi__10.5194_hess-21-3041-2017 type=abstract title=Water–food–energy nexus with changing agricultural scenarios in India during recent decades
+Abstract. Meeting the growing water and food demands in a densely populated country like India is a major challenge. It requires an extensive investigation into the changing patterns of the checks and balances behind the maintenance of food security at the expense of depleting groundwater, along with high energy consumption. Here we present a comprehensive set of analyses which assess the present status of the water–food–energy nexus in India, along with its changing pattern, in the last few decades. We find that with the growth of population and consequent increase in the food demands, the food production has also increased, and this has been made possible with the intensification of irrigation. However, during the recent decade (after 1996), the increase in food production has not been sufficient to meet its growing demands, precipitating a decline in the per-capita food availability. We also find a statistically significant declining trend of groundwater storage in India during the last decade, as derived from the Gravity Recovery and Climate Experiment (GRACE) satellite datasets. Regional studies reveal contrasting trends between northern and western–central India. North-western India and the middle Ganga basin show a decrease in the groundwater storage as opposed to an increasing storage over western–central India. Comparison with well data reveals that the highest consistency of GRACE-derived storage data with available well measurements is in the middle Ganga basin. After analysing the data for the last 2 decades, we further showcase that, after a drought, the groundwater storage drops but is unable to recover to its original condition even after good monsoon years. The groundwater storage reveals a very strong negative correlation with the electricity consumption for agricultural usage, which may also be considered as a proxy for groundwater pumped for irrigation in a region. The electricity usage for agricultural purposes has an increasing trend and, interestingly, it does not have any correlation with the monsoon rainfall as computed with the original or de-trended variables. This reveals an important finding that the irrigation has been intensified irrespective of rainfall. This also resulted in a decreasing correlation between the food production and monsoon rainfall, revealing the increasing dependency of agricultural activities on irrigation. We conclude that irrigation has now become essential for agriculture to meet the food demand; however
+
+Semantic aliases (appended at embed time, not in card JSON):
+Related themes: rainfall failure. monsoon deficit. dry year crop loss. kharif failure. erratic rainfall. delayed monsoon. drought prone area. climate stress farming. rainfall variability. precipitation deficit. crop failure rainfall. food insecurity drought. distress drought season. SPI negative Standard Precipitation Index. MAI Moisture Adequacy Index low. VCI Vegetation Condition Index low. dry ...
+
+JSON schema summary (required top-level keys):
+["card_id", "production_system", "observed_stress", "causal_pathway", "context", "diagnostic_signals", "confounders", "sources"]

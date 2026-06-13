@@ -4,10 +4,12 @@ from __future__ import annotations
 
 import logging
 import math
+import time
 from typing import Any
 
 from pymongo.database import Database
 
+from services.diagnosis_trace import RetrievalMetrics, RetrievalResult
 from services.ollama_client import embed_text
 
 log = logging.getLogger(__name__)
@@ -19,6 +21,33 @@ ACWADAM_TO_CARD_AQUIFER = {
     "himalayan_and_sub_himalayan": "hard_rock",
     "alluvium": "alluvium",
     "sedimentary_soft_rock": "semi-consolidated",
+}
+
+# When an MWS AER has few dedicated cards, retrieve from physiographically adjacent AERs
+# instead of falling back to unrelated regions (e.g. AER-3 must not pull AER-9 Indo-Gangetic).
+AER_RETRIEVAL_NEIGHBORS: dict[str, list[str]] = {
+    "AER-1": ["AER-1", "AER-14", "AER-2", "AER-4"],
+    "AER-2": ["AER-2", "AER-4", "AER-5"],
+    "AER-3": ["AER-3", "AER-6", "AER-7", "AER-8"],
+    "AER-4": ["AER-2", "AER-4", "AER-5", "AER-9"],
+    "AER-5": ["AER-2", "AER-4", "AER-5", "AER-6"],
+    "AER-6": ["AER-3", "AER-6", "AER-7", "AER-8"],
+    "AER-7": ["AER-3", "AER-6", "AER-7", "AER-8"],
+    "AER-8": ["AER-3", "AER-6", "AER-7", "AER-8"],
+    "AER-9": ["AER-4", "AER-9", "AER-10", "AER-13"],
+    "AER-10": ["AER-5", "AER-9", "AER-10", "AER-7", "AER-8"],
+    # Eastern plateau / Chhota Nagpur — proxy to peninsular hard-rock cards until dedicated cluster exists.
+    "AER-11": ["AER-11", "AER-12", "AER-10", "AER-7", "AER-8"],
+    "AER-12": ["AER-12", "AER-11", "AER-10", "AER-7", "AER-8"],
+    "AER-13": ["AER-9", "AER-13", "AER-15", "AER-10"],
+    # Himalayan / NE / delta — weak proxies until dedicated cards exist.
+    "AER-14": ["AER-14", "AER-1", "AER-16", "AER-10", "AER-9"],
+    "AER-15": ["AER-13", "AER-15", "AER-9", "AER-18", "AER-19"],
+    "AER-16": ["AER-16", "AER-14", "AER-17", "AER-10", "AER-15"],
+    "AER-17": ["AER-17", "AER-16", "AER-11", "AER-10", "AER-7"],
+    "AER-18": ["AER-15", "AER-18", "AER-19", "AER-8"],
+    "AER-19": ["AER-15", "AER-18", "AER-19"],
+    "AER-20": ["AER-20", "AER-19", "AER-18"],
 }
 
 CANDIDATE_POOL = 20
@@ -40,6 +69,27 @@ def _cosine(a: list[float], b: list[float]) -> float:
 def _card_aquifer_tag(mws_doc: dict) -> str:
     acwadam = (mws_doc.get("aquifer") or {}).get("acwadam_class", "")
     return ACWADAM_TO_CARD_AQUIFER.get(acwadam, "hard_rock")
+
+
+def _card_aer_tag(mws_doc: dict) -> str | None:
+    code = mws_doc.get("nbss_lup_aer_code")
+    if code and str(code).startswith("AER-"):
+        return str(code)
+    return None
+
+
+def _aer_tags_for_retrieval(mws_doc: dict) -> list[str] | None:
+    """Expand MWS AER to a retrieval set of related AER codes."""
+    aer = _card_aer_tag(mws_doc)
+    if not aer:
+        return None
+    neighbors = AER_RETRIEVAL_NEIGHBORS.get(aer, [aer])
+    # Preserve order while deduplicating (MWS AER first).
+    ordered: list[str] = []
+    for tag in [aer, *neighbors]:
+        if tag not in ordered:
+            ordered.append(tag)
+    return ordered
 
 
 def _production_system(card: dict) -> str:
@@ -101,14 +151,52 @@ def _diverse_select(scored: list[tuple[float, dict]], limit: int) -> list[dict]:
     return picked
 
 
+def _card_query(aquifer_tag: str, aer_tags: list[str] | None) -> dict[str, Any]:
+    query: dict[str, Any] = {"aquifer_tags": aquifer_tag}
+    if aer_tags:
+        query["aer_tags"] = {"$in": aer_tags} if len(aer_tags) > 1 else aer_tags[0]
+    return query
+
+
+def _fetch_candidates(
+    db: Database,
+    aquifer_tag: str,
+    aer_tags: list[str] | None,
+) -> list[dict]:
+    """Load evidence cards matching aquifer and (optional) AER constraints."""
+    query = _card_query(aquifer_tag, aer_tags)
+    candidates = list(db.evidence_cards.find(query))
+    if candidates or not aer_tags:
+        return candidates
+
+    # Last resort: same AER neighborhood without aquifer filter (never drop AER entirely).
+    aer_only = {"aer_tags": {"$in": aer_tags} if len(aer_tags) > 1 else aer_tags[0]}
+    candidates = list(db.evidence_cards.find(aer_only))
+    if candidates:
+        log.warning(
+            "No cards for aquifer=%s in AER set %s; using AER-only pool (%s cards)",
+            aquifer_tag,
+            aer_tags,
+            len(candidates),
+        )
+    else:
+        log.warning(
+            "No evidence cards for aquifer=%s AER set %s; retrieval may return fewer than %s cards",
+            aquifer_tag,
+            aer_tags,
+            DEFAULT_LIMIT,
+        )
+    return candidates
+
+
 def _score_candidates(
     db: Database,
     query_vector: list[float],
     aquifer_tag: str,
+    aer_tags: list[str] | None = None,
 ) -> list[tuple[float, dict]]:
-    query = {"aquifer_tags": aquifer_tag}
-    candidates = list(db.evidence_cards.find(query))
-    if len(candidates) < CANDIDATE_POOL:
+    candidates = _fetch_candidates(db, aquifer_tag, aer_tags)
+    if len(candidates) < CANDIDATE_POOL and not aer_tags:
         candidates = list(db.evidence_cards.find({}))
 
     scored: list[tuple[float, dict]] = []
@@ -127,37 +215,44 @@ def _vector_search_scored(
     query_vector: list[float],
     aquifer_tag: str,
     pool: int,
+    aer_tags: list[str] | None = None,
 ) -> list[tuple[float, dict]] | None:
-    pipeline: list[dict[str, Any]] = [
-        {
-            "$vectorSearch": {
-                "index": "evidence_card_vector_index",
-                "path": "embedding",
-                "queryVector": query_vector,
-                "numCandidates": max(50, pool * 10),
-                "limit": pool,
-                "filter": {"aquifer_tags": aquifer_tag},
-            }
-        },
-        {"$addFields": {"vectorSearchScore": {"$meta": "vectorSearchScore"}}},
-    ]
-    try:
-        docs = list(db.evidence_cards.aggregate(pipeline))
-    except Exception as exc:
-        log.debug("Atlas vector search unavailable, using cosine fallback: %s", exc)
-        return None
+    def _run(filter_query: dict[str, Any]) -> list[tuple[float, dict]] | None:
+        pipeline: list[dict[str, Any]] = [
+            {
+                "$vectorSearch": {
+                    "index": "evidence_card_vector_index",
+                    "path": "embedding",
+                    "queryVector": query_vector,
+                    "numCandidates": max(50, pool * 10),
+                    "limit": pool,
+                    "filter": filter_query,
+                }
+            },
+            {"$addFields": {"vectorSearchScore": {"$meta": "vectorSearchScore"}}},
+        ]
+        try:
+            docs = list(db.evidence_cards.aggregate(pipeline))
+        except Exception as exc:
+            log.debug("Atlas vector search unavailable, using cosine fallback: %s", exc)
+            return None
+        if not docs:
+            return None
+        scored: list[tuple[float, dict]] = []
+        for doc in docs:
+            score = doc.pop("vectorSearchScore", None)
+            if score is None:
+                emb = doc.get("embedding")
+                score = _cosine(query_vector, emb) if emb else 0.0
+            scored.append((float(score), doc))
+        scored.sort(key=lambda item: item[0], reverse=True)
+        return scored
 
-    if not docs:
-        return None
-
-    scored: list[tuple[float, dict]] = []
-    for doc in docs:
-        score = doc.pop("vectorSearchScore", None)
-        if score is None:
-            emb = doc.get("embedding")
-            score = _cosine(query_vector, emb) if emb else 0.0
-        scored.append((float(score), doc))
-    scored.sort(key=lambda item: item[0], reverse=True)
+    scored = _run(_card_query(aquifer_tag, aer_tags))
+    if aer_tags and not scored:
+        aer_only = {"aer_tags": {"$in": aer_tags} if len(aer_tags) > 1 else aer_tags[0]}
+        log.debug("Vector search found no hits for aquifer+AER; retrying AER-only filter")
+        scored = _run(aer_only)
     return scored
 
 
@@ -198,21 +293,45 @@ def retrieve_evidence_cards(
     mws_doc: dict,
     *,
     limit: int = DEFAULT_LIMIT,
-) -> list[dict]:
+) -> RetrievalResult:
+    t_total = time.perf_counter()
+
+    t0 = time.perf_counter()
     query_vector = embed_text(problem_text)
+    embed_ms = (time.perf_counter() - t0) * 1000
+
     aquifer_tag = _card_aquifer_tag(mws_doc)
+    aer_tags = _aer_tags_for_retrieval(mws_doc)
 
-    scored = _vector_search_scored(db, query_vector, aquifer_tag, CANDIDATE_POOL)
+    t1 = time.perf_counter()
+    scored = _vector_search_scored(db, query_vector, aquifer_tag, CANDIDATE_POOL, aer_tags)
     if not scored:
-        scored = _score_candidates(db, query_vector, aquifer_tag)
-
+        scored = _score_candidates(db, query_vector, aquifer_tag, aer_tags)
     selected = _diverse_select(scored, limit)
+    search_ms = (time.perf_counter() - t1) * 1000
 
     enriched = []
+    t2 = time.perf_counter()
     for card in selected:
         pathway_tags = card.get("pathway_tags") or []
         citations = _fetch_paper_chunks(db, query_vector, pathway_tags, limit=3)
         item = _strip_embedding(card)
         item["citations"] = citations
         enriched.append(item)
-    return enriched
+    citations_ms = (time.perf_counter() - t2) * 1000
+
+    metrics = RetrievalMetrics(
+        embed_ms=embed_ms,
+        search_ms=search_ms,
+        citations_ms=citations_ms,
+    )
+    log.debug(
+        "Retrieved %s evidence cards in %.1f ms (embed=%.1f search=%.1f citations=%.1f total=%.1f)",
+        len(enriched),
+        (time.perf_counter() - t_total) * 1000,
+        embed_ms,
+        search_ms,
+        citations_ms,
+        metrics.total_ms,
+    )
+    return RetrievalResult(cards=enriched, metrics=metrics)

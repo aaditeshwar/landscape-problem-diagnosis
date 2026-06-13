@@ -98,6 +98,28 @@ def _lulc_field_series(mws: dict, field: str) -> dict | None:
     return out or None
 
 
+_LULC_CROPLAND_COMPONENTS = (
+    "single_kharif",
+    "single_non_kharif",
+    "double_crop",
+    "triple_crop",
+)
+
+
+def _lulc_cropland_ha_series(mws: dict) -> dict | None:
+    """Total cropped area per year from lulc_vector crop-class columns (not cropland_in_ha)."""
+    lulc = mws.get("lulc_ha") or {}
+    out: dict[str, float] = {}
+    for year, row in lulc.items():
+        if not isinstance(row, dict):
+            continue
+        parts = [row.get(key) for key in _LULC_CROPLAND_COMPONENTS]
+        if not any(v is not None for v in parts):
+            continue
+        out[str(year)] = round(sum(v or 0 for v in parts), 4)
+    return out or None
+
+
 def _cropping_or_lulc_series(mws: dict, cropping_field: str, lulc_field: str) -> dict | None:
     return _cropping_field_series(mws, cropping_field) or _lulc_field_series(mws, lulc_field)
 
@@ -174,7 +196,7 @@ VARIABLE_RESOLVERS: dict[str, Any] = {
     "cropping_intensity": _cropping_intensity_series,
     "lulc_single_kharif_ha": lambda m: _cropping_or_lulc_series(m, "single_kharif_ha", "single_kharif"),
     "lulc_double_crop_ha": lambda m: _cropping_or_lulc_series(m, "double_crop_ha", "double_crop"),
-    "lulc_cropland_ha": lambda m: _lulc_field_series(m, "cropland"),
+    "lulc_cropland_ha": _lulc_cropland_ha_series,
     "lulc_shrub_scrub_ha": lambda m: _lulc_field_series(m, "shrub_scrub"),
     "lulc_barrenland_ha": lambda m: _lulc_field_series(m, "barrenland"),
     "lulc_tree_forest_ha": lambda m: _lulc_field_series(m, "tree_forest"),
@@ -365,6 +387,7 @@ def assemble_variable_bundle(
             "missing_variable_questions": missing_questions,
             "evidence_card": {
                 "card_id": card.get("card_id"),
+                "aer_tags": card.get("aer_tags", []),
                 "overall_reasoning_note": card.get("overall_reasoning_note"),
                 "diagnostic_signals": card.get("diagnostic_signals", []),
                 "confounders": card.get("confounders", []),
@@ -385,6 +408,8 @@ def location_context(mws_doc: dict) -> dict[str, Any]:
         "district": mws_doc.get("district"),
         "tehsil": mws_doc.get("tehsil"),
         "area_ha": mws_doc.get("area_ha"),
+        "nbss_lup_aer_code": mws_doc.get("nbss_lup_aer_code"),
+        "nbss_lup_aer_name": mws_doc.get("nbss_lup_aer_name"),
         "aquifer_class": aquifer.get("acwadam_class"),
         "aquifer_raw": aquifer.get("raw_class"),
         "terrain_cluster": terrain.get("cluster_id"),

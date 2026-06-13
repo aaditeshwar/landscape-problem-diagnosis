@@ -68,7 +68,7 @@ CONTEXT_CLUSTERS = [
         "suffix": "001",
         "label": "Deccan basalt semi-arid (Vidarbha/Marathwada)",
         "aquifer_types": ["hard_rock"],
-        "aer_tags": ["AER-6"],
+        "aer_tags": ["AER-3", "AER-6"],
         "rainfall_regime": "semi-arid",
         "agro_climatic_zones": ["semi-arid"],
         "terrain_types": ["plateau", "plains"],
@@ -78,7 +78,7 @@ CONTEXT_CLUSTERS = [
         "suffix": "002",
         "label": "Peninsular crystalline semi-arid",
         "aquifer_types": ["hard_rock"],
-        "aer_tags": ["AER-7", "AER-8"],
+        "aer_tags": ["AER-3", "AER-7", "AER-8"],
         "rainfall_regime": "semi-arid",
         "agro_climatic_zones": ["semi-arid"],
         "terrain_types": ["plateau", "hilly"],
@@ -123,6 +123,116 @@ CONTEXT_CLUSTERS = [
         "agro_climatic_zones": ["sub-humid", "semi-arid"],
         "terrain_types": ["plains"],
         "geographic_examples": ["coastal Tamil Nadu", "coastal Andhra Pradesh", "Odisha coast"],
+    },
+    {
+        "suffix": "007",
+        "label": "Chhota Nagpur / Eastern Plateau sub-humid",
+        "aquifer_types": ["hard_rock"],
+        "aer_tags": ["AER-12"],
+        "rainfall_regime": "humid",
+        "agro_climatic_zones": ["sub-humid", "humid"],
+        "terrain_types": ["plateau", "hilly"],
+        "geographic_examples": ["Jharkhand", "West Bengal (western)", "Odisha (northern)"],
+    },
+    {
+        "suffix": "008",
+        "label": "Chhattisgarh / Eastern Ghats sub-humid",
+        "aquifer_types": ["hard_rock"],
+        "aer_tags": ["AER-11"],
+        "rainfall_regime": "sub-humid",
+        "agro_climatic_zones": ["sub-humid"],
+        "terrain_types": ["plateau", "hilly"],
+        "geographic_examples": ["Chhattisgarh", "Odisha (western)", "Jharkhand (parts)"],
+    },
+    {
+        "suffix": "009",
+        "label": "Eastern Plains (Ganga-Brahmaputra middle)",
+        "aquifer_types": ["alluvium"],
+        "aer_tags": ["AER-13"],
+        "rainfall_regime": "humid",
+        "agro_climatic_zones": ["sub-humid", "humid"],
+        "terrain_types": ["plains"],
+        "geographic_examples": ["eastern Uttar Pradesh", "northern Bihar"],
+    },
+    {
+        "suffix": "010",
+        "label": "Bengal & Assam delta plains",
+        "aquifer_types": ["alluvium"],
+        "aer_tags": ["AER-15"],
+        "rainfall_regime": "humid",
+        "agro_climatic_zones": ["humid", "perhumid"],
+        "terrain_types": ["plains"],
+        "geographic_examples": ["West Bengal", "Assam", "eastern Bihar"],
+    },
+    {
+        "suffix": "011",
+        "label": "Western Himalayan foothills",
+        "aquifer_types": ["hard_rock"],
+        "aer_tags": ["AER-14"],
+        "rainfall_regime": "sub-humid",
+        "agro_climatic_zones": ["sub-humid", "humid"],
+        "terrain_types": ["hilly", "slopes"],
+        "geographic_examples": ["Himachal Pradesh", "Uttarakhand", "Jammu division"],
+    },
+    {
+        "suffix": "012",
+        "label": "Eastern Himalayas perhumid",
+        "aquifer_types": ["hard_rock"],
+        "aer_tags": ["AER-16"],
+        "rainfall_regime": "humid",
+        "agro_climatic_zones": ["perhumid"],
+        "terrain_types": ["hilly"],
+        "geographic_examples": ["Sikkim", "Arunachal Pradesh", "NE hill states"],
+    },
+    {
+        "suffix": "013",
+        "label": "NE Hills (Purvanchal)",
+        "aquifer_types": ["semi-consolidated"],
+        "aer_tags": ["AER-17"],
+        "rainfall_regime": "humid",
+        "agro_climatic_zones": ["perhumid"],
+        "terrain_types": ["hilly"],
+        "geographic_examples": ["Meghalaya", "Nagaland", "Mizoram", "Assam hills"],
+    },
+    {
+        "suffix": "014",
+        "label": "Malwa / Gujarat semi-arid (volcanic)",
+        "aquifer_types": ["hard_rock"],
+        "aer_tags": ["AER-5"],
+        "rainfall_regime": "semi-arid",
+        "agro_climatic_zones": ["semi-arid"],
+        "terrain_types": ["plateau", "plains"],
+        "geographic_examples": ["Madhya Pradesh Malwa", "Gujarat"],
+    },
+    {
+        "suffix": "015",
+        "label": "West Coast humid perhumid",
+        "aquifer_types": ["alluvium"],
+        "aer_tags": ["AER-19"],
+        "rainfall_regime": "humid",
+        "agro_climatic_zones": ["humid", "perhumid"],
+        "terrain_types": ["plains", "hilly"],
+        "geographic_examples": ["Kerala", "Konkan Maharashtra", "Goa"],
+    },
+    {
+        "suffix": "016",
+        "label": "Western Himalayan cold arid",
+        "aquifer_types": ["hard_rock"],
+        "aer_tags": ["AER-1"],
+        "rainfall_regime": "arid",
+        "agro_climatic_zones": ["arid"],
+        "terrain_types": ["hilly", "valley"],
+        "geographic_examples": ["Ladakh", "high Himalaya cold desert"],
+    },
+    {
+        "suffix": "017",
+        "label": "Andaman-Nicobar & Lakshadweep islands",
+        "aquifer_types": ["coastal"],
+        "aer_tags": ["AER-20"],
+        "rainfall_regime": "humid",
+        "agro_climatic_zones": ["humid", "perhumid"],
+        "terrain_types": ["plains"],
+        "geographic_examples": ["Andaman & Nicobar", "Lakshadweep"],
     },
 ]
 
@@ -213,6 +323,109 @@ def format_chunks_for_prompt(chunks: list[dict]) -> str:
     return "\n\n".join(parts)
 
 
+_DATA_DICTIONARY: dict | None = None
+
+
+def _data_dictionary() -> dict:
+    global _DATA_DICTIONARY
+    if _DATA_DICTIONARY is None:
+        raw = load_json(META / "data_dictionary_v2.json")
+        _DATA_DICTIONARY = raw.get("data_dictionary", raw)
+    return _DATA_DICTIONARY
+
+
+def variable_type_hints(pathway_info: dict) -> str:
+    """Summarise variable shapes for variables used in this pathway."""
+    dd = _data_dictionary().get("variables", {})
+    lines = []
+    for item in pathway_info.get("diagnostic_variables", []):
+        name = item.get("variable")
+        if not name:
+            continue
+        meta = dd.get(name, {})
+        desc = meta.get("description") or item.get("rationale") or ""
+        vtype = meta.get("type", "unknown")
+        avail = item.get("availability", meta.get("availability", "?"))
+        lines.append(f"  {name} ({vtype}, availability={avail}): {desc[:160]}")
+    return "\n".join(lines) if lines else "  (none)"
+
+
+DERIVED_VARIABLES_FOR_EXPRESSIONS = {
+    "mean_annual_precipitation_mm": "mean of annual_precipitation_mm time series",
+    "trend_annual_precipitation_mm": "linear slope of annual_precipitation_mm (mm/year)",
+    "mean_annual_et_mm": "mean of annual_et_mm time series",
+    "trend_annual_et_mm": "linear slope of annual_et_mm (mm/year)",
+    "mean_annual_runoff_mm": "mean of annual_runoff_mm time series",
+    "trend_annual_runoff_mm": "linear slope of annual_runoff_mm (mm/year)",
+    "mean_annual_delta_g_mm": "mean of P−ET−Runoff groundwater balance",
+    "trend_annual_delta_g_mm": "linear slope of annual_delta_g_mm (mm/year)",
+    "mean_cropping_intensity": "mean of cropping_intensity time series",
+    "trend_cropping_intensity": "linear slope of cropping_intensity (ratio/year)",
+    "mean_kharif_cropped_area_ha": "mean of lulc_single_kharif_ha time series",
+    "trend_kharif_cropped_area_ha": "linear slope of lulc_single_kharif_ha (ha/year)",
+    "mean_double_crop_area_ha": "mean of lulc_double_crop_ha time series",
+    "trend_double_crop_area_ha": "linear slope of lulc_double_crop_ha (ha/year)",
+    "drought_moderate_return_period": "average years between moderate drought kharif seasons",
+    "drought_severe_return_period": "average years between severe drought kharif seasons",
+    "mean_swb_total_area_ha": "mean of swb_total_area_ha time series",
+    "trend_swb_total_area_ha": "linear slope of swb_total_area_ha (ha/year)",
+    "mean_swb_rabi_kharif_ratio": "mean of swb_rabi_area_ha / swb_kharif_area_ha ratio",
+    "trend_swb_rabi_kharif_ratio": "linear slope of SWB rabi/kharif ratio",
+}
+
+
+def derived_variable_hints_block() -> str:
+    lines = ["Derived/computed variables (scalars — use directly in expressions):"]
+    for name, hint in DERIVED_VARIABLES_FOR_EXPRESSIONS.items():
+        lines.append(f"  {name}: {hint}")
+    return "\n".join(lines)
+
+
+def expression_rules_block(pathway_info: dict) -> str:
+    unavailable = [
+        item["variable"]
+        for item in pathway_info.get("diagnostic_variables", [])
+        if item.get("availability") == "not_available"
+    ]
+    unavailable_note = (
+        f"Variables marked not_available ({', '.join(unavailable) or 'none'}) "
+        "may use type=qualitative with qualitative_description only and expression omitted."
+        if unavailable
+        else "All pathway variables are available — every signal must have a Python expression."
+    )
+    return f"""Signal expression rules (CRITICAL — downstream diagnosis evaluates these step-by-step as Python booleans):
+- Every diagnostic_signals[].condition MUST include a non-empty "expression" for types quantitative, trend, and composite.
+- type=qualitative WITHOUT expression is allowed ONLY for variables with availability=not_available in the framework list above.
+  {unavailable_note}
+- The expression is shown to a reasoning model as the evaluable condition. It MUST be a single valid Python boolean expression using variable names exactly as in data_dictionary.json.
+- Put interpretive prose ONLY in "explanation" and optional supporting "qualitative_description". NEVER put prose paragraphs in "expression".
+- Time-series variables (e.g. lulc_*_ha, cropping_intensity, annual_runoff_mm, drought_weeks_severe) are dicts keyed by year strings "2017".."2024". Use [-1] for latest year, [0] for earliest: cropping_intensity[-1] <= 1.15
+- Scalar NREGA totals (nrega_swc_count, nrega_irrigation_count, nrega_community_assets_count) are numeric aggregates — compare directly: nrega_irrigation_count < 3 (NOT .values() or dict indexing).
+- Null/absent categorical values: use `canal_name is None`, never SQL syntax like `IS NULL`.
+- List variables: organization_domains is a Python list — use `'fisheries' not in organization_domains`.
+- terrain_cluster_id is an integer: 1 = Mostly Plains, 3 = Broad Plains and Slopes. Use explicit comparisons, e.g. terrain_cluster_id == 3 for sloping terrain; do NOT describe terrain in prose without a numeric test.
+- String equality: aquifer_class == 'crystalline_basement' (single quotes inside the JSON string).
+- Ratios and compound conditions: parenthesize explicitly — (lulc_single_kharif_ha[-1] / (lulc_single_kharif_ha[-1] + lulc_double_crop_ha[-1] + 1e-9)) > 0.75
+- Derived mean/trend scalars are computed at diagnosis time from the raw time series and injected alongside present_variables. Prefer them for multi-year patterns instead of prose:
+  trend_annual_delta_g_mm < 0, mean_cropping_intensity <= 1.15, trend_swb_total_area_ha < -5
+
+{derived_variable_hints_block()}
+
+BAD example (current corpus bug — do NOT reproduce):
+  "type": "qualitative",
+  "qualitative_description": "Terrain cluster indicates sloping plateau or hilly terrain..."
+  (no expression — model cannot evaluate TRUE/FALSE; also contradicts terrain_cluster_id == 1 = Mostly Plains)
+
+GOOD example for terrain_cluster_id on rainfed_risk:
+  "type": "quantitative",
+  "expression": "terrain_cluster_id == 3 and annual_runoff_mm[-1] > 80",
+  "qualitative_description": "Broad plains and slopes (cluster 3) with high runoff reduce in-field moisture retention.",
+  "threshold_confidence": "medium",
+  "context_sensitivity": "regional"
+
+The example card below may contain legacy qualitative-only conditions — ignore those patterns; your output must follow these expression rules."""
+
+
 def build_prompt(
     pathway_info: dict,
     cluster: dict,
@@ -265,6 +478,11 @@ Diagnostic variables from the framework (use these variable names in signals):
 
 Recommended solutions for this pathway:
 {solutions}
+
+Variable types for this pathway (from data_dictionary.json):
+{variable_type_hints(pathway_info)}
+
+{expression_rules_block(pathway_info)}
 
 Rules:
 - Include 3-5 diagnostic_signals using available variables where possible.

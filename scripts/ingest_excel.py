@@ -25,6 +25,7 @@ import os
 import re
 import sys
 from datetime import datetime, timezone
+from pathlib import Path
 
 import openpyxl
 import requests
@@ -37,6 +38,11 @@ from shapely.validation import make_valid
 load_dotenv()
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger(__name__)
+
+_RUNTIME_DIR = Path(__file__).resolve().parents[1] / "runtime"
+if str(_RUNTIME_DIR) not in sys.path:
+    sys.path.insert(0, str(_RUNTIME_DIR))
+from services.aer_lookup import attach_aer_to_mws, validate_aer_geojson  # noqa: E402
 
 # ── Configuration ─────────────────────────────────────────────────────────────
 CORE_STACK_BASE = "https://geoserver.core-stack.org/api/v1"
@@ -406,6 +412,7 @@ def parse_lulc_vector(rows, docs):
         "single_kharif", "single_non_kharif",
         "k_water", "kr_water", "krz_water",
     ]
+    # cropland_in_ha is stored but not used for diagnosis; lulc_cropland_ha sums the four crop classes.
     for r in rows:
         uid = r["UID"]
         if uid not in docs:
@@ -1052,6 +1059,24 @@ def main():
             )
     else:
         log.info("Skipping geometry fetch (--skip-geometries)")
+
+    # ── NBSS-LUP AER tagging ──────────────────────────────────────────────────
+    if geometries_ok:
+        aer_report = validate_aer_geojson()
+        if not aer_report.ok:
+            log.warning(
+                "AER GeoJSON validation failed (%s). "
+                "Run scripts/maintenance/fetch_aer_geojson.py before ingest.",
+                "; ".join(aer_report.summary_lines()[-2:]),
+            )
+        else:
+            aer_stats = attach_aer_to_mws(db, list(mws_docs.keys()))
+            log.info(
+                "AER tagging: updated=%s missing_boundary=%s lookup_failed=%s",
+                aer_stats["updated"],
+                aer_stats["missing_boundary"],
+                aer_stats["lookup_failed"],
+            )
 
     # ── Update manifest ───────────────────────────────────────────────────────
     db.ingest_manifest.update_one(

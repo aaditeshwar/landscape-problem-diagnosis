@@ -327,8 +327,13 @@
       },
       "nbss_lup_aer_code": {
         "type": "static", "unit": "categorical (AER-1 to AER-20)",
-        "description": "NBSS & LUP Agro-Ecological Region code for the MWS. Derived from spatial intersection with AER boundaries.",
-        "availability": "not_available", "note": "Derive at ingest using AER boundary GeoJSON from data.gov.in"
+        "description": "NBSS & LUP Agro-Ecological Region code for the MWS. Derived from spatial intersection with data/India_AER_NBSS_LUP.geojson at ingest.",
+        "availability": "available"
+      },
+      "nbss_lup_aer_name": {
+        "type": "static", "unit": "text",
+        "description": "Canonical NBSS & LUP AER name from metadata/reference_standards.json for nbss_lup_aer_code.",
+        "availability": "available"
       },
       "mean_annual_precipitation_mm": {"type": "derived", "unit": "mm/agricultural_year", "description": "Mean annual precipitation across available hydrological years.", "computation": "mean(hydrological_annual.precipitation_mm)", "availability": "derived"},
       "trend_annual_precipitation_mm": {"type": "derived", "unit": "mm/year", "description": "Linear trend slope of annual precipitation.", "computation": "trend(hydrological_annual.precipitation_mm)", "availability": "derived"},

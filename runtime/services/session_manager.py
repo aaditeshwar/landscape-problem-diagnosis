@@ -6,8 +6,6 @@ from uuid import uuid4
 
 from pymongo.database import Database
 
-from services.ollama_client import reason_model
-
 
 def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -107,7 +105,3 @@ def append_turn(
             update.setdefault("$set", {})[f"injected_variables.{key}"] = val
 
     db.sessions.update_one({"_id": session_id}, update)
-
-
-def model_for_turn(follow_up: bool) -> str:
-    return reason_model()
