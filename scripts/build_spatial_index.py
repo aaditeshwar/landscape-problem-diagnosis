@@ -50,9 +50,14 @@ STATE_ALIASES = {
     "chhatisgarh": "chhatisgarh",
 }
 
+DISTRICT_ALIASES = {
+    "theni": "teni",
+}
+
 # CoRE Stack / ingest label -> SOI TEHSIL spelling (alphanumeric keys)
 TEHSIL_ALIASES = {
     "kaprada": "kaparada",
+    "sawali": "sawli",
 }
 
 
@@ -70,8 +75,13 @@ def _canon_tehsil(tehsil: str) -> str:
     return TEHSIL_ALIASES.get(key, key)
 
 
+def _canon_district(district: str) -> str:
+    key = _part_key(district)
+    return DISTRICT_ALIASES.get(key, key)
+
+
 def normalize_key(state: str, district: str, tehsil: str) -> str:
-    return "|".join([_canon_state(state), _part_key(district), _canon_tehsil(tehsil)])
+    return "|".join([_canon_state(state), _canon_district(district), _canon_tehsil(tehsil)])
 
 
 
