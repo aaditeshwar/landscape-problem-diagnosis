@@ -190,7 +190,7 @@ Helpers:
 .\.venv\Scripts\python.exe scripts\verify\verify_evidence_cards.py
 ```
 
-**Semantic aliases:** Card embeddings use alias-augmented text from `metadata/semantic_aliases.json` (see `runtime/services/card_embedding_text.py`). After editing aliases:
+**Semantic aliases:** Card embeddings use alias-augmented text from `metadata/semantic_aliases.json` (see `scripts/lib/card_embedding_text.py`). After editing aliases:
 
 ```powershell
 .\.venv\Scripts\python.exe scripts\maintenance\preview_card_embedding_text.py --prefix <pathway> --show-legacy

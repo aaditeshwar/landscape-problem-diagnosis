@@ -16,14 +16,13 @@ from dotenv import load_dotenv
 from pymongo import MongoClient
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "runtime"))
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from _bootstrap import bootstrap  # noqa: E402
 
 bootstrap()
 
-from services.card_embedding_text import card_embed_text, stamp_embedding_metadata  # noqa: E402
+from lib.card_embedding_text import card_embed_text, stamp_embedding_metadata  # noqa: E402
 
 from generate_evidence_cards import (  # noqa: E402
     CONTEXT_CLUSTERS,

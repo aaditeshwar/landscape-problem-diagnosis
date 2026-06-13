@@ -3,7 +3,7 @@ embed_utils.py (REFERENCE ONLY)
 ================================
 Reference implementation for alias-augmented evidence card embedding.
 
-Canonical implementation: runtime/services/card_embedding_text.py
+Canonical implementation: scripts/lib/card_embedding_text.py
 Alias data: metadata/semantic_aliases.json
 
 Do not run this script directly — use:

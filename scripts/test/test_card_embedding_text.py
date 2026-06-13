@@ -10,9 +10,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from _bootstrap import ROOT, bootstrap  # noqa: E402
 
-bootstrap(runtime=True)
+bootstrap()
 
-from services.card_embedding_text import (  # noqa: E402
+from lib.card_embedding_text import (  # noqa: E402
     aliases_for_pathway,
     build_card_embedding_text,
     format_alias_paragraph,

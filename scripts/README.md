@@ -29,6 +29,7 @@ Paper manifest helpers: `validate_manifest.py`, `sync_manifest_pdfs.py`, `restor
 
 | Module | Used by |
 |--------|---------|
+| `lib/card_embedding_text.py` | Evidence card embed text + semantic aliases |
 | `lib/tehsil_excel_catalog.py` | `batch_ingest_excel.py`, `sync_active_excels.py`, verify audit |
 | `lib/excel_audit.py` | `sync_active_excels.py`, `verify/audit_excel_core_stack.py` |
 
@@ -67,7 +68,7 @@ Paper manifest helpers: `validate_manifest.py`, `sync_manifest_pdfs.py`, `restor
 
 | File | Notes |
 |------|-------|
-| `reference/embed_utils.py` | Reference only; canonical code is `runtime/services/card_embedding_text.py` |
+| `reference/embed_utils.py` | Reference only; canonical code is `scripts/lib/card_embedding_text.py` |
 
 ## Dependencies
 

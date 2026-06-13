@@ -31,20 +31,25 @@ from dotenv import load_dotenv
 from pymongo import MongoClient, UpdateOne
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "runtime"))
+sys.path.insert(0, str(ROOT / "scripts"))
+
+from _bootstrap import bootstrap  # noqa: E402
+
+bootstrap()
+
+from lib.card_embedding_text import (  # noqa: E402
+    aliases_for_pathway,
+    card_embed_text,
+    format_alias_paragraph,
+    stamp_embedding_metadata,
+)
+
 META = ROOT / "metadata"
 RAW_DIR = ROOT / "data" / "evidence_cards" / "raw"
 DB_NAME = "diagnosis_db"
 COLLECTION = "evidence_cards"
 
 load_dotenv(ROOT / ".env")
-
-from services.card_embedding_text import (  # noqa: E402
-    aliases_for_pathway,
-    card_embed_text,
-    format_alias_paragraph,
-    stamp_embedding_metadata,
-)
 
 EMBED_MODEL = os.getenv("OLLAMA_EMBED_MODEL", "nomic-embed-text")
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434").rstrip("/")
