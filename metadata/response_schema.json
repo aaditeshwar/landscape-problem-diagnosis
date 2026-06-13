@@ -1,0 +1,165 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DiagnosisResponse",
+  "description": "JSON body returned by POST /api/query (first diagnosis) and POST /api/answer (follow-up). The reasoner produces the diagnosis fields; the API adds session_id.",
+  "type": "object",
+  "required": [
+    "session_id",
+    "confirmed_pathways",
+    "uncertain_pathways",
+    "solutions",
+    "panel_updates"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "description": "Diagnosis session identifier. Created on the first /api/query call; reused on subsequent /api/answer calls.",
+      "pattern": "^session_[a-f0-9]{12}$",
+      "examples": ["session_a1b2c3d4e5f6"]
+    },
+    "confirmed_pathways": {
+      "type": "array",
+      "description": "Causal pathways supported by present MWS variables and retrieved evidence.",
+      "items": { "$ref": "#/definitions/ConfirmedPathway" }
+    },
+    "uncertain_pathways": {
+      "type": "array",
+      "description": "Candidate pathways where key diagnostic variables are still missing from MWS data or user follow-up.",
+      "items": { "$ref": "#/definitions/UncertainPathway" }
+    },
+    "solutions": {
+      "type": "array",
+      "description": "Suggested interventions drawn from the diagnosis framework for confirmed pathways.",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "panel_updates": {
+      "type": "array",
+      "description": "Visualization keys used to highlight charts in the MWS info panel. See metadata/reference_standards.json query_triggered_panel_updates.",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "examples": [
+          "cropping_intensity + annual_delta_g_mm dual_axis",
+          "lulc_tree_forest_ha trend",
+          "cd_total_deforestation_ha + cd_total_afforestation_ha paired_bar",
+          "drought_weeks stacked_bar",
+          "dist_*_km horizontal_bars"
+        ]
+      }
+    },
+    "panel_update_explanation": {
+      "type": ["string", "null"],
+      "description": "1–3 sentences explaining why panel_updates were chosen. Shown in the follow-up chat trail under \"Action taken\"; often null on the first query."
+    },
+    "follow_up_question": {
+      "type": ["string", "null"],
+      "description": "Next structured question for the user, if any. Post-processed to exclude repeats and variables already in MWS data or prior answers."
+    },
+    "diagnosis_revision": {
+      "type": ["object", "null"],
+      "description": "Present on follow-up (/api/answer) responses. Server-computed diff vs the prior turn.",
+      "required": ["improved", "summary", "pathway_changes"],
+      "additionalProperties": false,
+      "properties": {
+        "improved": {
+          "type": "boolean",
+          "description": "True when pathway ranking, confidence, or solutions changed materially."
+        },
+        "summary": {
+          "type": ["string", "null"],
+          "description": "Human-readable summary of what changed (or that ranking was unchanged)."
+        },
+        "pathway_changes": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/PathwayChange" }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "PathwayChange": {
+      "type": "object",
+      "required": ["pathway_id", "from", "to", "reason"],
+      "additionalProperties": false,
+      "properties": {
+        "pathway_id": { "$ref": "#/definitions/PathwayId" },
+        "from": {
+          "type": "string",
+          "description": "Prior status: confirmed, uncertain, or absent."
+        },
+        "to": {
+          "type": "string",
+          "description": "Revised status: confirmed, uncertain, or absent."
+        },
+        "reason": {
+          "type": "string",
+          "description": "Short explanation of why the pathway moved."
+        }
+      }
+    },
+    "PathwayConfidence": {
+      "type": "string",
+      "enum": ["high", "medium", "low"],
+      "description": "Model-assigned confidence for pathway ranking."
+    },
+    "PathwayId": {
+      "type": "string",
+      "description": "Short causal pathway key from diagnosis_framework.json (not the full pipeline key).",
+      "examples": [
+        "groundwater_stress",
+        "forest_degradation",
+        "encroachment",
+        "multi_sector_vulnerability",
+        "small_landholding"
+      ]
+    },
+    "MissingVariableQuestion": {
+      "type": "object",
+      "required": ["variable", "question"],
+      "additionalProperties": false,
+      "properties": {
+        "variable": {
+          "type": "string",
+          "description": "Diagnostic variable name from the framework (typically not_available in Excel corpus).",
+          "examples": ["borewell_density", "ntfp_species_presence", "household_income_inr"]
+        },
+        "question": {
+          "type": "string",
+          "minLength": 1,
+          "description": "User-facing follow-up question for the missing variable."
+        }
+      }
+    },
+    "ConfirmedPathway": {
+      "type": "object",
+      "required": ["pathway_id", "confidence", "reasoning"],
+      "additionalProperties": false,
+      "properties": {
+        "pathway_id": { "$ref": "#/definitions/PathwayId" },
+        "confidence": { "$ref": "#/definitions/PathwayConfidence" },
+        "reasoning": {
+          "type": "string",
+          "description": "Short justification citing MWS UID, village names, and relevant variable values."
+        }
+      }
+    },
+    "UncertainPathway": {
+      "type": "object",
+      "required": ["pathway_id", "confidence", "missing_variable_questions"],
+      "additionalProperties": false,
+      "properties": {
+        "pathway_id": { "$ref": "#/definitions/PathwayId" },
+        "confidence": { "$ref": "#/definitions/PathwayConfidence" },
+        "missing_variable_questions": {
+          "type": "array",
+          "description": "Structured questions for variables still missing; sanitized server-side before response.",
+          "items": { "$ref": "#/definitions/MissingVariableQuestion" }
+        }
+      }
+    }
+  }
+}

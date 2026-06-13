@@ -1,0 +1,262 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "EvidenceCard",
+  "description": "A semi-structured evidence card extracted from one or more research papers, grounding a causal pathway in a diagnosis framework with qualitative and quantitative conditions drawn from literature.",
+  "type": "object",
+  "required": [
+    "card_id",
+    "production_system",
+    "observed_stress",
+    "causal_pathway",
+    "context",
+    "diagnostic_signals",
+    "confounders",
+    "sources"
+  ],
+  "properties": {
+    "card_id": {
+      "type": "string",
+      "description": "Unique identifier. Format: <production_system>__<stress>__<cause>__<index>. Example: agriculture__water_scarcity__groundwater_stress__001",
+      "pattern": "^[a-z_]+__[a-z_]+__[a-z_]+__[0-9]{3}$"
+    },
+    "production_system": {
+      "type": "string",
+      "enum": ["Agriculture", "Livestock", "NTFP_Forest_Biodiversity", "Fishery", "Socio_Economic"],
+      "description": "Top-level production system from the diagnosis framework"
+    },
+    "observed_stress": {
+      "type": "string",
+      "description": "The observed community-level stress this card helps diagnose. Must match a key in diagnosis_framework.json"
+    },
+    "causal_pathway": {
+      "type": "string",
+      "description": "The specific causal pathway this card grounds. Must match a key in diagnosis_framework.json"
+    },
+    "context": {
+      "type": "object",
+      "description": "Describes the agro-ecological and socio-economic context in which the paper's findings apply. Used for retrieval filtering.",
+      "required": ["agro_climatic_zones", "aquifer_types", "terrain_types", "rainfall_regime"],
+      "properties": {
+        "agro_climatic_zones": {
+          "type": "array",
+          "description": "Agro-climatic zones where this evidence applies (ICAR classification or FAO zone names). Use ['any'] if broadly applicable.",
+          "items": { "type": "string" },
+          "examples": [["semi-arid", "sub-humid"], ["arid"], ["any"]]
+        },
+        "aquifer_types": {
+          "type": "array",
+          "description": "Aquifer types where evidence applies.",
+          "items": {
+            "type": "string",
+            "enum": ["hard_rock", "alluvium", "semi-consolidated", "coastal", "any"]
+          }
+        },
+        "terrain_types": {
+          "type": "array",
+          "description": "Terrain types where evidence applies.",
+          "items": {
+            "type": "string",
+            "enum": ["plains", "slopes", "hilly", "plateau", "valley", "any"]
+          }
+        },
+        "rainfall_regime": {
+          "type": "string",
+          "enum": ["arid", "semi-arid", "sub-humid", "humid", "any"],
+          "description": "Rainfall regime where the paper's conditions apply"
+        },
+        "crop_systems": {
+          "type": "array",
+          "description": "Relevant crop systems mentioned in study (optional).",
+          "items": { "type": "string" },
+          "examples": [["kharif rainfed", "cotton-soybean"], ["irrigated wheat-rice"]]
+        },
+        "geographic_examples": {
+          "type": "array",
+          "description": "Specific regions, states, or countries in which the source studies were conducted.",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "diagnostic_signals": {
+      "type": "array",
+      "description": "List of diagnostic signals drawn from the paper. Each signal maps one or more variables to a condition expression, with a severity level and qualitative explanation. These are the building blocks for LLM reasoning.",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["signal_id", "variables", "condition", "severity", "direction", "explanation"],
+        "properties": {
+          "signal_id": {
+            "type": "string",
+            "description": "Short unique label within the card. Example: sig_01"
+          },
+          "variables": {
+            "type": "array",
+            "description": "Variable names from data_dictionary.json involved in this signal.",
+            "items": { "type": "string" }
+          },
+          "condition": {
+            "type": "object",
+            "description": "The logical condition grounded in the paper. Use 'expression' for quantitative thresholds where available; 'qualitative' where the paper only gives directional or descriptive guidance.",
+            "required": ["type"],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["quantitative", "qualitative", "trend", "composite"],
+                "description": "quantitative: a threshold expression | qualitative: directional description only | trend: change over time | composite: combination of multiple sub-conditions"
+              },
+              "expression": {
+                "type": "string",
+                "description": "Python-evaluable logical expression string using variable names. Use None if type is qualitative. Example: 'soge_dev_percent > 70 and aquifer_class == \"hard_rock\"'",
+                "examples": [
+                  "soge_dev_percent > 70",
+                  "annual_well_depth_m[year_n] - annual_well_depth_m[year_0] > 3",
+                  "drought_weeks_severe > 4 and annual_precipitation_mm < 700",
+                  "cd_total_degradation_ha / mws_area_ha > 0.15"
+                ]
+              },
+              "qualitative_description": {
+                "type": "string",
+                "description": "Human-readable description of the condition when a precise threshold is unavailable. Required if type is qualitative or trend.",
+                "examples": [
+                  "Well depth is increasing year-on-year over a multi-year window, indicating declining water table",
+                  "Barren land area has increased relative to baseline cropland area",
+                  "Monsoon onset is delayed by more than 2 weeks compared to historical average"
+                ]
+              },
+              "threshold_confidence": {
+                "type": "string",
+                "enum": ["high", "medium", "low", "none"],
+                "description": "Confidence in the threshold value: high = from peer-reviewed empirical study with similar context; medium = from expert guidelines or grey literature; low = extrapolated from dissimilar context; none = no quantitative threshold available"
+              },
+              "context_sensitivity": {
+                "type": "string",
+                "enum": ["global", "regional", "local"],
+                "description": "How context-sensitive the threshold is: global = applies broadly; regional = applies to similar agro-climatic zones; local = should only be used in the specific study context"
+              }
+            }
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["low", "moderate", "high", "critical"],
+            "description": "Severity of the causal pathway if this signal is active, as assessed from literature"
+          },
+          "direction": {
+            "type": "string",
+            "enum": ["confirms", "suggests", "rules_out", "amplifies"],
+            "description": "confirms: strong evidence this cause is active | suggests: weak or indirect evidence | rules_out: variable value makes this cause unlikely | amplifies: strengthens another active signal when co-occurring"
+          },
+          "explanation": {
+            "type": "string",
+            "description": "One to three sentence plain-language explanation of why this variable pattern indicates the causal pathway, drawing from the paper's findings."
+          },
+          "interaction_with": {
+            "type": "array",
+            "description": "Signal IDs within the same card (or across cards in the same pathway) that interact with this signal — i.e. the combination of both signals is more or less diagnostic than each alone.",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    },
+    "overall_reasoning_note": {
+      "type": "string",
+      "description": "A paragraph-length note for the LLM summarising how to reason over the signals in this card collectively — which signals are sufficient alone, which need to co-occur, how to handle missing variables, and what alternative causes to rule out first."
+    },
+    "confounders": {
+      "type": "array",
+      "description": "Alternative explanations or confounding conditions that this evidence card cannot rule out on its own, and which the LLM should consider before concluding the causal pathway is active.",
+      "items": {
+        "type": "object",
+        "required": ["confounder", "how_to_distinguish"],
+        "properties": {
+          "confounder": {
+            "type": "string",
+            "description": "The alternative causal pathway or confounding variable"
+          },
+          "how_to_distinguish": {
+            "type": "string",
+            "description": "Which variable or user question can help distinguish this confounder from the primary pathway"
+          }
+        }
+      }
+    },
+    "missing_variable_questions": {
+      "type": "array",
+      "description": "Targeted questions to ask the user when key not-available variables are missing, in priority order. Used by the interactive system to elicit data that would most improve diagnostic confidence.",
+      "items": {
+        "type": "object",
+        "required": ["missing_variable", "question_to_user", "how_answer_updates_diagnosis"],
+        "properties": {
+          "missing_variable": {
+            "type": "string",
+            "description": "Variable name from data_dictionary.json with availability: not_available"
+          },
+          "question_to_user": {
+            "type": "string",
+            "description": "Plain-language question phrased for a non-technical user (farmer, extension worker, NGO staff)"
+          },
+          "how_answer_updates_diagnosis": {
+            "type": "string",
+            "description": "How the user's answer changes the diagnostic conclusion or confidence level"
+          }
+        }
+      }
+    },
+    "sources": {
+      "type": "array",
+      "description": "Research papers, reports, or guidelines from which the evidence in this card is drawn.",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["source_id", "title", "authors", "year", "source_type"],
+        "properties": {
+          "source_id": {
+            "type": "string",
+            "description": "Short citekey. Format: <FirstAuthorLastName><Year>. Example: Shah2009"
+          },
+          "title": { "type": "string" },
+          "authors": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "year": { "type": "integer" },
+          "doi": { "type": "string" },
+          "url": { "type": "string" },
+          "source_type": {
+            "type": "string",
+            "enum": ["peer_reviewed_journal", "government_report", "ngo_report", "grey_literature", "expert_guideline", "book_chapter"]
+          },
+          "relevance_note": {
+            "type": "string",
+            "description": "One sentence on which specific finding from this source grounds the signal(s) in this card"
+          }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Card-level metadata for versioning and quality tracking",
+      "properties": {
+        "created_by": {
+          "type": "string",
+          "description": "Pipeline stage or human reviewer that created this card. E.g. 'llm_extraction_v1', 'expert_review'"
+        },
+        "reviewed_by_expert": {
+          "type": "boolean",
+          "default": false
+        },
+        "review_notes": { "type": "string" },
+        "created_at": { "type": "string", "format": "date" },
+        "last_updated": { "type": "string", "format": "date" },
+        "extraction_model": {
+          "type": "string",
+          "description": "LLM model used for extraction if created by pipeline. E.g. claude-sonnet-4-20250514"
+        },
+        "confidence_overall": {
+          "type": "string",
+          "enum": ["high", "medium", "low"],
+          "description": "Overall confidence in this card's diagnostic utility, assessed at creation or review time"
+        }
+      }
+    }
+  }
+}

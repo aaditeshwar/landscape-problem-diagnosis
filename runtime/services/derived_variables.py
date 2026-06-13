@@ -1,0 +1,200 @@
+"""On-the-fly derived statistics from MWS time series (not stored in Mongo)."""
+
+from __future__ import annotations
+
+from typing import Any
+
+
+def _sorted_numeric_series(series: dict | None) -> list[tuple[int, float]]:
+    if not series:
+        return []
+    out: list[tuple[int, float]] = []
+    for key, value in series.items():
+        if value is None:
+            continue
+        try:
+            out.append((int(key), float(value)))
+        except (TypeError, ValueError):
+            continue
+    out.sort(key=lambda pair: pair[0])
+    return out
+
+
+def mean(series: dict | None) -> float | None:
+    pairs = _sorted_numeric_series(series)
+    if not pairs:
+        return None
+    return round(sum(v for _, v in pairs) / len(pairs), 4)
+
+
+def trend(series: dict | None) -> float | None:
+    """Linear slope over agricultural years (units per year)."""
+    pairs = _sorted_numeric_series(series)
+    if len(pairs) < 2:
+        return None
+    years = [float(y) for y, _ in pairs]
+    values = [v for _, v in pairs]
+    n = len(years)
+    mean_y = sum(years) / n
+    mean_v = sum(values) / n
+    num = sum((y - mean_y) * (v - mean_v) for y, v in zip(years, values))
+    den = sum((y - mean_y) ** 2 for y in years)
+    if den == 0:
+        return None
+    return round(num / den, 4)
+
+
+def delta_g_series(mws_doc: dict) -> dict[str, float] | None:
+    hydro = mws_doc.get("hydrological_annual") or {}
+    if not hydro:
+        return None
+    out: dict[str, float] = {}
+    for year, row in hydro.items():
+        if not isinstance(row, dict):
+            continue
+        delta = row.get("delta_g_mm")
+        if delta is not None:
+            out[str(year)] = float(delta)
+            continue
+        precip = row.get("precipitation_mm")
+        et = row.get("et_mm")
+        runoff = row.get("runoff_mm")
+        if precip is not None and et is not None and runoff is not None:
+            out[str(year)] = round(float(precip) - float(et) - float(runoff), 3)
+    return out or None
+
+
+def precipitation_series(mws_doc: dict) -> dict[str, float] | None:
+    return _annual_field_series(mws_doc, "precipitation_mm")
+
+
+def et_series(mws_doc: dict) -> dict[str, float] | None:
+    return _annual_field_series(mws_doc, "et_mm")
+
+
+def runoff_series(mws_doc: dict) -> dict[str, float] | None:
+    return _annual_field_series(mws_doc, "runoff_mm")
+
+
+def _annual_field_series(mws_doc: dict, field: str) -> dict[str, float] | None:
+    hydro = mws_doc.get("hydrological_annual") or {}
+    out: dict[str, float] = {}
+    for year, row in hydro.items():
+        if isinstance(row, dict) and row.get(field) is not None:
+            out[str(year)] = float(row[field])
+    return out or None
+
+
+def cropping_intensity_series(mws_doc: dict) -> dict[str, float] | None:
+    ci = mws_doc.get("cropping_intensity") or {}
+    out: dict[str, float] = {}
+    for year, row in ci.items():
+        if isinstance(row, dict) and row.get("cropping_intensity") is not None:
+            out[str(year)] = float(row["cropping_intensity"])
+    return out or None
+
+
+def kharif_cropped_area_ha_series(mws_doc: dict) -> dict[str, float] | None:
+    drought = mws_doc.get("drought_kharif") or {}
+    out: dict[str, float] = {}
+    for year, row in drought.items():
+        if isinstance(row, dict) and row.get("kharif_cropped_ha") is not None:
+            out[str(year)] = float(row["kharif_cropped_ha"])
+    return out or None
+
+
+def double_crop_area_ha_series(mws_doc: dict) -> dict[str, float] | None:
+    ci = mws_doc.get("cropping_intensity") or {}
+    out: dict[str, float] = {}
+    for year, row in ci.items():
+        if isinstance(row, dict) and row.get("double_crop_ha") is not None:
+            out[str(year)] = float(row["double_crop_ha"])
+    return out or None
+
+
+def swb_total_area_ha_series(mws_doc: dict) -> dict[str, float] | None:
+    swb = mws_doc.get("swb_annual") or {}
+    out: dict[str, float] = {}
+    for year, row in swb.items():
+        if isinstance(row, dict) and row.get("total_ha") is not None:
+            out[str(year)] = float(row["total_ha"])
+    return out or None
+
+
+def swb_rabi_kharif_ratio_series(mws_doc: dict) -> dict[str, float] | None:
+    swb = mws_doc.get("swb_annual") or {}
+    out: dict[str, float] = {}
+    for year, row in swb.items():
+        if not isinstance(row, dict):
+            continue
+        kharif = row.get("kharif_ha")
+        rabi = row.get("rabi_ha")
+        if kharif is None or rabi is None or float(kharif) == 0:
+            continue
+        out[str(year)] = round(float(rabi) / float(kharif), 4)
+    return out or None
+
+
+def drought_weeks_series(mws_doc: dict, field: str) -> dict[str, float] | None:
+    drought = mws_doc.get("drought_kharif") or {}
+    out: dict[str, float] = {}
+    for year, row in drought.items():
+        if isinstance(row, dict) and row.get(field) is not None:
+            out[str(year)] = float(row[field])
+    return out or None
+
+
+def drought_return_period(weeks_series: dict | None, *, min_weeks: float = 1.0) -> float | None:
+    """Average years between drought events (years with weeks >= min_weeks)."""
+    pairs = _sorted_numeric_series(weeks_series)
+    if not pairs:
+        return None
+    event_years = sum(1 for _, weeks in pairs if weeks >= min_weeks)
+    if event_years == 0:
+        return None
+    return round(len(pairs) / event_years, 2)
+
+
+def resolve_derived(mws_doc: dict, variable: str) -> Any:
+    """Resolve a derived diagnostic variable name to a scalar or series."""
+    if variable == "mean_annual_precipitation_mm":
+        return mean(precipitation_series(mws_doc))
+    if variable == "trend_annual_precipitation_mm":
+        return trend(precipitation_series(mws_doc))
+    if variable == "mean_annual_et_mm":
+        return mean(et_series(mws_doc))
+    if variable == "trend_annual_et_mm":
+        return trend(et_series(mws_doc))
+    if variable == "mean_annual_runoff_mm":
+        return mean(runoff_series(mws_doc))
+    if variable == "trend_annual_runoff_mm":
+        return trend(runoff_series(mws_doc))
+    if variable == "mean_annual_delta_g_mm":
+        return mean(delta_g_series(mws_doc))
+    if variable == "trend_annual_delta_g_mm":
+        return trend(delta_g_series(mws_doc))
+    if variable == "mean_cropping_intensity":
+        return mean(cropping_intensity_series(mws_doc))
+    if variable == "trend_cropping_intensity":
+        return trend(cropping_intensity_series(mws_doc))
+    if variable == "mean_kharif_cropped_area_ha":
+        return mean(kharif_cropped_area_ha_series(mws_doc))
+    if variable == "trend_kharif_cropped_area_ha":
+        return trend(kharif_cropped_area_ha_series(mws_doc))
+    if variable == "mean_double_crop_area_ha":
+        return mean(double_crop_area_ha_series(mws_doc))
+    if variable == "trend_double_crop_area_ha":
+        return trend(double_crop_area_ha_series(mws_doc))
+    if variable == "drought_moderate_return_period":
+        return drought_return_period(drought_weeks_series(mws_doc, "moderate_weeks"))
+    if variable == "drought_severe_return_period":
+        return drought_return_period(drought_weeks_series(mws_doc, "severe_weeks"))
+    if variable == "mean_swb_total_area_ha":
+        return mean(swb_total_area_ha_series(mws_doc))
+    if variable == "trend_swb_total_area_ha":
+        return trend(swb_total_area_ha_series(mws_doc))
+    if variable == "mean_swb_rabi_kharif_ratio":
+        return mean(swb_rabi_kharif_ratio_series(mws_doc))
+    if variable == "trend_swb_rabi_kharif_ratio":
+        return trend(swb_rabi_kharif_ratio_series(mws_doc))
+    return None

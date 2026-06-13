@@ -1,0 +1,228 @@
+import type { MwsDocument } from '../types'
+
+export interface YearPoint {
+  year: string
+  value: number
+}
+
+export interface DroughtPoint {
+  year: string
+  no: number
+  mild: number
+  moderate: number
+  severe: number
+}
+
+function sortedYears(obj: Record<string, unknown> | undefined): string[] {
+  if (!obj) return []
+  return Object.keys(obj).sort((a, b) => Number(a) - Number(b))
+}
+
+export function hydroSeries(mws: MwsDocument, field: keyof NonNullable<MwsDocument['hydrological_annual']>[string]): YearPoint[] {
+  const hydro = mws.hydrological_annual ?? {}
+  return sortedYears(hydro)
+    .map((year) => ({
+      year,
+      value: Number(hydro[year]?.[field] ?? NaN),
+    }))
+    .filter((p) => Number.isFinite(p.value))
+}
+
+export function croppingSeries(mws: MwsDocument): YearPoint[] {
+  const data = mws.cropping_intensity ?? {}
+  return sortedYears(data)
+    .map((year) => {
+      const row = data[year]
+      const raw =
+        row != null && typeof row === 'object'
+          ? (row as { cropping_intensity?: number }).cropping_intensity
+          : row
+      return { year, value: Number(raw) }
+    })
+    .filter((p) => Number.isFinite(p.value))
+}
+
+export function droughtSeries(mws: MwsDocument): DroughtPoint[] {
+  const data = mws.drought_kharif ?? {}
+  return sortedYears(data).map((year) => {
+    const row = data[year] ?? {}
+    return {
+      year,
+      no: Number(row.no_drought_weeks ?? 0),
+      mild: Number(row.mild_weeks ?? 0),
+      moderate: Number(row.moderate_weeks ?? 0),
+      severe: Number(row.severe_weeks ?? 0),
+    }
+  })
+}
+
+export function drySpellSeries(mws: MwsDocument): YearPoint[] {
+  const data = mws.drought_kharif ?? {}
+  return sortedYears(data)
+    .map((year) => ({ year, value: Number(data[year]?.dry_spell_weeks ?? NaN) }))
+    .filter((p) => Number.isFinite(p.value))
+}
+
+export function swbSeries(mws: MwsDocument): Array<{ year: string; total: number; kharif: number; rabi: number }> {
+  const data = mws.swb_annual ?? {}
+  return sortedYears(data).map((year) => ({
+    year,
+    total: Number(data[year]?.total_ha ?? 0),
+    kharif: Number(data[year]?.kharif_ha ?? 0),
+    rabi: Number(data[year]?.rabi_ha ?? 0),
+  }))
+}
+
+export function nregaTotals(mws: MwsDocument): Array<{ category: string; total: number }> {
+  const totals: Record<string, number> = {}
+  for (const year of Object.values(mws.nrega_mws ?? {})) {
+    for (const [cat, count] of Object.entries(year)) {
+      totals[cat] = (totals[cat] ?? 0) + Number(count ?? 0)
+    }
+  }
+  return Object.entries(totals)
+    .map(([category, total]) => ({ category: category.replace(/_/g, ' '), total }))
+    .sort((a, b) => b.total - a.total)
+}
+
+export function hasNregaData(mws: MwsDocument): boolean {
+  return nregaTotals(mws).some((row) => row.total > 0)
+}
+
+export function degradationTotals(mws: MwsDocument): { degradation: number; afforestation: number } {
+  const land = landChangeTotals(mws)
+  return { degradation: land.croppingDegradation, afforestation: land.afforestation }
+}
+
+export interface LandChangeTotals {
+  croppingDegradation: number
+  afforestation: number
+  deforestation: number
+  urbanization: number
+}
+
+function changeDetectionHa(mws: MwsDocument, sheet: string, ...keys: string[]): number {
+  const row = mws.change_detection?.[sheet] ?? {}
+  for (const key of keys) {
+    const val = row[key]
+    if (val != null && Number.isFinite(Number(val))) {
+      return Number(val)
+    }
+  }
+  return 0
+}
+
+export function landChangeTotals(mws: MwsDocument): LandChangeTotals {
+  return {
+    croppingDegradation: changeDetectionHa(mws, 'degradation', 'total_ha', 'total_degradation'),
+    afforestation: changeDetectionHa(mws, 'afforestation', 'total_ha', 'total_afforestation'),
+    deforestation: changeDetectionHa(mws, 'deforestation', 'total_ha', 'total_deforestation'),
+    urbanization: changeDetectionHa(mws, 'urbanization', 'total_ha', 'total_urbanization'),
+  }
+}
+
+export function dualAxisSeries(mws: MwsDocument): Array<{ year: string; cropping: number; deltaG: number }> {
+  const cropping = croppingSeries(mws)
+  const delta = hydroSeries(mws, 'delta_g_mm')
+  const deltaMap = Object.fromEntries(delta.map((d) => [d.year, d.value]))
+  return cropping
+    .filter((c) => deltaMap[c.year] !== undefined)
+    .map((c) => ({ year: c.year, cropping: c.value, deltaG: deltaMap[c.year] }))
+}
+
+const LULC_STACK_KEYS = ['cropland', 'tree_forest', 'shrub_scrub', 'barrenland', 'krz_water'] as const
+
+export function lulcForestSeries(mws: MwsDocument): YearPoint[] {
+  const data = mws.lulc_ha ?? {}
+  return sortedYears(data)
+    .map((year) => ({ year, value: Number(data[year]?.tree_forest ?? NaN) }))
+    .filter((p) => Number.isFinite(p.value))
+}
+
+export function lulcStackedSeries(mws: MwsDocument): Array<Record<string, string | number>> {
+  const data = mws.lulc_ha ?? {}
+  return sortedYears(data).map((year) => {
+    const row = data[year] ?? {}
+    const out: Record<string, string | number> = { year }
+    for (const key of LULC_STACK_KEYS) {
+      out[key] = Number(row[key] ?? 0)
+    }
+    return out
+  })
+}
+
+const FACILITY_DISTANCE_SPECS: Array<{ key: keyof NonNullable<MwsDocument['facility_distances']>; label: string }> = [
+  { key: 'dist_school_primary_km', label: 'Primary school' },
+  { key: 'dist_school_secondary_km', label: 'Secondary school' },
+  { key: 'dist_college_km', label: 'College' },
+  { key: 'dist_chc_km', label: 'Community health centre' },
+  { key: 'dist_phc_km', label: 'Primary health centre' },
+  { key: 'dist_sub_centre_km', label: 'Health sub-centre' },
+  { key: 'dist_district_hospital_km', label: 'District hospital' },
+  { key: 'dist_cooperative_km', label: 'Agricultural cooperative society' },
+  { key: 'dist_markets_trading_km', label: 'Agricultural market' },
+  { key: 'dist_storage_warehousing_km', label: 'Cold storage / warehousing' },
+  { key: 'dist_agri_processing_km', label: 'Agri processing' },
+  { key: 'dist_apmc_km', label: 'APMC' },
+  { key: 'dist_dairy_km', label: 'Dairy / animal husbandry' },
+  { key: 'dist_bank_km', label: 'Bank (nearest)' },
+  { key: 'dist_csc_km', label: 'Common service centre' },
+  { key: 'dist_pds_km', label: 'PDS outlet' },
+]
+
+const FACILITY_LABEL_ORDER = FACILITY_DISTANCE_SPECS.map((spec) => spec.label)
+
+function sortFacilityRows<T extends { facility?: string; label?: string }>(rows: T[]): T[] {
+  const order = new Map(FACILITY_LABEL_ORDER.map((label, index) => [label, index]))
+  return [...rows].sort((a, b) => {
+    const aLabel = a.facility ?? a.label ?? ''
+    const bLabel = b.facility ?? b.label ?? ''
+    const aIndex = order.get(aLabel) ?? Number.MAX_SAFE_INTEGER
+    const bIndex = order.get(bLabel) ?? Number.MAX_SAFE_INTEGER
+    if (aIndex !== bIndex) return aIndex - bIndex
+    return aLabel.localeCompare(bLabel)
+  })
+}
+
+export function facilityDistanceRows(mws: MwsDocument): Array<{ label: string; km: number }> {
+  const dist = mws.facility_distances ?? {}
+  const rows = FACILITY_DISTANCE_SPECS.flatMap(({ key, label }) => {
+    const km = dist[key]
+    if (km == null || !Number.isFinite(km)) return []
+    return [{ label, km }]
+  })
+  return rows
+}
+
+export function deforestationPair(mws: MwsDocument): { deforestation: number; afforestation: number } {
+  const land = landChangeTotals(mws)
+  return { deforestation: land.deforestation, afforestation: land.afforestation }
+}
+
+export function intersectVillageRows(mws: MwsDocument): Array<{
+  village_id: number
+  name: string
+  population: number | null
+  sc_percent: number | null
+  st_percent: number | null
+  literacy_rate_percent: number | null
+}> {
+  return (mws.intersect_village_names ?? []).map((v) => ({
+    village_id: v.village_id,
+    name: v.name?.trim() || `Village ${v.village_id}`,
+    population: v.population != null ? Number(v.population) : null,
+    sc_percent: v.sc_percent != null ? Number(v.sc_percent) : null,
+    st_percent: v.st_percent != null ? Number(v.st_percent) : null,
+    literacy_rate_percent: v.literacy_rate_percent != null ? Number(v.literacy_rate_percent) : null,
+  }))
+}
+
+export function facilityDistanceTable(mws: MwsDocument): Array<{ facility: string; distance_km: number }> {
+  if (mws.facility_distance_table?.length) {
+    return sortFacilityRows(mws.facility_distance_table)
+  }
+  return facilityDistanceRows(mws).map((row) => ({
+    facility: row.label,
+    distance_km: row.km,
+  }))
+}

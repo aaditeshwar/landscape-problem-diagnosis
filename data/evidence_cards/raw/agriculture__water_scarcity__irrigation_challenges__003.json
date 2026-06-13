@@ -1,0 +1,202 @@
+{
+  "card_id": "agriculture__water_scarcity__irrigation_challenges__003",
+  "production_system": "Agriculture",
+  "observed_stress": "water_scarcity",
+  "causal_pathway": "irrigation_challenges",
+  "pathway_description": "Irrigation infrastructure is present but insufficient, costly, or seasonally fails.",
+  "stress_description": "Farmers report insufficient water for crop production, particularly for rabi and zaid seasons or during dry spells in kharif.",
+  "context": {
+    "agro_climatic_zones": [
+      "sub-humid"
+    ],
+    "aquifer_types": [
+      "alluvium"
+    ],
+    "terrain_types": [
+      "plains"
+    ],
+    "rainfall_regime": "sub-humid",
+    "geographic_examples": [
+      "Punjab",
+      "Haryana",
+      "western Uttar Pradesh"
+    ]
+  },
+  "aer_reference": {
+    "aer_id": "AER-9",
+    "description": "Northern Plain, hot sub-humid (dry) ecoregion",
+    "states": [
+      "Uttar Pradesh (western)",
+      "Haryana",
+      "Punjab",
+      "Delhi"
+    ],
+    "rainfall_mm": "740-960",
+    "aquifer": "alluvium"
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "swb_total_area_ha",
+        "swb_kharif_area_ha"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "(swb_total_area_ha[-1] / swb_total_area_ha[0]) < 0.85 OR (swb_kharif_area_ha / swb_total_area_ha) < 0.5",
+        "qualitative_description": "Total surface water body area has declined by more than 15% over the available record, or kharif SWB area is less than half of total SWB area, indicating rapid seasonal drying or loss of storage capacity.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "In the alluvial plains of Punjab, Haryana and western UP, surface water bodies (tanks, ponds, reservoirs) serve as critical seasonal buffers for rabi and zaid irrigation. A declining trend in total SWB area indicates either siltation reducing storage capacity, encroachment, or poor maintenance. Rapid drying between kharif and rabi seasons—evidenced by low kharif-to-total SWB area ratios—signals that storage infrastructure cannot sustain inter-seasonal water availability. This directly constrains rabi crop irrigation, which depends on stored or diverted surface water supplementing groundwater. Siltation is a well-documented cause of reduced check dam and tank performance; manual desilting has been shown to increase recharge by up to 84% in comparable Indian settings (Dashora2019).",
+      "sources_cited": [
+        "Dashora2019"
+      ]
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "swb_count"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "swb_count < 2 per 1000 ha of MWS area",
+        "qualitative_description": "Fewer than 2 surface water bodies per 1000 ha of micro-watershed area, indicating a structural gap in surface irrigation infrastructure relative to command area.",
+        "threshold_confidence": "low",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "A low density of surface water bodies relative to agricultural area in the sub-humid alluvial plains indicates that irrigation infrastructure is insufficient to meet crop water demand across the landscape. In the Indo-Gangetic Plain, canal systems are supplemented by tanks and ponds; where these are absent or sparse, farmers rely entirely on groundwater, increasing pumping costs and exposure to aquifer-level fluctuations. Low SWB count is a structural infrastructure gap signal, distinct from groundwater depletion, and points toward investment in new or rehabilitated surface storage as a solution.",
+      "sources_cited": [
+        "Dashora2019"
+      ]
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "annual_well_depth_m"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "annual_well_depth_m > 30",
+        "qualitative_description": "Current well depth exceeds 30 metres, implying high energy costs for groundwater lifting that disadvantage marginal and small farmers who cannot afford diesel or electricity for deep pumping.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "In alluvial aquifers of the Indo-Gangetic Plain, well depth is a proxy for both water table depth and the cost of irrigation. As water tables decline due to over-extraction for wheat and rice cultivation, lifting costs rise proportionally, making irrigation economically inaccessible for marginal farmers even when water is physically present. Deep wells (>30m) in this context signal that irrigation is present but costly, a defining characteristic of the irrigation_challenges pathway. This is distinct from the groundwater_stress pathway where water is physically absent. Solar pump installation can reduce operating costs and is a recommended intervention for this context.",
+      "sources_cited": [
+        "Fishman2011"
+      ]
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "nrega_swc_count"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "sum(nrega_swc_count.values()) < 10",
+        "qualitative_description": "Fewer than 10 cumulative soil and water conservation or irrigation works completed under MGNREGA in the micro-watershed, indicating low historical public investment in irrigation infrastructure maintenance and expansion.",
+        "threshold_confidence": "low",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "MGNREGA investment in SWC and irrigation works (tank desilting, field channels, check dams) is a key mechanism for maintaining and expanding surface irrigation infrastructure in rural India. Low cumulative NREGA SWC counts indicate that existing infrastructure has not been maintained or expanded through public works, amplifying the risk of seasonal irrigation failure. Tank desilting through MGNREGA is a primary recommended solution for this pathway. The benefit-cost ratio of such recharge and storage structures has been estimated at 4.1 in comparable Indian dryland settings (Dashora2019), suggesting high returns to investment.",
+      "interaction_with": [
+        "sig_01",
+        "sig_02"
+      ],
+      "sources_cited": [
+        "Dashora2019"
+      ]
+    },
+    {
+      "signal_id": "sig_05",
+      "variables": [
+        "river_name"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "A named perennial or seasonal river is present in or adjacent to the micro-watershed but no diversion or lift irrigation scheme is recorded, indicating an untapped surface water resource.",
+        "threshold_confidence": "low",
+        "context_sensitivity": "local"
+      },
+      "severity": "low",
+      "direction": "confirms",
+      "explanation": "The presence of a named river (e.g., a tributary of the Yamuna, Ghaggar, or Beas systems in Punjab/Haryana/western UP) indicates potential for diversion or lift irrigation that may not be utilised due to infrastructure gaps, institutional failures, or seasonal flow variability. In the sub-humid alluvial plains, rivers are often seasonally reliable but lack last-mile connectivity to fields. This signal confirms the irrigation_challenges pathway (infrastructure gap) rather than absolute water absence, and points toward canal rehabilitation or community lift irrigation as solutions.",
+      "sources_cited": []
+    }
+  ],
+  "overall_reasoning_note": "Irrigation challenges in the sub-humid alluvial plains of Punjab, Haryana and western UP are characterised by the co-existence of water resources (rivers, canals, alluvial aquifers) with inadequate, deteriorating, or costly access infrastructure. Diagnosis should confirm at least two of: declining SWB area/count (sig_01, sig_02), high well depth implying cost barriers (sig_03), or low NREGA investment in water infrastructure (sig_04). The river presence signal (sig_05) is supportive but not confirmatory. Critically distinguish this pathway from pure groundwater_stress (where water is physically absent) by checking whether farmers report water being available but inaccessible or unaffordable, versus wells running dry. If both SWB decline and deep wells are present simultaneously, the irrigation_challenges and groundwater_stress pathways may co-occur and require combined interventions. Always ask about seasonal patterns: rabi and zaid water shortages with adequate kharif supply strongly indicate infrastructure insufficiency rather than absolute scarcity.",
+  "confounders": [
+    {
+      "confounder": "Groundwater depletion (over-extraction) causing water unavailability, misread as infrastructure insufficiency",
+      "how_to_distinguish": "If annual_well_depth_m shows a rapid increasing trend (>1m/year over multiple years) AND swb_count and swb_total_area_ha are adequate, the primary pathway is groundwater_stress rather than irrigation_challenges. In irrigation_challenges, water is present but access is costly or seasonally interrupted; in groundwater_stress, the aquifer itself is depleting. Ask farmers: 'Is water available if you pump longer or deeper, or has the well gone completely dry?' Availability at depth with high cost confirms irrigation_challenges; complete drying confirms groundwater_stress."
+    },
+    {
+      "confounder": "Meteorological drought causing seasonal water shortage, misattributed to infrastructure failure",
+      "how_to_distinguish": "Check whether water shortages co-occur with documented low-rainfall years. If swb_total_area_ha declines sharply in drought years but recovers in normal years, drought is the primary driver and infrastructure is adequate. Persistent multi-year SWB decline independent of rainfall variability confirms structural infrastructure degradation (siltation, disrepair) as the irrigation_challenges pathway. NREGA SWC investment history (sig_04) helps distinguish: low investment in normal rainfall years confirms infrastructure neglect rather than drought response."
+    }
+  ],
+  "missing_variable_questions": [],
+  "sources": [
+    {
+      "source_id": "Dashora2019",
+      "title": "Hydrologic and cost benefit analysis at local scale of streambed recharge structures in Rajasthan (India) and their value for securing irrigation water supplies",
+      "authors": [
+        "Dashora, Y.",
+        "Dillon, P.",
+        "Maheshwari, B.",
+        "Soni, P.",
+        "Mittal, H.K.",
+        "Dashora, R.",
+        "Singh, P.K.",
+        "Purohit, R.C.",
+        "Katara, P."
+      ],
+      "year": 2019,
+      "doi": "10.1007/s10040-019-01951-y",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents the hydrological performance and benefit-cost ratio (average 4.1) of check dam recharge structures in India; demonstrates that manual desilting increases recharge by 84% and that siltation is a primary cause of infrastructure performance decline—directly relevant to tank desilting as a recommended solution and to SWB area decline as a diagnostic signal."
+    },
+    {
+      "source_id": "Fishman2011",
+      "title": "Can the groundwater crisis in rural India be attributed to well deepening?",
+      "authors": [
+        "Fishman, R.",
+        "Devineni, N.",
+        "Raman, S."
+      ],
+      "year": 2011,
+      "doi": "10.1029/2011WR010477",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents well depth as a proxy for water table depth and irrigation cost burden in Indian alluvial and hard rock settings; supports use of annual_well_depth_m as a signal for cost-based irrigation access barriers."
+    },
+    {
+      "source_id": "Mekonnen2016",
+      "title": "Global Monthly Water Scarcity: Blue Water Footprints versus Blue Water Availability",
+      "authors": [
+        "Mekonnen, M.M.",
+        "Hoekstra, A.Y."
+      ],
+      "year": 2016,
+      "doi": "10.1371/journal.pone.0032688",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Establishes that water scarcity in major river basins including the Indus-Ganges system is severe during at least one month per year, contextualising seasonal irrigation failure in the Indo-Gangetic Plain as a documented phenomenon."
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-07-15",
+    "last_updated": "2025-07-15",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium"
+  }
+}

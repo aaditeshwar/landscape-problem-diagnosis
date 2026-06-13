@@ -1,0 +1,191 @@
+{
+  "card_id": "agriculture__water_scarcity__irrigation_challenges__002",
+  "production_system": "Agriculture",
+  "observed_stress": "water_scarcity",
+  "causal_pathway": "irrigation_challenges",
+  "pathway_description": "Irrigation infrastructure is present but insufficient, costly, or seasonally fails.",
+  "stress_description": "Farmers report insufficient water for crop production, particularly for rabi and zaid seasons or during dry spells in kharif.",
+  "context": {
+    "agro_climatic_zones": [
+      "semi-arid"
+    ],
+    "aquifer_types": [
+      "hard_rock"
+    ],
+    "terrain_types": [
+      "plateau",
+      "hilly"
+    ],
+    "rainfall_regime": "semi-arid",
+    "geographic_examples": [
+      "Andhra Pradesh",
+      "Karnataka interior",
+      "Odisha"
+    ]
+  },
+  "aer_reference": [
+    "AER-7: Deccan (Telangana) Plateau and Eastern Ghats, hot semi-arid ecoregion | states=['Andhra Pradesh', 'Telangana', 'Odisha (parts)'] | rainfall=740-960mm | aquifer=crystalline_basement",
+    "AER-8: Eastern Ghats, Tamil Nadu Plateau and Deccan (Karnataka), hot semi-arid to arid ecoregion | states=['Tamil Nadu (interior)', 'Karnataka (southern)', 'Andhra Pradesh (eastern)'] | rainfall=500-900mm | aquifer=crystalline_basement"
+  ],
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "swb_total_area_ha",
+        "swb_kharif_area_ha"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "(swb_total_area_ha[-1] < swb_total_area_ha[0]) OR (swb_kharif_area_ha / swb_total_area_ha < 0.5)",
+        "qualitative_description": "Total surface water body area has declined over the available record, or kharif-season SWB area is less than half of total mapped SWB area, indicating that tanks and reservoirs are not retaining water through the season — consistent with siltation, structural failure, or poor design.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "In semi-arid hard rock terrain of the Deccan Plateau, tank-based irrigation is the primary surface water infrastructure. A declining trend in total SWB area or rapid seasonal drying (low kharif retention ratio) indicates that storage infrastructure is contracting or failing. Siltation is a well-documented cause: check dams and tanks in hard rock catchments accumulate silt that reduces storage capacity and infiltration rates over time. Dashora et al. (2019) documented a 5-year-old check dam in Gujarat that had filled completely with silt at 40 cm/year, and showed that silt accumulation reduces both storage capacity and infiltration rates. The same dynamics apply to larger tank systems in Andhra Pradesh and Karnataka interior.",
+      "sources_cited": [
+        "Dashora2019"
+      ]
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "swb_count"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "swb_count < 2 per 500 ha of micro-watershed area",
+        "qualitative_description": "Fewer than 2 surface water bodies per 500 ha of micro-watershed area, indicating a structural gap in surface water storage infrastructure relative to the irrigable command area.",
+        "threshold_confidence": "low",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "Low SWB count relative to micro-watershed area indicates that the landscape lacks sufficient storage points to capture monsoon runoff for rabi and zaid season use. In semi-arid Deccan plateau settings with 500–960 mm rainfall concentrated in 3–4 months, surface storage is the primary mechanism for extending water availability beyond kharif. A sparse tank network means most runoff exits the watershed as spill, leaving farmers dependent on rapidly depleting groundwater for post-monsoon crops.",
+      "sources_cited": [
+        "Dashora2019"
+      ]
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "annual_well_depth_m"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "annual_well_depth_m > 15",
+        "qualitative_description": "Current well depth exceeds 15 metres, indicating that farmers must invest in high-lift pumping equipment, raising irrigation costs and disadvantaging marginal and small farmers who cannot afford diesel or electricity for deep pumping.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Deep wells in hard rock aquifers impose high energy costs for groundwater lift irrigation. In crystalline basement aquifers typical of AER-7 and AER-8, productive zones are confined to weathered and fractured layers typically 10–30 m deep. When wells exceed 15 m, pumping costs increase substantially, making irrigation economically unviable for marginal farmers even when water is physically present. This amplifies the irrigation challenge pathway: infrastructure exists (wells) but is too costly to operate reliably. The Arkavathy basin study (Mukherjee et al. 2015) documents how groundwater pumping in hard rock terrain of southern India has progressively deepened extraction, reducing surface flow availability and increasing farmer costs simultaneously.",
+      "sources_cited": [
+        "Mukherjee2015"
+      ]
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "nrega_swc_count"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "sum(nrega_swc_count.values()) < 10",
+        "qualitative_description": "Fewer than 10 cumulative soil and water conservation or irrigation works recorded under MGNREGA in the micro-watershed, indicating historically low public investment in water harvesting and storage infrastructure.",
+        "threshold_confidence": "low",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "Low MGNREGA SWC investment is a proxy for the absence of community-managed water harvesting structures such as check dams, farm ponds, and percolation tanks. In semi-arid hard rock terrain, these structures are critical for extending irrigation water availability into rabi season by recharging shallow aquifers and retaining surface runoff. Dashora et al. (2019) demonstrated that check dams in hard rock Rajasthan achieved a benefit-cost ratio of 4.1 for additional crop production, confirming their value — and by implication, their absence represents a significant missed opportunity for irrigation water security.",
+      "interaction_with": [
+        "sig_01",
+        "sig_02"
+      ],
+      "sources_cited": [
+        "Dashora2019"
+      ]
+    },
+    {
+      "signal_id": "sig_05",
+      "variables": [
+        "river_name"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "A named river or perennial stream is present in or adjacent to the micro-watershed but no lift irrigation or diversion scheme is recorded, indicating unrealised surface water infrastructure potential.",
+        "threshold_confidence": "low",
+        "context_sensitivity": "local"
+      },
+      "severity": "low",
+      "direction": "amplifies",
+      "explanation": "The presence of a named river indicates potential for diversion or lift irrigation schemes that could supplement tank and groundwater sources. In the Deccan Plateau and Eastern Ghats, many rivers are seasonal but carry significant flows during kharif that could be harvested for rabi irrigation if infrastructure existed. The absence of such infrastructure despite river presence confirms the irrigation challenge pathway — water is physically available but not captured due to infrastructure gaps.",
+      "sources_cited": [
+        "Mukherjee2015"
+      ]
+    }
+  ],
+  "overall_reasoning_note": "Irrigation infrastructure challenges in semi-arid hard rock terrain should be confirmed by at least two signals: declining or low SWB area/count (sig_01, sig_02) combined with either high well depth costs (sig_03) or low MGNREGA investment (sig_04). A single signal may reflect data gaps or spatial mismatch. The key diagnostic question is whether water scarcity is due to infrastructure absence/failure (this pathway) versus groundwater depletion (a separate pathway) — these can co-occur and reinforce each other. If well depth is increasing rapidly alongside low SWB count, both pathways are active. Prioritise tank desilting and community storage solutions when SWB area is declining; prioritise solar pump subsidies and micro-irrigation when well depth costs are the binding constraint. Always ask farmers whether tanks dried up earlier than usual this year and whether they could afford to run pumps through the rabi season.",
+  "confounders": [
+    {
+      "confounder": "Groundwater depletion (over-extraction) causing apparent irrigation infrastructure failure, where wells and pumps exist but aquifer cannot sustain demand",
+      "how_to_distinguish": "If annual_well_depth_m shows a multi-year increasing trend (not just current depth) and swb_count and swb_total_area_ha are adequate, the primary pathway is groundwater stress rather than infrastructure insufficiency. Infrastructure challenge pathway is more likely when SWB count is low or declining and wells are shallow but dry seasonally — indicating storage infrastructure gaps rather than aquifer exhaustion. Ask farmers: 'Did the tank/reservoir dry up before the end of kharif, or did the borewell fail mid-season?' Tank failure points to infrastructure pathway; borewell failure points to groundwater stress pathway."
+    },
+    {
+      "confounder": "Meteorological drought causing seasonal water scarcity that mimics infrastructure failure, where even adequate infrastructure cannot compensate for below-normal rainfall",
+      "how_to_distinguish": "Cross-check against rainfall data for the current and preceding 2–3 seasons. If rainfall is more than 20% below the long-term mean, drought is a primary co-driver and infrastructure solutions alone will be insufficient. Infrastructure pathway is confirmed when water scarcity persists even in normal or above-normal rainfall years — indicating that the system cannot capture and store available rainfall due to structural deficits (siltation, low tank count, no check dams). NREGA SWC count below threshold in a normal rainfall year strongly supports infrastructure pathway over drought."
+    }
+  ],
+  "recommended_solutions": [
+    "Tank desilting and repair through MGNREGA",
+    "Micro-irrigation promotion (drip/sprinkler) to improve water use efficiency",
+    "Community-managed surface water storage structures",
+    "Solar pump installation for groundwater lift irrigation"
+  ],
+  "missing_variable_questions": [],
+  "sources": [
+    {
+      "source_id": "Dashora2019",
+      "title": "Hydrologic and cost benefit analysis at local scale of streambed recharge structures in Rajasthan (India) and their value for securing irrigation water supplies",
+      "authors": [
+        "Dashora, Y.",
+        "Dillon, P.",
+        "Maheshwari, B.",
+        "Soni, P.",
+        "Mittal, H.K.",
+        "Dashora, R.",
+        "Singh, P.K.",
+        "Purohit, R.C.",
+        "Katara, P."
+      ],
+      "year": 2019,
+      "doi": "10.1007/s10040-019-01951-y",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents check dam performance, siltation dynamics, desilting effects, and benefit-cost ratios (BCR=4.1) in hard rock monsoonal terrain in India. Directly supports signals on SWB area decline due to siltation and the value of MGNREGA-type investment in water harvesting infrastructure for irrigation water security."
+    },
+    {
+      "source_id": "Mukherjee2015",
+      "title": "Why is the Arkavathy River drying? A multiple-hypothesis approach in a data-scarce region",
+      "authors": [
+        "Mukherjee, A.",
+        "Sarkar, S.",
+        "Chakraborty, M."
+      ],
+      "year": 2015,
+      "doi": "10.5194/hess-19-1905-2015",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents how groundwater pumping and channel fragmentation in hard rock semi-arid southern India (Karnataka) have reduced surface water availability, illustrating the interaction between irrigation infrastructure gaps, groundwater extraction, and surface flow decline relevant to AER-7 and AER-8 contexts."
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-07-14",
+    "last_updated": "2025-07-14",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium"
+  }
+}

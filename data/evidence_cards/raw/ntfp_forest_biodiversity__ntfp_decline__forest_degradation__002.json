@@ -1,0 +1,199 @@
+{
+  "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__002",
+  "production_system": "NTFP_Forest_Biodiversity",
+  "observed_stress": "ntfp_decline",
+  "causal_pathway": "forest_degradation",
+  "context": {
+    "agro_climatic_zones": [
+      "semi-arid"
+    ],
+    "aquifer_types": [
+      "hard_rock"
+    ],
+    "terrain_types": [
+      "plateau",
+      "hilly"
+    ],
+    "rainfall_regime": "semi-arid",
+    "geographic_examples": [
+      "Andhra Pradesh",
+      "Karnataka interior",
+      "Odisha"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "lulc_tree_forest_ha"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "lulc_tree_forest_ha[-1] < lulc_tree_forest_ha[0]",
+        "qualitative_description": "Forest cover (tree/forest land use class) has declined over the 2017–2024 period, indicating net loss of canopy area in or adjacent to the micro-watershed.",
+        "threshold_confidence": "high",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "A declining trend in forest cover area directly reduces the stock of NTFP-bearing trees and understory species. In semi-arid plateau and hilly terrain of Andhra Pradesh, Karnataka interior, and Odisha, forest patches are already fragmented and ecologically stressed; even modest canopy loss disproportionately reduces NTFP availability. Studies on south Indian forest-fringe communities document that NTFP dependence is tightly coupled to local forest condition, and that degradation shifts communities from a 'win-win' to a 'win-lose' or 'lose-lose' livelihood outcome."
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "cd_total_deforestation_ha",
+        "cd_forest_to_farm_ha"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "cd_total_deforestation_ha > 30 or cd_forest_to_farm_ha > 25",
+        "qualitative_description": "Cumulative deforestation exceeds 30 ha or forest-to-farm conversion exceeds 25 ha, indicating substantial habitat loss for NTFP species even when net canopy trend is flat.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Cumulative deforestation quantifies irreversible habitat loss. In hard-rock semi-arid landscapes, forest regeneration is slow due to shallow soils and erratic rainfall (740–960 mm in AER-7; 500–900 mm in AER-8), meaning deforested patches rarely recover NTFP-bearing species within a generation. Large deforested areas confirm that the forest degradation pathway—rather than over-harvesting alone—is the primary driver of NTFP decline.",
+      "interaction_with": [
+        "sig_01",
+        "sig_03"
+      ]
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "cd_total_afforestation_ha",
+        "cd_total_deforestation_ha"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "cd_total_afforestation_ha < 0.35 * cd_total_deforestation_ha",
+        "qualitative_description": "Afforestation is less than 35% of cumulative deforestation, indicating weak forest recovery relative to habitat loss (amplifying signal only).",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "When afforestation investment is small relative to deforestation, remaining NTFP-bearing forest is exposed to continued degradation pressures (grazing, fuelwood extraction, encroachment). Community forest resource rights under FRA and Joint Forest Management are critical mechanisms for protecting residual NTFP habitat; low afforestation relative to loss indicates these governance and recovery mechanisms are absent or weak.",
+      "interaction_with": [
+        "sig_01",
+        "sig_04"
+      ],
+      "sources_cited": null
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "organization_domains"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "No NGO or government organisation active in NTFP, agroforestry, or community forestry domains is recorded for the micro-watershed or adjacent block.",
+        "threshold_confidence": "low",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Absence of organisations working in NTFP or community forestry domains indicates that communities lack institutional support for sustainable harvesting practices, certification pathways, or Joint Forest Management (JFM) facilitation. Research on NTFP certification in India highlights that sustainable management requires active institutional frameworks; without them, destructive collection methods persist and wild populations decline further.",
+      "interaction_with": [
+        "sig_02",
+        "sig_03"
+      ]
+    }
+  ],
+  "overall_reasoning_note": "Forest degradation as the driver of NTFP decline should be confirmed by at least one primary signal: substantial cumulative deforestation or forest-to-farm conversion (sig_02), and/or a declining lulc_tree_forest_ha trend (sig_01). Large gross deforestation from change detection can confirm the pathway even when net canopy cover is stable or noisy year-to-year. The afforestation ratio (sig_03) and absence of institutional support (sig_04) are amplifying signals only.A low protection ratio (sig_03) amplifies the diagnosis by indicating that remaining forest is unguarded. Absence of institutional support (sig_04) amplifies but does not confirm the pathway on its own. In semi-arid hard-rock terrain, distinguish between gradual canopy thinning (degradation) and outright clearing (deforestation) — both reduce NTFP availability but require different interventions. Always ask about direct NTFP species presence and community access restrictions before finalising diagnosis, as these are not captured by available remote-sensing variables.",
+  "confounders": [
+    {
+      "confounder": "Over-harvesting of NTFPs by communities causing species depletion without significant forest cover loss",
+      "how_to_distinguish": "If lulc_tree_forest_ha shows stable or increasing forest cover but NTFP yields are declining, over-harvesting rather than forest degradation is the primary driver. Check whether collection methods are destructive (e.g., bark stripping, uprooting) and whether peak seasonality of exploitation is compressed into 3–4 months with no recovery period. Forest degradation pathway requires evidence of actual canopy or cover loss (sig_01, sig_02)."
+    },
+    {
+      "confounder": "Policy or access restrictions (e.g., Protected Area notifications, compensatory afforestation enclosures) reducing NTFP access without ecological degradation",
+      "how_to_distinguish": "If forest cover is stable or increasing (e.g., due to compensatory afforestation plantations) but community access is curtailed, the driver is tenure/governance exclusion rather than ecological degradation. Compensatory afforestation in Odisha has been documented to contribute to dispossession of Adivasi communities while relying on industrial monoculture plantations that do not support traditional NTFP species. Check whether cd_total_afforestation_ha reflects monoculture plantation or natural forest, and whether CFR rights have been recognised under FRA."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "ntfp_species_presence",
+      "question_to_user": "Have community members noticed a reduction in the number or abundance of specific NTFP species they collect — such as tendu leaves (Diospyros melanoxylon), mahua flowers (Madhuca indica), achar seeds (Buchanania lanzan), or medicinal plants — compared to 10–15 years ago? Are certain species now absent from areas where they were previously common?",
+      "how_answer_updates_diagnosis": "Confirmed decline in specific NTFP species abundance, especially canopy-dependent species like mahua or tendu, strongly confirms the forest degradation pathway. If only understory or ground-layer species are declining while canopy species persist, consider fire or grazing pressure as a co-driver. If species are present but access is restricted, shift diagnosis toward governance/tenure pathway."
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Shaanker2004",
+      "title": "Livelihood gains and ecological costs of non-timber forest product dependence: assessing the roles of dependence, ecological knowledge and market structure in three contrasting human and ecological settings in south India",
+      "authors": [
+        "Shaanker, R. Uma",
+        "Ganeshaiah, K. N.",
+        "Krishnan, S.",
+        "Ramya, R.",
+        "Meera, C.",
+        "Aravind, N. A.",
+        "Kumar, A.",
+        "Rao, D.",
+        "Vanaraj, G.",
+        "Ramachandra, J.",
+        "Gauthier, R.",
+        "Ghazoul, J.",
+        "Poole, N.",
+        "Chinnappa Reddy, B. V."
+      ],
+      "year": 2004,
+      "doi": "10.1017/s0376892904001596",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents the win-lose and lose-lose dynamics of NTFP dependence in south Indian forest-fringe communities, directly relevant to Andhra Pradesh and Karnataka interior contexts; establishes that ecological degradation of forest habitat is a key driver of NTFP livelihood loss."
+    },
+    {
+      "source_id": "Yadav2013",
+      "title": "Non-timber forest products certification in India: opportunities and challenges",
+      "authors": [
+        "Yadav, M.",
+        "Dugaya, D."
+      ],
+      "year": 2013,
+      "doi": "10.1007/s10668-012-9393-1",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents declining wild NTFP populations due to destructive collection methods in India, the socio-economic importance of NTFPs for forest-dwelling communities, and the need for institutional frameworks for sustainable management; identifies key NTFP species relevant to Central and South India."
+    },
+    {
+      "source_id": "doi__10.53892_ugvt5889",
+      "title": "Potential for Recognition of Community Forest Resource Rights Under India's Forest Rights Act",
+      "authors": [
+        "Springate-Baginski, Oliver"
+      ],
+      "year": 2010,
+      "source_type": "grey_literature",
+      "relevance_note": "Establishes the legal basis and scale of CFR rights under FRA 2006 covering 150 million forest-dwelling people and 40 million hectares; directly supports the recommended solution of CFR rights recognition as a response to forest degradation-driven NTFP decline."
+    },
+    {
+      "source_id": "Goswami2022",
+      "title": "Compensatory Afforestation in Odisha, India: A Political Ecology of Forest Restoration",
+      "authors": [
+        "Goswami, Anusha"
+      ],
+      "year": 2022,
+      "source_type": "grey_literature",
+      "relevance_note": "Documents how compensatory afforestation in Odisha contributes to Adivasi dispossession and relies on industrial monoculture plantations that do not restore NTFP-bearing species, directly relevant to distinguishing ecological degradation from governance-driven access loss as confounders."
+    },
+    {
+      "source_id": "Sinha2017",
+      "title": "The Role of Non-Timber Forest Products (NTFPs) in Tribal Economy of Jharkhand, India",
+      "authors": [
+        "Sinha, B. K."
+      ],
+      "year": 2017,
+      "doi": "10.20546/ijcmas.2017.610.259",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Quantifies NTFP contribution to tribal household income (17.18% of gross annual income) and documents peak seasonality constraints; supports the stress description of declining NTFP quantity and quality affecting dependent communities."
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-07-15",
+    "last_updated": "2025-07-15",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium"
+  }
+}

@@ -1,0 +1,133 @@
+[
+  {
+    "card_id": "agriculture__water_scarcity__groundwater_stress__001",
+    "production_system": "Agriculture",
+    "observed_stress": "water_scarcity",
+    "causal_pathway": "groundwater_stress",
+    "context": {
+      "agro_climatic_zones": ["semi-arid", "sub-humid"],
+      "aquifer_types": ["hard_rock"],
+      "terrain_types": ["plateau", "plains"],
+      "rainfall_regime": "semi-arid",
+      "crop_systems": ["kharif rainfed", "cotton", "soybean"],
+      "geographic_examples": ["Vidarbha Maharashtra", "Telangana", "Karnataka Deccan Plateau"]
+    },
+    "diagnostic_signals": [
+      {
+        "signal_id": "sig_01",
+        "variables": ["soge_dev_percent", "soge_class_name"],
+        "condition": {
+          "type": "quantitative",
+          "expression": "soge_dev_percent > 70 or soge_class_name in ['Semi-critical', 'Critical', 'Over-exploited']",
+          "threshold_confidence": "high",
+          "context_sensitivity": "global"
+        },
+        "severity": "high",
+        "direction": "confirms",
+        "explanation": "CGWB defines groundwater stress classes based on extraction as a percentage of net annual recharge. In hard rock aquifers, even 'Safe' SOGE values above 60% can indicate localised stress because storativity is low and recharge is spatially heterogeneous — a block-level Safe classification may mask critical depletion at the micro-watershed scale."
+      },
+      {
+        "signal_id": "sig_02",
+        "variables": ["annual_well_depth_m"],
+        "condition": {
+          "type": "trend",
+          "expression": "annual_well_depth_m[-1] - annual_well_depth_m[0] > 3",
+          "qualitative_description": "Well depth has increased by more than 3 metres over the available multi-year record (2017–2025), indicating declining static water level.",
+          "threshold_confidence": "medium",
+          "context_sensitivity": "regional"
+        },
+        "severity": "high",
+        "direction": "confirms",
+        "explanation": "Deepening well depth is a direct proxy for declining groundwater table. A 3m decline over 8 years (~0.4m/year) is considered significant in hard rock aquifers where storage is limited to weathered and fractured zones typically 10–30m deep. Faster rates indicate imminent failure of shallow dug wells.",
+        "interaction_with": ["sig_01", "sig_03"]
+      },
+      {
+        "signal_id": "sig_03",
+        "variables": ["annual_delta_g_mm"],
+        "condition": {
+          "type": "trend",
+          "qualitative_description": "Annual delta_g (P - ET - Runoff) is negative in more than 4 of the last 8 years, indicating chronic excess extraction over recharge.",
+          "threshold_confidence": "medium",
+          "context_sensitivity": "regional"
+        },
+        "severity": "moderate",
+        "direction": "confirms",
+        "explanation": "A consistently negative delta_g across multiple years means outflows (ET + runoff) persistently exceed precipitation, leaving no surplus for groundwater recharge. In semi-arid hard rock settings, even small negative balances accumulate quickly due to low aquifer storage."
+      },
+      {
+        "signal_id": "sig_04",
+        "variables": ["nrega_swc_count"],
+        "condition": {
+          "type": "quantitative",
+          "expression": "sum(nrega_swc_count.values()) < 5",
+          "qualitative_description": "Fewer than 5 cumulative SWC works in the MWS over the MGNREGA record, indicating low investment in recharge infrastructure.",
+          "threshold_confidence": "low",
+          "context_sensitivity": "local"
+        },
+        "severity": "moderate",
+        "direction": "amplifies",
+        "explanation": "Low historical SWC investment means natural recharge opportunities (check dams, percolation ponds, farm bunds) have not been exploited, amplifying the depletion caused by extraction. It also signals an opportunity for intervention rather than a terminal condition.",
+        "interaction_with": ["sig_03"]
+      }
+    ],
+    "overall_reasoning_note": "Groundwater stress in hard rock aquifers should be confirmed by at least two of the three primary signals: elevated SOGE, deepening well trend, or chronic negative delta_g. A single signal may reflect data noise or spatial mismatch (SOGE is block-level). The absence of SWC investment (sig_04) amplifies the other signals but does not confirm stress on its own. If SOGE is Safe but well depth is increasing rapidly, prioritise the well depth trend — block-level SOGE masks micro-watershed heterogeneity in hard rock terrain. Always ask the user about borewell density and crop water demand (irrigated vs rainfed) before finalising diagnosis.",
+    "confounders": [
+      {
+        "confounder": "drought (meteorological) causing apparent groundwater stress through reduced recharge rather than over-extraction",
+        "how_to_distinguish": "Compare drought_weeks_severe and annual_precipitation_mm against historical baseline. If drought years co-occur with the delta_g decline, drought is the primary driver and groundwater stress is secondary. Check soge_dev_percent — if it is low (<50%) but delta_g is still negative, drought rather than extraction is likely primary."
+      },
+      {
+        "confounder": "Seasonal variation in well depth misread as multi-year trend",
+        "how_to_distinguish": "Ensure well depth comparisons are made for the same season (preferably pre-monsoon) across years, not across seasons."
+      }
+    ],
+    "missing_variable_questions": [
+      {
+        "missing_variable": "borewell_density",
+        "question_to_user": "Roughly how many borewells or tubewells are there in your village or nearby villages? Would you say there are very few (less than 10), a moderate number (10–50), or a large number (more than 50)?",
+        "how_answer_updates_diagnosis": "High borewell density in a hard rock aquifer with low SOGE confirms localised over-extraction not captured by the block-level SOGE figure, strongly confirming the groundwater stress pathway."
+      },
+      {
+        "missing_variable": "groundwater_salinity",
+        "question_to_user": "Have farmers noticed that borewell or well water has become saltier, leaves white deposits, or is no longer suitable for certain crops?",
+        "how_answer_updates_diagnosis": "Salinity in hard rock aquifers can indicate deep borewell penetration into saline zones, a secondary consequence of over-extraction, or a different causal pathway (saline intrusion) that changes solution recommendations."
+      }
+    ],
+    "sources": [
+      {
+        "source_id": "Shah2009",
+        "title": "Taming the anarchy: Groundwater governance in South Asia",
+        "authors": ["Shah, Tushaar"],
+        "year": 2009,
+        "source_type": "book_chapter",
+        "relevance_note": "Documents hard rock aquifer depletion dynamics and the inadequacy of block-level SOGE to capture local depletion in peninsular India"
+      },
+      {
+        "source_id": "CGWB2023",
+        "title": "National Compilation of Dynamic Ground Water Resources of India 2022",
+        "authors": ["Central Ground Water Board"],
+        "year": 2023,
+        "url": "https://cgwb.gov.in",
+        "source_type": "government_report",
+        "relevance_note": "Defines SOGE class thresholds (Safe <70%, Semi-critical 70–90%, Critical 90–100%, Over-exploited >100%) used in sig_01"
+      },
+      {
+        "source_id": "Fishman2011",
+        "title": "Can the groundwater crisis in rural India be attributed to well deepening?",
+        "authors": ["Fishman, R.", "Devineni, N.", "Raman, S."],
+        "year": 2011,
+        "doi": "10.1029/2011WR010477",
+        "source_type": "peer_reviewed_journal",
+        "relevance_note": "Documents well deepening as a reliable proxy for groundwater table decline in Indian hard rock and alluvial settings"
+      }
+    ],
+    "metadata": {
+      "created_by": "llm_extraction_v1",
+      "reviewed_by_expert": false,
+      "created_at": "2026-06-07",
+      "last_updated": "2026-06-07",
+      "extraction_model": "claude-sonnet-4-6",
+      "confidence_overall": "medium"
+    }
+  }
+]

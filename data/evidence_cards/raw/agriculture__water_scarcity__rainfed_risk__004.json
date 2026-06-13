@@ -1,0 +1,182 @@
+{
+  "card_id": "agriculture__water_scarcity__rainfed_risk__004",
+  "production_system": "Agriculture",
+  "observed_stress": "water_scarcity",
+  "causal_pathway": "rainfed_risk",
+  "pathway_description": "High dependence on rainfall with minimal irrigation infrastructure makes agriculture vulnerable to erratic monsoons.",
+  "stress_description": "Farmers report insufficient water for crop production, particularly for rabi and zaid seasons or during dry spells in kharif.",
+  "context": {
+    "agro_climatic_zones": [
+      "arid",
+      "semi-arid"
+    ],
+    "aquifer_types": [
+      "alluvium"
+    ],
+    "terrain_types": [
+      "plains",
+      "slopes"
+    ],
+    "rainfall_regime": "arid",
+    "geographic_examples": [
+      "Rajasthan",
+      "Kachchh Gujarat",
+      "Haryana arid belt"
+    ],
+    "aer_reference": [
+      "AER-2: Western Plain, Kachchh and part of Kathiawar Peninsula, hot arid ecoregion | states=['Rajasthan', 'Gujarat (Kachchh)'] | rainfall=<400mm | aquifer=alluvium",
+      "AER-4: Northern Plain and Central Highlands including Aravallis, hot semi-arid ecoregion | states=['Rajasthan (eastern)', 'Gujarat (northern)', 'Haryana', 'Punjab (parts)'] | rainfall=400-740mm | aquifer=alluvium"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "lulc_single_kharif_ha",
+        "lulc_double_crop_ha"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "lulc_single_kharif_ha / (lulc_single_kharif_ha + lulc_double_crop_ha) > 0.75",
+        "qualitative_description": "More than 75% of cropped area is under single kharif season only, with very low double-cropped area, indicating near-total dependence on monsoon rainfall and absence of irrigation for a second crop.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "In arid and semi-arid zones such as AER-2 and AER-4, where annual rainfall is below 400–740 mm and largely confined to the kharif season, a high ratio of single-season kharif area to total cropped area is a direct indicator of rainfed dependence. The absence of rabi or zaid cropping at scale confirms that farmers lack access to stored or diverted water. This pattern is characteristic of less-favoured arid/semi-arid areas in South Asia, where rainfed systems dominate and irrigation infrastructure is minimal.",
+      "interaction_with": [
+        "sig_02",
+        "sig_03"
+      ]
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "cropping_intensity"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "cropping_intensity <= 1.15",
+        "qualitative_description": "Cropping intensity at or near 1.0–1.15 indicates that most agricultural land supports only one crop per year, consistent with rainfed single-season farming.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Cropping intensity is a composite indicator of irrigation access and water availability. Values near 1.0 indicate single-season rainfed farming; values above 1.5 typically reflect irrigated double or triple cropping. In arid zones with erratic monsoons and no canal or groundwater infrastructure, cropping intensity remains depressed. This is consistent with the characterisation of less-favoured arid/semi-arid areas in South Asia, where low cropping intensity is a defining feature of rainfed agricultural systems.",
+      "interaction_with": [
+        "sig_01",
+        "sig_04"
+      ]
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "swb_rabi_area_ha",
+        "canal_name"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Surface water body (SWB) area in rabi season is very low or absent, AND no canal name is recorded for the micro-watershed, confirming absence of both stored surface water and canal-based irrigation infrastructure.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "The absence of persistent surface water bodies into the rabi season indicates that monsoon runoff is not being captured and stored for post-monsoon irrigation. Combined with the absence of a canal, this confirms that farmers have no access to surface irrigation infrastructure. In AER-2 (rainfall <400 mm) and AER-4 (400–740 mm), runoff is episodic and rapidly lost without water harvesting structures, leaving rabi and zaid seasons entirely unirrigated. This directly explains farmer-reported water insufficiency outside the kharif window.",
+      "interaction_with": [
+        "sig_01",
+        "sig_04"
+      ]
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "nrega_irrigation_count",
+        "annual_runoff_mm",
+        "terrain_cluster_id"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "nrega_irrigation_count < 3 AND annual_runoff_mm > 0.3 * annual_rainfall_mm",
+        "qualitative_description": "Fewer than 3 MGNREGA irrigation works recorded in the micro-watershed, despite measurable runoff potential, indicates that water harvesting opportunities exist but have not been exploited. Terrain cluster indicating slopes amplifies runoff loss.",
+        "threshold_confidence": "low",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Low investment in MGNREGA irrigation works (farm ponds, check dams, field bunds) in areas with non-trivial runoff indicates a structural gap in water harvesting infrastructure rather than an absolute absence of harvestable water. In arid and semi-arid plains and slopes, a significant fraction of rainfall is lost as runoff, particularly on sloping terrain. This amplifies rainfed risk because potentially capturable water is not being retained. The terrain cluster variable helps distinguish plains (where in-situ harvesting is more feasible) from slopes (where runoff loss is faster and structures must be placed at drainage outlets).",
+      "interaction_with": [
+        "sig_03"
+      ]
+    }
+  ],
+  "overall_reasoning_note": "Rainfed risk in arid and semi-arid alluvial zones should be confirmed by at least two of the three primary signals: dominance of single kharif cropping area, low cropping intensity, and absence of surface water or canal infrastructure into rabi season. The MGNREGA signal (sig_04) amplifies the diagnosis but does not confirm it independently — low investment may reflect administrative gaps rather than absence of need. When cropping intensity is low but a canal is present, investigate whether the canal is functional and whether tail-end farmers have access. Always ask about net irrigated area (missing variable) before finalising, as this directly quantifies irrigation access. In Rajasthan and Kachchh, erratic monsoon years can temporarily suppress cropping intensity even in irrigated areas — cross-check with multi-year averages rather than single-year snapshots.",
+  "confounders": [
+    {
+      "confounder": "Groundwater-based irrigation masking rainfed dependence at aggregate level",
+      "how_to_distinguish": "Check for presence of borewells or tubewells and net irrigated area data. If groundwater irrigation is active, cropping intensity may be higher than 1.15 and double-cropped area will be non-trivial even without canals. In alluvial aquifers of Haryana and eastern Rajasthan, shallow water tables can support borewell irrigation even in semi-arid zones, which would shift the diagnosis toward groundwater stress rather than rainfed risk."
+    },
+    {
+      "confounder": "Meteorological drought causing a temporary single-season cropping pattern in otherwise irrigated areas",
+      "how_to_distinguish": "Compare cropping intensity and single kharif area across multiple years. If the low cropping intensity is confined to one or two severe drought years and recovers in normal rainfall years, the primary driver is meteorological drought rather than structural rainfed dependence. Structural rainfed risk will show persistently low cropping intensity regardless of rainfall year quality."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "irrigated_area_ha",
+      "question_to_user": "Do you have data on the net irrigated area in this village or micro-watershed — that is, the total area that received at least one irrigation during the year? If not available as a number, can you estimate what share of farmland is irrigated: almost none (less than 10%), some (10–30%), or a significant portion (more than 30%)?",
+      "how_answer_updates_diagnosis": "If net irrigated area is very low (less than 10% of gross cropped area), this strongly confirms the rainfed risk pathway and justifies high-severity classification. If irrigated area is moderate to high, the water scarcity stress may be driven by irrigation system failure, groundwater depletion, or canal unreliability rather than structural rainfed dependence, and the diagnosis should be reconsidered."
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Devendra2011",
+      "title": "Rainfed Areas and Animal Agriculture in Asia: The Wanting Agenda for Transforming Productivity Growth and Rural Poverty",
+      "authors": [
+        "Devendra, C."
+      ],
+      "year": 2011,
+      "doi": "10.5713/ajas.2011.r.09",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents the extent and biophysical characteristics of rainfed arid and semi-arid systems in South Asia, including India, where rainfed ecosystems occupy 68% of cultivated area. Describes key features of less-favoured areas including variable rainfall, short growing seasons, and minimal development investment — directly supporting the rainfed risk pathway characterisation for AER-2 and AER-4 contexts."
+    },
+    {
+      "source_id": "Daccache2014",
+      "title": "Management of crop water under drought: a review",
+      "authors": [
+        "Daccache, A.",
+        "Ciurana, J.S.",
+        "Rodriguez Diaz, J.A.",
+        "Knox, J.W."
+      ],
+      "year": 2014,
+      "doi": "10.1007/s13593-015-0283-4",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Reviews unproductive water losses (runoff and evaporation) in rainfed dryland systems, noting that tropical residual moisture regimes with short intense rainy seasons have the highest losses. Supports the rationale for in-situ water harvesting interventions and the use of annual runoff as a diagnostic variable for rainfed risk."
+    },
+    {
+      "source_id": "Fischer2005",
+      "title": "Socio-economic and climate change impacts on agriculture: an integrated assessment, 1990–2080",
+      "authors": [
+        "Fischer, G.",
+        "Shah, M.",
+        "Tubiello, F.N.",
+        "van Velhuizen, H."
+      ],
+      "year": 2005,
+      "doi": "10.1098/rstb.2005.1744",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Provides agro-ecological zone modelling framework linking rainfall regimes, soil quality, and crop production potential. Supports the use of agro-climatic zone classification (arid, semi-arid) and rainfall regime as contextual variables for diagnosing rainfed vulnerability in dryland agricultural systems."
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-07-14",
+    "last_updated": "2025-07-14",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium"
+  }
+}

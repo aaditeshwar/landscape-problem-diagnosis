@@ -1,0 +1,243 @@
+# Preprocessing Pipeline
+
+Step-by-step guide for building the local `diagnosis_db` corpus and evidence base.
+Run commands from the project root with the virtual environment activated:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\<script>.py
+```
+
+Script layout: see **`scripts/README.md`** (pipeline scripts, `verify/`, `test/`, `maintenance/`, `lib/`).
+
+Configure `.env` before starting (see `.env.example`):
+
+| Variable | Used by |
+|----------|---------|
+| `MONGO_URI` | All MongoDB scripts (`?directConnection=true` if connecting to Docker MongoDB) |
+| `CORE_STACK_API_KEY` | `ingest_excel.py` — MWS/village geometries |
+| `UNPAYWALL_EMAIL` | `fetch_papers.py` — PDF URL discovery |
+| `ANTHROPIC_API_KEY` | `generate_evidence_cards.py` (later step) |
+
+---
+
+## Step 1 — Excel ingest + geometries
+
+Ingest tehsil Excel data and fetch map boundaries from CoRE Stack.
+
+```powershell
+.\.venv\Scripts\python.exe scripts\ingest_excel.py `
+  --excel data/raw_excel/Maharashtra__Yavatmal__Darwha_data.xlsx `
+  --state Maharashtra --district Yavatmal --tehsil Darwha
+```
+
+**Verify:**
+
+```powershell
+.\.venv\Scripts\python.exe scripts\verify\verify_ingest.py
+```
+
+**Expected:** ~99 MWS docs, ~115 village docs, manifest `status: complete`, MWS + village + tehsil boundaries in MongoDB.
+
+**Re-run after Excel update or to refresh geometries:**
+
+```powershell
+# add --force to overwrite a complete manifest entry
+```
+
+---
+
+## Step 2 — Load framework metadata into MongoDB
+
+One-time load of diagnosis framework and data dictionary (if not already done):
+
+```powershell
+.\.venv\Scripts\python.exe scripts\load_metadata_to_mongo.py
+```
+
+---
+
+## Step 3 — Fetch paper metadata (review before PDF download)
+
+Search OpenAlex and Semantic Scholar for open-access papers. **Current scope:** pathways matching `agriculture__water_scarcity*` only (default).
+
+```powershell
+# Metadata only — no PDFs (for manual review)
+.\.venv\Scripts\python.exe scripts\fetch_papers.py --dry-run
+```
+
+Defaults:
+
+- `--pathway-prefix agriculture__water_scarcity` (4 pathways)
+- `--max-per-pathway 25` candidates per pathway
+- OpenAlex only (add `--semantic-scholar` to include Semantic Scholar; often rate-limited without an API key)
+
+Output:
+
+- `data/papers/metadata/<paper_id>.json` — full metadata per paper
+- `data/papers/fetch_manifest.json` — review ledger with one entry per paper
+
+### Why irrelevant papers can appear
+
+Search APIs (OpenAlex, Semantic Scholar) use **keyword relevance**, not exact query matching. A query like *"groundwater depletion hard rock aquifer peninsular India"* will also rank papers about **groundwater quality/contamination** because they share terms (*groundwater*, *aquifer*, *India*). The script takes the first N unique results per query with no pathway-specific re-ranking. Review and filter in the manifest before downloading PDFs.
+
+---
+
+## Step 4 — Review and select papers
+
+Open `data/papers/fetch_manifest.json`. Each paper entry includes:
+
+| Field | Purpose |
+|-------|---------|
+| `title`, `year`, `doi`, `abstract` | Review relevance |
+| `discovered_via_query` | Which search query surfaced this paper |
+| `pathway_tags` | Pathway(s) this paper was collected for |
+| `include_in_corpus` | **`true`** = carry forward; set to **`false`** to exclude |
+| `pdf_downloaded` | Whether PDF is on disk |
+
+**Review helper:**
+
+```powershell
+.\.venv\Scripts\python.exe scripts\verify\verify_papers.py
+```
+
+Mark non-relevant papers (e.g. groundwater quality when targeting depletion/stress):
+
+```json
+"doi__10.1007_s00244-020-00805-z": {
+  "title": "Sources and Consequences of Groundwater Contamination",
+  "include_in_corpus": false,
+  ...
+}
+```
+
+**Validate before downloading PDFs:**
+
+```powershell
+.\.venv\Scripts\python.exe scripts\validate_manifest.py
+```
+
+Must report `Result: VALID` with no errors before proceeding.
+
+**Preserve your review flags:** after editing `include_in_corpus`, save a backup list to
+`data/papers/include_in_corpus_exclusions.json` (array of paper IDs to exclude).
+Re-apply after any fetch run with:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\restore_manifest_exclusions.py
+```
+
+Re-running `fetch_papers.py` (metadata search) rebuilds paper entries but now **preserves**
+existing `include_in_corpus` values. New papers still default to `true`.
+
+---
+
+## Step 5 — Download PDFs for selected papers only
+
+After review, download PDFs for papers still marked `include_in_corpus: true`:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\fetch_papers.py --download-selected
+```
+
+Requires `UNPAYWALL_EMAIL` in `.env`.
+
+**After download, sync manifest flags from disk:**
+
+```powershell
+.\.venv\Scripts\python.exe scripts\sync_manifest_pdfs.py
+```
+
+Not all papers have open-access PDFs — typical success rate is ~60%. Papers without PDFs remain in metadata; set `include_in_corpus: false` on them before chunking, or add PDFs manually to `data/papers/pdfs/{paper_id}.pdf`.
+
+Full list of missing PDFs: `data/papers/missing_pdfs.txt` (generated by sync script).
+
+---
+
+## Step 6 — Chunk, embed, and index
+
+```powershell
+# Smoke test (1 paper)
+.\.venv\Scripts\python.exe scripts\chunk_and_embed.py --limit 1
+
+# Full run — only papers with include_in_corpus=true AND PDF on disk
+.\.venv\Scripts\python.exe scripts\chunk_and_embed.py
+
+# Verify
+.\.venv\Scripts\python.exe scripts\verify\verify_chunks.py
+```
+
+Requires Ollama with `nomic-embed-text` on the host given by `OLLAMA_URL` in `.env`.
+On the GPU machine: `ollama pull nomic-embed-text` and ensure it listens on the network
+(`OLLAMA_HOST=0.0.0.0 ollama serve` or equivalent).
+
+```powershell
+# Point .env at GPU machine, e.g. OLLAMA_URL=http://192.168.1.50:11434
+
+# Optional: dry run first (no embed, no DB writes)
+.\.venv\Scripts\python.exe scripts\chunk_and_embed.py --dry-run
+
+# Smoke test (1 paper, real embed)
+.\.venv\Scripts\python.exe scripts\chunk_and_embed.py --limit 1
+
+# Full run — 36 papers with PDFs (skips already-chunked paper_ids)
+.\.venv\Scripts\python.exe scripts\chunk_and_embed.py
+
+# Verify
+.\.venv\Scripts\python.exe scripts\verify\verify_chunks.py
+```
+
+Stores chunks in MongoDB `paper_chunks`. Re-run is resumable (skips papers already in `paper_chunks`).
+Use `--force` to re-chunk a paper from scratch.
+
+---
+
+## Step 7 — Generate evidence cards
+
+Requires `ANTHROPIC_API_KEY` in `.env`. Generates one card per pathway × context cluster
+(6 clusters × 4 water_scarcity pathways = 24 cards).
+
+```powershell
+# Preview prompts (no API cost)
+.\.venv\Scripts\python.exe scripts\generate_evidence_cards.py --dry-run
+
+# Smoke test (1 card)
+.\.venv\Scripts\python.exe scripts\generate_evidence_cards.py --limit 1
+
+# Full run
+.\.venv\Scripts\python.exe scripts\generate_evidence_cards.py
+
+# Verify
+.\.venv\Scripts\python.exe scripts\verify\verify_evidence_cards.py
+```
+
+Raw prompts/responses saved under `data/evidence_cards/raw/`. Cards stored in MongoDB
+`evidence_cards` with Ollama embeddings for retrieval (alias-augmented text from
+`metadata/semantic_aliases.json`; re-embed with `scripts/reembed_evidence_cards.py --apply`).
+
+---
+
+## Step 8 — Export tehsil spatial index
+
+```powershell
+.\.venv\Scripts\python.exe scripts\build_spatial_index.py
+```
+
+Writes `runtime/static/tehsil_list.geojson` from MongoDB `tehsil_boundaries`.
+
+---
+
+## Quick reference — agriculture / water scarcity only
+
+```powershell
+# 1. Ingest (once per tehsil)
+.\.venv\Scripts\python.exe scripts\ingest_excel.py --excel data/raw_excel/Maharashtra__Yavatmal__Darwha_data.xlsx --state Maharashtra --district Yavatmal --tehsil Darwha
+
+# 2. Fetch metadata for review (up to 25 papers × 4 pathways)
+.\.venv\Scripts\python.exe scripts\fetch_papers.py --dry-run
+
+# 3. Review manifest → set include_in_corpus: false on irrelevant papers
+.\.venv\Scripts\python.exe scripts\verify\verify_papers.py
+
+# 4. Download selected PDFs
+.\.venv\Scripts\python.exe scripts\fetch_papers.py --download-selected
+```

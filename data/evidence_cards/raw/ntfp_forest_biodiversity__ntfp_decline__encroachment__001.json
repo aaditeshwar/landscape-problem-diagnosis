@@ -1,0 +1,187 @@
+{
+  "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__001",
+  "production_system": "NTFP_Forest_Biodiversity",
+  "observed_stress": "ntfp_decline",
+  "causal_pathway": "encroachment",
+  "context": {
+    "agro_climatic_zones": [
+      "semi-arid"
+    ],
+    "aquifer_types": [
+      "hard_rock"
+    ],
+    "terrain_types": [
+      "plateau",
+      "plains"
+    ],
+    "rainfall_regime": "semi-arid",
+    "geographic_examples": [
+      "Vidarbha Maharashtra",
+      "Marathwada",
+      "Telangana"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "cd_forest_to_farm_ha"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "cd_forest_to_farm_ha > 50 over a 10-year window",
+        "qualitative_description": "More than 50 hectares of forest land converted to farmland within the micro-watershed over the past decade, indicating active encroachment pressure on forest boundaries.",
+        "threshold_confidence": "high",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Forest-to-farm conversion is the most direct measurable indicator of encroachment. In the semi-arid Deccan Plateau (AER-6), where forest patches are already fragmented and under pressure from smallholder agriculture expansion, even modest conversion rates can eliminate critical NTFP-bearing patches. Geospatial studies of forest fragmentation in peninsular India document how cropland expansion progressively reduces interior forest cover, directly curtailing NTFP availability for dependent communities.",
+      "interaction_with": [
+        "sig_02",
+        "sig_03"
+      ]
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "cd_total_urbanization_ha"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "cd_total_urbanization_ha[-1] - cd_total_urbanization_ha[0] > 20",
+        "qualitative_description": "Settlement footprint has expanded by more than 20 hectares over the available multi-year record, suggesting peri-urban or village-level encroachment into adjacent forest land.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "Settlement expansion into forest margins is a secondary but significant encroachment vector in semi-arid plateau regions where land pressure is high. Urbanization of forest-adjacent land reduces both the physical extent of NTFP-bearing forest and community access corridors. This signal is most diagnostic when co-occurring with forest-to-farm conversion (sig_01), as combined agricultural and settlement pressure accelerates forest loss.",
+      "interaction_with": [
+        "sig_01"
+      ]
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "village_st_percent"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "village_st_percent > 25",
+        "qualitative_description": "Scheduled Tribe population exceeds 25% of village population, indicating high dependence on forest resources and elevated risk of tenure conflict or displacement from encroached forest land.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "High ST population share is a proxy for forest-dependent livelihoods and NTFP reliance. Where forest encroachment occurs in villages with significant ST populations, the impact on NTFP access is disproportionately severe. Studies on protected area displacement in India document how indigenous and forest-dwelling communities lose customary access rights when forest boundaries are contested or encroached, even where formal Forest Rights Act claims remain unfiled or unrecognised.",
+      "interaction_with": [
+        "sig_01",
+        "sig_04"
+      ]
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "village_st_percent",
+        "cd_forest_to_farm_ha"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "village_st_percent > 25 AND cd_forest_to_farm_ha > 50",
+        "qualitative_description": "Co-occurrence of high ST population share and significant forest-to-farm conversion suggests that encroachment is displacing forest-dependent communities from their customary NTFP collection areas.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "The combination of a large ST population and measurable forest-to-farm conversion is a strong composite signal for the encroachment pathway. Research on Forest Rights Act implementation in India shows that where tenure rights remain unrecognised, encroachment by outsiders or by wealthier farmers displaces tribal communities from ancestral forest land, directly reducing NTFP collection. This composite signal distinguishes encroachment-driven NTFP decline from decline caused by ecological degradation alone.",
+      "interaction_with": [
+        "sig_01",
+        "sig_03"
+      ]
+    }
+  ],
+  "overall_reasoning_note": "Encroachment-driven NTFP decline should be confirmed by at least two signals: measurable forest-to-farm conversion (sig_01) is the primary indicator; settlement expansion (sig_02) and high ST population share (sig_03) are corroborating signals. The composite signal (sig_04) is most diagnostic when both land conversion and community vulnerability are present simultaneously. In the semi-arid Deccan Plateau, forest patches are already small and fragmented, so even modest encroachment can eliminate NTFP access for entire communities. Always verify whether Forest Rights Act claims have been filed and whether community forest rights are formally recognised before finalising diagnosis, as unrecognised tenure is both a cause and consequence of encroachment pressure.",
+  "confounders": [
+    {
+      "confounder": "Forest degradation (not encroachment) causing NTFP decline through overextraction, fire, or drought rather than physical loss of forest extent",
+      "how_to_distinguish": "If cd_forest_to_farm_ha shows minimal conversion but NTFP yields are declining, investigate fire frequency, drought stress, and overextraction. Encroachment is confirmed when forest extent is measurably reduced. Degradation without encroachment would show stable or slowly declining forest area but deteriorating canopy density or species composition. Check for fire event records and drought years coinciding with NTFP decline onset."
+    },
+    {
+      "confounder": "Forest Rights Act disputes or administrative restrictions on NTFP collection reducing access without physical encroachment of forest land",
+      "how_to_distinguish": "If cd_forest_to_farm_ha is low but village_st_percent is high and communities report restricted access, the pathway may be tenure conflict or administrative exclusion rather than encroachment. Encroachment is confirmed when satellite-derived land use change shows actual forest-to-farm or forest-to-settlement conversion, not merely restricted access to intact forest."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "fra_claims_filed_count",
+      "question_to_user": "Have community members or households in this village filed individual or community forest rights claims under the Forest Rights Act (FRA)? If yes, approximately how many claims have been filed and how many have been recognised?",
+      "how_answer_updates_diagnosis": "Low FRA claim filing in a village with high ST population and measurable forest conversion strongly confirms the encroachment pathway, as unrecognised tenure leaves communities unable to defend forest boundaries. High filing rates with low recognition rates suggest administrative barriers compounding encroachment impacts."
+    },
+    {
+      "missing_variable": "ntfp_species_availability_trend",
+      "question_to_user": "Which specific NTFP species (e.g., tendu leaves, mahua, amla, bamboo) have declined most in recent years? Has the decline been in the quantity collected, the area where they are found, or both?",
+      "how_answer_updates_diagnosis": "Decline in species found only in interior forest patches (e.g., mahua, amla) concentrated near encroached areas confirms the encroachment pathway. If decline is uniform across species and locations, ecological degradation or drought may be the primary driver rather than encroachment."
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Bose2010_FRA",
+      "title": "Relocation from protected areas as a violent process in the recent history of biodiversity conservation in India",
+      "authors": [
+        "Bose, Purabi",
+        "Arts, Bas",
+        "van Dijk, Han"
+      ],
+      "year": 2022,
+      "doi": "10.37773/ees.v2i1.55",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents illegal relocation and displacement of indigenous and forest-dwelling communities from protected forest areas in India, and how non-recognition of tenure rights under the Forest Rights Act enables encroachment and loss of community forest access, directly relevant to the encroachment pathway and FRA-based solutions."
+    },
+    {
+      "source_id": "Nagendra2013_fragmentation",
+      "title": "Geospatial analysis of forest fragmentation in Uttara Kannada District, India",
+      "authors": [
+        "Ramachandra, T.V.",
+        "Bharath, H.A.",
+        "Bharath, S."
+      ],
+      "year": 2016,
+      "doi": "10.1186/s40663-016-0069-4",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Demonstrates through temporal land use analysis how cropland and built-up area expansion progressively reduces interior forest cover in peninsular India, with interior forest declining from 64% to 26% over three decades — directly supporting the forest-to-farm conversion signal as an indicator of encroachment-driven forest loss."
+    },
+    {
+      "source_id": "RRI2020_tenure",
+      "title": "The Opportunity Framework 2020: Identifying Opportunities to Invest in Securing Collective Tenure Rights in the Forest",
+      "authors": [
+        "Rights and Resources Initiative"
+      ],
+      "year": 2020,
+      "doi": "10.53892/rhaa9312",
+      "source_type": "ngo_report",
+      "relevance_note": "Provides global evidence that governments formally recognise only 10% of land customarily managed by indigenous and local communities, creating tenure insecurity that enables encroachment. Supports the rationale for FRA claim filing as a recommended solution and the use of ST population share as a proxy for tenure vulnerability."
+    },
+    {
+      "source_id": "Puyravaud2003_deforestation",
+      "title": "Conserving forest biodiversity in times of violent conflict",
+      "authors": [
+        "McNeely, Jeffrey A."
+      ],
+      "year": 2003,
+      "doi": "10.1017/s0030605303000334",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents how nationalization of forests and disenfranchisement of traditional forest inhabitants drives conflict and loss of biodiversity, with relevance to the encroachment pathway where community tenure insecurity enables external actors to convert forest land to agriculture."
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-07-14",
+    "last_updated": "2025-07-14",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium"
+  }
+}

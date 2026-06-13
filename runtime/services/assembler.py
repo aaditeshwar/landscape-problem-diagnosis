@@ -1,0 +1,394 @@
+from __future__ import annotations
+
+from functools import lru_cache
+import json
+from pathlib import Path
+from typing import Any
+
+from config import METADATA_DIR
+from services.derived_variables import resolve_derived
+
+# Variables with no CoRE Stack / Excel resolver — always null unless user injects an answer.
+NOT_AVAILABLE = {
+    "well_depth_m",
+    "annual_well_depth_m",
+    "borewell_density",
+    "groundwater_salinity",
+    "irrigated_area_ha",
+    "tank_siltation_status",
+    "canal_command_coverage",
+    "crop_type_composition",
+    "market_price_crop",
+    "landholding_size_distribution",
+    "livestock_population",
+    "household_income_inr",
+    "migrant_household_percent",
+    "fish_production_kg",
+    "ntfp_species_presence",
+    "invasive_species_area_ha",
+    "forest_fire_incidents",
+    "soil_organic_carbon",
+    "soil_erosion_rate",
+    "soil_type",
+    "common_land_area_ha",
+    "fodder_land_area_ha",
+}
+
+
+def _present_variables(bundle: dict[str, dict]) -> set[str]:
+    present: set[str] = set()
+    for data in bundle.values():
+        present.update((data.get("present_variables") or {}).keys())
+    return present
+
+
+def _missing_variables(bundle: dict[str, dict]) -> set[str]:
+    missing: set[str] = set()
+    for data in bundle.values():
+        missing.update(data.get("missing_variables") or [])
+    return missing
+
+
+def _nrega_category_total(mws: dict, category_key: str) -> int | float | None:
+    total = 0
+    found = False
+    for year_data in (mws.get("nrega_mws") or {}).values():
+        val = year_data.get(category_key)
+        if val is not None:
+            total += val
+            found = True
+    return total if found else None
+
+
+def _nrega_swc_count(mws: dict) -> int | float | None:
+    return _nrega_category_total(mws, "soil_and_water_conservation")
+
+
+def _annual_series(mws: dict, field: str) -> dict | None:
+    hydro = mws.get("hydrological_annual") or {}
+    if not hydro:
+        return None
+    out = {str(y): row.get(field) for y, row in hydro.items() if row.get(field) is not None}
+    return out or None
+
+
+def _drought_series(mws: dict, field: str) -> dict | None:
+    drought = mws.get("drought_kharif") or {}
+    if not drought:
+        return None
+    out = {str(y): row.get(field) for y, row in drought.items() if row.get(field) is not None}
+    return out or None
+
+
+def _cropping_field_series(mws: dict, field: str) -> dict | None:
+    ci = mws.get("cropping_intensity") or {}
+    out: dict[str, float] = {}
+    for year, row in ci.items():
+        if isinstance(row, dict) and row.get(field) is not None:
+            out[str(year)] = row[field]
+    return out or None
+
+
+def _lulc_field_series(mws: dict, field: str) -> dict | None:
+    lulc = mws.get("lulc_ha") or {}
+    out: dict[str, float] = {}
+    for year, row in lulc.items():
+        if isinstance(row, dict) and row.get(field) is not None:
+            out[str(year)] = row[field]
+    return out or None
+
+
+def _cropping_or_lulc_series(mws: dict, cropping_field: str, lulc_field: str) -> dict | None:
+    return _cropping_field_series(mws, cropping_field) or _lulc_field_series(mws, lulc_field)
+
+
+def _swb_field_series(mws: dict, field: str) -> dict | None:
+    swb = mws.get("swb_annual") or {}
+    out: dict[str, float] = {}
+    for year, row in swb.items():
+        if isinstance(row, dict) and row.get(field) is not None:
+            out[str(year)] = row[field]
+    return out or None
+
+
+def _change_detection_value(mws: dict, sheet: str, field: str) -> Any:
+    return ((mws.get("change_detection") or {}).get(sheet) or {}).get(field)
+
+
+def _cropping_intensity_series(mws: dict) -> dict | None:
+    return _cropping_field_series(mws, "cropping_intensity")
+
+
+def _canal_name(mws: dict) -> str | None:
+    if "canal" not in mws:
+        return None
+    canal = mws.get("canal") or {}
+    return canal.get("canal_name") or canal.get("project_name") or ""
+
+
+def _swb_count(mws: dict) -> int | None:
+    if mws.get("swb_count") is not None:
+        return mws["swb_count"]
+    intersect = mws.get("swb_intersect")
+    if isinstance(intersect, list):
+        return len(intersect)
+    return None
+
+
+def _village_aggregate(mws: dict, field: str) -> Any:
+    aggregates = mws.get("village_aggregates") or {}
+    value = aggregates.get(field)
+    return value if value is not None else None
+
+
+def _facility_distance(mws: dict, field: str) -> Any:
+    return (mws.get("facility_distances") or {}).get(field)
+
+
+def _stream_order_n_percent(mws: dict) -> dict | None:
+    data = mws.get("stream_order_area_percent")
+    return data if data else None
+
+
+VARIABLE_RESOLVERS: dict[str, Any] = {
+    "soge_dev_percent": lambda m: (m.get("soge") or {}).get("dev_percent"),
+    "soge_class_name": lambda m: (m.get("soge") or {}).get("class_name"),
+    "aquifer_class": lambda m: (m.get("aquifer") or {}).get("acwadam_class"),
+    "aquifer_lithology_percent": lambda m: (m.get("aquifer") or {}).get("lithology_percent"),
+    "annual_delta_g_mm": lambda m: _annual_series(m, "delta_g_mm"),
+    "annual_precipitation_mm": lambda m: _annual_series(m, "precipitation_mm"),
+    "annual_et_mm": lambda m: _annual_series(m, "et_mm"),
+    "annual_runoff_mm": lambda m: _annual_series(m, "runoff_mm"),
+    "seasonal_precipitation_mm": lambda m: m.get("hydrological_seasonal"),
+    "drought_weeks_severe": lambda m: _drought_series(m, "severe_weeks"),
+    "drought_weeks_moderate": lambda m: _drought_series(m, "moderate_weeks"),
+    "dry_spell_weeks": lambda m: _drought_series(m, "dry_spell_weeks"),
+    "monsoon_onset_date": lambda m: _drought_series(m, "monsoon_onset"),
+    "kharif_cropped_area_percent": lambda m: _drought_series(m, "kharif_cropped_percent"),
+    "drought_causality_json": lambda m: m.get("drought_causality"),
+    "nrega_swc_count": _nrega_swc_count,
+    "nrega_irrigation_count": lambda m: _nrega_category_total(m, "irrigation_on_farms"),
+    "nrega_land_restoration_count": lambda m: _nrega_category_total(m, "land_restoration"),
+    "nrega_plantation_count": lambda m: _nrega_category_total(m, "plantations"),
+    "nrega_community_assets_count": lambda m: _nrega_category_total(m, "community_assets"),
+    "cropping_intensity": _cropping_intensity_series,
+    "lulc_single_kharif_ha": lambda m: _cropping_or_lulc_series(m, "single_kharif_ha", "single_kharif"),
+    "lulc_double_crop_ha": lambda m: _cropping_or_lulc_series(m, "double_crop_ha", "double_crop"),
+    "lulc_cropland_ha": lambda m: _lulc_field_series(m, "cropland"),
+    "lulc_shrub_scrub_ha": lambda m: _lulc_field_series(m, "shrub_scrub"),
+    "lulc_barrenland_ha": lambda m: _lulc_field_series(m, "barrenland"),
+    "lulc_tree_forest_ha": lambda m: _lulc_field_series(m, "tree_forest"),
+    "lulc_krz_water_ha": lambda m: _lulc_field_series(m, "krz_water"),
+    "swb_total_area_ha": lambda m: _swb_field_series(m, "total_ha"),
+    "swb_kharif_area_ha": lambda m: _swb_field_series(m, "kharif_ha"),
+    "swb_rabi_area_ha": lambda m: _swb_field_series(m, "rabi_ha"),
+    "swb_zaid_area_ha": lambda m: _swb_field_series(m, "zaid_ha"),
+    "swb_count": _swb_count,
+    "canal_name": _canal_name,
+    "river_name": lambda m: m.get("river_name"),
+    "cd_total_degradation_ha": lambda m: _change_detection_value(m, "degradation", "total_ha"),
+    "cd_farm_to_barren_ha": lambda m: _change_detection_value(m, "degradation", "farm_to_barren_ha"),
+    "cd_total_deforestation_ha": lambda m: _change_detection_value(m, "deforestation", "total_ha"),
+    "cd_forest_to_farm_ha": lambda m: _change_detection_value(m, "deforestation", "forest_to_farm_ha"),
+    "cd_total_urbanization_ha": lambda m: _change_detection_value(m, "urbanization", "total_ha"),
+    "cd_total_afforestation_ha": lambda m: _change_detection_value(m, "afforestation", "total_ha"),
+    "cd_single_to_double_ha": lambda m: _change_detection_value(m, "crop_intensity", "single_to_double_ha"),
+    "stream_order_N_area_percent": _stream_order_n_percent,
+    "terrain_cluster_id": lambda m: (m.get("terrain") or {}).get("cluster_id"),
+    "slopy_area_percent": lambda m: (m.get("terrain") or {}).get("slopy_percent"),
+    "organization_domains": lambda m: m.get("organisation_domains") or m.get("organization_domains"),
+    "mean_annual_precipitation_mm": lambda m: resolve_derived(m, "mean_annual_precipitation_mm"),
+    "trend_annual_precipitation_mm": lambda m: resolve_derived(m, "trend_annual_precipitation_mm"),
+    "mean_annual_et_mm": lambda m: resolve_derived(m, "mean_annual_et_mm"),
+    "trend_annual_et_mm": lambda m: resolve_derived(m, "trend_annual_et_mm"),
+    "mean_annual_runoff_mm": lambda m: resolve_derived(m, "mean_annual_runoff_mm"),
+    "trend_annual_runoff_mm": lambda m: resolve_derived(m, "trend_annual_runoff_mm"),
+    "mean_annual_delta_g_mm": lambda m: resolve_derived(m, "mean_annual_delta_g_mm"),
+    "trend_annual_delta_g_mm": lambda m: resolve_derived(m, "trend_annual_delta_g_mm"),
+    "mean_cropping_intensity": lambda m: resolve_derived(m, "mean_cropping_intensity"),
+    "trend_cropping_intensity": lambda m: resolve_derived(m, "trend_cropping_intensity"),
+    "mean_kharif_cropped_area_ha": lambda m: resolve_derived(m, "mean_kharif_cropped_area_ha"),
+    "trend_kharif_cropped_area_ha": lambda m: resolve_derived(m, "trend_kharif_cropped_area_ha"),
+    "mean_double_crop_area_ha": lambda m: resolve_derived(m, "mean_double_crop_area_ha"),
+    "trend_double_crop_area_ha": lambda m: resolve_derived(m, "trend_double_crop_area_ha"),
+    "drought_moderate_return_period": lambda m: resolve_derived(m, "drought_moderate_return_period"),
+    "drought_severe_return_period": lambda m: resolve_derived(m, "drought_severe_return_period"),
+    "mean_swb_total_area_ha": lambda m: resolve_derived(m, "mean_swb_total_area_ha"),
+    "trend_swb_total_area_ha": lambda m: resolve_derived(m, "trend_swb_total_area_ha"),
+    "mean_swb_rabi_kharif_ratio": lambda m: resolve_derived(m, "mean_swb_rabi_kharif_ratio"),
+    "trend_swb_rabi_kharif_ratio": lambda m: resolve_derived(m, "trend_swb_rabi_kharif_ratio"),
+    "village_sc_percent": lambda m: _village_aggregate(m, "village_sc_percent"),
+    "village_st_percent": lambda m: _village_aggregate(m, "village_st_percent"),
+    "village_literacy_rate": lambda m: _village_aggregate(m, "village_literacy_rate"),
+    "village_total_population": lambda m: _village_aggregate(m, "village_total_population"),
+    "dist_apmc_km": lambda m: _facility_distance(m, "dist_apmc_km"),
+    "dist_bank_km": lambda m: _facility_distance(m, "dist_bank_km"),
+    "dist_dairy_km": lambda m: _facility_distance(m, "dist_dairy_km"),
+    "dist_cooperative_km": lambda m: _facility_distance(m, "dist_cooperative_km"),
+    "dist_agri_market_km": lambda m: _facility_distance(m, "dist_markets_trading_km"),
+    "dist_markets_trading_km": lambda m: _facility_distance(m, "dist_markets_trading_km"),
+    "dist_cold_storage_km": lambda m: _facility_distance(m, "dist_storage_warehousing_km"),
+    "dist_storage_warehousing_km": lambda m: _facility_distance(m, "dist_storage_warehousing_km"),
+    "dist_agri_processing_km": lambda m: _facility_distance(m, "dist_agri_processing_km"),
+    "dist_phc_km": lambda m: _facility_distance(m, "dist_phc_km"),
+    "dist_chc_km": lambda m: _facility_distance(m, "dist_chc_km"),
+    "dist_sub_centre_km": lambda m: _facility_distance(m, "dist_sub_centre_km"),
+    "dist_district_hospital_km": lambda m: _facility_distance(m, "dist_district_hospital_km"),
+    "dist_school_primary_km": lambda m: _facility_distance(m, "dist_school_primary_km"),
+    "dist_school_secondary_km": lambda m: _facility_distance(m, "dist_school_secondary_km"),
+    "dist_college_km": lambda m: _facility_distance(m, "dist_college_km"),
+    "dist_csc_km": lambda m: _facility_distance(m, "dist_csc_km"),
+    "dist_pds_km": lambda m: _facility_distance(m, "dist_pds_km"),
+}
+
+
+@lru_cache
+def load_framework() -> dict:
+    path = METADATA_DIR / "diagnosis_framework.json"
+    with path.open(encoding="utf-8") as fh:
+        return json.load(fh)
+
+
+def find_pathway(pathway_id: str) -> tuple[dict, str, str] | None:
+    root = load_framework()["diagnosis_framework"]["production_systems"]
+    for production, pdata in root.items():
+        for stress, sdata in pdata.get("observed_stresses", {}).items():
+            pathways = sdata.get("causal_pathways", {})
+            if pathway_id in pathways:
+                return pathways[pathway_id], production, stress
+    return None
+
+
+def resolve_variable(mws_doc: dict, variable: str, injected: dict | None = None) -> Any:
+    if injected and variable in injected:
+        return injected[variable]
+    if variable in NOT_AVAILABLE:
+        return None
+    derived = resolve_derived(mws_doc, variable)
+    if derived is not None:
+        return derived
+    resolver = VARIABLE_RESOLVERS.get(variable)
+    if resolver is None:
+        return None
+    return resolver(mws_doc)
+
+
+def authorized_follow_up_questions(
+    bundle: dict[str, dict],
+    injected: dict | None = None,
+    *,
+    uncertain_pathway_ids: set[str] | None = None,
+    confirmed_pathway_ids: set[str] | None = None,
+    pathway_retrieval_ranks: dict[str, int] | None = None,
+) -> list[tuple[str, str]]:
+    """Return (variable, question) pairs allowed for user follow-up.
+
+    A question is authorized only when the variable is still missing for this MWS
+    (not in present_variables or injected) and the evidence card supplies the question text.
+    Results are ordered: uncertain pathways first, then by retrieval rank.
+    When any uncertain pathway has eligible questions, confirmed-pathway questions are omitted.
+    """
+    injected = injected or {}
+    present = _present_variables(bundle)
+    uncertain = uncertain_pathway_ids or set()
+    confirmed = confirmed_pathway_ids or set()
+    ranks = pathway_retrieval_ranks or {}
+
+    candidates: list[tuple[int, int, str, int, str, str]] = []
+    seen_vars: set[str] = set()
+
+    for pathway_id, data in bundle.items():
+        missing = set(data.get("missing_variables") or [])
+        for q_idx, q in enumerate(data.get("missing_variable_questions") or []):
+            var = q.get("missing_variable") or q.get("variable")
+            question = (q.get("question_to_user") or q.get("question") or "").strip()
+            if not var or not question or var in injected or var in present or var in seen_vars:
+                continue
+            if var not in missing:
+                continue
+            seen_vars.add(str(var))
+            tier = 0 if pathway_id in uncertain else (2 if pathway_id in confirmed else 1)
+            rank = ranks.get(pathway_id, 999)
+            candidates.append((tier, rank, pathway_id, q_idx, str(var), question))
+
+    candidates.sort(key=lambda item: (item[0], item[1], item[2], item[3]))
+
+    uncertain_candidates = [item for item in candidates if item[0] == 0]
+    if uncertain_candidates:
+        candidates = uncertain_candidates
+
+    return [(var, question) for _, _, _, _, var, question in candidates]
+
+
+def assemble_variable_bundle(
+    mws_doc: dict,
+    retrieved_cards: list[dict],
+    injected: dict | None = None,
+) -> dict[str, dict]:
+    bundle: dict[str, dict] = {}
+
+    for card in retrieved_cards:
+        pathway_id = card.get("causal_pathway")
+        if not pathway_id:
+            continue
+        found = find_pathway(pathway_id)
+        if not found:
+            continue
+        pathway_cfg, _production, _stress = found
+
+        present: dict[str, Any] = {}
+        missing: list[str] = []
+        for var_def in pathway_cfg.get("diagnostic_variables", []):
+            name = var_def["variable"]
+            if var_def.get("availability") == "not_available" and not (injected and name in injected):
+                missing.append(name)
+                continue
+            value = resolve_variable(mws_doc, name, injected)
+            if value is None:
+                missing.append(name)
+            else:
+                present[name] = value
+
+        card_questions = {
+            q["missing_variable"]: q
+            for q in card.get("missing_variable_questions", [])
+            if q.get("missing_variable")
+        }
+        missing_questions = [card_questions[v] for v in missing if v in card_questions]
+
+        bundle[pathway_id] = {
+            "pathway_id": pathway_id,
+            "description": pathway_cfg.get("description"),
+            "solutions": pathway_cfg.get("solutions", []),
+            "present_variables": present,
+            "missing_variables": missing,
+            "missing_variable_questions": missing_questions,
+            "evidence_card": {
+                "card_id": card.get("card_id"),
+                "overall_reasoning_note": card.get("overall_reasoning_note"),
+                "diagnostic_signals": card.get("diagnostic_signals", []),
+                "confounders": card.get("confounders", []),
+                "citations": card.get("citations", []),
+            },
+        }
+    return bundle
+
+
+def location_context(mws_doc: dict) -> dict[str, Any]:
+    terrain = mws_doc.get("terrain") or {}
+    aquifer = mws_doc.get("aquifer") or {}
+    villages = mws_doc.get("intersect_village_names") or []
+    village_names = [v.get("name") for v in villages if v.get("name")]
+    return {
+        "uid": mws_doc.get("uid"),
+        "state": mws_doc.get("state"),
+        "district": mws_doc.get("district"),
+        "tehsil": mws_doc.get("tehsil"),
+        "area_ha": mws_doc.get("area_ha"),
+        "aquifer_class": aquifer.get("acwadam_class"),
+        "aquifer_raw": aquifer.get("raw_class"),
+        "terrain_cluster": terrain.get("cluster_id"),
+        "terrain_description": terrain.get("description"),
+        "village_names": village_names,
+        "villages": villages,
+    }

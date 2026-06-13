@@ -1,0 +1,355 @@
+{
+  "data_dictionary": {
+    "version": "2.0",
+    "description": "Variable-level data dictionary for MWS (micro-watershed) and village-level indicators. Static variables have a single value per MWS or village. Time-series variables are stored as objects keyed by agricultural_year (integer = start year of Jul-Jun cycle, e.g. 2017 = 2017-18). All time-series variables span the agricultural year from July 1 to June 30 of the following year.",
+    "primary_key": {
+      "mws_level": "uid",
+      "village_level": "village_id"
+    },
+    "agricultural_year_convention": "Year label = start year of the July 1 – June 30 cycle. E.g. agricultural_year 2017 covers July 1 2017 to June 30 2018.",
+    "variable_types": {
+      "static": "Single value per spatial unit, does not change across years",
+      "time_series": "Object keyed by agricultural_year integer. E.g. {2017: 450.2, 2018: 512.1, ...}",
+      "derived": "Computed from other variables; not stored raw in source Excel"
+    },
+    "variables": {
+      "uid": {
+        "type": "static", "unit": "categorical", "description": "Unique MWS identifier", "source_sheet": "mws", "source_column": "UID", "availability": "available"
+      },
+      "mws_area_ha": {
+        "type": "static", "unit": "hectares", "description": "Total geographic area of the MWS", "source_sheet": "mws", "source_column": "area_in_ha", "availability": "available"
+      },
+      "watershed_code": {
+        "type": "static", "unit": "categorical", "description": "Watershed code the MWS belongs to", "source_sheet": "mws", "source_column": "watershed_code", "availability": "available"
+      },
+      "basin_code": {
+        "type": "static", "unit": "categorical", "description": "River basin code", "source_sheet": "mws", "source_column": "basin_code", "availability": "available"
+      },
+      "stream_order_area_percent": {
+        "type": "static", "unit": "percent per order",
+        "description": "Object keyed by Strahler stream order (1–11): percentage of MWS area draining into that order. E.g. {1: 35.2, 2: 28.1, ...}",
+        "source_sheet": "stream_order", "source_column": "order_N_area_percent (N=1..11)", "availability": "available"
+      },
+      "downstream_uid": {
+        "type": "static", "unit": "categorical", "description": "UID of the immediately downstream MWS", "source_sheet": "mws_connectivity", "source_column": "downstream_mws", "availability": "available"
+      },
+      "upstream_uids": {
+        "type": "static", "unit": "list of categorical", "description": "List of UIDs of immediately upstream MWSes", "source_sheet": "mws_connectivity", "source_column": "upstream_mws", "availability": "available"
+      },
+      "flow_direction": {
+        "type": "static", "unit": "categorical (1–8)",
+        "description": "D8 flow direction of MWS outlet: 1=NE, 2=E, 3=SE, 4=S, 5=SW, 6=W, 7=NW, 8=N",
+        "source_sheet": "mws_connectivity", "source_column": "direction", "availability": "available"
+      },
+      "drainage_density_km_per_km2": {
+        "type": "static", "unit": "km/km²",
+        "description": "Drainage line density within MWS. Documented for reference only; not ingested or used in the diagnosis pipeline.",
+        "source_sheet": "drainage_density", "source_column": "drainage_density", "availability": "not_available",
+        "source_policy": "not_ingested_from_core", "follow_up_eligible": false
+      },
+      "elevation_min_m": {"type": "static", "unit": "metres", "source_sheet": "dem", "source_column": "min_elevation", "availability": "available"},
+      "elevation_max_m": {"type": "static", "unit": "metres", "source_sheet": "dem", "source_column": "max_elevation", "availability": "available"},
+      "elevation_mean_m": {"type": "static", "unit": "metres", "source_sheet": "dem", "source_column": "mean_elevation", "availability": "available"},
+      "terrain_cluster_id": {
+        "type": "static", "unit": "categorical",
+        "description": "Terrain cluster: 1=Mostly Plains, 3=Broad Plains and Slopes",
+        "source_sheet": "terrain", "source_column": "terrain_cluster_id", "availability": "available"
+      },
+      "terrain_area_percent": {
+        "type": "static", "unit": "percent per class",
+        "description": "Object keyed by terrain class: {hill_slope, plain, ridge, slopy, valley} → percent of MWS area",
+        "source_sheet": "terrain", "source_column": "hill_slope_area_percent, plain_area_percent, ridge_area_percent, slopy_area_percent, valley_area_percent", "availability": "available"
+      },
+      "aquifer_class": {
+        "type": "static", "unit": "categorical (ACWADAM)",
+        "description": "Dominant aquifer class per ACWADAM classification: alluvium | himalayan_and_sub_himalayan | volcanic | sedimentary_soft_rock | sedimentary_hard_rock | crystalline_basement",
+        "source_sheet": "aquifer_vector", "source_column": "aquifer_class", "availability": "available"
+      },
+      "aquifer_lithology_percent": {
+        "type": "static", "unit": "percent per lithology",
+        "description": "Object keyed by lithology name: percent of MWS area under each aquifer lithology",
+        "source_sheet": "aquifer_vector", "source_column": "principle_aq_<LithologyName>_percent", "availability": "available"
+      },
+      "soge_dev_percent": {
+        "type": "static", "unit": "percent",
+        "description": "Stage of Groundwater Extraction — block-level % development (CGWB). Thresholds: Safe <70%, Semi-critical 70–90%, Critical 90–100%, Over-exploited >100%",
+        "source_sheet": "soge_vector", "source_column": "soge_dev_percent", "availability": "available"
+      },
+      "soge_class_name": {
+        "type": "static", "unit": "categorical",
+        "description": "CGWB groundwater development class: Safe | Semi-critical | Critical | Over-exploited",
+        "source_sheet": "soge_vector", "source_column": "class_name", "availability": "available"
+      },
+      "river_name": {
+        "type": "static", "unit": "categorical", "description": "Name of river passing through or adjacent to MWS (null if none)", "source_sheet": "river", "source_column": "river_name", "availability": "available"
+      },
+      "canal_name": {
+        "type": "static", "unit": "categorical", "description": "Name and project of irrigation canal intersecting MWS (null if none)", "source_sheet": "canal", "source_column": "canal_name / project_name", "availability": "available"
+      },
+      "restoration_area_ha": {
+        "type": "static", "unit": "hectares per category",
+        "description": "WRI Restoration Atlas classification (widescale, protection, mosaic). Deprecated — not ingested or used in diagnosis.",
+        "source_sheet": "restoration_vector", "source_column": "wide_scale_restoration_area_in_ha, protection_area_in_ha, mosaic_restoration_area_in_ha",
+        "availability": "not_available", "source_policy": "not_ingested_from_core", "follow_up_eligible": false
+      },
+      "organization_domains": {
+        "type": "static", "unit": "list of categorical",
+        "description": "Domains of work of NGOs/organisations present in MWS (e.g. Agroforestry, Fisheries, Watershed management, Seed management). Coverage is partial.",
+        "source_sheet": "agroecological", "source_column": "domains", "availability": "available"
+      },
+      "cd_degradation_ha": {
+        "type": "static", "unit": "hectares per transition",
+        "description": "Cumulative change 2017-18 to 2024-25: {farm_to_barren, farm_to_scrubland, total_degradation} → ha",
+        "source_sheet": "change_detection_degradation", "source_column": "farm_to_barren_area_in_ha, farm_to_scrub_land_area_in_ha, total_degradation_area_in_ha", "availability": "available"
+      },
+      "cd_deforestation_ha": {
+        "type": "static", "unit": "hectares per transition",
+        "description": "Cumulative change 2017-18 to 2024-25: {forest_to_farm, total_deforestation} → ha",
+        "source_sheet": "change_detection_deforestation", "source_column": "forest_to_farm_area_in_ha, total_deforestation_area_in_ha", "availability": "available"
+      },
+      "cd_afforestation_ha": {
+        "type": "static", "unit": "hectares", "description": "Total area transitioning to forest/tree cover 2017-18 to 2024-25",
+        "source_sheet": "change_detection_afforestation", "source_column": "total_afforestation_area_in_ha", "availability": "available"
+      },
+      "cd_urbanization_ha": {
+        "type": "static", "unit": "hectares", "description": "Total area urbanised (to built-up) 2017-18 to 2024-25",
+        "source_sheet": "change_detection_urbanization", "source_column": "total_urbanization_area_in_ha", "availability": "available"
+      },
+      "cd_crop_intensity_ha": {
+        "type": "static", "unit": "hectares per transition",
+        "description": "Crop intensity transitions 2017-18 to 2024-25: {single_to_double, double_to_single, single_to_triple, double_to_triple, triple_to_double, triple_to_single} → ha",
+        "source_sheet": "change_detection_cropintensity", "source_column": "various transition columns", "availability": "available"
+      },
+      "precipitation_mm": {
+        "type": "time_series", "unit": "mm/agricultural_year",
+        "description": "Annual total precipitation within MWS. Keyed by agricultural_year. E.g. {2017: 820.4, 2018: 750.1, ...}",
+        "source_sheet": "hydrological_annual", "source_column": "Precipitation_in_mm_<YYYY-YYYY>", "availability": "available"
+      },
+      "et_mm": {
+        "type": "time_series", "unit": "mm/agricultural_year",
+        "description": "Annual actual evapotranspiration. Keyed by agricultural_year.",
+        "source_sheet": "hydrological_annual", "source_column": "ET_in_mm_<YYYY-YYYY>", "availability": "available"
+      },
+      "runoff_mm": {
+        "type": "time_series", "unit": "mm/agricultural_year",
+        "description": "Annual surface runoff. Keyed by agricultural_year.",
+        "source_sheet": "hydrological_annual", "source_column": "RunOff_in_mm_<YYYY-YYYY>", "availability": "available"
+      },
+      "delta_g_mm": {
+        "type": "time_series", "unit": "mm/agricultural_year", "variable_type_tag": "derived",
+        "description": "Annual groundwater recharge = precipitation_mm - et_mm - runoff_mm. Positive = net recharge; negative = net depletion. Raw DeltaG column in source is buggy; always recompute.",
+        "source_sheet": "hydrological_annual", "source_column": "DERIVED: Precipitation - ET - RunOff", "availability": "available",
+        "computation": "delta_g_mm[y] = precipitation_mm[y] - et_mm[y] - runoff_mm[y]"
+      },
+      "cumulative_g_mm": {
+        "type": "time_series", "unit": "mm cumulative from 2017 base", "variable_type_tag": "derived",
+        "description": "Cumulative groundwater stock anomaly from rolling sum of delta_g_mm. Computed at runtime only; not stored at ingest.",
+        "source_sheet": "hydrological_annual", "source_column": "DERIVED: cumulative sum of delta_g_mm", "availability": "not_available",
+        "computation": "cumulative_g_mm[y] = sum(delta_g_mm[2017..y])", "source_policy": "runtime_derived_only", "follow_up_eligible": false
+      },
+      "well_depth_m": {
+        "type": "time_series", "unit": "metres",
+        "description": "Mean well depth within MWS per agricultural year. CoRE Excel values are unreliable; supplied by user follow-up only.",
+        "source_sheet": "hydrological_annual", "source_column": "WellDepth_in_m_<YYYY-YYYY>", "availability": "not_available",
+        "source_policy": "not_ingested_from_core", "follow_up_eligible": true
+      },
+      "annual_well_depth_m": {
+        "type": "time_series", "unit": "metres",
+        "description": "Framework alias for well_depth_m — user-supplied time series keyed by agricultural year.",
+        "availability": "not_available", "follow_up_eligible": true, "alias_of": "well_depth_m"
+      },
+      "seasonal_precipitation_mm": {
+        "type": "time_series", "unit": "mm/season",
+        "description": "Seasonal precipitation. Keyed by agricultural_year, sub-keyed by season: {kharif, rabi, zaid}. E.g. {2017: {kharif: 720, rabi: 80, zaid: 20}}",
+        "source_sheet": "hydrological_seasonal", "source_column": "precipitation_<season>_in_mm_<YYYY-YYYY>", "availability": "available"
+      },
+      "seasonal_et_mm": {
+        "type": "time_series", "unit": "mm/season",
+        "description": "Seasonal actual evapotranspiration. Keyed by agricultural_year + season.",
+        "source_sheet": "hydrological_seasonal", "source_column": "et_<season>_in_mm_<YYYY-YYYY>", "availability": "available"
+      },
+      "seasonal_runoff_mm": {
+        "type": "time_series", "unit": "mm/season",
+        "description": "Seasonal surface runoff. Keyed by agricultural_year + season.",
+        "source_sheet": "hydrological_seasonal", "source_column": "runoff_<season>_in_mm_<YYYY-YYYY>", "availability": "available"
+      },
+      "seasonal_delta_g_mm": {
+        "type": "time_series", "unit": "mm/season", "variable_type_tag": "derived",
+        "description": "Seasonal groundwater recharge = seasonal_precipitation - seasonal_et - seasonal_runoff. Recomputed; raw columns are buggy.",
+        "source_sheet": "hydrological_seasonal", "source_column": "DERIVED", "availability": "available"
+      },
+      "swb_area_ha": {
+        "type": "time_series", "unit": "hectares per season",
+        "description": "Surface water body area per agricultural_year, sub-keyed by season and total: {kharif, rabi, zaid, total}.",
+        "source_sheet": "surfaceWaterBodies_annual", "source_column": "kharif_area_in_ha_<YYYY-YYYY>, rabi_area_in_ha_<YYYY-YYYY>, zaid_area_in_ha_<YYYY-YYYY>, total_area_in_ha_<YYYY-YYYY>", "availability": "available"
+      },
+      "swb_count": {
+        "type": "static", "unit": "count",
+        "description": "Number of distinct surface water bodies intersecting the MWS",
+        "source_sheet": "mws_intersect_swb", "source_column": "count of SWB_UID rows per MWS UID", "availability": "available"
+      },
+      "lulc_ha": {
+        "type": "time_series", "unit": "hectares per LULC class per agricultural_year",
+        "description": "LULC areas keyed by agricultural_year, sub-keyed by class: {barrenland, built_up, single_kharif, single_non_kharif, double_crop, triple_crop, tree_forest, shrub_scrub, k_water, kr_water, krz_water}. k_water=kharif only; kr_water=kharif+rabi; krz_water=all seasons.",
+        "source_sheet": "lulc_vector", "source_column": "<class>_in_ha_<YYYY>", "availability": "available"
+      },
+      "cropping_intensity": {
+        "type": "time_series", "unit": "unitless ratio",
+        "description": "Cropping intensity (total harvested area / net sown area) per agricultural_year.",
+        "source_sheet": "croppingIntensity_annual", "source_column": "cropping_intensity_unit_less_<YYYY-YYYY>", "availability": "available"
+      },
+      "single_crop_area_ha": {
+        "type": "time_series", "unit": "hectares",
+        "description": "Area under single cropping (kharif or non-kharif) per agricultural_year.",
+        "source_sheet": "croppingIntensity_annual", "source_column": "single_crop_in_ha_<YYYY-YYYY>", "availability": "available"
+      },
+      "double_crop_area_ha": {
+        "type": "time_series", "unit": "hectares", "source_sheet": "croppingIntensity_annual", "source_column": "double_crop_in_ha_<YYYY-YYYY>", "availability": "available"
+      },
+      "triple_crop_area_ha": {
+        "type": "time_series", "unit": "hectares", "source_sheet": "croppingIntensity_annual", "source_column": "triple_crop_in_ha_<YYYY-YYYY>", "availability": "available"
+      },
+      "drought_weeks": {
+        "type": "time_series", "unit": "kharif weeks per drought category",
+        "description": "Keyed by agricultural_year, sub-keyed by severity: {no_drought, mild, moderate, severe}. Total kharif = 18 weeks.",
+        "source_sheet": "croppingDrought_kharif", "source_column": "No_Drought_in_weeks_<YYYY>, Mild_in_weeks_<YYYY>, Moderate_in_weeks_<YYYY>, Severe_in_weeks_<YYYY>", "availability": "available"
+      },
+      "dry_spell_weeks": {
+        "type": "time_series", "unit": "weeks",
+        "description": "Number of kharif weeks under dry spell per agricultural_year. Dry spell = 4 consecutive weeks each with <50% historical rainfall (4-week moving window).",
+        "source_sheet": "croppingDrought_kharif", "source_column": "drysp_unit_4_weeks_<YYYY>", "availability": "available"
+      },
+      "kharif_cropped_area_ha": {
+        "type": "time_series", "unit": "hectares",
+        "description": "Kharif cropped area per agricultural_year (converted from sq km in source).",
+        "source_sheet": "croppingDrought_kharif", "source_column": "kharif_cropped_sqkm_<YYYY> × 100", "availability": "available"
+      },
+      "kharif_cropped_area_percent": {
+        "type": "time_series", "unit": "percent of MWS area",
+        "description": "Kharif cropped area as % of MWS area per agricultural_year.",
+        "source_sheet": "croppingDrought_kharif", "source_column": "kharif_cropped_area_percent_<YYYY>", "availability": "available"
+      },
+      "monsoon_onset_date": {
+        "type": "time_series", "unit": "ISO date (YYYY-MM-DD)",
+        "description": "Monsoon onset date in kharif season per agricultural_year.",
+        "source_sheet": "croppingDrought_kharif", "source_column": "monsoon_onset_<YYYY>", "availability": "available"
+      },
+      "drought_causality": {
+        "type": "time_series", "unit": "index values (varied scales)",
+        "description": "Per agricultural_year: {severe_moderate: {spi_score, mai_score, vci_score, cropping_area_sown_score}, mild: {...}}. Raw index values per India Drought Manual algorithm (Sections 3.2.1–3.2.2). SPI=Standard Precipitation Index; MAI=Moisture Adequacy Index; VCI=Vegetation Condition Index.",
+        "source_sheet": "drought_causality", "source_column": "severe_moderate_drought_causality_<YYYY>, mild_drought_causality_<YYYY>", "availability": "available"
+      },
+      "nrega_mws": {
+        "type": "time_series", "unit": "count per work category",
+        "description": "MGNREGA works completed in MWS per agricultural_year, keyed by category: {soil_water_conservation, land_restoration, plantations, irrigation_on_farms, other_farm_works, off_farm_livelihood_assets, community_assets}.",
+        "source_sheet": "nrega_annual", "source_column": "<category>_count_<YYYY>", "availability": "available"
+      },
+      "village_population": {
+        "type": "static", "unit": "persons", "description": "Total village population (Census-based)", "source_sheet": "social_economic_indicator", "source_column": "total_population_count", "availability": "available"
+      },
+      "village_sc_percent": {
+        "type": "static", "unit": "percent", "source_sheet": "social_economic_indicator", "source_column": "SC_percent", "availability": "available"
+      },
+      "village_st_percent": {
+        "type": "static", "unit": "percent", "source_sheet": "social_economic_indicator", "source_column": "ST_percent", "availability": "available"
+      },
+      "village_literacy_rate": {
+        "type": "static", "unit": "percent", "source_sheet": "social_economic_indicator", "source_column": "literacy_rate_percent", "availability": "available"
+      },
+      "facility_distances_km": {
+        "type": "static", "unit": "km per facility type",
+        "description": "Object keyed by facility: {apmc, bank, phc, school_primary, agri_market, dairy, cold_storage, agri_processing, cooperative, csc, pds, college, university}. Road distance from village to nearest mapped facility. The cooperative key is distance to an agricultural cooperative society (PACS/FSS/marketing co-op from agri_industry_co_operatives_societies) — not a water-user association, irrigation cooperative, or watershed management group.",
+        "source_sheet": "facilities_proximity", "source_column": "various distance columns", "availability": "available"
+      },
+      "dist_cooperative_km": {
+        "type": "static", "unit": "km",
+        "description": "Minimum road distance from intersecting villages to nearest agricultural cooperative society (agri_industry_co_operatives_societies in facilities_proximity). Used as a proxy for access to co-op credit, inputs, or marketing — not for water-user associations or watershed management groups.",
+        "source_sheet": "facilities_proximity", "source_column": "agri_industry_co_operatives_societies_distance", "availability": "available"
+      },
+      "nrega_village": {
+        "type": "time_series", "unit": "count per work category",
+        "description": "MGNREGA works at village level per year 2005–2025, same categories as nrega_mws.",
+        "source_sheet": "nrega_assets_village", "source_column": "<category>_count_<YYYY>", "availability": "available"
+      },
+      "soil_type": {
+        "type": "static", "unit": "categorical", "description": "Dominant soil type (e.g. Vertisol, Entisol, Inceptisol, Alfisol)", "availability": "not_available"
+      },
+      "soil_organic_carbon": {
+        "type": "static", "unit": "g/kg or %", "description": "Soil organic carbon content", "availability": "not_available"
+      },
+      "soil_erosion_rate": {
+        "type": "static", "unit": "tonnes/ha/year", "description": "Estimated soil erosion rate (e.g. RUSLE)", "availability": "not_available"
+      },
+      "groundwater_salinity": {
+        "type": "static", "unit": "µS/cm TDS", "description": "Electrical conductivity of groundwater", "availability": "not_available"
+      },
+      "borewell_density": {
+        "type": "static", "unit": "count/km²", "description": "Number of borewells/dug-wells per unit area", "availability": "not_available"
+      },
+      "irrigated_area_ha": {
+        "type": "time_series", "unit": "hectares", "description": "Net irrigated area from all sources. Proxy: double_crop_area_ha + triple_crop_area_ha + single non-kharif area.", "availability": "not_available"
+      },
+      "landholding_distribution": {
+        "type": "static", "unit": "percent per category", "description": "Distribution across marginal/small/medium/large landholding size categories", "availability": "not_available"
+      },
+      "crop_type_area_ha": {
+        "type": "time_series", "unit": "hectares per crop", "description": "Area under specific crops (cotton, soybean, wheat, millets, pulses, etc.)", "availability": "not_available"
+      },
+      "common_land_area_ha": {
+        "type": "static", "unit": "hectares", "description": "Community common land / gairan / revenue wasteland area", "availability": "not_available"
+      },
+      "livestock_population": {
+        "type": "static", "unit": "count per species", "description": "Livestock by species (cattle, buffalo, goat, sheep, poultry)", "availability": "not_available"
+      },
+      "fodder_land_area_ha": {
+        "type": "static", "unit": "hectares", "description": "Area under dedicated fodder crops", "availability": "not_available"
+      },
+      "fish_production_kg": {
+        "type": "time_series", "unit": "kg/year", "description": "Annual fish production from water bodies in MWS", "availability": "not_available"
+      },
+      "ntfp_species_presence": {
+        "type": "static", "unit": "categorical / count", "description": "Presence and abundance of key NTFP species", "availability": "not_available"
+      },
+      "invasive_species_area_ha": {
+        "type": "static", "unit": "hectares", "description": "Area under invasive plant species (Lantana, Prosopis, Parthenium, aquatic weeds)", "availability": "not_available"
+      },
+      "forest_fire_incidents": {
+        "type": "time_series", "unit": "count/year", "description": "Forest fire incidents within MWS per year", "availability": "not_available"
+      },
+      "migrant_household_percent": {
+        "type": "static", "unit": "percent", "description": "Households with seasonal or permanent out-migration", "availability": "not_available"
+      },
+      "household_income_inr": {
+        "type": "static", "unit": "INR/year", "description": "Mean annual household income by source", "availability": "not_available"
+      },
+      "market_price_crop": {
+        "type": "time_series", "unit": "INR/quintal", "description": "Local market price realised for key crops vs MSP", "availability": "not_available"
+      },
+      "nbss_lup_aer_code": {
+        "type": "static", "unit": "categorical (AER-1 to AER-20)",
+        "description": "NBSS & LUP Agro-Ecological Region code for the MWS. Derived from spatial intersection with AER boundaries.",
+        "availability": "not_available", "note": "Derive at ingest using AER boundary GeoJSON from data.gov.in"
+      },
+      "mean_annual_precipitation_mm": {"type": "derived", "unit": "mm/agricultural_year", "description": "Mean annual precipitation across available hydrological years.", "computation": "mean(hydrological_annual.precipitation_mm)", "availability": "derived"},
+      "trend_annual_precipitation_mm": {"type": "derived", "unit": "mm/year", "description": "Linear trend slope of annual precipitation.", "computation": "trend(hydrological_annual.precipitation_mm)", "availability": "derived"},
+      "mean_annual_et_mm": {"type": "derived", "unit": "mm/agricultural_year", "description": "Mean annual evapotranspiration.", "computation": "mean(hydrological_annual.et_mm)", "availability": "derived"},
+      "trend_annual_et_mm": {"type": "derived", "unit": "mm/year", "description": "Linear trend slope of annual ET.", "computation": "trend(hydrological_annual.et_mm)", "availability": "derived"},
+      "mean_annual_runoff_mm": {"type": "derived", "unit": "mm/agricultural_year", "description": "Mean annual surface runoff.", "computation": "mean(hydrological_annual.runoff_mm)", "availability": "derived"},
+      "trend_annual_runoff_mm": {"type": "derived", "unit": "mm/year", "description": "Linear trend slope of annual runoff.", "computation": "trend(hydrological_annual.runoff_mm)", "availability": "derived"},
+      "mean_annual_delta_g_mm": {"type": "derived", "unit": "mm/agricultural_year", "description": "Mean annual groundwater recharge (P−ET−Runoff).", "computation": "mean(delta_g_mm series)", "availability": "derived"},
+      "trend_annual_delta_g_mm": {"type": "derived", "unit": "mm/year", "description": "Linear trend slope of annual delta_g; negative trend indicates chronic depletion.", "computation": "trend(delta_g_mm series)", "availability": "derived"},
+      "mean_cropping_intensity": {"type": "derived", "unit": "unitless ratio", "description": "Mean cropping intensity across years.", "computation": "mean(cropping_intensity.cropping_intensity)", "availability": "derived"},
+      "trend_cropping_intensity": {"type": "derived", "unit": "ratio/year", "description": "Linear trend slope of cropping intensity.", "computation": "trend(cropping_intensity.cropping_intensity)", "availability": "derived"},
+      "mean_kharif_cropped_area_ha": {"type": "derived", "unit": "hectares", "description": "Mean kharif cropped area.", "computation": "mean(drought_kharif.kharif_cropped_ha)", "availability": "derived"},
+      "trend_kharif_cropped_area_ha": {"type": "derived", "unit": "ha/year", "description": "Linear trend slope of kharif cropped area.", "computation": "trend(drought_kharif.kharif_cropped_ha)", "availability": "derived"},
+      "mean_double_crop_area_ha": {"type": "derived", "unit": "hectares", "description": "Mean double-cropped area.", "computation": "mean(cropping_intensity.double_crop_ha)", "availability": "derived"},
+      "trend_double_crop_area_ha": {"type": "derived", "unit": "ha/year", "description": "Linear trend slope of double-cropped area.", "computation": "trend(cropping_intensity.double_crop_ha)", "availability": "derived"},
+      "drought_moderate_return_period": {"type": "derived", "unit": "years", "description": "Average return period of moderate drought kharif weeks (years with moderate_weeks ≥ 1).", "computation": "n_years / count(moderate drought years)", "availability": "derived"},
+      "drought_severe_return_period": {"type": "derived", "unit": "years", "description": "Average return period of severe drought kharif weeks.", "computation": "n_years / count(severe drought years)", "availability": "derived"},
+      "mean_swb_total_area_ha": {"type": "derived", "unit": "hectares", "description": "Mean total surface water body area.", "computation": "mean(swb_annual.total_ha)", "availability": "derived"},
+      "trend_swb_total_area_ha": {"type": "derived", "unit": "ha/year", "description": "Linear trend slope of total SWB area.", "computation": "trend(swb_annual.total_ha)", "availability": "derived"},
+      "mean_swb_rabi_kharif_ratio": {"type": "derived", "unit": "unitless ratio", "description": "Mean ratio of rabi to kharif SWB area (rabi ⊆ kharif).", "computation": "mean(rabi_ha / kharif_ha per year)", "availability": "derived"},
+      "trend_swb_rabi_kharif_ratio": {"type": "derived", "unit": "ratio/year", "description": "Linear trend slope of rabi/kharif SWB persistence ratio.", "computation": "trend(rabi_ha / kharif_ha per year)", "availability": "derived"}
+    }
+  }
+}

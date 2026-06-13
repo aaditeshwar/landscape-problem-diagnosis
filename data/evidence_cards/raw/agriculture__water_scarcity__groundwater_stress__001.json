@@ -1,0 +1,232 @@
+{
+  "card_id": "agriculture__water_scarcity__groundwater_stress__001",
+  "production_system": "Agriculture",
+  "observed_stress": "water_scarcity",
+  "causal_pathway": "groundwater_stress",
+  "pathway_description": "Declining or insufficient groundwater availability due to overextraction, poor recharge, or aquifer limitations.",
+  "stress_description": "Farmers report insufficient water for crop production, particularly for rabi and zaid seasons or during dry spells in kharif.",
+  "context": {
+    "agro_climatic_zones": [
+      "semi-arid"
+    ],
+    "aquifer_types": [
+      "hard_rock"
+    ],
+    "terrain_types": [
+      "plateau",
+      "plains"
+    ],
+    "rainfall_regime": "semi-arid",
+    "geographic_examples": [
+      "Vidarbha Maharashtra",
+      "Marathwada",
+      "Telangana"
+    ],
+    "aer_reference": "AER-6: Deccan Plateau, hot semi-arid ecoregion | states=['Maharashtra (Vidarbha, Marathwada)', 'Telangana', 'Karnataka (northern)'] | rainfall=500-960mm | aquifer=volcanic"
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "soge_dev_percent",
+        "soge_class_name"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "soge_dev_percent > 70 or soge_class_name in ['Semi-critical', 'Critical', 'Over-exploited']",
+        "threshold_confidence": "high",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "CGWB defines groundwater stress classes based on extraction as a percentage of net annual recharge: Safe (<70%), Semi-critical (70–90%), Critical (90–100%), Over-exploited (>100%). In the hard rock volcanic aquifers of the Deccan Plateau (Vidarbha, Marathwada, Telangana), storativity is inherently low and recharge is spatially heterogeneous. A block-level Safe classification can mask critical depletion at the micro-watershed scale, so even SOGE values approaching 60–70% warrant concern. Rapid groundwater-level declines (>0.5 m/year) are documented as widespread in dry regions with extensive croplands globally, and peninsular India's hard rock aquifers are among the most vulnerable.",
+      "sources_cited": [
+        "CGWB2023",
+        "Gleeson2024"
+      ]
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "annual_well_depth_m"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "annual_well_depth_m[-1] - annual_well_depth_m[0] > 3",
+        "qualitative_description": "Well depth has increased by more than 3 metres over the available multi-year record (2017–2025), indicating a declining static water level at a rate of approximately 0.4 m/year or more.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Deepening well depth is a direct proxy for declining groundwater table. In hard rock aquifers of the Deccan Plateau, usable storage is confined to weathered and fractured zones typically 10–30 m deep. A sustained increase of >3 m over 8 years signals imminent failure of shallow dug wells and progressive dependence on deeper borewells. Globally, rapid groundwater-level declines have accelerated in 30% of regional aquifers over the past four decades, with dry cropland regions disproportionately affected. In peninsular India's hard rock systems, over-exploitation manifests as seasonal emptying and filling rather than the gradual multi-year decline seen in alluvial aquifers, making year-on-year pre-monsoon well depth comparisons the most reliable indicator.",
+      "interaction_with": [
+        "sig_01",
+        "sig_03"
+      ],
+      "sources_cited": [
+        "Gleeson2024",
+        "Villholth2012"
+      ]
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "annual_delta_g_mm",
+        "trend_annual_delta_g_mm"
+      ],
+      "condition": {
+        "type": "trend",
+        "qualitative_description": "Linear trend in annual groundwater recharge (ΔG) is negative, indicating chronic excess extraction over recharge.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional",
+        "expression": "trend_annual_delta_g_mm < 0"
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "A consistently negative delta_g (P - ET - Runoff) across multiple years means outflows persistently exceed precipitation inputs, leaving no surplus for groundwater recharge. In semi-arid hard rock settings of the Deccan Plateau, even small negative annual balances accumulate quickly due to low aquifer storage capacity. The groundwater recharge trend trend (trend_annual_delta_g_mm) provides corroborating evidence: a sustained downward trajectory confirms that depletion is structural rather than episodic. India has one of the highest rates of groundwater extraction globally, and abstraction far exceeding natural recharge is well documented for peninsular hard rock systems.",
+      "interaction_with": [
+        "sig_01",
+        "sig_04"
+      ],
+      "sources_cited": [
+        "Villholth2012",
+        "Siebert2010"
+      ]
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "nrega_swc_count"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "sum(nrega_swc_count.values()) < 5",
+        "qualitative_description": "Fewer than 5 cumulative SWC works recorded in the micro-watershed over the MGNREGA programme period, indicating low investment in recharge infrastructure.",
+        "threshold_confidence": "low",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Low historical SWC investment means natural recharge opportunities — check dams, percolation ponds, farm bunds, trench structures — have not been exploited, amplifying depletion caused by extraction. India has more than 500,000 tanks and ponds historically used to detain monsoon runoff for both direct irrigation and aquifer infiltration; where this infrastructure has not been maintained or expanded under MGNREGA, recharge deficits are larger. A low nrega_swc_count also signals an intervention opportunity: managed aquifer recharge through streambed structures and infiltration basins is technically feasible in the Deccan Plateau context and has demonstrated recovery potential globally. This signal does not confirm stress on its own but amplifies the other signals.",
+      "interaction_with": [
+        "sig_03"
+      ],
+      "sources_cited": [
+        "Dillon2019",
+        "Villholth2012"
+      ]
+    }
+  ],
+  "overall_reasoning_note": "Groundwater stress in hard rock aquifers of the Deccan Plateau should be confirmed by at least two of the three primary signals: elevated SOGE (sig_01), deepening well trend (sig_02), or chronic negative delta_g / declining groundwater recharge trend (sig_03). A single signal may reflect data noise or spatial mismatch — SOGE is block-level and can mask micro-watershed heterogeneity in hard rock terrain. The absence of SWC investment (sig_04) amplifies the other signals but does not confirm stress independently. If SOGE is Safe but well depth is increasing rapidly, prioritise the well depth trend. In hard rock volcanic aquifers (basalt, Deccan Trap), over-exploitation manifests as seasonal emptying rather than gradual multi-year decline, so pre-monsoon well depth comparisons across years are more diagnostic than post-monsoon readings. Always ask the user about borewell density and groundwater salinity (see missing_variable_questions) before finalising diagnosis, as these variables are not available in the framework dataset but materially change the diagnosis and solution pathway.",
+  "confounders": [
+    {
+      "confounder": "Meteorological drought causing apparent groundwater stress through reduced recharge rather than structural over-extraction",
+      "how_to_distinguish": "Compare annual_delta_g_mm and trend_annual_delta_g_mm against historical baseline alongside precipitation anomaly data. If negative delta_g values co-occur exclusively with documented drought years and soge_dev_percent remains below 70%, drought is the primary driver and groundwater stress is a secondary, potentially reversible effect. If SOGE is elevated (>70%) even in near-normal rainfall years, structural over-extraction is the primary pathway. Drought and over-extraction frequently co-occur in Marathwada and Vidarbha; both pathways may need to be addressed simultaneously."
+    },
+    {
+      "confounder": "Aquifer lithology heterogeneity — localised low-permeability zones within the Deccan basalt creating apparent depletion in isolated pockets rather than basin-wide stress",
+      "how_to_distinguish": "Use aquifer_lithology_percent to assess the proportion of hard rock versus any alluvial or weathered zone coverage. If aquifer_class confirms predominantly hard rock with low alluvial percentage, localised depletion is expected and block-level SOGE will understate local stress. Cross-check with annual_well_depth_m at the village level: if only a subset of wells are deepening while others are stable, localised lithological control rather than basin-wide over-extraction may be the cause, and targeted recharge zone mapping is needed before recommending broad SWC investment."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "borewell_density",
+      "question_to_user": "Roughly how many borewells or tubewells are there in your village or in nearby villages? Would you say there are very few (fewer than 10), a moderate number (10–50), or a large number (more than 50)? Have new borewells been drilled in the last 3–5 years?",
+      "how_answer_updates_diagnosis": "High borewell density in a hard rock aquifer with low or moderate SOGE confirms localised over-extraction not captured by the block-level SOGE figure, strongly confirming the groundwater stress pathway. Recent drilling of new or deeper borewells is a behavioural indicator that farmers are chasing a declining water table, consistent with sig_02. If borewell density is low, the stress may be more attributable to poor recharge infrastructure (sig_04) or drought (confounder 1) than to extraction pressure."
+    },
+    {
+      "missing_variable": "groundwater_salinity",
+      "question_to_user": "Have farmers noticed that borewell or well water has become saltier, leaves white or crusty deposits on soil or pipes, or is no longer suitable for certain crops? Has any water testing been done recently?",
+      "how_answer_updates_diagnosis": "Salinity in hard rock aquifers of the Deccan Plateau can indicate deep borewell penetration into saline or fluoride-rich zones — a secondary consequence of over-extraction as farmers drill deeper. This changes the solution pathway: recharge infrastructure alone is insufficient if available groundwater is saline; water quality treatment or alternative source development becomes necessary. Salinity could also indicate a distinct causal pathway (geogenic contamination) unrelated to extraction levels, which would require a different evidence card."
+    },
+    {
+      "missing_variable": "annual_well_depth_m",
+      "question_to_user": "Have farmers noticed that well or borewell depth has increased over the past several years? Can you estimate how much deeper wells are now compared to 5–8 years ago (e.g., less than 1 m, 1–3 m, more than 3 m)?",
+      "how_answer_updates_diagnosis": "A reported increase of more than 3 m over 5–8 years strongly confirms groundwater table decline and supports the groundwater stress pathway even when block-level SOGE appears Safe. Stable or shallow well depths suggest extraction pressure or drought rather than structural depletion."
+    }
+  ],
+  "recommended_solutions": [
+    "Panchayat-NGO partnership for collective groundwater governance",
+    "MGNREGA-funded soil and water conservation (SWC) works with detailed project reports",
+    "UVAS (underground valve-based agri-storage) mapping and construction",
+    "Trench and check-dam construction for in-situ recharge",
+    "Gabion structures on drainage lines to slow runoff",
+    "Participatory hydrological mapping to identify recharge zones",
+    "Community pond repair and desilting"
+  ],
+  "sources": [
+    {
+      "source_id": "CGWB2023",
+      "title": "National Compilation of Dynamic Ground Water Resources of India 2022",
+      "authors": [
+        "Central Ground Water Board"
+      ],
+      "year": 2023,
+      "url": "https://cgwb.gov.in",
+      "source_type": "government_report",
+      "relevance_note": "Defines SOGE class thresholds (Safe <70%, Semi-critical 70–90%, Critical 90–100%, Over-exploited >100%) used in sig_01; provides block-level groundwater assessment for Maharashtra and Telangana districts."
+    },
+    {
+      "source_id": "Gleeson2024",
+      "title": "Rapid groundwater decline and some cases of recovery in aquifers globally",
+      "authors": [
+        "Gleeson, T.",
+        "et al."
+      ],
+      "year": 2023,
+      "doi": "10.1038/s41586-023-06879-8",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents that rapid groundwater-level declines (>0.5 m/year) are widespread in dry regions with extensive croplands, and that declines have accelerated in 30% of regional aquifers globally over four decades; supports sig_01 and sig_02 thresholds and confirms recovery is possible with managed recharge and policy change."
+    },
+    {
+      "source_id": "Villholth2012",
+      "title": "Addressing Depletion in Alluvial Aquifers",
+      "authors": [
+        "Villholth, K.G.",
+        "et al."
+      ],
+      "year": 2022,
+      "doi": "10.37773/ees.v8i1.1122",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Explicitly distinguishes hard rock peninsular India aquifer dynamics (seasonal emptying and filling under over-exploitation) from alluvial aquifer dynamics; supports the diagnostic logic in sig_02 and sig_03 and the framing of management approaches for hard rock systems."
+    },
+    {
+      "source_id": "Siebert2010",
+      "title": "Groundwater use for irrigation – a global inventory",
+      "authors": [
+        "Siebert, S.",
+        "Burke, J.",
+        "Faures, J.M.",
+        "Frenken, K.",
+        "Hoogeveen, J.",
+        "Döll, P.",
+        "Portmann, F.T."
+      ],
+      "year": 2010,
+      "doi": "10.5194/hess-14-1863-2010",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents India as having the largest area equipped for groundwater irrigation globally (39 million ha) and notes increasing groundwater use leading to extraction above recharge rates; contextualises the scale of extraction pressure underlying sig_03."
+    },
+    {
+      "source_id": "Dillon2019",
+      "title": "Sixty years of global progress in managed aquifer recharge",
+      "authors": [
+        "Dillon, P.",
+        "et al."
+      ],
+      "year": 2019,
+      "doi": "10.1007/s10040-018-1841-z",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents India's historical use of more than 500,000 tanks and ponds for aquifer recharge and the large government and NGO investment in percolation tanks in drought-prone areas; supports the diagnostic logic of sig_04 (low SWC count as amplifier) and the recommended solutions involving check dams, trench structures, and community ponds."
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-07-14",
+    "last_updated": "2025-07-14",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium"
+  }
+}

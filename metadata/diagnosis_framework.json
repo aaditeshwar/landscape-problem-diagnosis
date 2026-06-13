@@ -1,0 +1,1146 @@
+{
+  "diagnosis_framework": {
+    "description": "A generic problem-diagnosis framework for agricultural and ecological production systems in an Indian tehsil context. Organized by production system > observed stress > causal pathway > variables required for diagnosis. Variables reference the data dictionary; those marked NOT_AVAILABLE are recommended additions. This framework is designed to be aquifer-agnostic, terrain-agnostic, and applicable across drought-prone and well-watered regions.",
+    "production_systems": {
+      "Agriculture": {
+        "observed_stresses": {
+          "water_scarcity": {
+            "description": "Farmers report insufficient water for crop production, particularly for rabi and zaid seasons or during dry spells in kharif.",
+            "causal_pathways": {
+              "groundwater_stress": {
+                "description": "Declining or insufficient groundwater availability due to overextraction, poor recharge, or aquifer limitations.",
+                "diagnostic_variables": [
+                  {
+                    "variable": "soge_dev_percent",
+                    "rationale": "Indicates the stage of groundwater extraction at block level; high values (>70%) indicate critical or over-exploited conditions",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "soge_class_name",
+                    "rationale": "CGWB categorical classification (Safe / Semi-critical / Critical / Over-exploited)",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "annual_well_depth_m",
+                    "rationale": "Increasing well depth over years indicates declining groundwater table; user-supplied when CoRE data unavailable",
+                    "availability": "not_available"
+                  },
+                  {
+                    "variable": "trend_annual_delta_g_mm",
+                    "rationale": "Linear trend in annual groundwater recharge (P - ET - Runoff); sustained negative trend confirms depletion",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "annual_delta_g_mm",
+                    "rationale": "Annual groundwater recharge; negative values across multiple years signal chronic depletion",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "aquifer_class",
+                    "rationale": "Hard rock aquifers (basalt, granite) have low storativity and are more vulnerable to depletion than alluvial aquifers",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "aquifer_lithology_percent",
+                    "rationale": "Lithological mix determines aquifer recharge potential; alluvial % indicates better recharge capacity",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "borewell_density",
+                    "rationale": "High borewell density per unit area signals extraction pressure exceeding recharge",
+                    "availability": "not_available"
+                  },
+                  {
+                    "variable": "groundwater_salinity",
+                    "rationale": "Saline groundwater (common in hard rock and coastal areas) makes available water unusable for irrigation",
+                    "availability": "not_available"
+                  },
+                  {
+                    "variable": "nrega_swc_count",
+                    "rationale": "Cumulative SWC works are a proxy for recharge infrastructure; low counts suggest underinvestment in recharge",
+                    "availability": "available"
+                  }
+                ],
+                "solutions": [
+                  "Panchayat-NGO partnership for collective groundwater governance",
+                  "MGNREGA-funded soil and water conservation (SWC) works with detailed project reports",
+                  "UVAS (underground valve-based agri-storage) mapping and construction",
+                  "Trench and check-dam construction for in-situ recharge",
+                  "Gabion structures on drainage lines to slow runoff",
+                  "Participatory hydrological mapping to identify recharge zones",
+                  "Community pond repair and desilting"
+                ],
+                "case_study_examples": [
+                  "Plantation + check dams + farm bunds + bamboo groves",
+                  "Recharge shafts + percolation ponds + solar lift irrigation",
+                  "Kund construction + pond construction + afforestation"
+                ]
+              },
+              "drought": {
+                "description": "Meteorological or agricultural drought reducing water availability during the cropping season.",
+                "diagnostic_variables": [
+                  {
+                    "variable": "drought_weeks_severe",
+                    "rationale": "Count of kharif weeks under severe drought conditions; persistent severe weeks directly cause crop failure",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "drought_weeks_moderate",
+                    "rationale": "Moderate drought weeks indicate stress periods",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "dry_spell_weeks",
+                    "rationale": "Number of weeks under defined dry spell (4-week moving window with <50% historical rainfall); long dry spells disrupt crop growth stages",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "drought_causality_json",
+                    "rationale": "SPI indicates meteorological drought severity; MAI measures soil moisture adequacy; VCI captures vegetation stress; together they classify drought type and severity per India Drought Manual",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "annual_precipitation_mm",
+                    "rationale": "Annual rainfall quantum and inter-annual variability; below-normal years confirm drought risk",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "seasonal_precipitation_mm",
+                    "rationale": "Seasonal breakdown reveals whether deficit is in kharif (monsoon) or rabi (post-monsoon irrigation dependent)",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "monsoon_onset_date",
+                    "rationale": "Delayed onset shortens effective kharif season and increases crop failure risk",
+                    "availability": "available"
+                  }
+                ],
+                "solutions": [
+                  "Check dam repair using community labour ahead of monsoon",
+                  "Emergency pre-monsoon water harvesting structure construction",
+                  "Drought-tolerant variety promotion for kharif"
+                ],
+                "case_study_examples": [
+                  "Pond construction + community management + livestock corridor",
+                  "Pipeline construction + trenching + stone fencing",
+                  "Bund repair + irrigation improvement + recharge promotion"
+                ]
+              },
+              "rainfed_risk": {
+                "description": "High dependence on rainfall with minimal irrigation infrastructure makes agriculture vulnerable to erratic monsoons.",
+                "diagnostic_variables": [
+                  {
+                    "variable": "lulc_single_kharif_ha",
+                    "rationale": "Large area under single kharif cropping indicates rainfed dependence; no rabi cropping without irrigation",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "lulc_double_crop_ha",
+                    "rationale": "Low double-cropped area relative to total cropland confirms limited irrigation access",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "cropping_intensity",
+                    "rationale": "Low cropping intensity (near 1.0) implies single season rainfed farming; higher values indicate irrigation",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "swb_rabi_area_ha",
+                    "rationale": "Low SWB area persisting into rabi suggests limited surface water storage for post-monsoon irrigation",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "canal_name",
+                    "rationale": "Presence of a canal indicates access to surface irrigation; absence confirms rainfed dependency",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "nrega_irrigation_count",
+                    "rationale": "Low count of MGNREGA irrigation works suggests poor irrigation infrastructure investment",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "irrigated_area_ha",
+                    "rationale": "Net irrigated area directly quantifies irrigation access; low values confirm rainfed risk",
+                    "availability": "not_available"
+                  },
+                  {
+                    "variable": "annual_runoff_mm",
+                    "rationale": "High runoff relative to rainfall indicates rapid water loss; potential for in-situ water harvesting",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "terrain_cluster_id",
+                    "rationale": "Sloping terrain increases runoff loss; plain terrain is more amenable to water harvesting",
+                    "availability": "available"
+                  }
+                ],
+                "solutions": [
+                  "In-situ water harvesting (farm ponds, bunds, broad-bed furrows)",
+                  "Promotion of short-duration drought-tolerant crop varieties",
+                  "Rainwater harvesting structures scaled to slope and drainage density",
+                  "Crop insurance and risk mitigation advisory"
+                ],
+                "case_study_examples": []
+              },
+              "irrigation_challenges": {
+                "description": "Irrigation infrastructure is present but insufficient, costly, or seasonally fails.",
+                "diagnostic_variables": [
+                  {
+                    "variable": "swb_total_area_ha",
+                    "rationale": "Trend in total SWB area over years indicates whether storage infrastructure is expanding or contracting",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "swb_kharif_area_ha",
+                    "rationale": "SWB area in kharif vs rabi vs zaid shows persistence of water storage; rapid drying indicates siltation or poor design",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "swb_count",
+                    "rationale": "Number of surface water bodies; low count relative to MWS area indicates infrastructure gap",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "annual_well_depth_m",
+                    "rationale": "Deep wells imply high lifting costs, disadvantaging marginal farmers; user-supplied when CoRE data unavailable",
+                    "availability": "not_available"
+                  },
+                  {
+                    "variable": "river_name",
+                    "rationale": "Presence of a named river can indicate potential for diversion or lift irrigation",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "nrega_swc_count",
+                    "rationale": "Cumulative SWC and irrigation works indicate historical investment in water harvesting infrastructure",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "dist_cooperative_km",
+                    "rationale": "Distance to nearest agricultural cooperative society (PACS/marketing co-op) relates to access to institutional credit for irrigation investment",
+                    "availability": "available"
+                  }
+                ],
+                "solutions": [
+                  "Tank desilting and repair through MGNREGA",
+                  "Micro-irrigation promotion (drip/sprinkler) to improve water use efficiency",
+                  "Community-managed surface water storage structures",
+                  "Solar pump installation for groundwater lift irrigation"
+                ],
+                "case_study_examples": []
+              }
+            }
+          },
+          "low_yield": {
+            "description": "Farmers observe declining or stagnant crop yields over years despite similar inputs.",
+            "causal_pathways": {
+              "soil_degradation": {
+                "description": "Physical, chemical, or biological deterioration of soil reducing its productive capacity.",
+                "diagnostic_variables": [
+                  {
+                    "variable": "cd_total_degradation_ha",
+                    "rationale": "Area of farmland transitioning to barren or scrubland is a direct indicator of soil degradation at landscape scale",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "cd_farm_to_barren_ha",
+                    "rationale": "Farm-to-barren transition specifically indicates severe and likely irreversible soil degradation",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "lulc_shrub_scrub_ha",
+                    "rationale": "Increase in shrub/scrub over time may indicate cropland abandonment due to soil decline",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "terrain_cluster_id",
+                    "rationale": "Sloping terrain with high hill_slope_area_percent is more vulnerable to runoff-induced topsoil loss",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "slopy_area_percent",
+                    "rationale": "Higher slopy area indicates greater erosion risk and topsoil loss",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "nrega_land_restoration_count",
+                    "rationale": "Count of land restoration works indicates remediation investment; low counts suggest neglected degraded land",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "soil_organic_carbon",
+                    "rationale": "SOC directly measures soil fertility and biological health; declining SOC is the primary marker of soil degradation",
+                    "availability": "not_available"
+                  },
+                  {
+                    "variable": "soil_erosion_rate",
+                    "rationale": "Quantifies soil loss; high erosion rates confirm physical degradation even when barren transition is not yet visible",
+                    "availability": "not_available"
+                  },
+                  {
+                    "variable": "soil_type",
+                    "rationale": "Shallow Vertisols or Entisols on slopes are inherently more vulnerable to erosion; Vertisols in plains can have waterlogging issues",
+                    "availability": "not_available"
+                  }
+                ],
+                "solutions": [
+                  "Organic farming transition including composting, vermicompost, green manure",
+                  "System of Crop Intensification (SCI/SRI) to improve soil biological activity",
+                  "Community training on soil health management",
+                  "Contour bunding and field bunds on slopes to reduce erosion",
+                  "MGNREGA land restoration works on degraded fields"
+                ],
+                "case_study_examples": [
+                  "Natural farming + composting + seed exchange",
+                  "Organic seed distribution + training + market linkage",
+                  "Residue-free farming + manual deweeding"
+                ]
+              },
+              "monocropping": {
+                "description": "Continuous cultivation of the same crop depletes specific soil nutrients, increases pest pressure, and reduces resilience.",
+                "diagnostic_variables": [
+                  {
+                    "variable": "crop_type_composition",
+                    "rationale": "Area under dominant crops (e.g. cotton monoculture in Vidarbha) directly measures monocrop dependency",
+                    "availability": "not_available"
+                  },
+                  {
+                    "variable": "cropping_intensity",
+                    "rationale": "Low and stable cropping intensity may indicate seasonal monoculture with no diversification into other seasons",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "lulc_single_kharif_ha",
+                    "rationale": "Dominance of single kharif area and low double/triple crop area suggests monoculture cropping pattern",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "cd_single_to_double_ha",
+                    "rationale": "Positive change toward double cropping indicates diversification; negative trend or stagnation confirms continued monocropping",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "organization_domains",
+                    "rationale": "Presence of NGOs working on cultivation practices or agroforestry may indicate ongoing diversification efforts",
+                    "availability": "available"
+                  }
+                ],
+                "solutions": [
+                  "Crop diversification demonstrations and farmer field schools",
+                  "Intercropping and mixed cropping promotion (e.g. soybean-pigeonpea)",
+                  "Market linkage for diversified crops to make diversification economically viable",
+                  "Seed support for diverse local and improved varieties"
+                ],
+                "case_study_examples": [
+                  "Natural farming + composting + seed exchange"
+                ]
+              },
+              "seed_unavailability": {
+                "description": "Farmers cannot access quality seeds of preferred or resilient varieties, including traditional/indigenous varieties.",
+                "diagnostic_variables": [
+                  {
+                    "variable": "organization_domains",
+                    "rationale": "NGO presence in seed management domain indicates whether seed systems support is active in the MWS",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "dist_cooperative_km",
+                    "rationale": "Distance to nearest agricultural cooperative society (PACS/marketing co-op) is a proxy for access to institutional seed supply systems",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "dist_agri_market_km",
+                    "rationale": "Distance to agricultural markets relates to availability of commercial seed supply",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "crop_type_composition",
+                    "rationale": "Dominance of commercial hybrid crops (e.g. Bt cotton) at expense of traditional varieties indicates reduced seed diversity",
+                    "availability": "not_available"
+                  }
+                ],
+                "solutions": [
+                  "Community seed banks for local variety conservation and distribution",
+                  "Seed exchange fairs and farmer-to-farmer sharing networks",
+                  "Integration with government seed distribution schemes",
+                  "NGO support for indigenous variety documentation and multiplication"
+                ],
+                "case_study_examples": [
+                  "Organic seed distribution + training + market linkage",
+                  "Natural farming + composting + seed exchange"
+                ]
+              },
+              "chemical_dependence": {
+                "description": "Over-reliance on chemical fertilisers and pesticides leading to input cost escalation, soil health decline, and pest resistance.",
+                "diagnostic_variables": [
+                  {
+                    "variable": "soil_organic_carbon",
+                    "rationale": "Declining SOC is the primary measurable consequence of long-term chemical input use and tillage",
+                    "availability": "not_available"
+                  },
+                  {
+                    "variable": "dist_agri_market_km",
+                    "rationale": "Proximity to agri-input markets facilitates chemical input access; high access can promote overuse",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "organization_domains",
+                    "rationale": "NGO presence in organic/natural farming or soil conservation domains indicates counter-efforts",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "crop_type_composition",
+                    "rationale": "Crops like cotton are chemically intensive; higher cotton area implies higher pesticide exposure risk",
+                    "availability": "not_available"
+                  }
+                ],
+                "solutions": [
+                  "Natural/zero-budget natural farming (ZBNF) training and handholding",
+                  "Biofertiliser and biopesticide production and distribution at village level",
+                  "Gradual input substitution plans with farmer support groups",
+                  "Demonstration plots comparing chemical vs natural inputs"
+                ],
+                "case_study_examples": [
+                  "Residue-free farming + manual deweeding",
+                  "Natural farming + composting + seed exchange"
+                ]
+              }
+            }
+          },
+          "crop_failure": {
+            "description": "Partial or total loss of standing crops in a given season.",
+            "causal_pathways": {
+              "soil_degradation": {
+                "description": "See low_yield > soil_degradation \u2014 same variables apply, with higher severity thresholds expected.",
+                "diagnostic_variables": [
+                  {
+                    "variable": "cd_farm_to_barren_ha",
+                    "rationale": "Severe barrenisation indicates areas prone to crop failure",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "soil_organic_carbon",
+                    "rationale": "Very low SOC leads to poor water retention and nutrient availability causing crop failure",
+                    "availability": "not_available"
+                  },
+                  {
+                    "variable": "drought_weeks_severe",
+                    "rationale": "Severe drought weeks in tandem with degraded soils dramatically increase failure probability",
+                    "availability": "available"
+                  }
+                ],
+                "solutions": [
+                  "Emergency soil rehabilitation: contour trenching, vegetative cover",
+                  "Crop insurance and ex-post relief mechanisms",
+                  "Shift to perennial or agroforestry systems on severely degraded land"
+                ],
+                "case_study_examples": []
+              },
+              "monocropping": {
+                "description": "Monoculture increases susceptibility to pest/disease outbreaks causing sudden crop losses.",
+                "diagnostic_variables": [
+                  {
+                    "variable": "crop_type_composition",
+                    "rationale": "Single crop dominance across MWS creates landscape-level vulnerability to pest outbreaks",
+                    "availability": "not_available"
+                  },
+                  {
+                    "variable": "drought_causality_json",
+                    "rationale": "VCI score captures vegetation condition stress which can reflect crop disease or pest damage at landscape scale",
+                    "availability": "available"
+                  }
+                ]
+              },
+              "seed_unavailability": {
+                "description": "Use of poor quality or unadapted seeds increases failure risk particularly under stress.",
+                "diagnostic_variables": [
+                  {
+                    "variable": "kharif_cropped_area_percent",
+                    "rationale": "Year-on-year decline in kharif cropped area may indicate farmers abandoning crops due to seed or input failures",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "organization_domains",
+                    "rationale": "Seed management NGO presence can mitigate seed-related failure risk",
+                    "availability": "available"
+                  }
+                ]
+              },
+              "chemical_dependence": {
+                "description": "Pesticide resistance and input failure contribute to crop loss episodes.",
+                "diagnostic_variables": [
+                  {
+                    "variable": "drought_weeks_moderate",
+                    "rationale": "Combined stress from moderate drought and pest resistance is a common failure trigger",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "soil_organic_carbon",
+                    "rationale": "Depleted SOC amplifies crop failure risk under input failure",
+                    "availability": "not_available"
+                  }
+                ]
+              }
+            }
+          },
+          "market_access_gap": {
+            "description": "Farmers receive poor prices due to remoteness from markets, lack of storage, or monopolistic intermediaries.",
+            "causal_pathways": {
+              "infrastructure_gap": {
+                "description": "Physical distance or absence of market infrastructure prevents remunerative price realisation.",
+                "diagnostic_variables": [
+                  {
+                    "variable": "dist_apmc_km",
+                    "rationale": "Distance to APMC determines access to regulated market pricing; >20 km severely constrains access",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "dist_agri_market_km",
+                    "rationale": "Distance to nearest agricultural trading facility",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "dist_cold_storage_km",
+                    "rationale": "Absence of nearby cold storage forces distress selling of perishables",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "dist_agri_processing_km",
+                    "rationale": "Distance to processing units; absence prevents value addition",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "dist_cooperative_km",
+                    "rationale": "Agricultural cooperative societies provide collective bargaining and marketing; high distance indicates weak institutional marketing access",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "dist_bank_km",
+                    "rationale": "Lack of banking access forces reliance on moneylenders and distress sales",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "crop_type_composition",
+                    "rationale": "Highly perishable crops (vegetables, fruits) with no nearby processing suffer worse post-harvest losses",
+                    "availability": "not_available"
+                  },
+                  {
+                    "variable": "market_price_crop",
+                    "rationale": "Direct measure of price realisation gap vs MSP or wholesale price",
+                    "availability": "not_available"
+                  },
+                  {
+                    "variable": "landholding_size_distribution",
+                    "rationale": "Marginal/small farmers have insufficient marketable surplus to negotiate prices independently",
+                    "availability": "not_available"
+                  }
+                ],
+                "solutions": [
+                  "Farmer Producer Organisation (FPO) formation for collective marketing",
+                  "Primary processing unit establishment near the MWS cluster",
+                  "Cold storage and warehouse linkage through cooperative networks",
+                  "Digital market platform access (e-NAM, commodity apps) training",
+                  "APMC sub-yard or direct market infrastructure advocacy"
+                ],
+                "case_study_examples": [
+                  "Organic seed distribution + training + market linkage"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "Livestock": {
+        "observed_stresses": {
+          "livestock_decline": {
+            "description": "Decline in livestock population, condition, or productivity; high mortality; distress sale or migration of animals.",
+            "causal_pathways": {
+              "overgrazing": {
+                "description": "Livestock numbers exceed carrying capacity of available grazing land, degrading pastures and causing fodder shortage.",
+                "diagnostic_variables": [
+                  {
+                    "variable": "common_land_area_ha",
+                    "rationale": "Size of community grazing land relative to livestock population determines stocking density and overgrazing risk",
+                    "availability": "not_available"
+                  },
+                  {
+                    "variable": "lulc_shrub_scrub_ha",
+                    "rationale": "High shrub/scrub area with trend toward barrenisation indicates degraded grazing commons",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "lulc_barrenland_ha",
+                    "rationale": "Increasing barren land area reflects overgrazing-induced pasture degradation",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "cd_total_degradation_ha",
+                    "rationale": "Farm and pasture degradation trend confirms landscape-level overuse",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "livestock_population",
+                    "rationale": "Absolute livestock numbers are essential to compute stocking rate vs carrying capacity",
+                    "availability": "not_available"
+                  },
+                  {
+                    "variable": "nrega_land_restoration_count",
+                    "rationale": "MGNREGA land restoration works include pasture development; low count signals neglect of commons",
+                    "availability": "available"
+                  }
+                ],
+                "solutions": [
+                  "Community grazing management plans with seasonal rotational grazing",
+                  "Village pasture (gairan) development under MGNREGA",
+                  "Stocking density norms through gram panchayat bylaws",
+                  "Promotion of stall-fed livestock to reduce grazing pressure"
+                ],
+                "case_study_examples": []
+              },
+              "fodder_shortage": {
+                "description": "Insufficient availability of green or dry fodder, especially in rabi and summer seasons.",
+                "diagnostic_variables": [
+                  {
+                    "variable": "fodder_land_area_ha",
+                    "rationale": "Area under dedicated fodder crops directly measures fodder production capacity",
+                    "availability": "not_available"
+                  },
+                  {
+                    "variable": "swb_rabi_area_ha",
+                    "rationale": "Water availability in rabi determines ability to grow irrigated fodder crops post-monsoon",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "lulc_tree_forest_ha",
+                    "rationale": "Tree cover provides tree fodder (lopping); declining forest area reduces dry season fodder supply",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "dry_spell_weeks",
+                    "rationale": "Prolonged dry spells during kharif reduce green fodder availability from crop residue and grasslands",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "cd_total_deforestation_ha",
+                    "rationale": "Forest loss reduces tree-fodder availability, intensifying dry-season fodder crisis",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "livestock_population",
+                    "rationale": "Required to compute fodder demand vs available supply",
+                    "availability": "not_available"
+                  }
+                ],
+                "solutions": [
+                  "Silage making and fodder conservation training for dry season",
+                  "Azolla and multi-cut fodder crop promotion on irrigated plots",
+                  "Tree fodder species (Subabul, Gliricidia) planting on farm bunds",
+                  "Community fodder banks with seasonal stocking"
+                ],
+                "case_study_examples": []
+              },
+              "pasture_degradation": {
+                "description": "Community grazing lands and grasslands degraded through encroachment, invasives, or neglect.",
+                "diagnostic_variables": [
+                  {
+                    "variable": "common_land_area_ha",
+                    "rationale": "Available common land area is the primary indicator of pasture extent",
+                    "availability": "not_available"
+                  },
+                  {
+                    "variable": "cd_total_degradation_ha",
+                    "rationale": "Degradation transitions include commons degradation which appears as farm/scrub transitions",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "lulc_barrenland_ha",
+                    "rationale": "Increasing barren land on commons and pasture interfaces signals grazing land degradation",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "invasive_species_area_ha",
+                    "rationale": "Lantana, Prosopis, and other invasives replace palatable grasses on commons, directly reducing grazing value",
+                    "availability": "not_available"
+                  },
+                  {
+                    "variable": "nrega_plantation_count",
+                    "rationale": "Plantation works can include pasture development; trend shows investment in commons rehabilitation",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "cd_forest_to_farm_ha",
+                    "rationale": "Forest encroachment often co-occurs with commons encroachment",
+                    "availability": "available"
+                  }
+                ],
+                "solutions": [
+                  "Common land treatment: grass seeding, gully plugging, protection",
+                  "Removal of invasive species (Prosopis, Lantana) from commons",
+                  "MGNREGA pasture development works on degraded gairan",
+                  "Community bylaws restricting encroachment on commons"
+                ],
+                "case_study_examples": []
+              },
+              "water_scarcity_livestock": {
+                "description": "Livestock face water stress particularly in summer months when surface water dries up.",
+                "diagnostic_variables": [
+                  {
+                    "variable": "swb_zaid_area_ha",
+                    "rationale": "Low zaid SWB area means water bodies dry up before summer ends, directly causing livestock water stress",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "swb_count",
+                    "rationale": "Low number of water bodies limits spatial access for livestock",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "annual_well_depth_m",
+                    "rationale": "Deep wells with high lifting cost are inaccessible to smallholder livestock keepers for animal watering; user-supplied",
+                    "availability": "not_available"
+                  },
+                  {
+                    "variable": "drought_weeks_severe",
+                    "rationale": "Severe drought periods accelerate surface water depletion available for livestock",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "nrega_swc_count",
+                    "rationale": "Check dams, ponds, and nalas built under SWC contribute to livestock water availability",
+                    "availability": "available"
+                  }
+                ],
+                "solutions": [
+                  "Construction of livestock ponds in grazing areas",
+                  "Check dam construction to sustain surface water for longer",
+                  "Cattle troughs at existing water bodies"
+                ],
+                "case_study_examples": []
+              }
+            }
+          }
+        }
+      },
+      "NTFP_Forest_Biodiversity": {
+        "observed_stresses": {
+          "ntfp_decline": {
+            "description": "Non-timber forest produce collection declining in quantity or quality; reduced access for dependent communities.",
+            "causal_pathways": {
+              "forest_degradation": {
+                "description": "Degradation of forest cover reduces NTFP-bearing trees and understory species.",
+                "diagnostic_variables": [
+                  {
+                    "variable": "lulc_tree_forest_ha",
+                    "rationale": "Absolute forest area and its trend over 2017\u20132024 measures forest cover change",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "cd_total_deforestation_ha",
+                    "rationale": "Total deforested area quantifies cumulative habitat loss",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "cd_total_afforestation_ha",
+                    "rationale": "Low afforestation relative to deforestation indicates weak forest protection and recovery",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "ntfp_species_presence",
+                    "rationale": "Direct survey of NTFP species abundance is the most diagnostic indicator",
+                    "availability": "not_available"
+                  },
+                  {
+                    "variable": "organization_domains",
+                    "rationale": "NGO presence in NTFP or agroforestry domains indicates active NTFP support",
+                    "availability": "available"
+                  }
+                ],
+                "solutions": [
+                  "Community plantation of indigenous NTFP-bearing species",
+                  "Fire line creation and community forest watch patrols",
+                  "Village-level forest protection bylaws and penalties",
+                  "Joint Forest Management (JFM) or Community Forest Resource (CFR) rights under FRA",
+                  "Assisted natural regeneration in degraded forest patches"
+                ],
+                "case_study_examples": [
+                  "Forest patrolling + plantation + fire line creation",
+                  "Forest fencing + patrolling + by-laws",
+                  "Water harvesting + afforestation + check dams + community monitoring"
+                ]
+              },
+              "encroachment": {
+                "description": "Forest land encroached for agriculture or settlement, reducing forest extent and community access.",
+                "diagnostic_variables": [
+                  {
+                    "variable": "cd_forest_to_farm_ha",
+                    "rationale": "Forest-to-farm transition directly measures encroachment",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "cd_total_urbanization_ha",
+                    "rationale": "Settlement expansion into forest areas can indicate encroachment",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "village_st_percent",
+                    "rationale": "High ST population with declining NTFP access may indicate forest rights disputes or displacement",
+                    "availability": "available"
+                  }
+                ],
+                "solutions": [
+                  "Forest Rights Act (FRA) claim filing support for individual and community rights",
+                  "Boundary demarcation and signage of forest land",
+                  "Livelihood alternatives for encroacher households to reduce pressure"
+                ],
+                "case_study_examples": []
+              },
+              "invasive_species": {
+                "description": "Invasive plants (Lantana, Prosopis, Parthenium) or aquatic weeds outcompete native NTFP species.",
+                "diagnostic_variables": [
+                  {
+                    "variable": "invasive_species_area_ha",
+                    "rationale": "Direct measure of area under invasive species infestation",
+                    "availability": "not_available"
+                  },
+                  {
+                    "variable": "lulc_shrub_scrub_ha",
+                    "rationale": "Increase in shrub/scrub class can partly reflect invasive species expansion into degraded forest edges",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "nrega_plantation_count",
+                    "rationale": "Plantation works can include invasive removal and native species replacement; low counts suggest neglect",
+                    "availability": "available"
+                  }
+                ],
+                "solutions": [
+                  "Community-led Prosopis/Lantana removal campaigns with product utilisation (charcoal, crafts)",
+                  "Replacement planting with native species after invasive removal",
+                  "Aquatic weed management in tanks through community labour"
+                ],
+                "case_study_examples": []
+              },
+              "forest_fire": {
+                "description": "Recurring forest fires damage mature trees, understory NTFP species, and regeneration.",
+                "diagnostic_variables": [
+                  {
+                    "variable": "forest_fire_incidents",
+                    "rationale": "Direct count of fire events within MWS per year",
+                    "availability": "not_available"
+                  },
+                  {
+                    "variable": "drought_weeks_severe",
+                    "rationale": "Severe drought weeks dry out forest understory increasing fire risk",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "dry_spell_weeks",
+                    "rationale": "Long dry spells in kharif or post-kharif elevate fire ignition risk",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "lulc_shrub_scrub_ha",
+                    "rationale": "Dense dry scrubland is highly fire-prone; increase after fire may indicate recurring events",
+                    "availability": "available"
+                  }
+                ],
+                "solutions": [
+                  "Fire line creation and annual maintenance before summer",
+                  "Community fire watch squads with early warning protocols",
+                  "Fire-resilient species selection in plantations",
+                  "Controlled burning protocols to reduce dry fuel load"
+                ],
+                "case_study_examples": []
+              },
+              "genetic_erosion": {
+                "description": "Loss of indigenous crop varieties, tree species, and medicinal plant diversity from landscapes and seed systems.",
+                "diagnostic_variables": [
+                  {
+                    "variable": "ntfp_species_presence",
+                    "rationale": "Species richness survey is the primary diagnostic for genetic/biodiversity erosion",
+                    "availability": "not_available"
+                  },
+                  {
+                    "variable": "crop_type_composition",
+                    "rationale": "Replacement of traditional varieties by hybrids in the crop landscape reflects genetic erosion",
+                    "availability": "not_available"
+                  },
+                  {
+                    "variable": "organization_domains",
+                    "rationale": "NGO work in seed management domain indicates active efforts against genetic erosion",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "village_st_percent",
+                    "rationale": "Indigenous communities (ST) are primary custodians of traditional seed and plant knowledge; their displacement correlates with genetic erosion",
+                    "availability": "available"
+                  }
+                ],
+                "solutions": [
+                  "Community seed banks for indigenous crop and plant varieties",
+                  "Documentation of traditional ecological knowledge with village elders",
+                  "Ex-situ conservation nurseries for rare NTFP species",
+                  "Integration with national PGR (Plant Genetic Resources) networks"
+                ],
+                "case_study_examples": []
+              }
+            }
+          },
+          "wildlife_conflict": {
+            "description": "Damage to crops or livestock by wildlife; increased human-wildlife interactions due to habitat compression.",
+            "causal_pathways": {
+              "habitat_loss_fragmentation": {
+                "description": "Reduction and fragmentation of wildlife habitat forces animals into agricultural areas.",
+                "diagnostic_variables": [
+                  {
+                    "variable": "cd_total_deforestation_ha",
+                    "rationale": "Forest loss drives wildlife into farms; high deforestation intensifies conflict",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "lulc_tree_forest_ha",
+                    "rationale": "Absolute forest cover and fragmentation trend determines habitat availability",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "cd_forest_to_farm_ha",
+                    "rationale": "Forest-to-farm conversion is the primary driver of habitat encroachment",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "stream_order_N_area_percent",
+                    "rationale": "Higher-order stream corridors are wildlife movement pathways; their degree of agricultural adjacency affects conflict likelihood",
+                    "availability": "available"
+                  }
+                ]
+              }
+            }
+          },
+          "biodiversity_loss": {
+            "description": "Decline in plant and animal species richness and abundance within MWS landscapes.",
+            "causal_pathways": {
+              "forest_degradation": {
+                "$ref": "NTFP_Forest_Biodiversity/ntfp_decline/forest_degradation"
+              },
+              "encroachment": {
+                "$ref": "NTFP_Forest_Biodiversity/ntfp_decline/encroachment"
+              },
+              "invasive_species": {
+                "$ref": "NTFP_Forest_Biodiversity/ntfp_decline/invasive_species"
+              },
+              "forest_fire": {
+                "$ref": "NTFP_Forest_Biodiversity/ntfp_decline/forest_fire"
+              },
+              "genetic_erosion": {
+                "$ref": "NTFP_Forest_Biodiversity/ntfp_decline/genetic_erosion"
+              }
+            }
+          }
+        }
+      },
+      "Fishery": {
+        "observed_stresses": {
+          "low_fish_productivity": {
+            "description": "Water bodies within MWS produce low fish yields; declining fish species diversity; inequitable access to fishery resources.",
+            "causal_pathways": {
+              "water_potential": {
+                "description": "Tanks and water bodies are under-utilised for fisheries due to seasonal drying, siltation, poor management, or access restrictions.",
+                "diagnostic_variables": [
+                  {
+                    "variable": "swb_total_area_ha",
+                    "rationale": "Total water body area sets the upper limit for fishery potential within MWS",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "swb_rabi_area_ha",
+                    "rationale": "Persistence of water through rabi season determines effective fish growing period; only krz_water supports year-round fisheries",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "swb_zaid_area_ha",
+                    "rationale": "Zaid-persisting water bodies can support one complete fish production cycle",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "lulc_krz_water_ha",
+                    "rationale": "Perennial water bodies (kharif+rabi+zaid) are the only ones suitable for sustained fish production",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "swb_count",
+                    "rationale": "Number of distinct water bodies; multiple smaller tanks vs fewer large ones affects fishery management",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "annual_delta_g_mm",
+                    "rationale": "Groundwater recharge balance affects baseflow sustaining perennial water bodies",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "fish_production_kg",
+                    "rationale": "Actual fish yield data is essential to establish productivity gap vs water body potential",
+                    "availability": "not_available"
+                  },
+                  {
+                    "variable": "ntfp_species_presence",
+                    "rationale": "Aquatic NTFP and fish species inventories reveal biodiversity decline in water bodies",
+                    "availability": "not_available"
+                  },
+                  {
+                    "variable": "nrega_community_assets_count",
+                    "rationale": "MGNREGA community assets include tank desilting and fishery infrastructure; investment trend indicates support",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "organization_domains",
+                    "rationale": "NGO presence in fisheries domain indicates institutional support for fishery management",
+                    "availability": "available"
+                  }
+                ],
+                "solutions": [
+                  "Fingerling stocking in tanks and perennial water bodies",
+                  "Training of Community Resource Persons (CRPs) in fishery management, feeding, and harvesting",
+                  "Fish marketing and value chain linkage to local and regional markets",
+                  "Tank desilting to increase water holding capacity and fish habitat",
+                  "Fishery rights formalisation through Self-Help Groups or cooperatives"
+                ],
+                "case_study_examples": []
+              }
+            }
+          }
+        }
+      },
+      "Socio_Economic": {
+        "observed_stresses": {
+          "economic_hardship": {
+            "description": "Households face economic distress, inability to meet basic needs, high debt, or livelihood loss.",
+            "causal_pathways": {
+              "multi_sector_vulnerability": {
+                "description": "Economic hardship is a cross-cutting outcome of failures across agriculture, livestock, forest, and fishery production systems combined with poor access to financial services.",
+                "diagnostic_variables": [
+                  {
+                    "variable": "village_sc_percent",
+                    "rationale": "Higher SC/ST proportion correlates with greater livelihood vulnerability and limited asset base",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "village_st_percent",
+                    "rationale": "ST communities often depend on forests and commons which are degrading; loss compounds economic hardship",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "village_literacy_rate",
+                    "rationale": "Low literacy limits access to government schemes, market information, and diversification opportunities",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "dist_bank_km",
+                    "rationale": "Remoteness from banking forces reliance on informal moneylenders; high debt is a primary hardship driver",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "migrant_household_percent",
+                    "rationale": "High out-migration is both a symptom and cause of economic hardship and agricultural labour shortage",
+                    "availability": "not_available"
+                  },
+                  {
+                    "variable": "household_income_inr",
+                    "rationale": "Direct measure of income adequacy and livelihood security",
+                    "availability": "not_available"
+                  },
+                  {
+                    "variable": "drought_weeks_severe",
+                    "rationale": "Recurring severe drought years cause crop losses that cascade into debt and hardship",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "nrega_swc_count",
+                    "rationale": "MGNREGA works provide wage employment; low count indicates insufficient employment guarantee coverage",
+                    "availability": "available"
+                  }
+                ],
+                "solutions": [
+                  "Integrated watershed-livelihood programme combining SWC, agriculture, and livestock",
+                  "MGNREGA saturation for wage employment during lean seasons",
+                  "Convergence of government schemes (PM-KISAN, PMAY, NFSA) at village level",
+                  "Financial inclusion: BC Sakhi, Jan Dhan, crop insurance enrolment drives",
+                  "Community institutions (SHGs, FPOs) as platform for collective action"
+                ],
+                "case_study_examples": []
+              }
+            }
+          },
+          "low_income": {
+            "description": "Household incomes are insufficient for basic needs; dependence on single livelihood source with no diversification.",
+            "causal_pathways": {
+              "small_landholding": {
+                "description": "Fragmented, small landholdings limit surplus production, mechanisation, and creditworthiness.",
+                "diagnostic_variables": [
+                  {
+                    "variable": "landholding_size_distribution",
+                    "rationale": "Direct measure of landholding fragmentation; proportion of marginal (<1ha) and small (1\u20132ha) holders",
+                    "availability": "not_available"
+                  },
+                  {
+                    "variable": "village_total_population",
+                    "rationale": "Combined with MWS cropland area, gives a proxy for average farm size per household",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "lulc_cropland_ha",
+                    "rationale": "Total cropland divided by village population gives approximate per-capita land availability",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "cropping_intensity",
+                    "rationale": "Higher cropping intensity increases effective production from small holdings; low intensity compounds income constraint",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "dist_apmc_km",
+                    "rationale": "Small holders near APMCs have better price discovery; remote smallholders are exploited by intermediaries",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "dist_dairy_km",
+                    "rationale": "Proximity to dairy infrastructure enables livestock income diversification for small holders",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "organization_domains",
+                    "rationale": "NGO presence in livelihoods, fisheries, or extension services indicates diversification support available",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "nrega_community_assets_count",
+                    "rationale": "MGNREGA off-farm livelihood asset works provide supplementary income; cumulative count reflects safety net strength",
+                    "availability": "available"
+                  },
+                  {
+                    "variable": "household_income_inr",
+                    "rationale": "Direct income measurement by source (farm / livestock / NTFP / wage / other) to diagnose livelihood mix",
+                    "availability": "not_available"
+                  },
+                  {
+                    "variable": "market_price_crop",
+                    "rationale": "Price realisation gap vs MSP is a direct indicator of income loss from market failure",
+                    "availability": "not_available"
+                  }
+                ],
+                "solutions": [
+                  "FPO formation for collective input procurement and output marketing",
+                  "Lease-land farming models and cooperative farming on common land",
+                  "Diversification into livestock, fishery, NTFP to supplement farm income",
+                  "Skill development and non-farm livelihood promotion",
+                  "Access to Kisan Credit Card and institutional credit for investment"
+                ],
+                "case_study_examples": []
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
