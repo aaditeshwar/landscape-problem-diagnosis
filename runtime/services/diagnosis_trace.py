@@ -40,6 +40,7 @@ class DiagnosisRun:
     llm_ms: float
     postprocess_ms: float
     prompt_profile: str = "ollama"
+    signal_evaluation: dict[str, dict[str, Any]] | None = None
 
     def as_timing_dict(self) -> dict[str, float]:
         return {
@@ -66,6 +67,15 @@ class DiagnosisRequestTrace:
     follow_up_variable: str | None = None
     follow_up_answer: str | None = None
     problem_description: str | None = None
+    state: str | None = None
+    district: str | None = None
+    tehsil: str | None = None
+    mws_aer_code: str | None = None
+    pathway_evidence: list[dict[str, Any]] = field(default_factory=list)
+    signal_evaluation: dict[str, Any] = field(default_factory=dict)
+    follow_up_signal_updates: list[dict[str, Any]] = field(default_factory=list)
+    status: str = "ok"
+    error: str | None = None
 
     def to_log_event(self) -> dict[str, Any]:
         payload = asdict(self)

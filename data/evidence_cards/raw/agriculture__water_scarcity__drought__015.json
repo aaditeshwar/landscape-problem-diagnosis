@@ -71,10 +71,15 @@
       ],
       "condition": {
         "type": "composite",
-        "expression": "drought_causality_json.get('spi_kharif', 0) < -1.0 or drought_causality_json.get('mai_kharif', 1.0) < 0.5 or drought_causality_json.get('vci_kharif', 100) < 35",
+        "expression": "drought_mild_spi_score_latest >= 26 or drought_mild_mai_score_latest >= 26 or drought_mild_vci_score_latest >= 26",
         "qualitative_description": "SPI below -1.0 (moderate meteorological drought), MAI below 0.5 (soil moisture inadequacy), or VCI below 35 (significant vegetation stress) in kharif season confirms drought causality.",
         "threshold_confidence": "high",
-        "context_sensitivity": "global"
+        "context_sensitivity": "global",
+        "variables": [
+          "drought_mild_spi_score_latest",
+          "drought_mild_mai_score_latest",
+          "drought_mild_vci_score_latest"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -95,7 +100,11 @@
         "expression": "(seasonal_precipitation_mm[-1].get('kharif', 9999) < 0.75 * mean_annual_precipitation_mm * 0.85) or (trend_annual_precipitation_mm < -20)",
         "qualitative_description": "Kharif seasonal precipitation in the latest year below 75% of the long-run kharif normal, or a declining trend in annual precipitation exceeding 20 mm/year, confirms a structural rainfall deficit underpinning drought.",
         "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "seasonal_precipitation_mm",
+          "precipitation_mm"
+        ]
       },
       "severity": "moderate",
       "direction": "confirms",

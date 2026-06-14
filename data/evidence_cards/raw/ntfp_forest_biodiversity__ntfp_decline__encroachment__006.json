@@ -30,7 +30,7 @@
       ],
       "condition": {
         "type": "trend",
-        "expression": "cd_forest_to_farm_ha[-1] > cd_forest_to_farm_ha[0] and (cd_forest_to_farm_ha[-1] - cd_forest_to_farm_ha[0]) > 50",
+        "expression": "cd_forest_to_farm_ha > 50",
         "qualitative_description": "Cumulative forest-to-farm conversion has increased by more than 50 ha over the available record, indicating active encroachment of forest land for agriculture.",
         "threshold_confidence": "high",
         "context_sensitivity": "regional"
@@ -50,10 +50,13 @@
       ],
       "condition": {
         "type": "trend",
-        "expression": "cd_total_urbanization_ha[-1] > cd_total_urbanization_ha[0] and (cd_total_urbanization_ha[-1] - cd_total_urbanization_ha[0]) > 30",
+        "expression": "cd_total_urbanization_ha > 30",
         "qualitative_description": "Settlement footprint has expanded by more than 30 ha over the record period, suggesting encroachment of forest fringes for habitation in addition to agricultural conversion.",
         "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "cd_urbanization_ha"
+        ]
       },
       "severity": "moderate",
       "direction": "confirms",
@@ -90,10 +93,14 @@
       ],
       "condition": {
         "type": "composite",
-        "expression": "(cd_forest_to_farm_ha[-1] - cd_forest_to_farm_ha[0]) > 20 and (cd_total_urbanization_ha[-1] - cd_total_urbanization_ha[0]) > 15 and village_st_percent > 15",
+        "expression": "cd_forest_to_farm_ha > 20 and cd_total_urbanization_ha > 15 and village_st_percent > 15",
         "qualitative_description": "Both agricultural conversion and settlement expansion are occurring simultaneously in a village with significant ST population, indicating compound encroachment pressure on forest-dependent livelihoods.",
         "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "cd_forest_to_farm_ha",
+          "cd_urbanization_ha"
+        ]
       },
       "severity": "high",
       "direction": "confirms",

@@ -52,6 +52,11 @@ export interface PathwayResult {
   pathway_id: string
   confidence: string
   reasoning?: string
+  production_system?: string
+  observed_stress?: string
+  card_id?: string
+  aer_tags?: string[]
+  card_rainfall_regime?: string
   missing_variable_questions?: Array<{ variable: string; question: string }>
 }
 
@@ -60,24 +65,77 @@ export interface PathwayChange {
   from: string
   to: string
   reason: string
+  interpretation?: string
+}
+
+export interface FollowUpSignalUpdate {
+  pathway_id: string
+  signal_id?: string
+  variable?: string
+  direction?: string
+  result?: boolean | null
+  inference?: 'evaluated' | 'unable_to_evaluate' | string
+  inference_note?: string
+  user_answer?: string
+  update_interpretation?: string
+  update_rule?: string
+}
+
+export interface PathwayInterpretation {
+  pathway_id: string
+  status: 'confirmed' | 'uncertain' | string
+  reasoning: string
+}
+
+export interface PathwaySignalSummary {
+  pathway_id?: string
+  signal_id?: string
+  direction?: string
+  result?: boolean | null
+  status?: string
+  expression?: string
+  qualitative_hint?: string
+  user_answer?: string
+  update_interpretation?: string
+  update_rule?: string
+  answered_variable?: string
+  inference?: string
+  inference_note?: string
+}
+
+export interface SignalEvaluationPathway {
+  pathway_id: string
+  summary?: Record<string, unknown>
+  evidence_note?: string | null
+  signals: PathwaySignalSummary[]
+}
+
+export interface SignalEvaluation {
+  pathways: SignalEvaluationPathway[]
 }
 
 export interface DiagnosisRevision {
   improved: boolean
   summary: string | null
   pathway_changes: PathwayChange[]
+  pathway_interpretations?: PathwayInterpretation[]
 }
 
 export interface DiagnosisResponse {
   session_id: string
+  mws_aer_code?: string | null
+  retrieval_aer_tags?: string[]
   confirmed_pathways: PathwayResult[]
   uncertain_pathways: PathwayResult[]
   solutions: string[]
   panel_updates: string[]
   panel_update_explanation?: string | null
   follow_up_question?: string | null
+  follow_up_variable?: string | null
   diagnosis_revision?: DiagnosisRevision | null
+  follow_up_signal_updates?: FollowUpSignalUpdate[]
   pathway_retrieval_ranks?: Record<string, number>
+  signal_evaluation?: SignalEvaluation | null
 }
 
 export interface FollowUpExchange {
@@ -87,6 +145,8 @@ export interface FollowUpExchange {
   explanation?: string | null
   variable?: string
   revision?: DiagnosisRevision | null
+  signalUpdates?: FollowUpSignalUpdate[]
+  signalEvaluation?: SignalEvaluation | null
 }
 
 export interface MwsDocument {
@@ -95,6 +155,11 @@ export interface MwsDocument {
   district: string
   tehsil: string
   area_ha?: number
+  nbss_lup_aer_code?: string
+  nbss_lup_aer_name?: string
+  agro_ecological_zone?: string
+  rainfall_regime?: string
+  rainfall_mm_band?: string
   aquifer?: {
     raw_class?: string
     acwadam_class?: string

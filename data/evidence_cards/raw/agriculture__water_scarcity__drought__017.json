@@ -68,10 +68,17 @@
       ],
       "condition": {
         "type": "composite",
-        "expression": "drought_causality_json.get('spi_class') in ['moderately_dry', 'severely_dry', 'extremely_dry'] and drought_causality_json.get('mai_class') in ['low', 'very_low'] and drought_causality_json.get('vci') is not None and drought_causality_json.get('vci') < 40",
+        "expression": "(drought_mild_spi_score_latest >= 26 or drought_severe_moderate_spi_score_latest >= 26) and (drought_mild_mai_score_latest >= 26 or drought_severe_moderate_path_score_latest >= 2) and drought_mild_vci_score_latest >= 26",
         "qualitative_description": "Concurrent SPI indicating dry conditions, low MAI indicating soil moisture deficit, and VCI below 40 indicating vegetation stress together confirm meteorological drought has translated into agricultural drought.",
         "threshold_confidence": "high",
-        "context_sensitivity": "global"
+        "context_sensitivity": "global",
+        "variables": [
+          "drought_mild_vci_score_latest",
+          "drought_mild_spi_score_latest",
+          "drought_severe_moderate_spi_score_latest",
+          "drought_mild_mai_score_latest",
+          "drought_severe_moderate_path_score_latest"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -91,7 +98,11 @@
         "expression": "mean_annual_precipitation_mm < 1600 or (seasonal_precipitation_mm[-1].get('kharif', 9999) < 0.6 * (sum(v.get('kharif', 0) for v in list(seasonal_precipitation_mm.values())) / max(len(seasonal_precipitation_mm), 1)))",
         "qualitative_description": "Mean annual precipitation below the AER-20 lower bound of 1600 mm, or kharif seasonal precipitation in the latest year below 60% of the multi-year kharif mean, confirms a below-normal rainfall year consistent with meteorological drought.",
         "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "seasonal_precipitation_mm",
+          "precipitation_mm"
+        ]
       },
       "severity": "moderate",
       "direction": "confirms",

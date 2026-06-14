@@ -49,10 +49,15 @@
       ],
       "condition": {
         "type": "composite",
-        "expression": "drought_causality_json.get('spi_class') in ['moderate_drought', 'severe_drought', 'extreme_drought'] and drought_causality_json.get('vci') is not None and drought_causality_json.get('vci') < 35",
+        "expression": "(drought_mild_spi_score_latest >= 26 or drought_severe_moderate_spi_score_latest >= 26) and drought_mild_vci_score_latest >= 26",
         "qualitative_description": "SPI classification of moderate or worse drought combined with VCI below 35 confirms both meteorological and agricultural drought are co-occurring, ruling out irrigation-buffered scenarios.",
         "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "drought_mild_vci_score_latest",
+          "drought_mild_spi_score_latest",
+          "drought_severe_moderate_spi_score_latest"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -92,7 +97,11 @@
         "expression": "seasonal_precipitation_mm[-1].get('kharif', 9999) < 0.75 * mean_annual_precipitation_mm or mean_annual_precipitation_mm < 1200",
         "qualitative_description": "Kharif seasonal rainfall in the most recent year below 75% of the long-term annual mean, or mean annual precipitation below 1200 mm, indicates a below-normal rainfall year consistent with meteorological drought in AER-13.",
         "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "seasonal_precipitation_mm",
+          "precipitation_mm"
+        ]
       },
       "severity": "moderate",
       "direction": "confirms",

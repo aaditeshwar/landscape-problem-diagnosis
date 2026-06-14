@@ -54,7 +54,11 @@
         "expression": "cd_total_deforestation_ha > 0 and (cd_total_afforestation_ha < cd_total_deforestation_ha)",
         "qualitative_description": "Cumulative deforestation exceeds cumulative afforestation, indicating a net forest deficit with weak recovery. The larger the gap, the more severe the degradation pressure on NTFP-bearing habitat.",
         "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "cd_total_deforestation_ha",
+          "cd_afforestation_ha"
+        ]
       },
       "severity": "high",
       "direction": "confirms",

@@ -71,7 +71,11 @@
         "expression": "terrain_cluster_id == 3 and mean_annual_runoff_mm > 40",
         "qualitative_description": "Broad plains and slopes terrain (cluster 3) combined with mean annual runoff exceeding 40 mm indicates that a significant fraction of the scarce precipitation is lost as surface runoff rather than infiltrating to support crops.",
         "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "runoff_mm",
+          "terrain_cluster_id"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",

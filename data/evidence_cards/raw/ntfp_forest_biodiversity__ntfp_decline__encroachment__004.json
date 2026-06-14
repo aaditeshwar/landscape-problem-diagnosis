@@ -30,7 +30,7 @@
       ],
       "condition": {
         "type": "trend",
-        "expression": "cd_forest_to_farm_ha[-1] > cd_forest_to_farm_ha[0] and (cd_forest_to_farm_ha[-1] - cd_forest_to_farm_ha[0]) > 50",
+        "expression": "cd_forest_to_farm_ha > 50",
         "qualitative_description": "Cumulative forest-to-farm conversion has increased by more than 50 ha over the available record, indicating sustained encroachment pressure on forest land.",
         "threshold_confidence": "high",
         "context_sensitivity": "regional"
@@ -50,10 +50,13 @@
       ],
       "condition": {
         "type": "trend",
-        "expression": "cd_total_urbanization_ha[-1] > cd_total_urbanization_ha[0] and (cd_total_urbanization_ha[-1] - cd_total_urbanization_ha[0]) > 20",
+        "expression": "cd_total_urbanization_ha > 20",
         "qualitative_description": "Total urbanized area has expanded by more than 20 ha over the record period, suggesting settlement encroachment that may be displacing forest cover or blocking community access routes.",
         "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "cd_urbanization_ha"
+        ]
       },
       "severity": "moderate",
       "direction": "confirms",
@@ -90,10 +93,14 @@
       ],
       "condition": {
         "type": "composite",
-        "expression": "(cd_forest_to_farm_ha[-1] - cd_forest_to_farm_ha[0]) > 30 and (cd_total_urbanization_ha[-1] - cd_total_urbanization_ha[0]) > 10",
+        "expression": "cd_forest_to_farm_ha > 30 and cd_total_urbanization_ha > 10",
         "qualitative_description": "Both agricultural conversion and settlement expansion are simultaneously increasing, indicating compound encroachment pressure from multiple land use change vectors.",
         "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "cd_forest_to_farm_ha",
+          "cd_urbanization_ha"
+        ]
       },
       "severity": "high",
       "direction": "confirms",

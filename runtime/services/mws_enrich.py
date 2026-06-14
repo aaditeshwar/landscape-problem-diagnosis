@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from pymongo.database import Database
+from services.aer_lookup import mws_aer_profile
 
 
 def _intersect_village_ids(mws_doc: dict) -> list:
@@ -204,6 +204,7 @@ def village_names_for_mws(db: Database, mws_doc: dict) -> list[dict[str, Any]]:
 
 def enrich_mws_doc(db: Database, doc: dict) -> dict:
     enriched = dict(doc)
+    enriched.update(mws_aer_profile(doc))
     enriched["intersect_village_names"] = village_names_for_mws(db, doc)
     enriched["village_aggregates"] = village_aggregates_for_mws(db, doc)
     enriched["facility_distances"] = facility_distances_for_mws(db, doc)

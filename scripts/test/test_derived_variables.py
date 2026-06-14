@@ -43,7 +43,18 @@ def test_delta_g_recompute():
 def test_drought_return_period():
     weeks = {"2017": 0, "2018": 2, "2019": 0, "2020": 4, "2021": 0, "2022": 1}
     assert drought_return_period(weeks) == 2.0
-    assert drought_return_period({"2017": 0, "2018": 0}) is None
+    assert drought_return_period({"2017": 0, "2018": 0}) == 2.0
+    assert drought_return_period({}) is None
+
+
+def test_drought_severe_return_period_with_no_events():
+    mws = {
+        "drought_kharif": {
+            str(y): {"severe_weeks": 0, "moderate_weeks": 0}
+            for y in range(2017, 2025)
+        }
+    }
+    assert resolve_derived(mws, "drought_severe_return_period") == 8.0
 
 
 def test_swb_ratio():
@@ -56,6 +67,20 @@ def test_swb_ratio():
     ratios = swb_rabi_kharif_ratio_series(mws)
     assert ratios == {"2017": 0.5, "2018": 0.5}
     assert resolve_derived(mws, "mean_swb_rabi_kharif_ratio") == 0.5
+
+
+def test_swb_ratio_zero_kharif_across_years():
+    mws = {
+        "swb_annual": {
+            "2017": {"kharif_ha": 0, "rabi_ha": 0},
+            "2018": {"kharif_ha": 0, "rabi_ha": 12},
+            "2019": {"kharif_ha": 0},
+        }
+    }
+    ratios = swb_rabi_kharif_ratio_series(mws)
+    assert ratios == {"2017": 0.0, "2018": 0.0, "2019": 0.0}
+    assert resolve_derived(mws, "mean_swb_rabi_kharif_ratio") == 0.0
+    assert resolve_derived(mws, "trend_swb_rabi_kharif_ratio") == 0.0
 
 
 def test_resolve_derived_names():
@@ -87,7 +112,9 @@ def main() -> int:
         test_mean_and_trend,
         test_delta_g_recompute,
         test_drought_return_period,
+        test_drought_severe_return_period_with_no_events,
         test_swb_ratio,
+        test_swb_ratio_zero_kharif_across_years,
         test_resolve_derived_names,
     ]
     failed = 0

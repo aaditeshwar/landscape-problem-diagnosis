@@ -49,10 +49,16 @@
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "drought_causality_json.get('spi_class') in ['moderate_drought', 'severe_drought', 'extreme_drought'] or drought_causality_json.get('vci') < 35 or drought_causality_json.get('mai') < 0.5",
+        "expression": "(drought_mild_spi_score_latest >= 26 or drought_severe_moderate_spi_score_latest >= 26) or drought_mild_vci_score_latest >= 26 or drought_mild_mai_score_latest >= 26",
         "qualitative_description": "SPI class indicates moderate to extreme meteorological drought, or VCI below 35 signals significant vegetation stress, or MAI below 0.5 indicates soil moisture inadequacy — any one of these confirms agricultural drought per the India Drought Manual classification.",
         "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "drought_mild_vci_score_latest",
+          "drought_mild_mai_score_latest",
+          "drought_mild_spi_score_latest",
+          "drought_severe_moderate_spi_score_latest"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -92,7 +98,11 @@
         "expression": "seasonal_precipitation_mm[-1].get('kharif', 0) < 0.75 * mean_annual_precipitation_mm or mean_annual_precipitation_mm < 700 or trend_annual_precipitation_mm < -5",
         "qualitative_description": "Kharif seasonal rainfall below 75% of the long-term annual mean, or mean annual precipitation below 700 mm, or a declining trend exceeding 5 mm/year confirms structural precipitation deficit underpinning drought risk.",
         "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "seasonal_precipitation_mm",
+          "precipitation_mm"
+        ]
       },
       "severity": "moderate",
       "direction": "confirms",

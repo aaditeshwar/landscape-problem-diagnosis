@@ -94,7 +94,11 @@
         "expression": "mean_annual_runoff_mm > 300 and terrain_cluster_id == 1",
         "qualitative_description": "High mean annual runoff (>300 mm) on mostly plains terrain (cluster 1) indicates substantial harvestable water that is currently lost as surface runoff, representing an unrealised in-situ water harvesting opportunity.",
         "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "runoff_mm",
+          "terrain_cluster_id"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",

@@ -1,7 +1,9 @@
 import type { DiagnosisResponse, FollowUpExchange, PathwayResult } from '../types'
 import type { FollowUpTarget } from '../utils/followUp'
 import { followUpPromptLabel } from '../utils/followUp'
+import { formatPathwayAerContext, formatPathwayHierarchy } from '../utils/pathwayLabels'
 import { formatPanelUpdateActionList } from '../utils/panelUpdates'
+import { SignalRichText } from './SignalRichText'
 
 interface Props {
   selectedMwsUid: string | null
@@ -19,6 +21,8 @@ interface Props {
   canContinueConversation: boolean
   onSubmitFollowUp: () => void
   disabled: boolean
+  mwsAerCode?: string | null
+  retrievalAerTags?: string[] | null
 }
 
 export function DiagnosisPanel({
@@ -37,8 +41,30 @@ export function DiagnosisPanel({
   canContinueConversation,
   onSubmitFollowUp,
   disabled,
+  mwsAerCode,
+  retrievalAerTags,
 }: Props) {
   const sectionTitle = followUpPromptLabel(followUpTarget, followUpHistory.length > 0)
+  const resolvedMwsAer = mwsAerCode ?? diagnosis?.mws_aer_code ?? null
+  const resolvedRetrievalAer = retrievalAerTags ?? diagnosis?.retrieval_aer_tags ?? null
+
+  function pathwayAerLine(pathway: PathwayResult) {
+    const aer = formatPathwayAerContext(pathway, resolvedMwsAer, resolvedRetrievalAer)
+    const tone =
+      aer.alignment === 'exact'
+        ? 'text-stone-500'
+        : aer.alignment === 'neighbor'
+          ? 'text-amber-800'
+          : aer.alignment === 'mismatch'
+            ? 'font-medium text-red-800'
+            : 'text-stone-500'
+    return (
+      <div className={`mt-1 text-xs ${tone}`}>
+        {aer.text}
+        {aer.note ? ` · ${aer.note}` : ''}
+      </div>
+    )
+  }
 
   return (
     <div className="flex h-full flex-col gap-4 overflow-y-auto p-4">
@@ -98,9 +124,18 @@ export function DiagnosisPanel({
               <ul className="mt-2 space-y-2">
                 {diagnosis.confirmed_pathways.map((p: PathwayResult) => (
                   <li key={p.pathway_id} className="rounded-lg bg-emerald-50 px-3 py-2 text-sm">
-                    <div className="font-medium capitalize">{p.pathway_id.replace(/_/g, ' ')}</div>
+                    <div className="font-medium">{formatPathwayHierarchy(p)}</div>
+                    {pathwayAerLine(p)}
                     <div className="text-xs uppercase text-emerald-700">{p.confidence} confidence</div>
-                    {p.reasoning && <p className="mt-1 text-stone-700">{p.reasoning}</p>}
+                    {p.reasoning && (
+                      <p className="mt-1 text-stone-700">
+                        <SignalRichText
+                          text={p.reasoning}
+                          pathwayId={p.pathway_id}
+                          signalEvaluation={diagnosis.signal_evaluation}
+                        />
+                      </p>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -113,7 +148,8 @@ export function DiagnosisPanel({
               <ul className="mt-2 space-y-2">
                 {diagnosis.uncertain_pathways.map((p: PathwayResult) => (
                   <li key={p.pathway_id} className="rounded-lg bg-amber-50 px-3 py-2 text-sm">
-                    <div className="font-medium capitalize">{p.pathway_id.replace(/_/g, ' ')}</div>
+                    <div className="font-medium">{formatPathwayHierarchy(p)}</div>
+                    {pathwayAerLine(p)}
                     <div className="text-xs uppercase text-amber-700">{p.confidence} confidence</div>
                   </li>
                 ))}
@@ -152,24 +188,67 @@ export function DiagnosisPanel({
                         Diagnosis update
                       </div>
                       {entry.revision.summary ? (
-                        <p className="mt-1 text-sm text-stone-800">{entry.revision.summary}</p>
+                        <p className="mt-1 text-sm text-stone-800">
+                          <SignalRichText
+                            text={entry.revision.summary}
+                            signalEvaluation={entry.signalEvaluation ?? diagnosis.signal_evaluation}
+                          />
+                        </p>
                       ) : null}
                       {entry.revision.pathway_changes.length > 0 ? (
                         <ul className="mt-2 space-y-1 text-sm text-stone-700">
                           {entry.revision.pathway_changes.map((change) => (
                             <li key={`${change.pathway_id}-${change.from}-${change.to}`}>
-                              <span className="font-medium capitalize">
-                                {change.pathway_id.replace(/_/g, ' ')}
+                              <span className="font-medium">
+                                {formatPathwayHierarchy({ pathway_id: change.pathway_id })}
                               </span>
                               : {change.from} → {change.to}
+                              {change.reason ? (
+                                <p className="mt-1 text-xs text-stone-600">
+                                  <SignalRichText
+                                    text={change.reason}
+                                    pathwayId={change.pathway_id}
+                                    signalEvaluation={entry.signalEvaluation ?? diagnosis.signal_evaluation}
+                                  />
+                                </p>
+                              ) : null}
                             </li>
                           ))}
                         </ul>
                       ) : entry.revision.improved ? (
                         <p className="mt-1 text-sm text-stone-700">Solutions or confidence were updated.</p>
-                      ) : (
+                      ) : null}
+                      {(entry.revision.pathway_interpretations?.length ?? 0) > 0 ? (
+                        <div className="mt-2 space-y-2">
+                          <div className="text-xs font-medium uppercase tracking-wide text-amber-900">
+                            Evidence interpretation
+                          </div>
+                          {entry.revision.pathway_interpretations?.map((item) => (
+                            <div
+                              key={`${item.pathway_id}-${item.status}`}
+                              className="rounded border border-amber-100 bg-amber-50/80 px-2 py-2 text-xs text-stone-700"
+                            >
+                              <div className="font-medium text-amber-900">
+                                {formatPathwayHierarchy({ pathway_id: item.pathway_id })}
+                                {item.status === 'ruled_out'
+                                  ? ' · ruled out'
+                                  : item.status
+                                    ? ` · ${item.status}`
+                                    : ''}
+                              </div>
+                              <p className="mt-1">
+                                <SignalRichText
+                                  text={item.reasoning}
+                                  pathwayId={item.pathway_id}
+                                  signalEvaluation={entry.signalEvaluation ?? diagnosis.signal_evaluation}
+                                />
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      ) : !entry.revision.improved && !entry.revision.pathway_changes.length ? (
                         <p className="mt-1 text-sm text-stone-600">No material change to pathway ranking.</p>
-                      )}
+                      ) : null}
                     </div>
                   ) : null}
                   <div className="mt-2 text-xs font-medium uppercase tracking-wide text-sky-700">Action taken</div>
@@ -185,7 +264,12 @@ export function DiagnosisPanel({
                   {entry.explanation?.trim() ? (
                     <>
                       <div className="mt-2 text-xs font-medium uppercase tracking-wide text-stone-500">Why</div>
-                      <p className="mt-1 text-sm text-stone-800">{entry.explanation}</p>
+                      <p className="mt-1 text-sm text-stone-800">
+                        <SignalRichText
+                          text={entry.explanation}
+                          signalEvaluation={entry.signalEvaluation ?? diagnosis.signal_evaluation}
+                        />
+                      </p>
                     </>
                   ) : null}
                 </div>

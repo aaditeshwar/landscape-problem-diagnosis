@@ -1,0 +1,126 @@
+{
+  "variable_registry": {
+    "version": "1.0",
+    "policy": "Canonical names match metadata/data_dictionary_v2.json. Framework and assembler may expose legacy aliases during migration; expressions should converge on canonical names and correct shapes.",
+    "expression_access": {
+      "nested_time_series": "Use year-keyed dict access, e.g. drought_causality[sorted(drought_causality.keys())[-1]]['mild']['spi_score']. Do not call .get() with invented flat keys like spi_class or spi_kharif.",
+      "static": "Use the scalar directly, e.g. cd_urbanization_ha > 20. Do not index static variables with [-1] or [0]."
+    },
+    "variables": {
+      "drought_causality": {
+        "canonical_name": "drought_causality",
+        "type": "nested_time_series",
+        "mongo_field": "drought_causality",
+        "legacy_aliases": ["drought_causality_json"],
+        "nested_schema": {
+          "severe_moderate": ["spi_score", "mai_score", "vci_score", "cropping_area_sown_score", "drought_path1", "drought_path2", "drought_path3", "drought_path4", "drought_path5", "drought_path6"],
+          "mild": ["spi_score", "mai_score", "vci_score", "cropping_area_sown_score"]
+        },
+        "source_key_map": {
+          "mild_drought_spi_score": "spi_score",
+          "mild_drought_mai_score": "mai_score",
+          "mild_drought_vci_score": "vci_score",
+          "mild_drought_cropping_area_sown_score": "cropping_area_sown_score",
+          "moderate_drought_spi_score": "spi_score",
+          "moderate_drought_mai_score": "mai_score",
+          "moderate_drought_vci_score": "vci_score",
+          "moderate_drought_cropping_area_sown_score": "cropping_area_sown_score",
+          "severe_drought_spi_score": "spi_score",
+          "severe_drought_mai_score": "mai_score",
+          "severe_drought_vci_score": "vci_score",
+          "severe_drought_cropping_area_sown_score": "cropping_area_sown_score",
+          "moderate_drought_path1": "drought_path1",
+          "moderate_drought_path2": "drought_path2",
+          "moderate_drought_path3": "drought_path3",
+          "moderate_drought_path4": "drought_path4",
+          "moderate_drought_path5": "drought_path5",
+          "moderate_drought_path6": "drought_path6"
+        },
+        "invented_expression_keys": [
+          "spi_class", "mai_class", "vci_class",
+          "spi_kharif", "mai_kharif", "vci_kharif",
+          "SPI_kharif", "MAI_kharif", "VCI_kharif",
+          "spi", "mai", "vci"
+        ]
+      },
+      "cd_urbanization_ha": {
+        "canonical_name": "cd_urbanization_ha",
+        "type": "static",
+        "mongo_path": "change_detection.urbanization.total_ha",
+        "legacy_aliases": ["cd_total_urbanization_ha"]
+      },
+      "cd_afforestation_ha": {
+        "canonical_name": "cd_afforestation_ha",
+        "type": "static",
+        "mongo_path": "change_detection.afforestation.total_ha",
+        "legacy_aliases": ["cd_total_afforestation_ha"]
+      },
+      "cd_total_degradation_ha": {
+        "canonical_name": "cd_total_degradation_ha",
+        "type": "static",
+        "mongo_path": "change_detection.degradation.total_ha",
+        "legacy_aliases": []
+      },
+      "cd_farm_to_barren_ha": {
+        "canonical_name": "cd_farm_to_barren_ha",
+        "type": "static",
+        "mongo_path": "change_detection.degradation.farm_to_barren_ha",
+        "legacy_aliases": []
+      },
+      "cd_total_deforestation_ha": {
+        "canonical_name": "cd_total_deforestation_ha",
+        "type": "static",
+        "mongo_path": "change_detection.deforestation.total_ha",
+        "legacy_aliases": []
+      },
+      "cd_forest_to_farm_ha": {
+        "canonical_name": "cd_forest_to_farm_ha",
+        "type": "static",
+        "mongo_path": "change_detection.deforestation.forest_to_farm_ha",
+        "legacy_aliases": []
+      },
+      "cd_single_to_double_ha": {
+        "canonical_name": "cd_single_to_double_ha",
+        "type": "static",
+        "mongo_path": "change_detection.crop_intensity.single_to_double_ha",
+        "legacy_aliases": []
+      },
+      "precipitation_mm": {
+        "canonical_name": "precipitation_mm",
+        "type": "time_series",
+        "mongo_path": "hydrological_annual.<year>.precipitation_mm",
+        "legacy_aliases": ["annual_precipitation_mm"]
+      },
+      "et_mm": {
+        "canonical_name": "et_mm",
+        "type": "time_series",
+        "mongo_path": "hydrological_annual.<year>.et_mm",
+        "legacy_aliases": ["annual_et_mm"]
+      },
+      "runoff_mm": {
+        "canonical_name": "runoff_mm",
+        "type": "time_series",
+        "mongo_path": "hydrological_annual.<year>.runoff_mm",
+        "legacy_aliases": ["annual_runoff_mm"]
+      },
+      "delta_g_mm": {
+        "canonical_name": "delta_g_mm",
+        "type": "time_series",
+        "mongo_path": "hydrological_annual.<year>.delta_g_mm",
+        "legacy_aliases": ["annual_delta_g_mm"]
+      }
+    },
+    "derived_variables": {
+      "drought_mild_spi_score_latest": {
+        "type": "derived",
+        "description": "Latest agricultural year mild drought SPI trigger score from drought_causality nested schema."
+      },
+      "drought_mild_mai_score_latest": {"type": "derived"},
+      "drought_mild_vci_score_latest": {"type": "derived"},
+      "drought_severe_moderate_spi_score_latest": {"type": "derived"},
+      "drought_severe_moderate_mai_score_latest": {"type": "derived"},
+      "drought_severe_moderate_vci_score_latest": {"type": "derived"},
+      "drought_severe_moderate_path_score_latest": {"type": "derived"}
+    }
+  }
+}

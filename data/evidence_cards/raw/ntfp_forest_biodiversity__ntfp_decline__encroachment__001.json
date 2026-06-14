@@ -29,7 +29,7 @@
       ],
       "condition": {
         "type": "trend",
-        "expression": "cd_forest_to_farm_ha[-1] > cd_forest_to_farm_ha[0] and (cd_forest_to_farm_ha[-1] - cd_forest_to_farm_ha[0]) > 50",
+        "expression": "cd_forest_to_farm_ha > 50",
         "qualitative_description": "Cumulative forest-to-farm conversion has increased by more than 50 ha over the available record, indicating active encroachment of forest land for agriculture.",
         "threshold_confidence": "high",
         "context_sensitivity": "regional"
@@ -45,10 +45,13 @@
       ],
       "condition": {
         "type": "trend",
-        "expression": "cd_total_urbanization_ha[-1] > cd_total_urbanization_ha[0] and (cd_total_urbanization_ha[-1] - cd_total_urbanization_ha[0]) > 20",
+        "expression": "cd_total_urbanization_ha > 20",
         "qualitative_description": "Total urbanized or settled area has expanded by more than 20 ha over the record period, potentially encroaching on forest fringes.",
         "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "cd_urbanization_ha"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -85,7 +88,7 @@
       ],
       "condition": {
         "type": "composite",
-        "expression": "(cd_forest_to_farm_ha[-1] - cd_forest_to_farm_ha[0]) > 30 and village_st_percent > 25",
+        "expression": "cd_forest_to_farm_ha > 30 and village_st_percent > 25",
         "qualitative_description": "Moderate-to-high forest-to-farm conversion (>30 ha net increase) co-occurring with high ST population share (>25%) indicates encroachment directly threatening NTFP-dependent tribal livelihoods.",
         "threshold_confidence": "high",
         "context_sensitivity": "local"

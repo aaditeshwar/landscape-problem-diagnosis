@@ -91,7 +91,11 @@
         "expression": "terrain_cluster_id == 3 and mean_annual_runoff_mm > 300",
         "qualitative_description": "Broad plains and slopes terrain (cluster 3) combined with high mean annual runoff indicates rapid water loss from sloping fields, reducing in-field moisture retention and amplifying crop water stress during dry spells.",
         "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "runoff_mm",
+          "terrain_cluster_id"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",

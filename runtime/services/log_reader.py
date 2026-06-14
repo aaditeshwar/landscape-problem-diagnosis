@@ -14,6 +14,9 @@ SUMMARY_FIELDS = (
     "event",
     "session_id",
     "mws_uid",
+    "tehsil",
+    "district",
+    "state",
     "turn_type",
     "model",
     "timings_ms",
@@ -25,6 +28,9 @@ SUMMARY_FIELDS = (
     "retrieval_query",
     "problem_description",
     "retrieved_card_ids",
+    "mws_aer_code",
+    "status",
+    "error",
 )
 
 HEAVY_FIELDS = frozenset({"prompt", "llm_raw_response", "llm_response"})

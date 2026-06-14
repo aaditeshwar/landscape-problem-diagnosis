@@ -1,9 +1,11 @@
 import type { MwsDocument } from '../types'
 import {
   facilityDistanceTable,
+  formatAgroEcologicalZone,
   hasNregaData,
   intersectVillageRows,
   landChangeTotals,
+  mwsRainfallBand,
 } from '../utils/mwsData'
 import { hasPanelHighlights, panelHighlightFlags } from '../utils/panelHighlight'
 import {
@@ -93,6 +95,8 @@ export function InfoPanel({ mws, loading, panelUpdates }: Props) {
           <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-stone-500">Identity</h3>
           <div className="rounded-lg border border-stone-200 bg-white px-3 py-1">
             <IdentityRow label="Area" value={mws.area_ha != null ? `${mws.area_ha.toFixed(1)} ha` : null} />
+            <IdentityRow label="Agro-ecological zone" value={formatAgroEcologicalZone(mws)} />
+            <IdentityRow label="Rainfall band" value={mwsRainfallBand(mws)} />
             <IdentityRow label="Terrain" value={mws.terrain?.description ?? mws.terrain?.cluster_id} />
             <IdentityRow label="Aquifer" value={mws.aquifer?.raw_class ?? mws.aquifer?.acwadam_class} />
             <IdentityRow label="River" value={mws.river_name} />

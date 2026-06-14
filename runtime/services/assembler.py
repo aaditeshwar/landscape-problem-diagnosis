@@ -7,6 +7,11 @@ from typing import Any
 
 from config import METADATA_DIR
 from services.derived_variables import resolve_derived
+from services.variable_registry import (
+    canonical_name,
+    extend_resolver_map,
+    resolver_key_for,
+)
 
 # Variables with no CoRE Stack / Excel resolver — always null unless user injects an answer.
 NOT_AVAILABLE = {
@@ -76,7 +81,14 @@ def _drought_series(mws: dict, field: str) -> dict | None:
     drought = mws.get("drought_kharif") or {}
     if not drought:
         return None
-    out = {str(y): row.get(field) for y, row in drought.items() if row.get(field) is not None}
+    out: dict[str, float] = {}
+    for year, row in drought.items():
+        if not isinstance(row, dict):
+            continue
+        if row.get(field) is not None:
+            out[str(year)] = float(row[field])
+        else:
+            out[str(year)] = 0.0
     return out or None
 
 
@@ -172,7 +184,7 @@ def _stream_order_n_percent(mws: dict) -> dict | None:
     return data if data else None
 
 
-VARIABLE_RESOLVERS: dict[str, Any] = {
+_BASE_VARIABLE_RESOLVERS: dict[str, Any] = {
     "soge_dev_percent": lambda m: (m.get("soge") or {}).get("dev_percent"),
     "soge_class_name": lambda m: (m.get("soge") or {}).get("class_name"),
     "aquifer_class": lambda m: (m.get("aquifer") or {}).get("acwadam_class"),
@@ -239,6 +251,13 @@ VARIABLE_RESOLVERS: dict[str, Any] = {
     "trend_swb_total_area_ha": lambda m: resolve_derived(m, "trend_swb_total_area_ha"),
     "mean_swb_rabi_kharif_ratio": lambda m: resolve_derived(m, "mean_swb_rabi_kharif_ratio"),
     "trend_swb_rabi_kharif_ratio": lambda m: resolve_derived(m, "trend_swb_rabi_kharif_ratio"),
+    "drought_mild_spi_score_latest": lambda m: resolve_derived(m, "drought_mild_spi_score_latest"),
+    "drought_mild_mai_score_latest": lambda m: resolve_derived(m, "drought_mild_mai_score_latest"),
+    "drought_mild_vci_score_latest": lambda m: resolve_derived(m, "drought_mild_vci_score_latest"),
+    "drought_severe_moderate_spi_score_latest": lambda m: resolve_derived(m, "drought_severe_moderate_spi_score_latest"),
+    "drought_severe_moderate_mai_score_latest": lambda m: resolve_derived(m, "drought_severe_moderate_mai_score_latest"),
+    "drought_severe_moderate_vci_score_latest": lambda m: resolve_derived(m, "drought_severe_moderate_vci_score_latest"),
+    "drought_severe_moderate_path_score_latest": lambda m: resolve_derived(m, "drought_severe_moderate_path_score_latest"),
     "village_sc_percent": lambda m: _village_aggregate(m, "village_sc_percent"),
     "village_st_percent": lambda m: _village_aggregate(m, "village_st_percent"),
     "village_literacy_rate": lambda m: _village_aggregate(m, "village_literacy_rate"),
@@ -263,6 +282,8 @@ VARIABLE_RESOLVERS: dict[str, Any] = {
     "dist_pds_km": lambda m: _facility_distance(m, "dist_pds_km"),
 }
 
+VARIABLE_RESOLVERS = extend_resolver_map(_BASE_VARIABLE_RESOLVERS)
+
 
 @lru_cache
 def load_framework() -> dict:
@@ -281,18 +302,67 @@ def find_pathway(pathway_id: str) -> tuple[dict, str, str] | None:
     return None
 
 
+def pathway_diagnostic_variables(pathway_id: str) -> set[str]:
+    found = find_pathway(pathway_id)
+    if not found:
+        return set()
+    pathway_cfg, _, _ = found
+    return {
+        str(var_def.get("variable"))
+        for var_def in pathway_cfg.get("diagnostic_variables", [])
+        if var_def.get("variable")
+    }
+
+
+def pathway_uses_variable(pathway_id: str, variable: str) -> bool:
+    if not variable:
+        return False
+    return variable in pathway_diagnostic_variables(pathway_id)
+
+
+def _assign_present_variable(present: dict[str, Any], name: str, value: Any) -> None:
+    present[name] = value
+    canonical = canonical_name(name)
+    if canonical != name and canonical not in present:
+        present[canonical] = value
+
+
+def _resolved_bundle_value(name: str, value: Any) -> Any | object:
+    """Map resolver None to present-bucket defaults for list and presence-categorical vars."""
+    from services.variable_registry import list_type_variables, presence_categorical_variables
+
+    if value is not None:
+        return value
+    if name in list_type_variables():
+        return []
+    if name in presence_categorical_variables():
+        return None
+    return _UNRESOLVED_VARIABLE
+
+
+_UNRESOLVED_VARIABLE = object()
+
+
 def resolve_variable(mws_doc: dict, variable: str, injected: dict | None = None) -> Any:
     if injected and variable in injected:
         return injected[variable]
-    if variable in NOT_AVAILABLE:
+    lookup = resolver_key_for(variable)
+    if lookup in NOT_AVAILABLE:
         return None
-    derived = resolve_derived(mws_doc, variable)
+    derived = resolve_derived(mws_doc, lookup)
     if derived is not None:
         return derived
-    resolver = VARIABLE_RESOLVERS.get(variable)
+    resolver = VARIABLE_RESOLVERS.get(lookup)
     if resolver is None:
         return None
     return resolver(mws_doc)
+
+
+CONFIDENCE_SORT_ORDER = {"low": 0, "medium": 1, "high": 2}
+
+
+def _confidence_sort_key(confidence: str | None) -> int:
+    return CONFIDENCE_SORT_ORDER.get(str(confidence or "medium").lower(), 1)
 
 
 def authorized_follow_up_questions(
@@ -301,25 +371,37 @@ def authorized_follow_up_questions(
     *,
     uncertain_pathway_ids: set[str] | None = None,
     confirmed_pathway_ids: set[str] | None = None,
+    confirmed_pathway_confidence: dict[str, str] | None = None,
+    ruled_out_pathway_ids: set[str] | None = None,
     pathway_retrieval_ranks: dict[str, int] | None = None,
 ) -> list[tuple[str, str]]:
     """Return (variable, question) pairs allowed for user follow-up.
 
     A question is authorized only when the variable is still missing for this MWS
     (not in present_variables or injected) and the evidence card supplies the question text.
-    Results are ordered: uncertain pathways first, then by retrieval rank.
-    When any uncertain pathway has eligible questions, confirmed-pathway questions are omitted.
+    Results are ordered: uncertain pathways first (tier 0), then bundle pathways
+    that are neither uncertain nor confirmed (tier 1, high-recall), then confirmed
+    pathways (tier 2). Within tier 2 only, questions are ordered by lowest
+    confidence first (low, medium, high), then retrieval rank.
+    When any uncertain pathway has eligible questions, only tier 0 is returned.
+    Pathways previously ruled out via user_provided confirms+FALSE are never asked again.
     """
     injected = injected or {}
     present = _present_variables(bundle)
     uncertain = uncertain_pathway_ids or set()
     confirmed = confirmed_pathway_ids or set()
+    confirmed_confidence = confirmed_pathway_confidence or {}
+    ruled_out = ruled_out_pathway_ids or set()
     ranks = pathway_retrieval_ranks or {}
 
-    candidates: list[tuple[int, int, str, int, str, str]] = []
+    candidates: list[tuple[int, int, int, str, int, str, str]] = []
     seen_vars: set[str] = set()
 
     for pathway_id, data in bundle.items():
+        if pathway_id in ruled_out:
+            continue
+        if uncertain and pathway_id not in uncertain:
+            continue
         missing = set(data.get("missing_variables") or [])
         for q_idx, q in enumerate(data.get("missing_variable_questions") or []):
             var = q.get("missing_variable") or q.get("variable")
@@ -331,15 +413,40 @@ def authorized_follow_up_questions(
             seen_vars.add(str(var))
             tier = 0 if pathway_id in uncertain else (2 if pathway_id in confirmed else 1)
             rank = ranks.get(pathway_id, 999)
-            candidates.append((tier, rank, pathway_id, q_idx, str(var), question))
+            confidence_sort = (
+                _confidence_sort_key(confirmed_confidence.get(pathway_id))
+                if pathway_id in confirmed
+                else 999
+            )
+            candidates.append((tier, confidence_sort, rank, pathway_id, q_idx, str(var), question))
 
-    candidates.sort(key=lambda item: (item[0], item[1], item[2], item[3]))
+    candidates.sort(key=lambda item: (item[0], item[1], item[2], item[3], item[4]))
 
     uncertain_candidates = [item for item in candidates if item[0] == 0]
     if uncertain_candidates:
         candidates = uncertain_candidates
 
-    return [(var, question) for _, _, _, _, var, question in candidates]
+    return [(var, question) for _, _, _, _, _, var, question in candidates]
+
+
+def _resolve_signal_expression_variables(
+    mws_doc: dict,
+    card: dict,
+    present: dict[str, Any],
+    injected: dict | None,
+) -> dict[str, Any]:
+    """Resolve derived/list variables referenced in signal expressions but absent from present_variables."""
+    from services.signal_evaluator import expression_load_names
+
+    out = dict(present)
+    for name in sorted(expression_load_names(card)):
+        if name in out:
+            continue
+        slot = _resolved_bundle_value(name, resolve_variable(mws_doc, name, injected))
+        if slot is _UNRESOLVED_VARIABLE:
+            continue
+        _assign_present_variable(out, name, slot)
+    return out
 
 
 def assemble_variable_bundle(
@@ -366,10 +473,11 @@ def assemble_variable_bundle(
                 missing.append(name)
                 continue
             value = resolve_variable(mws_doc, name, injected)
-            if value is None:
+            slot = _resolved_bundle_value(name, value)
+            if slot is _UNRESOLVED_VARIABLE:
                 missing.append(name)
             else:
-                present[name] = value
+                _assign_present_variable(present, name, slot)
 
         card_questions = {
             q["missing_variable"]: q
@@ -378,18 +486,31 @@ def assemble_variable_bundle(
         }
         missing_questions = [card_questions[v] for v in missing if v in card_questions]
 
+        present = _resolve_signal_expression_variables(mws_doc, card, present, injected)
+        missing = [name for name in missing if name not in present]
+
+        card_question_vars = set(card_questions)
+        missing_signal_only = sorted(name for name in missing if name not in card_question_vars)
+
         bundle[pathway_id] = {
             "pathway_id": pathway_id,
+            "card_id": card.get("card_id"),
+            "production_system": card.get("production_system"),
+            "observed_stress": card.get("observed_stress"),
+            "context": card.get("context") or {},
+            "aer_tags": card.get("aer_tags") or [],
             "description": pathway_cfg.get("description"),
             "solutions": pathway_cfg.get("solutions", []),
             "present_variables": present,
             "missing_variables": missing,
+            "missing_signal_only_variables": missing_signal_only,
             "missing_variable_questions": missing_questions,
             "evidence_card": {
                 "card_id": card.get("card_id"),
                 "aer_tags": card.get("aer_tags", []),
                 "overall_reasoning_note": card.get("overall_reasoning_note"),
                 "diagnostic_signals": card.get("diagnostic_signals", []),
+                "missing_variable_questions": card.get("missing_variable_questions", []),
                 "confounders": card.get("confounders", []),
                 "citations": card.get("citations", []),
             },

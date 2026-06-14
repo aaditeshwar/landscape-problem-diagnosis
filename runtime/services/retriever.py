@@ -55,6 +55,8 @@ DEFAULT_LIMIT = 5
 # Bonus added to similarity when selecting a card from a new production system or pathway.
 SYSTEM_DIVERSITY_WEIGHT = 0.08
 PATHWAY_DIVERSITY_WEIGHT = 0.08
+# Prefer evidence cards whose aer_tags include the MWS AER over neighbor-proxy cards.
+DIRECT_AER_MATCH_WEIGHT = 0.06
 
 
 def _cosine(a: list[float], b: list[float]) -> float:
@@ -116,6 +118,22 @@ def pathway_retrieval_ranks(cards: list[dict]) -> dict[str, int]:
         rank = int(card.get("retrieval_rank", 999))
         ranks[str(pid)] = min(ranks.get(str(pid), 999), rank)
     return ranks
+
+
+def _apply_direct_aer_bonus(
+    scored: list[tuple[float, dict]],
+    mws_aer: str | None,
+) -> list[tuple[float, dict]]:
+    """Boost cards that list the MWS AER in aer_tags (over neighbor-proxy cards)."""
+    if not mws_aer:
+        return scored
+    boosted: list[tuple[float, dict]] = []
+    for similarity, card in scored:
+        tags = card.get("aer_tags") or []
+        bonus = DIRECT_AER_MATCH_WEIGHT if mws_aer in tags else 0.0
+        boosted.append((similarity + bonus, card))
+    boosted.sort(key=lambda item: item[0], reverse=True)
+    return boosted
 
 
 def _diverse_select(scored: list[tuple[float, dict]], limit: int) -> list[dict]:
@@ -194,6 +212,7 @@ def _score_candidates(
     query_vector: list[float],
     aquifer_tag: str,
     aer_tags: list[str] | None = None,
+    mws_aer: str | None = None,
 ) -> list[tuple[float, dict]]:
     candidates = _fetch_candidates(db, aquifer_tag, aer_tags)
     if len(candidates) < CANDIDATE_POOL and not aer_tags:
@@ -207,6 +226,7 @@ def _score_candidates(
         scored.append((_cosine(query_vector, emb), doc))
 
     scored.sort(key=lambda item: item[0], reverse=True)
+    scored = _apply_direct_aer_bonus(scored, mws_aer)
     return scored[: max(CANDIDATE_POOL, DEFAULT_LIMIT)]
 
 
@@ -216,6 +236,7 @@ def _vector_search_scored(
     aquifer_tag: str,
     pool: int,
     aer_tags: list[str] | None = None,
+    mws_aer: str | None = None,
 ) -> list[tuple[float, dict]] | None:
     def _run(filter_query: dict[str, Any]) -> list[tuple[float, dict]] | None:
         pipeline: list[dict[str, Any]] = [
@@ -246,7 +267,7 @@ def _vector_search_scored(
                 score = _cosine(query_vector, emb) if emb else 0.0
             scored.append((float(score), doc))
         scored.sort(key=lambda item: item[0], reverse=True)
-        return scored
+        return _apply_direct_aer_bonus(scored, mws_aer)
 
     scored = _run(_card_query(aquifer_tag, aer_tags))
     if aer_tags and not scored:
@@ -302,11 +323,12 @@ def retrieve_evidence_cards(
 
     aquifer_tag = _card_aquifer_tag(mws_doc)
     aer_tags = _aer_tags_for_retrieval(mws_doc)
+    mws_aer = _card_aer_tag(mws_doc)
 
     t1 = time.perf_counter()
-    scored = _vector_search_scored(db, query_vector, aquifer_tag, CANDIDATE_POOL, aer_tags)
+    scored = _vector_search_scored(db, query_vector, aquifer_tag, CANDIDATE_POOL, aer_tags, mws_aer)
     if not scored:
-        scored = _score_candidates(db, query_vector, aquifer_tag, aer_tags)
+        scored = _score_candidates(db, query_vector, aquifer_tag, aer_tags, mws_aer)
     selected = _diverse_select(scored, limit)
     search_ms = (time.perf_counter() - t1) * 1000
 
@@ -335,3 +357,28 @@ def retrieve_evidence_cards(
         metrics.total_ms,
     )
     return RetrievalResult(cards=enriched, metrics=metrics)
+
+
+def load_evidence_cards_by_ids(db: Database, card_ids: list[str]) -> list[dict]:
+    """Reload evidence cards from Mongo in retrieval order (follow-up retrieval freeze)."""
+    if not card_ids:
+        return []
+    docs = list(db.evidence_cards.find({"card_id": {"$in": card_ids}}))
+    by_id = {str(doc.get("card_id")): doc for doc in docs if doc.get("card_id")}
+    ordered: list[dict] = []
+    for rank, card_id in enumerate(card_ids):
+        doc = by_id.get(str(card_id))
+        if not doc:
+            continue
+        item = _strip_embedding(dict(doc))
+        item["retrieval_rank"] = rank
+        item["citations"] = []
+        ordered.append(item)
+    return ordered
+
+
+def frozen_retrieval_result(cards: list[dict]) -> RetrievalResult:
+    return RetrievalResult(
+        cards=cards,
+        metrics=RetrievalMetrics(embed_ms=0.0, search_ms=0.0, citations_ms=0.0),
+    )

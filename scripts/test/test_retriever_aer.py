@@ -10,7 +10,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "runtime"))
 
 from services.retriever import (  # noqa: E402
     AER_RETRIEVAL_NEIGHBORS,
+    DIRECT_AER_MATCH_WEIGHT,
     _aer_tags_for_retrieval,
+    _apply_direct_aer_bonus,
     _card_query,
     _fetch_candidates,
 )
@@ -88,10 +90,26 @@ def test_card_query_uses_in_for_multiple_aers():
     assert query == {"aquifer_tags": "hard_rock", "aer_tags": {"$in": ["AER-3", "AER-6"]}}
 
 
+def test_aer_neighbors_for_aer11():
+    tags = _aer_tags_for_retrieval({"nbss_lup_aer_code": "AER-11"})
+    assert tags == ["AER-11", "AER-12", "AER-10", "AER-7", "AER-8"]
+
+
+def test_direct_aer_bonus_prefers_mws_aer_card():
+    proxy = {"card_id": "proxy", "aer_tags": ["AER-7", "AER-8"], "embedding": [1.0, 0.0]}
+    direct = {"card_id": "direct", "aer_tags": ["AER-11"], "embedding": [0.95, 0.05]}
+    scored = [(0.90, proxy), (0.88, direct)]
+    boosted = _apply_direct_aer_bonus(scored, "AER-11")
+    assert boosted[0][1]["card_id"] == "direct"
+    assert boosted[0][0] >= 0.88 + DIRECT_AER_MATCH_WEIGHT
+
+
 def main() -> int:
     test_aer_neighbors_for_aer3()
+    test_aer_neighbors_for_aer11()
     test_fetch_candidates_excludes_wrong_aer()
     test_card_query_uses_in_for_multiple_aers()
+    test_direct_aer_bonus_prefers_mws_aer_card()
     print("All retriever AER tests passed.")
     return 0
 

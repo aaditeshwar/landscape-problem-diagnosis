@@ -23,6 +23,7 @@ from _bootstrap import bootstrap  # noqa: E402
 bootstrap()
 
 from lib.card_embedding_text import card_embed_text, stamp_embedding_metadata  # noqa: E402
+from lib.expression_audit import validate_card_expressions  # noqa: E402
 
 from generate_evidence_cards import (  # noqa: E402
     CONTEXT_CLUSTERS,
@@ -122,6 +123,12 @@ def main() -> int:
             jsonschema.validate(card, schema)
         except jsonschema.ValidationError as exc:
             log.error("[%s/%s] %s: schema invalid: %s", n, len(paths), card_id, exc.message)
+            failed += 1
+            continue
+
+        expr_errors = validate_card_expressions(card)
+        if expr_errors:
+            log.error("[%s/%s] %s: expression audit failed: %s", n, len(paths), card_id, expr_errors[0])
             failed += 1
             continue
 

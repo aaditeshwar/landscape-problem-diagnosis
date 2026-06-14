@@ -16,6 +16,7 @@ OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434").rstrip("/")
 OLLAMA_EMBED_MODEL = os.getenv("OLLAMA_EMBED_MODEL", "nomic-embed-text")
 OLLAMA_REASON_MODEL = os.getenv("OLLAMA_REASON_MODEL", "qwen2.5:14b")
 OLLAMA_FOLLOWUP_MODEL = os.getenv("OLLAMA_FOLLOWUP_MODEL", "llama3.1:8b")
+OLLAMA_CHAT_TIMEOUT = float(os.getenv("OLLAMA_CHAT_TIMEOUT", "600"))
 EMBED_CHAR_LIMIT = int(os.getenv("OLLAMA_EMBED_CHAR_LIMIT", "6000"))
 
 # Diagnosis LLM: ollama (local) or anthropic (Claude API)

@@ -66,10 +66,15 @@
       ],
       "condition": {
         "type": "composite",
-        "expression": "drought_causality_json.get('spi_kharif', 0) < -1.0 and (drought_causality_json.get('mai_kharif', 1.0) < 0.75 or drought_causality_json.get('vci_kharif', 100) < 40)",
+        "expression": "drought_mild_spi_score_latest >= 26 and (drought_mild_mai_score_latest >= 26 or drought_mild_vci_score_latest >= 26)",
         "qualitative_description": "SPI below -1.0 (moderate to severe meteorological drought) co-occurring with MAI below 0.75 (soil moisture inadequacy) or VCI below 40 (vegetation stress) confirms both meteorological and agricultural drought are active simultaneously.",
         "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "drought_mild_spi_score_latest",
+          "drought_mild_mai_score_latest",
+          "drought_mild_vci_score_latest"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -90,7 +95,11 @@
         "expression": "mean_annual_precipitation_mm < 1000 or (seasonal_precipitation_mm[-1].get('kharif', 9999) < 0.65 * (sum(v.get('kharif', 0) for v in seasonal_precipitation_mm.values()) / max(len(seasonal_precipitation_mm), 1)))",
         "qualitative_description": "Mean annual precipitation below 1000 mm (lower bound of AER-18 normal range of 900–1400 mm) or current kharif seasonal rainfall below 65% of the long-term kharif mean indicates a below-normal rainfall year consistent with meteorological drought.",
         "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "seasonal_precipitation_mm",
+          "precipitation_mm"
+        ]
       },
       "severity": "moderate",
       "direction": "confirms",

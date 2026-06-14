@@ -22,6 +22,7 @@ from config import (
     LOG_DIR,
     LOG_LEVEL,
     MONGO_URI,
+    OLLAMA_CHAT_TIMEOUT,
     OLLAMA_EMBED_MODEL,
     OLLAMA_FOLLOWUP_MODEL,
     OLLAMA_REASON_MODEL,
@@ -139,6 +140,7 @@ def startup_config_snapshot() -> dict[str, Any]:
         "anthropic_followup_model": ANTHROPIC_FOLLOWUP_MODEL,
         "anthropic_max_tokens": ANTHROPIC_MAX_TOKENS,
         "ollama_url": OLLAMA_URL,
+        "ollama_chat_timeout_s": OLLAMA_CHAT_TIMEOUT,
         "ollama_embed_model": OLLAMA_EMBED_MODEL,
         "ollama_reason_model": OLLAMA_REASON_MODEL,
         "ollama_followup_model": OLLAMA_FOLLOWUP_MODEL,
@@ -174,6 +176,8 @@ def log_diagnosis_event(event: dict[str, Any]) -> None:
     summary = (
         f"event={payload.get('event')} session={payload.get('session_id')} "
         f"mws={payload.get('mws_uid')} model={payload.get('model')} "
-        f"total_ms={total_ms}"
+        f"status={payload.get('status', 'ok')} total_ms={total_ms}"
     )
+    if payload.get("error"):
+        summary += f" error={str(payload.get('error'))[:160]}"
     logging.getLogger("diagnosis").info(summary)

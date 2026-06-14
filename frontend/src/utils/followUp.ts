@@ -33,32 +33,15 @@ export function resolveFollowUpTarget(
   if (!diagnosis) return null
 
   const followUpQuestion = diagnosis.follow_up_question?.trim() || null
+  const followUpVariable = diagnosis.follow_up_variable?.trim() || null
 
-  if (followUpQuestion && askedQuestions.has(followUpQuestion)) {
-    // Backend should prevent this; fall through to next structured question.
-  } else if (followUpQuestion) {
-    for (const item of diagnosis.uncertain_pathways) {
-      for (const q of item.missing_variable_questions ?? []) {
-        if (q.question === followUpQuestion && q.variable && !askedVariables.has(q.variable)) {
-          return { variable: q.variable, question: followUpQuestion, structured: true }
-        }
-      }
-    }
-  }
-
-  const uncertainWithRank: Array<{ item: DiagnosisResponse['uncertain_pathways'][number]; rank: number }> = []
-  for (const item of diagnosis.uncertain_pathways) {
-    const rank = diagnosis.pathway_retrieval_ranks?.[item.pathway_id] ?? Number.MAX_SAFE_INTEGER
-    uncertainWithRank.push({ item, rank })
-  }
-  uncertainWithRank.sort((a, b) => a.rank - b.rank)
-
-  for (const { item } of uncertainWithRank) {
-    for (const q of item.missing_variable_questions ?? []) {
-      if (q.variable && q.question && !askedVariables.has(q.variable) && !askedQuestions.has(q.question)) {
-        return { variable: q.variable, question: q.question, structured: true }
-      }
-    }
+  if (
+    followUpQuestion &&
+    !askedQuestions.has(followUpQuestion) &&
+    followUpVariable &&
+    !askedVariables.has(followUpVariable)
+  ) {
+    return { variable: followUpVariable, question: followUpQuestion, structured: true }
   }
 
   return { variable: USER_OBSERVATION_VARIABLE, question: null, structured: false }

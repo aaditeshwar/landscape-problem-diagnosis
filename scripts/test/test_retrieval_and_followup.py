@@ -84,8 +84,178 @@ def test_follow_up_prefers_uncertain_by_rank():
     assert ordered_gw[0][0] == "annual_well_depth_m"
 
 
-def main() -> int:
-    tests = [test_diverse_select_spreads_production_systems, test_follow_up_prefers_uncertain_by_rank]
+def test_ruled_out_pathways_excluded_from_follow_up():
+    bundle = {
+        "groundwater_stress": {
+            "missing_variables": ["borewell_density", "groundwater_salinity"],
+            "missing_variable_questions": [
+                {
+                    "missing_variable": "borewell_density",
+                    "question_to_user": "Borewell density question?",
+                },
+                {
+                    "missing_variable": "groundwater_salinity",
+                    "question_to_user": "Salinity question?",
+                },
+            ],
+            "present_variables": {},
+        },
+        "multi_sector_vulnerability": {
+            "missing_variables": ["migrant_household_percent"],
+            "missing_variable_questions": [
+                {
+                    "missing_variable": "migrant_household_percent",
+                    "question_to_user": "Migration question?",
+                },
+            ],
+            "present_variables": {},
+        },
+        "forest_degradation": {
+            "missing_variables": ["community_forest_protection_status"],
+            "missing_variable_questions": [
+                {
+                    "missing_variable": "community_forest_protection_status",
+                    "question_to_user": "Forest protection question?",
+                },
+            ],
+            "present_variables": {},
+        },
+    }
+    ranks = {
+        "groundwater_stress": 0,
+        "multi_sector_vulnerability": 1,
+        "forest_degradation": 2,
+    }
+    ordered = authorized_follow_up_questions(
+        bundle,
+        injected={"annual_well_depth_m": {"raw": "No"}},
+        uncertain_pathway_ids=set(),
+        confirmed_pathway_ids={"multi_sector_vulnerability"},
+        ruled_out_pathway_ids={"groundwater_stress", "forest_degradation"},
+        pathway_retrieval_ranks=ranks,
+    )
+    assert ordered[0] == ("migrant_household_percent", "Migration question?")
+    assert all(var != "borewell_density" for var, _ in ordered)
+
+
+def test_confirmed_follow_up_prefers_lowest_confidence():
+    bundle = {
+        "multi_sector_vulnerability": {
+            "missing_variables": ["household_income_inr"],
+            "missing_variable_questions": [
+                {
+                    "missing_variable": "household_income_inr",
+                    "question_to_user": "Income question?",
+                },
+            ],
+            "present_variables": {},
+        },
+        "small_landholding": {
+            "missing_variables": ["landholding_size_distribution", "market_price_crop"],
+            "missing_variable_questions": [
+                {
+                    "missing_variable": "landholding_size_distribution",
+                    "question_to_user": "Landholding question?",
+                },
+                {
+                    "missing_variable": "market_price_crop",
+                    "question_to_user": "MSP question?",
+                },
+            ],
+            "present_variables": {},
+        },
+        "irrigation_challenges": {
+            "missing_variables": ["tank_siltation_status"],
+            "missing_variable_questions": [
+                {
+                    "missing_variable": "tank_siltation_status",
+                    "question_to_user": "Tank siltation question?",
+                },
+            ],
+            "present_variables": {},
+        },
+    }
+    ranks = {
+        "multi_sector_vulnerability": 1,
+        "small_landholding": 3,
+        "irrigation_challenges": 4,
+    }
+    ordered = authorized_follow_up_questions(
+        bundle,
+        uncertain_pathway_ids=set(),
+        confirmed_pathway_ids={
+            "multi_sector_vulnerability",
+            "small_landholding",
+            "irrigation_challenges",
+        },
+        confirmed_pathway_confidence={
+            "multi_sector_vulnerability": "high",
+            "small_landholding": "high",
+            "irrigation_challenges": "medium",
+        },
+        pathway_retrieval_ranks=ranks,
+    )
+    assert ordered[0] == ("tank_siltation_status", "Tank siltation question?")
+    assert ordered[1][0] == "household_income_inr"
+
+
+def test_tier_one_still_precedes_tier_two_despite_confidence_order():
+    bundle = {
+        "groundwater_stress": {
+            "missing_variables": ["borewell_density"],
+            "missing_variable_questions": [
+                {
+                    "missing_variable": "borewell_density",
+                    "question_to_user": "Borewell question?",
+                },
+            ],
+            "present_variables": {},
+        },
+        "irrigation_challenges": {
+            "missing_variables": ["tank_siltation_status"],
+            "missing_variable_questions": [
+                {
+                    "missing_variable": "tank_siltation_status",
+                    "question_to_user": "Tank siltation question?",
+                },
+            ],
+            "present_variables": {},
+        },
+        "multi_sector_vulnerability": {
+            "missing_variables": ["household_income_inr"],
+            "missing_variable_questions": [
+                {
+                    "missing_variable": "household_income_inr",
+                    "question_to_user": "Income question?",
+                },
+            ],
+            "present_variables": {},
+        },
+    }
+    ranks = {"groundwater_stress": 0, "multi_sector_vulnerability": 1, "irrigation_challenges": 4}
+    ordered = authorized_follow_up_questions(
+        bundle,
+        uncertain_pathway_ids=set(),
+        confirmed_pathway_ids={"multi_sector_vulnerability", "irrigation_challenges"},
+        confirmed_pathway_confidence={
+            "multi_sector_vulnerability": "high",
+            "irrigation_challenges": "medium",
+        },
+        ruled_out_pathway_ids=set(),
+        pathway_retrieval_ranks=ranks,
+    )
+    assert ordered[0] == ("borewell_density", "Borewell question?")
+    assert ordered[1] == ("tank_siltation_status", "Tank siltation question?")
+
+
+def test_scoped_follow_up_freezes_unrelated_pathways():
+    tests = [
+        test_diverse_select_spreads_production_systems,
+        test_follow_up_prefers_uncertain_by_rank,
+        test_ruled_out_pathways_excluded_from_follow_up,
+        test_confirmed_follow_up_prefers_lowest_confidence,
+        test_tier_one_still_precedes_tier_two_despite_confidence_order,
+    ]
     failed = 0
     for fn in tests:
         try:

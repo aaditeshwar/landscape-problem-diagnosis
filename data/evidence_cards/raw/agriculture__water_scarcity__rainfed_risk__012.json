@@ -68,7 +68,11 @@
         "expression": "mean_annual_runoff_mm > 600 and terrain_cluster_id == 3",
         "qualitative_description": "High mean annual runoff (>600 mm) combined with broad plains and slopes terrain (cluster 3) indicates rapid water loss from sloping fields, reducing in-field moisture availability despite high rainfall.",
         "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "runoff_mm",
+          "terrain_cluster_id"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",

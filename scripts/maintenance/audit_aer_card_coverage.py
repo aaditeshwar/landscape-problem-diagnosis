@@ -19,6 +19,9 @@ from pymongo import MongoClient
 
 from services.retriever import AER_RETRIEVAL_NEIGHBORS, _fetch_candidates  # noqa: E402
 
+# Eastern plateau AERs where alluvium-tagged MWS often hit aquifer fallback (no alluvium cards).
+ALLUVIUM_GAP_AERS = ("AER-11", "AER-12")
+
 
 def neighbor_set(aer: str) -> list[str]:
     neighbors = AER_RETRIEVAL_NEIGHBORS.get(aer, [aer])
@@ -79,6 +82,68 @@ def main() -> int:
     print(f"\nAERs with ZERO cards after neighbor expansion: {', '.join(zero_neighbor) or 'none'}")
     print(f"AERs with weak pool (<8 cards): {', '.join(weak_neighbor) or 'none'}")
 
+    mws_aers: Counter[str] = Counter()
+    for doc in db.mws_data.find({"nbss_lup_aer_code": {"$exists": True, "$ne": None}}, {"nbss_lup_aer_code": 1}):
+        code = doc.get("nbss_lup_aer_code")
+        if code:
+            mws_aers[code] += 1
+
+    print("\n=== Alluvium aquifer gaps (high-volume eastern-plateau AERs) ===")
+    alluvium_fallback_aers: list[str] = []
+    for aer in ALLUVIUM_GAP_AERS:
+        tags = neighbor_set(aer)
+        alluvium_pool = count_pool(db, tags, "alluvium")
+        mws_total = mws_aers.get(aer, 0)
+        mws_alluvium = db.mws_data.count_documents(
+            {"nbss_lup_aer_code": aer, "aquifer.acwadam_class": "alluvium"},
+        )
+        if alluvium_pool == 0 and mws_alluvium > 0:
+            alluvium_fallback_aers.append(aer)
+            risk = "AQUIFER FALLBACK (no alluvium cards in neighbor pool)"
+        elif alluvium_pool == 0:
+            risk = "no alluvium cards (low alluvium MWS count)"
+        else:
+            risk = "ok"
+        print(
+            f"  {aer}: {mws_total} MWS total, {mws_alluvium} alluvium-classified, "
+            f"alluvium pool={alluvium_pool} -> {risk}"
+        )
+    if alluvium_fallback_aers:
+        print(
+            f"\n  WARNING: {', '.join(alluvium_fallback_aers)} alluvium MWS always drop aquifer filter "
+            "and may retrieve hard_rock neighbor-proxy cards."
+        )
+
+    print("\n=== Sample retrieval (alluvium MWS, generic stress query) ===")
+    try:
+        from services.retriever import retrieve_evidence_cards  # noqa: E402
+
+        for aer in ALLUVIUM_GAP_AERS:
+            sample = db.mws_data.find_one(
+                {"nbss_lup_aer_code": aer, "aquifer.acwadam_class": "alluvium"},
+            )
+            if not sample:
+                sample = db.mws_data.find_one({"nbss_lup_aer_code": aer})
+            if not sample:
+                print(f"  {aer}: no sample MWS")
+                continue
+            uid = sample.get("uid")
+            result = retrieve_evidence_cards(
+                db,
+                "what stresses exist in this landscape?",
+                sample,
+                limit=5,
+            )
+            cards = result.cards
+            direct = sum(1 for c in cards if aer in (c.get("aer_tags") or []))
+            print(f"  {aer} MWS {uid}: {direct}/{len(cards)} cards list {aer} directly")
+            for card in cards:
+                tags = card.get("aer_tags") or []
+                marker = "direct" if aer in tags else "proxy"
+                print(f"    [{marker}] {card.get('card_id')} aer={tags}")
+    except Exception as exc:
+        print(f"  (retrieval simulation skipped: {exc})")
+
     print("\n=== By aquifer type (neighbor pool) ===")
     aquifers = ["hard_rock", "alluvium", "semi-consolidated", "coastal"]
     gaps_by_aquifer: list[tuple[str, str, int]] = []
@@ -95,12 +160,6 @@ def main() -> int:
                 print()
 
     print("\n=== Ingested MWS by AER (top gaps for deployed tehsils) ===")
-    mws_aers: Counter[str] = Counter()
-    for doc in db.mws_data.find({"nbss_lup_aer_code": {"$exists": True, "$ne": None}}, {"nbss_lup_aer_code": 1}):
-        code = doc.get("nbss_lup_aer_code")
-        if code:
-            mws_aers[code] += 1
-
     print(f"  Total tagged MWS: {sum(mws_aers.values())}")
     print(f"  {'AER':<8} {'MWS':>7} {'direct':>7} {'neighbor':>9} {'risk'}")
     for aer, n in mws_aers.most_common():

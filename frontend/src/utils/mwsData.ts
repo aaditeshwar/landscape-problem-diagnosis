@@ -28,6 +28,38 @@ export function hydroSeries(mws: MwsDocument, field: keyof NonNullable<MwsDocume
     .filter((p) => Number.isFinite(p.value))
 }
 
+/** Mean annual precipitation (mm) from hydrological_annual time series. */
+export function meanAnnualPrecipitationMm(mws: MwsDocument): number | null {
+  const points = hydroSeries(mws, 'precipitation_mm')
+  if (!points.length) return null
+  const sum = points.reduce((acc, p) => acc + p.value, 0)
+  return sum / points.length
+}
+
+/** Rainfall band from mean annual precipitation (mm). */
+export function rainfallBandLabel(meanMm: number): string {
+  if (meanMm < 740) return '< 740 mm'
+  if (meanMm < 960) return '740–960 mm'
+  if (meanMm < 1200) return '960–1200 mm'
+  if (meanMm < 1620) return '1200–1620 mm'
+  return '> 1620 mm'
+}
+
+export function mwsRainfallBand(mws: MwsDocument): string | null {
+  const mean = meanAnnualPrecipitationMm(mws)
+  if (mean == null || !Number.isFinite(mean)) return null
+  return rainfallBandLabel(mean)
+}
+
+export function formatAgroEcologicalZone(mws: MwsDocument): string | null {
+  const name = mws.agro_ecological_zone ?? mws.nbss_lup_aer_name
+  const code = mws.nbss_lup_aer_code
+  if (name && code) return `${name} (${code})`
+  if (name) return name
+  if (code) return code
+  return null
+}
+
 export function croppingSeries(mws: MwsDocument): YearPoint[] {
   const data = mws.cropping_intensity ?? {}
   return sortedYears(data)

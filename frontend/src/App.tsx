@@ -183,6 +183,8 @@ export default function App() {
           explanation: result.panel_update_explanation ?? null,
           variable: followUpTarget.variable,
           revision: result.diagnosis_revision ?? null,
+          signalUpdates: result.follow_up_signal_updates ?? [],
+          signalEvaluation: result.signal_evaluation ?? null,
         },
       ])
       setDiagnosis(result)
@@ -241,6 +243,8 @@ export default function App() {
             canContinueConversation={!!sessionId && !!diagnosis}
             onSubmitFollowUp={handleFollowUp}
             disabled={!selectedMwsUid}
+            mwsAerCode={mwsData?.nbss_lup_aer_code ?? diagnosis?.mws_aer_code ?? null}
+            retrievalAerTags={diagnosis?.retrieval_aer_tags ?? null}
           />
         </aside>
 

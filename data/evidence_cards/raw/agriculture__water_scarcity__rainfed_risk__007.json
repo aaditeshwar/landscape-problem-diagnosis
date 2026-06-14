@@ -70,7 +70,11 @@
         "expression": "terrain_cluster_id == 3 and mean_annual_runoff_mm > 600",
         "qualitative_description": "Broad plains and slopes terrain (cluster 3) combined with high mean annual runoff (>600 mm) indicates rapid lateral drainage off the plateau, reducing in-field moisture retention and limiting recharge of shallow hard rock aquifers.",
         "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "runoff_mm",
+          "terrain_cluster_id"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",

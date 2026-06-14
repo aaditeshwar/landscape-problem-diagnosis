@@ -35,7 +35,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from _bootstrap import bootstrap  # noqa: E402
 
-bootstrap()
+bootstrap(runtime=True)
 
 from lib.card_embedding_text import (  # noqa: E402
     aliases_for_pathway,
@@ -43,6 +43,8 @@ from lib.card_embedding_text import (  # noqa: E402
     format_alias_paragraph,
     stamp_embedding_metadata,
 )
+from lib.expression_audit import validate_card_expressions  # noqa: E402
+from services.variable_registry import registry_excerpt_block  # noqa: E402
 
 META = ROOT / "metadata"
 RAW_DIR = ROOT / "data" / "evidence_cards" / "raw"
@@ -372,6 +374,13 @@ DERIVED_VARIABLES_FOR_EXPRESSIONS = {
     "trend_swb_total_area_ha": "linear slope of swb_total_area_ha (ha/year)",
     "mean_swb_rabi_kharif_ratio": "mean of swb_rabi_area_ha / swb_kharif_area_ha ratio",
     "trend_swb_rabi_kharif_ratio": "linear slope of SWB rabi/kharif ratio",
+    "drought_mild_spi_score_latest": "latest-year mild drought SPI trigger score (India Drought Manual, 0–100 scale)",
+    "drought_mild_mai_score_latest": "latest-year mild drought MAI trigger score",
+    "drought_mild_vci_score_latest": "latest-year mild drought VCI trigger score",
+    "drought_severe_moderate_spi_score_latest": "latest-year severe/moderate SPI trigger score",
+    "drought_severe_moderate_mai_score_latest": "latest-year severe/moderate MAI trigger score",
+    "drought_severe_moderate_vci_score_latest": "latest-year severe/moderate VCI trigger score",
+    "drought_severe_moderate_path_score_latest": "sum of latest-year severe/moderate drought path scores",
 }
 
 
@@ -398,9 +407,12 @@ def expression_rules_block(pathway_info: dict) -> str:
 - Every diagnostic_signals[].condition MUST include a non-empty "expression" for types quantitative, trend, and composite.
 - type=qualitative WITHOUT expression is allowed ONLY for variables with availability=not_available in the framework list above.
   {unavailable_note}
+- Every identifier in an expression MUST appear in the pathway diagnostic_variables list above (add derived scalars such as mean_cropping_intensity there when used).
 - The expression is shown to a reasoning model as the evaluable condition. It MUST be a single valid Python boolean expression using variable names exactly as in data_dictionary.json.
 - Put interpretive prose ONLY in "explanation" and optional supporting "qualitative_description". NEVER put prose paragraphs in "expression".
 - Time-series variables (e.g. lulc_*_ha, cropping_intensity, annual_runoff_mm, drought_weeks_severe) are dicts keyed by year strings "2017".."2024". Use [-1] for latest year, [0] for earliest: cropping_intensity[-1] <= 1.15
+- drought_causality is a nested time series: drought_causality[year][severity][metric]. Prefer derived latest-score scalars (drought_mild_spi_score_latest >= 26) instead of flat .get('spi_kharif') or .get('spi_class').
+- Static change-detection variables (cd_total_urbanization_ha, cd_forest_to_farm_ha, cd_total_deforestation_ha, …) are cumulative scalars for 2017–2024 — compare directly (cd_total_urbanization_ha > 20), never index with [-1].
 - Scalar NREGA totals (nrega_swc_count, nrega_irrigation_count, nrega_community_assets_count) are numeric aggregates — compare directly: nrega_irrigation_count < 3 (NOT .values() or dict indexing).
 - Null/absent categorical values: use `canal_name is None`, never SQL syntax like `IS NULL`.
 - List variables: organization_domains is a Python list — use `'fisheries' not in organization_domains`.
@@ -411,6 +423,8 @@ def expression_rules_block(pathway_info: dict) -> str:
   trend_annual_delta_g_mm < 0, mean_cropping_intensity <= 1.15, trend_swb_total_area_ha < -5
 
 {derived_variable_hints_block()}
+
+{registry_excerpt_block()}
 
 BAD example (current corpus bug — do NOT reproduce):
   "type": "qualitative",
@@ -781,6 +795,17 @@ def main() -> int:
             card = generate_card(claude, prompt)  # type: ignore[arg-type]
             card = normalize_card(card, schema)
             jsonschema.validate(card, schema)
+            pathway_vars = {
+                str(item.get("variable"))
+                for item in info.get("diagnostic_variables", [])
+                if item.get("variable")
+            }
+            expr_errors = validate_card_expressions(
+                card,
+                pathway_diagnostic_variables=pathway_vars,
+            )
+            if expr_errors:
+                raise ValueError("expression audit failed: " + "; ".join(expr_errors[:5]))
             doc = enrich_for_storage(card, pathway_key, cluster)
             if doc["card_id"] != card_id:
                 log.warning(f"  Model returned card_id={doc['card_id']}; expected {card_id}")

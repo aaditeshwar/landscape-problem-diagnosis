@@ -174,6 +174,7 @@
       "Shale": 0,
       "None": 0
     },
+    "cd_afforestation_ha": 232.14,
     "cd_farm_to_barren_ha": 0.04,
     "cd_forest_to_farm_ha": 65.41,
     "cd_single_to_double_ha": 23.06,
@@ -181,6 +182,7 @@
     "cd_total_deforestation_ha": 212.86,
     "cd_total_degradation_ha": 25.66,
     "cd_total_urbanization_ha": 7.25,
+    "cd_urbanization_ha": 7.25,
     "cropping_intensity": {
       "2017": 0.34,
       "2018": 0.47,
@@ -190,6 +192,16 @@
       "2022": 0.8,
       "2023": 0.73,
       "2024": 0.6
+    },
+    "delta_g_mm": {
+      "2017": -104.87,
+      "2018": -188.07,
+      "2019": 78.77,
+      "2020": -190.65,
+      "2021": -73.52,
+      "2022": 3.74,
+      "2023": -283.99,
+      "2024": -109.07
     },
     "dist_agri_market_km": 13.433,
     "dist_agri_processing_km": 8.02,
@@ -209,80 +221,157 @@
     "dist_school_secondary_km": 0.779,
     "dist_storage_warehousing_km": 47.772,
     "dist_sub_centre_km": 0.41,
-    "drought_causality_json": {
+    "drought_causality": {
       "2017": {
         "severe_moderate": {
-          "moderate_drought_path1": 1.0
+          "drought_path1": 1.0
         },
         "mild": {
-          "mild_drought_spi_score": 9.0,
-          "mild_drought_cropping_area_sown_score": 4.5,
-          "mild_drought_vci_score": 1.67
+          "spi_score": 9.0,
+          "cropping_area_sown_score": 4.5,
+          "vci_score": 1.67
         }
       },
       "2018": {
         "severe_moderate": {
-          "moderate_drought_path1": 1.0
+          "drought_path1": 1.0
         },
         "mild": {
-          "mild_drought_spi_score": 10.0,
-          "mild_drought_cropping_area_sown_score": 5.0,
-          "mild_drought_vci_score": 1.83
+          "spi_score": 10.0,
+          "cropping_area_sown_score": 5.0,
+          "vci_score": 1.83
         }
       },
       "2019": {
         "severe_moderate": {},
         "mild": {
-          "mild_drought_spi_score": 8.0,
-          "mild_drought_cropping_area_sown_score": 4.0,
-          "mild_drought_mai_score": 1.67
+          "spi_score": 8.0,
+          "cropping_area_sown_score": 4.0,
+          "mai_score": 1.67
         }
       },
       "2020": {
         "severe_moderate": {},
         "mild": {
-          "mild_drought_spi_score": 9.0,
-          "mild_drought_cropping_area_sown_score": 4.5,
-          "mild_drought_vci_score": 1.67
+          "spi_score": 9.0,
+          "cropping_area_sown_score": 4.5,
+          "vci_score": 1.67
         }
       },
       "2021": {
         "severe_moderate": {},
         "mild": {
-          "mild_drought_spi_score": 10.0,
-          "mild_drought_cropping_area_sown_score": 5.0,
-          "mild_drought_vci_score": 1.67
+          "spi_score": 10.0,
+          "cropping_area_sown_score": 5.0,
+          "vci_score": 1.67
         }
       },
       "2022": {
         "severe_moderate": {
-          "moderate_drought_path1": 3.0
+          "drought_path1": 3.0
         },
         "mild": {
-          "mild_drought_spi_score": 10.0,
-          "mild_drought_cropping_area_sown_score": 5.0,
-          "mild_drought_vci_score": 1.83
+          "spi_score": 10.0,
+          "cropping_area_sown_score": 5.0,
+          "vci_score": 1.83
         }
       },
       "2023": {
         "severe_moderate": {
-          "moderate_drought_path1": 2.0,
-          "moderate_drought_path4": 2.0
+          "drought_path1": 2.0,
+          "drought_path4": 2.0
         },
         "mild": {
-          "mild_drought_spi_score": 10.0,
-          "mild_drought_cropping_area_sown_score": 5.0,
-          "mild_drought_vci_score": 1.67
+          "spi_score": 10.0,
+          "cropping_area_sown_score": 5.0,
+          "vci_score": 1.67
         }
       },
       "2024": {
         "severe_moderate": {
-          "moderate_drought_path1": 3.0
+          "drought_path1": 3.0
         },
         "mild": {
-          "mild_drought_spi_score": 10.0,
-          "mild_drought_cropping_area_sown_score": 5.0,
-          "mild_drought_vci_score": 2.0
+          "spi_score": 10.0,
+          "cropping_area_sown_score": 5.0,
+          "vci_score": 2.0
+        }
+      }
+    },
+    "drought_causality_json": {
+      "2017": {
+        "severe_moderate": {
+          "drought_path1": 1.0
+        },
+        "mild": {
+          "spi_score": 9.0,
+          "cropping_area_sown_score": 4.5,
+          "vci_score": 1.67
+        }
+      },
+      "2018": {
+        "severe_moderate": {
+          "drought_path1": 1.0
+        },
+        "mild": {
+          "spi_score": 10.0,
+          "cropping_area_sown_score": 5.0,
+          "vci_score": 1.83
+        }
+      },
+      "2019": {
+        "severe_moderate": {},
+        "mild": {
+          "spi_score": 8.0,
+          "cropping_area_sown_score": 4.0,
+          "mai_score": 1.67
+        }
+      },
+      "2020": {
+        "severe_moderate": {},
+        "mild": {
+          "spi_score": 9.0,
+          "cropping_area_sown_score": 4.5,
+          "vci_score": 1.67
+        }
+      },
+      "2021": {
+        "severe_moderate": {},
+        "mild": {
+          "spi_score": 10.0,
+          "cropping_area_sown_score": 5.0,
+          "vci_score": 1.67
+        }
+      },
+      "2022": {
+        "severe_moderate": {
+          "drought_path1": 3.0
+        },
+        "mild": {
+          "spi_score": 10.0,
+          "cropping_area_sown_score": 5.0,
+          "vci_score": 1.83
+        }
+      },
+      "2023": {
+        "severe_moderate": {
+          "drought_path1": 2.0,
+          "drought_path4": 2.0
+        },
+        "mild": {
+          "spi_score": 10.0,
+          "cropping_area_sown_score": 5.0,
+          "vci_score": 1.67
+        }
+      },
+      "2024": {
+        "severe_moderate": {
+          "drought_path1": 3.0
+        },
+        "mild": {
+          "spi_score": 10.0,
+          "cropping_area_sown_score": 5.0,
+          "vci_score": 2.0
         }
       }
     },
@@ -315,6 +404,16 @@
       "2022": 6,
       "2023": 7,
       "2024": 6
+    },
+    "et_mm": {
+      "2017": 641.58,
+      "2018": 691.67,
+      "2019": 724.95,
+      "2020": 711.17,
+      "2021": 552.44,
+      "2022": 721.58,
+      "2023": 665.1,
+      "2024": 703.6
     },
     "kharif_cropped_area_percent": {
       "2017": 100,
@@ -411,6 +510,26 @@
     "nrega_land_restoration_count": 0,
     "nrega_plantation_count": 0,
     "nrega_swc_count": 4,
+    "precipitation_mm": {
+      "2017": 808.52,
+      "2018": 577.73,
+      "2019": 1128.19,
+      "2020": 657.63,
+      "2021": 555,
+      "2022": 1057.96,
+      "2023": 436.04,
+      "2024": 703.4
+    },
+    "runoff_mm": {
+      "2017": 271.81,
+      "2018": 74.13,
+      "2019": 324.47,
+      "2020": 137.11,
+      "2021": 76.08,
+      "2022": 332.64,
+      "2023": 54.93,
+      "2024": 108.87
+    },
     "seasonal_precipitation_mm": {
       "2017": {
         "kharif": {
@@ -637,7 +756,10 @@
     "village_total_population": 13318
   },
   "derived_variables": {
+    "drought_mild_spi_score_latest": 10.0,
+    "drought_mild_vci_score_latest": 2.0,
     "drought_moderate_return_period": 8.0,
+    "drought_severe_moderate_path_score_latest": 3.0,
     "mean_annual_delta_g_mm": -108.4575,
     "mean_annual_et_mm": 676.5113,
     "mean_annual_precipitation_mm": 740.5588,
@@ -659,6 +781,10 @@
   },
   "missing_variables": [
     "canal_name",
+    "drought_mild_mai_score_latest",
+    "drought_severe_moderate_mai_score_latest",
+    "drought_severe_moderate_spi_score_latest",
+    "drought_severe_moderate_vci_score_latest",
     "drought_severe_return_period",
     "organization_domains",
     "river_name"
@@ -671,6 +797,7 @@
     "aquifer_class": "static",
     "aquifer_lithology_percent": "static",
     "canal_name": "static",
+    "cd_afforestation_ha": "static",
     "cd_farm_to_barren_ha": "static",
     "cd_forest_to_farm_ha": "static",
     "cd_single_to_double_ha": "static",
@@ -678,7 +805,9 @@
     "cd_total_deforestation_ha": "static",
     "cd_total_degradation_ha": "static",
     "cd_total_urbanization_ha": "static",
+    "cd_urbanization_ha": "static",
     "cropping_intensity": "time_series",
+    "delta_g_mm": "static",
     "dist_agri_market_km": "static",
     "dist_agri_processing_km": "static",
     "dist_apmc_km": "static",
@@ -697,12 +826,21 @@
     "dist_school_secondary_km": "static",
     "dist_storage_warehousing_km": "static",
     "dist_sub_centre_km": "static",
+    "drought_causality": "time_series",
     "drought_causality_json": "time_series",
+    "drought_mild_mai_score_latest": "derived",
+    "drought_mild_spi_score_latest": "derived",
+    "drought_mild_vci_score_latest": "derived",
     "drought_moderate_return_period": "derived",
+    "drought_severe_moderate_mai_score_latest": "derived",
+    "drought_severe_moderate_path_score_latest": "derived",
+    "drought_severe_moderate_spi_score_latest": "derived",
+    "drought_severe_moderate_vci_score_latest": "derived",
     "drought_severe_return_period": "derived",
     "drought_weeks_moderate": "time_series",
     "drought_weeks_severe": "time_series",
     "dry_spell_weeks": "time_series",
+    "et_mm": "static",
     "kharif_cropped_area_percent": "time_series",
     "lulc_barrenland_ha": "time_series",
     "lulc_cropland_ha": "time_series",
@@ -727,7 +865,9 @@
     "nrega_plantation_count": "static",
     "nrega_swc_count": "static",
     "organization_domains": "static",
+    "precipitation_mm": "static",
     "river_name": "static",
+    "runoff_mm": "static",
     "seasonal_precipitation_mm": "time_series",
     "slopy_area_percent": "static",
     "soge_class_name": "static",

@@ -90,7 +90,11 @@
         "expression": "terrain_cluster_id == 3 and mean_annual_runoff_mm > 80",
         "qualitative_description": "Broad plains and slopes terrain (cluster 3) combined with mean annual runoff above 80 mm indicates significant in-season water loss that could otherwise be harvested for supplemental irrigation.",
         "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "runoff_mm",
+          "terrain_cluster_id"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",

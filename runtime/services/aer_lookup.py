@@ -122,6 +122,39 @@ def resolve_aer_code(props: dict[str, Any], ref_regions: dict[str, dict[str, Any
     return None
 
 
+def rainfall_regime_from_aer_name(name: str | None) -> str | None:
+    if not name:
+        return None
+    lower = name.lower()
+    if "perhumid" in lower or "per humid" in lower:
+        return "perhumid"
+    if "sub-humid" in lower or "subhumid" in lower:
+        return "sub-humid"
+    if "humid" in lower:
+        return "humid"
+    if "semi-arid" in lower or "semi arid" in lower:
+        return "semi-arid"
+    if "arid" in lower:
+        return "arid"
+    return None
+
+
+def mws_aer_profile(mws_doc: dict) -> dict[str, Any]:
+    """NBSS-LUP AER context for an MWS, including rainfall regime label."""
+    code = mws_doc.get("nbss_lup_aer_code")
+    ref = load_reference_regions().get(str(code or ""), {})
+    name = mws_doc.get("nbss_lup_aer_name") or ref.get("name")
+    regime = rainfall_regime_from_aer_name(name)
+    return {
+        "nbss_lup_aer_code": code,
+        "nbss_lup_aer_name": name,
+        "nbss_lup_aer_physio_reg": mws_doc.get("nbss_lup_aer_physio_reg"),
+        "agro_ecological_zone": name,
+        "rainfall_mm_band": ref.get("rainfall_mm"),
+        "rainfall_regime": regime,
+    }
+
+
 def enrich_feature_properties(
     props: dict[str, Any],
     ref_regions: dict[str, dict[str, Any]] | None = None,

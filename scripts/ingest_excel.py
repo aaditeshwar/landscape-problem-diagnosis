@@ -481,6 +481,15 @@ def parse_drought_causality(rows, docs):
         docs[uid]["drought_causality"] = causality
 
 
+def finalize_mws_docs(docs: dict) -> None:
+    """Apply registry normalizers to parsed MWS documents before Mongo upsert."""
+    from services.variable_registry import normalize_drought_causality
+
+    for doc in docs.values():
+        if "drought_causality" in doc:
+            doc["drought_causality"] = normalize_drought_causality(doc.get("drought_causality"))
+
+
 def parse_nrega_mws(rows, docs):
     nrega_years = list(range(2005, 2025))
     for r in rows:
@@ -1010,6 +1019,8 @@ def main():
     parse_mws_intersect_villages(sheet_to_dict(wb, "mws_intersect_villages", optional=True), mws_docs)
     parse_mws_intersect_swb(sheet_to_dict(wb, "mws_intersect_swb", optional=True), mws_docs)
     parse_agroecological(sheet_to_dict(wb, "agroecological", optional=True), mws_docs)
+
+    finalize_mws_docs(mws_docs)
 
     # Tag every MWS doc with tehsil metadata
     for uid, doc in mws_docs.items():

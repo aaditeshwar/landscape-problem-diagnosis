@@ -70,7 +70,11 @@
         "expression": "mean_annual_precipitation_mm < 150 and (trend_annual_precipitation_mm < -2) and (seasonal_precipitation_mm[-1].get('kharif', 0) < 0.6 * (sum(v.get('kharif', 0) for v in list(seasonal_precipitation_mm.values())[:-1]) / max(len(seasonal_precipitation_mm) - 1, 1)))",
         "qualitative_description": "Mean annual precipitation is below 150 mm (arid threshold for Ladakh), the long-term trend is declining, and the most recent kharif seasonal total is below 60% of the multi-year kharif mean — confirming both chronic aridity and an acute deficit year.",
         "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "precipitation_mm",
+          "seasonal_precipitation_mm"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -107,10 +111,15 @@
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "drought_causality_json.get('spi_class') in ['moderate_drought', 'severe_drought', 'extreme_drought'] and drought_causality_json.get('vci', 100) < 35",
+        "expression": "(drought_mild_spi_score_latest >= 26 or drought_severe_moderate_spi_score_latest >= 26) and drought_mild_vci_score_latest >= 26",
         "qualitative_description": "SPI classification indicates at least moderate meteorological drought AND VCI below 35 confirms concurrent vegetation stress, together satisfying the India Drought Manual composite criterion for agricultural drought declaration.",
         "threshold_confidence": "high",
-        "context_sensitivity": "global"
+        "context_sensitivity": "global",
+        "variables": [
+          "drought_mild_vci_score_latest",
+          "drought_mild_spi_score_latest",
+          "drought_severe_moderate_spi_score_latest"
+        ]
       },
       "severity": "high",
       "direction": "confirms",

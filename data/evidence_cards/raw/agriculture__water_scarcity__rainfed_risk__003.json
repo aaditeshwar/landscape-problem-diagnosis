@@ -93,7 +93,11 @@
         "expression": "mean_annual_runoff_mm > 120 and terrain_cluster_id == 1",
         "qualitative_description": "High mean annual runoff on mostly-plains terrain indicates that rainfall is being lost as surface flow rather than being retained in-field, representing an unmet water harvesting opportunity.",
         "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "runoff_mm",
+          "terrain_cluster_id"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",

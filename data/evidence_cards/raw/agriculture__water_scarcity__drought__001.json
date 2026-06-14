@@ -66,10 +66,14 @@
       ],
       "condition": {
         "type": "composite",
-        "expression": "drought_causality_json.get('SPI_kharif', 0) <= -1.0 and drought_causality_json.get('VCI_kharif', 100) < 40",
+        "expression": "drought_mild_spi_score_latest >= 26 and drought_mild_vci_score_latest >= 26",
         "qualitative_description": "SPI at or below -1.0 (moderate to severe meteorological drought) combined with VCI below 40 (moderate vegetation stress) confirms co-occurrence of meteorological and agricultural drought in the same kharif season.",
         "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "drought_mild_spi_score_latest",
+          "drought_mild_vci_score_latest"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -90,7 +94,11 @@
         "expression": "(seasonal_precipitation_mm[-1].get('kharif', 9999) < 0.75 * mean_annual_precipitation_mm) or (mean_annual_precipitation_mm < 700 and trend_annual_precipitation_mm < -5)",
         "qualitative_description": "Kharif seasonal rainfall below 75% of the long-run annual mean, or a declining multi-year precipitation trend below 700 mm/year, confirms structural rainfall deficit underpinning drought risk.",
         "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "seasonal_precipitation_mm",
+          "precipitation_mm"
+        ]
       },
       "severity": "moderate",
       "direction": "confirms",

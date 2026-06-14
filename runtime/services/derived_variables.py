@@ -4,6 +4,21 @@ from __future__ import annotations
 
 from typing import Any
 
+# India Drought Manual indicator trigger score on the stored 0–100 causality scale.
+IDM_INDICATOR_TRIGGER_SCORE = 26.0
+
+DROUGHT_DERIVED_VARIABLE_NAMES = frozenset(
+    {
+        "drought_mild_spi_score_latest",
+        "drought_mild_mai_score_latest",
+        "drought_mild_vci_score_latest",
+        "drought_severe_moderate_spi_score_latest",
+        "drought_severe_moderate_mai_score_latest",
+        "drought_severe_moderate_vci_score_latest",
+        "drought_severe_moderate_path_score_latest",
+    }
+)
+
 
 def _sorted_numeric_series(series: dict | None) -> list[tuple[int, float]]:
     if not series:
@@ -31,6 +46,8 @@ def trend(series: dict | None) -> float | None:
     """Linear slope over agricultural years (units per year)."""
     pairs = _sorted_numeric_series(series)
     if len(pairs) < 2:
+        if len(pairs) == 1:
+            return 0.0
         return None
     years = [float(y) for y, _ in pairs]
     values = [v for _, v in pairs]
@@ -123,15 +140,29 @@ def swb_total_area_ha_series(mws_doc: dict) -> dict[str, float] | None:
 
 def swb_rabi_kharif_ratio_series(mws_doc: dict) -> dict[str, float] | None:
     swb = mws_doc.get("swb_annual") or {}
+    if not swb:
+        return None
     out: dict[str, float] = {}
     for year, row in swb.items():
         if not isinstance(row, dict):
             continue
         kharif = row.get("kharif_ha")
         rabi = row.get("rabi_ha")
-        if kharif is None or rabi is None or float(kharif) == 0:
+        if kharif is None and rabi is None:
             continue
-        out[str(year)] = round(float(rabi) / float(kharif), 4)
+        try:
+            kharif_val = float(kharif or 0)
+        except (TypeError, ValueError):
+            continue
+        if kharif_val == 0:
+            out[str(year)] = 0.0
+            continue
+        if rabi is None:
+            continue
+        try:
+            out[str(year)] = round(float(rabi) / kharif_val, 4)
+        except (TypeError, ValueError):
+            continue
     return out or None
 
 
@@ -144,14 +175,72 @@ def drought_weeks_series(mws_doc: dict, field: str) -> dict[str, float] | None:
     return out or None
 
 
+def _drought_causality(mws_doc: dict) -> dict:
+    from services.variable_registry import normalize_drought_causality
+
+    return normalize_drought_causality(mws_doc.get("drought_causality"))
+
+
+def latest_drought_year_payload(mws_doc: dict) -> dict | None:
+    causality = _drought_causality(mws_doc)
+    if not causality:
+        return None
+    years = sorted(str(y) for y in causality.keys())
+    if not years:
+        return None
+    payload = causality.get(years[-1])
+    return payload if isinstance(payload, dict) else None
+
+
+def latest_drought_metric(mws_doc: dict, severity: str, metric: str) -> float | None:
+    payload = latest_drought_year_payload(mws_doc)
+    if not payload:
+        return None
+    block = payload.get(severity) or {}
+    if not isinstance(block, dict):
+        return 0.0
+    value = block.get(metric)
+    if value is None:
+        return 0.0
+    try:
+        return round(float(value), 4)
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def latest_drought_path_score(mws_doc: dict, severity: str = "severe_moderate") -> float | None:
+    payload = latest_drought_year_payload(mws_doc)
+    if not payload:
+        return None
+    block = payload.get(severity) or {}
+    if not isinstance(block, dict):
+        return None
+    total = 0.0
+    found = False
+    for key, value in block.items():
+        if not str(key).startswith("drought_path") or value is None:
+            continue
+        try:
+            total += float(value)
+            found = True
+        except (TypeError, ValueError):
+            continue
+    return round(total, 4) if found else 0.0
+
+
 def drought_return_period(weeks_series: dict | None, *, min_weeks: float = 1.0) -> float | None:
-    """Average years between drought events (years with weeks >= min_weeks)."""
+    """Average years between drought events (years with weeks >= min_weeks).
+
+    When the series spans N years with zero qualifying events, returns N (a lower bound
+    on return period) so expressions like ``drought_severe_return_period <= 4`` evaluate
+    as FALSE rather than leaving the variable unresolved.
+    """
     pairs = _sorted_numeric_series(weeks_series)
     if not pairs:
         return None
     event_years = sum(1 for _, weeks in pairs if weeks >= min_weeks)
     if event_years == 0:
-        return None
+        return float(len(pairs))
     return round(len(pairs) / event_years, 2)
 
 
@@ -197,4 +286,18 @@ def resolve_derived(mws_doc: dict, variable: str) -> Any:
         return mean(swb_rabi_kharif_ratio_series(mws_doc))
     if variable == "trend_swb_rabi_kharif_ratio":
         return trend(swb_rabi_kharif_ratio_series(mws_doc))
+    if variable == "drought_mild_spi_score_latest":
+        return latest_drought_metric(mws_doc, "mild", "spi_score")
+    if variable == "drought_mild_mai_score_latest":
+        return latest_drought_metric(mws_doc, "mild", "mai_score")
+    if variable == "drought_mild_vci_score_latest":
+        return latest_drought_metric(mws_doc, "mild", "vci_score")
+    if variable == "drought_severe_moderate_spi_score_latest":
+        return latest_drought_metric(mws_doc, "severe_moderate", "spi_score")
+    if variable == "drought_severe_moderate_mai_score_latest":
+        return latest_drought_metric(mws_doc, "severe_moderate", "mai_score")
+    if variable == "drought_severe_moderate_vci_score_latest":
+        return latest_drought_metric(mws_doc, "severe_moderate", "vci_score")
+    if variable == "drought_severe_moderate_path_score_latest":
+        return latest_drought_path_score(mws_doc)
     return None

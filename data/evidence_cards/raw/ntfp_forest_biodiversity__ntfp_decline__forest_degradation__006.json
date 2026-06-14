@@ -74,7 +74,11 @@
         "expression": "cd_total_deforestation_ha > cd_total_afforestation_ha and (cd_total_deforestation_ha - cd_total_afforestation_ha) > 20",
         "qualitative_description": "Net forest loss (deforestation minus afforestation) exceeds 20 ha, indicating that restoration efforts are insufficient to compensate for habitat destruction.",
         "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "cd_total_deforestation_ha",
+          "cd_afforestation_ha"
+        ]
       },
       "severity": "moderate",
       "direction": "confirms",

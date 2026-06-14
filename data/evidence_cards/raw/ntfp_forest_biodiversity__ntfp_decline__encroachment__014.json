@@ -28,7 +28,7 @@
       ],
       "condition": {
         "type": "trend",
-        "expression": "cd_forest_to_farm_ha[-1] > cd_forest_to_farm_ha[0]",
+        "expression": "cd_forest_to_farm_ha > cd_forest_to_farm_ha",
         "qualitative_description": "Cumulative forest-to-farm conversion area has increased over the observation period, indicating active encroachment of forest land for agriculture.",
         "threshold_confidence": "high",
         "context_sensitivity": "regional"
@@ -48,10 +48,13 @@
       ],
       "condition": {
         "type": "trend",
-        "expression": "cd_total_urbanization_ha[-1] > cd_total_urbanization_ha[0] and (cd_total_urbanization_ha[-1] - cd_total_urbanization_ha[0]) > 50",
+        "expression": "cd_total_urbanization_ha > 50",
         "qualitative_description": "Total urbanization area has grown by more than 50 ha over the observation period, suggesting settlement expansion that may be encroaching on forest margins.",
         "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "cd_urbanization_ha"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -67,7 +70,7 @@
       ],
       "condition": {
         "type": "composite",
-        "expression": "(village_st_percent > 25) and (cd_forest_to_farm_ha[-1] > cd_forest_to_farm_ha[0])",
+        "expression": "(village_st_percent > 25) and (cd_forest_to_farm_ha > cd_forest_to_farm_ha)",
         "qualitative_description": "Village has a high Scheduled Tribe population (>25%) coinciding with measurable forest-to-farm conversion, suggesting that encroachment may be displacing or restricting access for forest-dependent tribal communities.",
         "threshold_confidence": "medium",
         "context_sensitivity": "local"

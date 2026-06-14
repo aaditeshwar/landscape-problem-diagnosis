@@ -89,14 +89,18 @@ def _assert_shared_prompt_blocks(prompt: str) -> None:
     assert '"panel_update_explanation": null' in prompt
 
 
-def test_ollama_prompt_has_eval_block_and_json_fence():
+def test_ollama_prompt_has_signal_results_and_json_fence():
     prompt = _build_prompt(
         location=SAMPLE_LOCATION,
         problem_description="Report stresses",
         bundle=SAMPLE_BUNDLE,
         profile="ollama",
     )
-    assert "[SIGNAL EVALUATION" in prompt
+    assert "[SIGNAL EVALUATION RESULTS" in prompt
+    assert "server-computed" in prompt
+    assert "sig_01" in prompt
+    assert "TRUE" in prompt or "FALSE" in prompt
+    assert "Evaluate each signal expression against present_variables" not in prompt
     assert "NBSS-LUP AER: AER-3" in prompt
     assert "Derived/computed:" in prompt
     _assert_shared_prompt_blocks(prompt)
@@ -104,14 +108,16 @@ def test_ollama_prompt_has_eval_block_and_json_fence():
     assert "interaction_with" not in _format_bundle(SAMPLE_BUNDLE, "ollama")
 
 
-def test_claude_prompt_has_shared_blocks_without_eval_fence():
+def test_claude_prompt_has_signal_results_without_json_fence():
     claude = _build_prompt(
         location=SAMPLE_LOCATION,
         problem_description="Report stresses",
         bundle=SAMPLE_BUNDLE,
         profile="claude",
     )
-    assert "[SIGNAL EVALUATION" not in claude
+    assert "[SIGNAL EVALUATION RESULTS" in claude
+    assert "server-computed" in claude
+    assert "sig_01" in claude
     assert "expert agro-ecological diagnostician" in claude
     assert "Signals:" in claude
     assert "Confounders:" in claude
@@ -133,12 +139,26 @@ def test_prompt_includes_injected_data_and_prior_questions():
     assert "(none)" not in prompt
 
 
+def test_prompt_includes_reasoning_wording_rules():
+    prompt = _build_prompt(
+        location=SAMPLE_LOCATION,
+        problem_description="Report stresses",
+        bundle=SAMPLE_BUNDLE,
+        profile="claude",
+    )
+    assert "NEEDS_LLM means the variable is missing from landscape data" in prompt
+    assert 'Do NOT write "farmer reports"' in prompt
+    assert "data is NOT yet available" in prompt
+    assert "not supported by current landscape data" in prompt
+
+
 def main() -> int:
     test_split_present_variables()
     test_null_if_placeholder()
-    test_ollama_prompt_has_eval_block_and_json_fence()
-    test_claude_prompt_has_shared_blocks_without_eval_fence()
+    test_ollama_prompt_has_signal_results_and_json_fence()
+    test_claude_prompt_has_signal_results_without_json_fence()
     test_prompt_includes_injected_data_and_prior_questions()
+    test_prompt_includes_reasoning_wording_rules()
     print("All prompt builder tests passed.")
     return 0
 

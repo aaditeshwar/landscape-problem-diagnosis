@@ -52,7 +52,11 @@
         "expression": "cd_total_deforestation_ha > 0 and (cd_total_afforestation_ha / (cd_total_deforestation_ha + 1e-9)) < 0.5",
         "qualitative_description": "Cumulative deforestation exceeds afforestation by more than 2:1, indicating that forest recovery is failing to compensate for habitat loss.",
         "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "cd_total_deforestation_ha",
+          "cd_afforestation_ha"
+        ]
       },
       "severity": "high",
       "direction": "confirms",

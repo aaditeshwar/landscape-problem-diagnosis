@@ -70,10 +70,16 @@
       ],
       "condition": {
         "type": "composite",
-        "expression": "drought_causality_json.get('spi_class') in ['moderately_dry', 'severely_dry', 'extremely_dry'] or drought_causality_json.get('vci') < 35 or drought_causality_json.get('mai') < 0.5",
+        "expression": "(drought_mild_spi_score_latest >= 26 or drought_severe_moderate_spi_score_latest >= 26) or drought_mild_vci_score_latest >= 26 or drought_mild_mai_score_latest >= 26",
         "qualitative_description": "SPI indicating moderately dry or worse, VCI below 35, or MAI below 0.5 together confirm meteorological and agricultural drought co-occurrence per the India Drought Manual classification.",
         "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "drought_mild_vci_score_latest",
+          "drought_mild_mai_score_latest",
+          "drought_mild_spi_score_latest",
+          "drought_severe_moderate_spi_score_latest"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -94,7 +100,11 @@
         "expression": "trend_annual_precipitation_mm < -30 or (seasonal_precipitation_mm[-1].get('kharif', 9999) < 0.75 * mean_annual_precipitation_mm)",
         "qualitative_description": "A declining trend in annual precipitation exceeding 30 mm/year, or a kharif seasonal total below 75% of the long-term mean annual precipitation, confirms a below-normal rainfall year driving drought stress.",
         "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "seasonal_precipitation_mm",
+          "precipitation_mm"
+        ]
       },
       "severity": "moderate",
       "direction": "confirms",

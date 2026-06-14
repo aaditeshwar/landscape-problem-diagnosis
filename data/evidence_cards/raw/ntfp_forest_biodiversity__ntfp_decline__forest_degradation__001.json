@@ -53,7 +53,11 @@
         "expression": "cd_total_deforestation_ha > 0 and (cd_total_afforestation_ha == 0 or (cd_total_deforestation_ha / (cd_total_afforestation_ha + 1e-9)) > 2.0)",
         "qualitative_description": "Cumulative deforestation exceeds zero and is more than double cumulative afforestation, indicating a net forest deficit with weak recovery capacity.",
         "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "cd_total_deforestation_ha",
+          "cd_afforestation_ha"
+        ]
       },
       "severity": "high",
       "direction": "confirms",

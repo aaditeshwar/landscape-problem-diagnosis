@@ -28,7 +28,7 @@
       ],
       "condition": {
         "type": "trend",
-        "expression": "cd_forest_to_farm_ha[-1] > cd_forest_to_farm_ha[0] and (cd_forest_to_farm_ha[-1] - cd_forest_to_farm_ha[0]) > 50",
+        "expression": "cd_forest_to_farm_ha > 50",
         "qualitative_description": "Cumulative forest-to-farm conversion has increased by more than 50 ha over the available record, indicating active encroachment of forest land for agriculture.",
         "threshold_confidence": "high",
         "context_sensitivity": "regional"
@@ -44,10 +44,13 @@
       ],
       "condition": {
         "type": "trend",
-        "expression": "cd_total_urbanization_ha[-1] > cd_total_urbanization_ha[0] and (cd_total_urbanization_ha[-1] - cd_total_urbanization_ha[0]) > 20",
+        "expression": "cd_total_urbanization_ha > 20",
         "qualitative_description": "Settlement footprint has expanded by more than 20 ha over the record period, suggesting encroachment of forest fringes for habitation.",
         "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "cd_urbanization_ha"
+        ]
       },
       "severity": "moderate",
       "direction": "confirms",
@@ -63,7 +66,7 @@
       ],
       "condition": {
         "type": "composite",
-        "expression": "(village_st_percent > 40) and (cd_forest_to_farm_ha[-1] - cd_forest_to_farm_ha[0]) > 30",
+        "expression": "(village_st_percent > 40) and cd_forest_to_farm_ha > 30",
         "qualitative_description": "Village has a high Scheduled Tribe population (>40%) combined with measurable forest-to-farm conversion, indicating that forest-dependent indigenous communities are likely experiencing reduced NTFP access due to encroachment.",
         "threshold_confidence": "medium",
         "context_sensitivity": "local"
@@ -84,10 +87,14 @@
       ],
       "condition": {
         "type": "composite",
-        "expression": "((cd_forest_to_farm_ha[-1] - cd_forest_to_farm_ha[0]) > 50) and ((cd_total_urbanization_ha[-1] - cd_total_urbanization_ha[0]) > 20) and (terrain_cluster_id != 1)",
+        "expression": "(cd_forest_to_farm_ha > 50) and (cd_total_urbanization_ha > 20) and (terrain_cluster_id != 1)",
         "qualitative_description": "Both agricultural and settlement encroachment are increasing simultaneously in non-plains terrain, indicating compound pressure on forest extent from multiple encroachment vectors.",
         "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "cd_forest_to_farm_ha",
+          "cd_urbanization_ha"
+        ]
       },
       "severity": "high",
       "direction": "confirms",

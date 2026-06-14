@@ -50,6 +50,7 @@ TIME_SERIES_VARIABLES = frozenset(
         "monsoon_onset_date",
         "kharif_cropped_area_percent",
         "drought_causality_json",
+        "drought_causality",
         "cropping_intensity",
         "lulc_single_kharif_ha",
         "lulc_double_crop_ha",

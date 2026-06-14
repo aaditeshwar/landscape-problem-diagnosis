@@ -73,7 +73,11 @@
         "expression": "mean_annual_precipitation_mm < 600 and seasonal_precipitation_mm[-1]['kharif'] < (0.75 * mean_annual_precipitation_mm)",
         "qualitative_description": "Long-run mean annual precipitation below 600 mm combined with a kharif season receiving less than 75% of the long-run annual mean confirms a below-normal monsoon year in an already moisture-limited zone.",
         "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "precipitation_mm",
+          "seasonal_precipitation_mm"
+        ]
       },
       "severity": "moderate",
       "direction": "confirms",
@@ -110,10 +114,15 @@
       ],
       "condition": {
         "type": "composite",
-        "expression": "drought_causality_json.get('spi_class') in ['moderate_drought', 'severe_drought', 'extreme_drought'] and drought_causality_json.get('vci') is not None and drought_causality_json.get('vci') < 35",
+        "expression": "(drought_mild_spi_score_latest >= 26 or drought_severe_moderate_spi_score_latest >= 26) and drought_mild_vci_score_latest >= 26",
         "qualitative_description": "SPI classification of moderate drought or worse combined with VCI below 35 confirms co-occurrence of meteorological and agricultural drought, ruling out irrigation-buffered scenarios.",
         "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "drought_mild_vci_score_latest",
+          "drought_mild_spi_score_latest",
+          "drought_severe_moderate_spi_score_latest"
+        ]
       },
       "severity": "high",
       "direction": "confirms",

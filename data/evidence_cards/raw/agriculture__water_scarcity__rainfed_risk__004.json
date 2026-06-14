@@ -95,7 +95,11 @@
         "expression": "mean_annual_runoff_mm > 60 and terrain_cluster_id == 3",
         "qualitative_description": "Mean annual runoff exceeds 60mm and terrain is classified as broad plains and slopes (cluster 3), indicating significant water loss potential that could be captured through in-situ harvesting but currently is not.",
         "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "runoff_mm",
+          "terrain_cluster_id"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",

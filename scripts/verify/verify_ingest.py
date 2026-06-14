@@ -11,8 +11,10 @@ from _bootstrap import ROOT, bootstrap  # noqa: E402
 from dotenv import load_dotenv
 from pymongo import MongoClient
 
-bootstrap()
+bootstrap(runtime=True)
 load_dotenv(ROOT / ".env")
+
+from services.variable_registry import collect_drought_nested_keys, drought_source_key_map  # noqa: E402
 
 client = MongoClient(os.getenv("MONGO_URI", "mongodb://localhost:27017"), serverSelectionTimeoutMS=5000)
 db = client["diagnosis_db"]
@@ -68,5 +70,21 @@ if sample:
     print(f"  intersecting villages: {len(village_ids)} villages")
 else:
     print("  NOT FOUND")
+
+drought_sample = db.mws_data.find_one(
+    {"drought_causality": {"$exists": True}, "uid": "1_34623"},
+    {"uid": 1, "drought_causality.2024": 1},
+)
+print("\n=== Registry: drought causality normalization ===")
+if drought_sample:
+    keys = collect_drought_nested_keys(drought_sample.get("drought_causality"))
+    raw_keys = set(drought_source_key_map().keys())
+    stale = sorted(keys & raw_keys)
+    print(f"  sample uid: {drought_sample.get('uid')}")
+    print(f"  raw Excel nested keys still present: {len(stale)}")
+    if stale:
+        print(f"    examples: {stale[:5]}")
+else:
+    print("  drought sample NOT FOUND")
 
 client.close()

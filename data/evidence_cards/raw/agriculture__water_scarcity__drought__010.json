@@ -70,10 +70,16 @@
       ],
       "condition": {
         "type": "composite",
-        "expression": "drought_causality_json is not None and drought_causality_json.get('spi_class') in ['moderate_drought', 'severe_drought', 'extreme_drought'] and drought_causality_json.get('vci') is not None and drought_causality_json.get('vci') < 35",
+        "expression": "drought_causality is not None and (drought_mild_spi_score_latest >= 26 or drought_severe_moderate_spi_score_latest >= 26) and drought_mild_vci_score_latest >= 26",
         "qualitative_description": "SPI classification of moderate drought or worse, combined with VCI below 35 (indicating significant vegetation stress), jointly confirm both meteorological and agricultural drought are active.",
         "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "drought_causality",
+          "drought_mild_vci_score_latest",
+          "drought_mild_spi_score_latest",
+          "drought_severe_moderate_spi_score_latest"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -114,7 +120,10 @@
         "expression": "trend_annual_precipitation_mm < -10 and mean_annual_precipitation_mm < 1800",
         "qualitative_description": "A declining trend in annual precipitation of more than 10 mm/year combined with a long-term mean below 1800 mm suggests the zone is transitioning toward the lower boundary of the humid regime, increasing chronic drought risk.",
         "threshold_confidence": "low",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "precipitation_mm"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
