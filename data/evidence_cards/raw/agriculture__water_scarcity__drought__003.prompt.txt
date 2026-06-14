@@ -78,14 +78,80 @@ Recommended solutions for this pathway:
   "Drought-tolerant variety promotion for kharif"
 ]
 
+Variable types for this pathway (from data_dictionary.json):
+  drought_weeks_severe (unknown, availability=available): Count of kharif weeks under severe drought conditions; persistent severe weeks directly cause crop failure
+  drought_weeks_moderate (unknown, availability=available): Moderate drought weeks indicate stress periods
+  dry_spell_weeks (time_series, availability=available): Number of kharif weeks under dry spell per agricultural_year. Dry spell = 4 consecutive weeks each with <50% historical rainfall (4-week moving window).
+  drought_causality_json (unknown, availability=available): SPI indicates meteorological drought severity; MAI measures soil moisture adequacy; VCI captures vegetation stress; together they classify drought type and seve
+  annual_precipitation_mm (unknown, availability=available): Annual rainfall quantum and inter-annual variability; below-normal years confirm drought risk
+  seasonal_precipitation_mm (time_series, availability=available): Seasonal precipitation. Keyed by agricultural_year, sub-keyed by season: {kharif, rabi, zaid}. E.g. {2017: {kharif: 720, rabi: 80, zaid: 20}}
+  monsoon_onset_date (time_series, availability=available): Monsoon onset date in kharif season per agricultural_year.
+
+Signal expression rules (CRITICAL — downstream diagnosis evaluates these step-by-step as Python booleans):
+- Every diagnostic_signals[].condition MUST include a non-empty "expression" for types quantitative, trend, and composite.
+- type=qualitative WITHOUT expression is allowed ONLY for variables with availability=not_available in the framework list above.
+  All pathway variables are available — every signal must have a Python expression.
+- The expression is shown to a reasoning model as the evaluable condition. It MUST be a single valid Python boolean expression using variable names exactly as in data_dictionary.json.
+- Put interpretive prose ONLY in "explanation" and optional supporting "qualitative_description". NEVER put prose paragraphs in "expression".
+- Time-series variables (e.g. lulc_*_ha, cropping_intensity, annual_runoff_mm, drought_weeks_severe) are dicts keyed by year strings "2017".."2024". Use [-1] for latest year, [0] for earliest: cropping_intensity[-1] <= 1.15
+- Scalar NREGA totals (nrega_swc_count, nrega_irrigation_count, nrega_community_assets_count) are numeric aggregates — compare directly: nrega_irrigation_count < 3 (NOT .values() or dict indexing).
+- Null/absent categorical values: use `canal_name is None`, never SQL syntax like `IS NULL`.
+- List variables: organization_domains is a Python list — use `'fisheries' not in organization_domains`.
+- terrain_cluster_id is an integer: 1 = Mostly Plains, 3 = Broad Plains and Slopes. Use explicit comparisons, e.g. terrain_cluster_id == 3 for sloping terrain; do NOT describe terrain in prose without a numeric test.
+- String equality: aquifer_class == 'crystalline_basement' (single quotes inside the JSON string).
+- Ratios and compound conditions: parenthesize explicitly — (lulc_single_kharif_ha[-1] / (lulc_single_kharif_ha[-1] + lulc_double_crop_ha[-1] + 1e-9)) > 0.75
+- Derived mean/trend scalars are computed at diagnosis time from the raw time series and injected alongside present_variables. Prefer them for multi-year patterns instead of prose:
+  trend_annual_delta_g_mm < 0, mean_cropping_intensity <= 1.15, trend_swb_total_area_ha < -5
+
+Derived/computed variables (scalars — use directly in expressions):
+  mean_annual_precipitation_mm: mean of annual_precipitation_mm time series
+  trend_annual_precipitation_mm: linear slope of annual_precipitation_mm (mm/year)
+  mean_annual_et_mm: mean of annual_et_mm time series
+  trend_annual_et_mm: linear slope of annual_et_mm (mm/year)
+  mean_annual_runoff_mm: mean of annual_runoff_mm time series
+  trend_annual_runoff_mm: linear slope of annual_runoff_mm (mm/year)
+  mean_annual_delta_g_mm: mean of P−ET−Runoff groundwater balance
+  trend_annual_delta_g_mm: linear slope of annual_delta_g_mm (mm/year)
+  mean_cropping_intensity: mean of cropping_intensity time series
+  trend_cropping_intensity: linear slope of cropping_intensity (ratio/year)
+  mean_kharif_cropped_area_ha: mean of lulc_single_kharif_ha time series
+  trend_kharif_cropped_area_ha: linear slope of lulc_single_kharif_ha (ha/year)
+  mean_double_crop_area_ha: mean of lulc_double_crop_ha time series
+  trend_double_crop_area_ha: linear slope of lulc_double_crop_ha (ha/year)
+  drought_moderate_return_period: average years between moderate drought kharif seasons
+  drought_severe_return_period: average years between severe drought kharif seasons
+  mean_swb_total_area_ha: mean of swb_total_area_ha time series
+  trend_swb_total_area_ha: linear slope of swb_total_area_ha (ha/year)
+  mean_swb_rabi_kharif_ratio: mean of swb_rabi_area_ha / swb_kharif_area_ha ratio
+  trend_swb_rabi_kharif_ratio: linear slope of SWB rabi/kharif ratio
+
+BAD example (current corpus bug — do NOT reproduce):
+  "type": "qualitative",
+  "qualitative_description": "Terrain cluster indicates sloping plateau or hilly terrain..."
+  (no expression — model cannot evaluate TRUE/FALSE; also contradicts terrain_cluster_id == 1 = Mostly Plains)
+
+GOOD example for terrain_cluster_id on rainfed_risk:
+  "type": "quantitative",
+  "expression": "terrain_cluster_id == 3 and annual_runoff_mm[-1] > 80",
+  "qualitative_description": "Broad plains and slopes (cluster 3) with high runoff reduce in-field moisture retention.",
+  "threshold_confidence": "medium",
+  "context_sensitivity": "regional"
+
+The example card below may contain legacy qualitative-only conditions — ignore those patterns; your output must follow these expression rules.
+
 Rules:
 - Include 3-5 diagnostic_signals using available variables where possible.
 - For variables marked availability not_available, add missing_variable_questions.
 - Include 1-2 confounders distinguishing this pathway from alternatives.
 - Ground claims in the paper excerpts below; cite sources with realistic source_id citekeys.
+- Each source source_type must be exactly one of: peer_reviewed_journal, government_report, ngo_report, grey_literature, expert_guideline, book_chapter (use grey_literature for theses/working papers).
+- Each diagnostic_signals[].condition.type must be exactly one of: quantitative, qualitative, trend, composite (use composite for multi-part conditions, not "compound").
 - Set metadata.created_by to "llm_extraction_v1", reviewed_by_expert to false,
   extraction_model to "claude-sonnet-4-6", confidence_overall to medium/high/low as appropriate,
   created_at and last_updated to today's date.
+- At embedding time, semantic aliases from metadata/semantic_aliases.json are appended
+  automatically for pathway "drought" — do not duplicate alias
+  phrases in overall_reasoning_note.
 
 Example card (structure reference):
 {
@@ -294,6 +360,9 @@ how pH Unlike the management of N, there has been changes are distributed throug
 
 [Chunk 12] paper=doi__10.1016_s1161-0301_02_00108-9 type=body title=An overview of APSIM, a model designed for farming systems simulation
 influencing plant production, soil pH also performed well on Alfisols (Littleboy et al., also affects the turnover of soil organic matter. 1996). Soil processes such as mineralisation, nitrification These daily models accounts for variation in and urea hydrolysis are pH dependent. Whilst the soil loss with cover and runoff volume, the SOILN module does include routines to represent main factors that can be managed, but will not theeffectsofpHonthedynamicsofsoilCandN, predict the variation in erosion due to within day its ability to capture the consequences of soil variation in rainfall intensity and runoff rates. acidification on N mineralisation or C balance They are intended to get long-term soil loss has not been studied. reasonably correct and to correctly predict the Asystemsmodelthatiscapableofcapturingthe relative differences between management systems, effectsofsoilacidificationraisesaprobleminhow rather than to accurately predict individual soil uptake of N by plants is modelled. Many crop loss events. models only consider the uptake of nitrate. For Effectsoferosionon productivity aremodelled, most situations this is adequate because ammoni- based on routines from PERFECT, by reducing umisrapidlynitrifiedinsoil.Howeverinacidsoils the soil water, N, P and organic matter stores as nitrification is inhibited and models of plant erosion progresses. The EROSION module and growth will need to account for the uptake of erosion-productivity simulation were evaluated by both nitrate and ammonium. Nelson et al. (1998a,b). 276 B.A.Keatingetal./Europ.J.Agronomy18(2003)267(cid:3)/ 288 3.8. MANAGER the level of resource stocks/fluxes supplied by the radiation, water and nitrogen modules. The ab- The early recognition that all the possible sence of any direct communication among crop management configurations required of the simu- modules in APSIM is the key versatility in lator could not be explicitly identified and ad- modelling inter-species competition. APSIM al- dressed a priori, led to the development of the lows for any number of the biological modules to MANAGER module in APSIM. This module compete on a daily basis via allocation rules enables users to apply simple concepts of states, specified wholly within an ‘Arbitrator’ module events, actions and conditional logic to build that is linked to the APSIM engine along with complex management systems whose scope goes the competing crop modules. This approach can well beyond anything envisaged by the early 
+
+Semantic aliases (appended at embed time, not in card JSON):
+Related themes: rainfall failure. monsoon deficit. dry year crop loss. kharif failure. erratic rainfall. delayed monsoon. drought prone area. climate stress farming. rainfall variability. precipitation deficit. crop failure rainfall. food insecurity drought. distress drought season. SPI negative Standard Precipitation Index. MAI Moisture Adequacy Index low. VCI Vegetation Condition Index low. dry ...
 
 JSON schema summary (required top-level keys):
 ["card_id", "production_system", "observed_stress", "causal_pathway", "context", "diagnostic_signals", "confounders", "sources"]

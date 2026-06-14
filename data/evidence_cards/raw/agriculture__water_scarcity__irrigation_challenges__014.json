@@ -1,0 +1,189 @@
+{
+  "card_id": "agriculture__water_scarcity__irrigation_challenges__014",
+  "production_system": "Agriculture",
+  "observed_stress": "water_scarcity",
+  "causal_pathway": "irrigation_challenges",
+  "context": {
+    "agro_climatic_zones": [
+      "semi-arid"
+    ],
+    "aquifer_types": [
+      "hard_rock"
+    ],
+    "terrain_types": [
+      "plateau",
+      "plains"
+    ],
+    "rainfall_regime": "semi-arid",
+    "geographic_examples": [
+      "Madhya Pradesh Malwa",
+      "Gujarat"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "swb_total_area_ha",
+        "swb_count"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "trend_swb_total_area_ha < -5 and swb_count < 3",
+        "qualitative_description": "Surface water body area is declining at more than 5 ha/year and fewer than 3 distinct SWBs exist in the MWS, indicating both shrinking storage and sparse infrastructure coverage.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "In semi-arid hard rock terrain such as the Malwa Plateau and Gujarat plains, surface water bodies are the primary source of irrigation water for rabi and zaid seasons. A declining trend in total SWB area combined with a low count of structures signals that existing storage infrastructure is either silting up, poorly maintained, or structurally failing. A 5-year-old check dam in Gujarat was observed to have filled completely with silt at a rate of 40 cm/year, eliminating storage capacity entirely (Dashora et al. 2019). Low SWB count relative to MWS area indicates an infrastructure gap that leaves farmers dependent on unreliable groundwater or rainfall alone."
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "swb_kharif_area_ha"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "mean_swb_rabi_kharif_ratio < 0.35",
+        "qualitative_description": "The mean ratio of rabi-season SWB area to kharif-season SWB area is below 0.35, indicating that water bodies dry out rapidly after the monsoon and cannot sustain rabi irrigation.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Rapid post-monsoon drying of surface water bodies is a direct indicator that storage structures are failing to retain water into the rabi season. In semi-arid zones with 500–740 mm rainfall (AER-5), tanks and check dams must retain water well into the dry season to support rabi crops. A low rabi-to-kharif SWB area ratio indicates either siltation reducing storage capacity, poor embankment design, or high seepage losses. Dashora et al. (2019) document that siltation reduces both storage capacity and infiltration rates in hard rock check dams in Rajasthan, with benefit-cost ratios of 4.1 when structures are properly maintained — implying large losses when they are not."
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "nrega_swc_count"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "nrega_swc_count < 5",
+        "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA in the MWS, indicating historically low investment in water harvesting infrastructure.",
+        "threshold_confidence": "low",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Low cumulative MGNREGA investment in SWC and irrigation works indicates that the MWS has not benefited from systematic water harvesting infrastructure development. In semi-arid hard rock regions, check dams and percolation ponds built under MGNREGA are critical for extending irrigation availability into rabi and zaid seasons. Dashora et al. (2019) demonstrate that check dams in hard rock terrain in Rajasthan yield a benefit-cost ratio of 4.1 for additional crop production, making low investment a missed opportunity that amplifies seasonal water scarcity. This signal amplifies sig_01 and sig_02 but does not confirm the pathway independently.",
+      "interaction_with": [
+        "sig_01",
+        "sig_02"
+      ]
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "dist_cooperative_km"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "dist_cooperative_km > 15",
+        "qualitative_description": "Nearest agricultural cooperative (PACS or marketing co-op) is more than 15 km away, indicating limited access to institutional credit for irrigation investment such as pump sets, drip systems, or tank repair.",
+        "threshold_confidence": "low",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Distance to cooperative societies is a proxy for access to institutional credit and input supply chains. Farmers more than 15 km from a cooperative face higher transaction costs for obtaining loans to invest in micro-irrigation equipment, pump sets, or tank desilting. In semi-arid Gujarat and Malwa, where irrigation infrastructure is costly to install and maintain, credit access is a key enabling condition for adoption of water-saving technologies such as drip and sprinkler systems. Poor credit access amplifies the irrigation challenge by preventing farmers from investing in efficiency improvements even when water is technically available.",
+      "interaction_with": [
+        "sig_03"
+      ]
+    },
+    {
+      "signal_id": "sig_05",
+      "variables": [
+        "annual_well_depth_m"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Farmers report that well or borewell water levels have dropped significantly in the dry season (January–May), requiring deeper pumping or abandonment of wells for rabi irrigation. This variable is not available in the framework dataset and must be elicited from the user.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "In hard rock aquifers of the Malwa Plateau and Gujarat plains, groundwater storage is limited to shallow weathered and fractured zones. When surface water storage infrastructure fails or is absent, farmers fall back on groundwater for rabi irrigation, rapidly depleting shallow aquifers. Deepening well depths or dry-season well failure is a direct indicator that irrigation demand cannot be met from available water sources. This signal, when reported by farmers, strongly confirms the irrigation challenges pathway and distinguishes it from purely meteorological drought."
+    }
+  ],
+  "confounders": [
+    {
+      "confounder": "Meteorological drought reducing both surface storage and groundwater recharge, mimicking infrastructure failure",
+      "how_to_distinguish": "Compare mean_annual_precipitation_mm against the AER-5 baseline of 500–740 mm. If precipitation has been consistently below 500 mm in recent years, drought is the primary driver and infrastructure failure is secondary. Check trend_swb_total_area_ha — if SWB area decline correlates tightly with low-rainfall years but recovers in good monsoon years, the infrastructure is functional but undersized for drought years. If SWB area declines even in average rainfall years, siltation or structural failure is the primary cause."
+    },
+    {
+      "confounder": "Groundwater over-extraction (separate pathway) causing dry-season water scarcity rather than surface irrigation infrastructure failure",
+      "how_to_distinguish": "If swb_count and swb_total_area_ha are adequate but farmers still report water scarcity, the pathway is more likely groundwater stress than irrigation infrastructure failure. Check whether nrega_swc_count is high (indicating investment has occurred) but water scarcity persists — this points to extraction exceeding recharge rather than infrastructure absence. The irrigation_challenges pathway is confirmed when SWB area is declining or SWB count is low relative to MWS area, indicating the infrastructure gap is the binding constraint."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "annual_well_depth_m",
+      "question_to_user": "Have farmers in this area noticed that their wells or borewells are running dry earlier in the season compared to 5–10 years ago, or that they need to pump from greater depths to get water for rabi crops (October–March)?",
+      "how_answer_updates_diagnosis": "If farmers confirm increasing well depth or dry-season well failure, this strongly confirms that surface irrigation infrastructure is insufficient to meet rabi demand and farmers are over-relying on groundwater as a fallback. This would elevate the severity of the irrigation_challenges diagnosis and also flag a co-occurring groundwater stress pathway requiring attention."
+    },
+    {
+      "missing_variable": "tank_siltation_status",
+      "question_to_user": "Are the local tanks, ponds, or check dams in the area visibly silted up, shallower than they used to be, or drying out faster after the monsoon than they did 10 years ago?",
+      "how_answer_updates_diagnosis": "Farmer confirmation of visible siltation directly supports sig_01 and sig_02, confirming that declining SWB area is due to infrastructure degradation rather than reduced rainfall. This would prioritise tank desilting through MGNREGA as the primary recommended intervention."
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Dashora2019",
+      "title": "Hydrologic and cost benefit analysis at local scale of streambed recharge structures in Rajasthan (India) and their value for securing irrigation water supplies",
+      "authors": [
+        "Dashora, Y.",
+        "Dillon, P.",
+        "Maheshwari, B.",
+        "Soni, P.",
+        "Mittal, H.K.",
+        "Dashora, R.",
+        "Singh, P.K.",
+        "Purohit, R.C.",
+        "Katara, P."
+      ],
+      "year": 2019,
+      "doi": "10.1007/s10040-019-01951-y",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents siltation rates in hard rock check dams in Rajasthan (40 cm/year in Gujarat example), effect of desilting on recharge rates (84% increase after manual desilting), and benefit-cost ratio of 4.1 for check dam maintenance — directly supporting signals on SWB area decline and MGNREGA investment."
+    },
+    {
+      "source_id": "IPCC2014SYR",
+      "title": "Climate Change 2014 - Synthesis Report",
+      "authors": [
+        "IPCC"
+      ],
+      "year": 2014,
+      "doi": "10.59327/ipcc_ar5-9789291691432",
+      "source_type": "government_report",
+      "relevance_note": "Provides global context for increasing water scarcity under climate change, relevant to distinguishing meteorological drought from infrastructure failure as drivers of seasonal water stress in semi-arid India."
+    },
+    {
+      "source_id": "Mekonnen2016",
+      "title": "Global Monthly Water Scarcity: Blue Water Footprints versus Blue Water Availability",
+      "authors": [
+        "Mekonnen, M.M.",
+        "Hoekstra, A.Y."
+      ],
+      "year": 2016,
+      "doi": "10.1371/journal.pone.0032688",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents severe seasonal water scarcity affecting 2.67 billion people globally, with Indian river basins among the most affected — contextualising the rabi and dry-season irrigation challenge in semi-arid AER-5 zones."
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-01-27",
+    "last_updated": "2025-01-27",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 20,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  }
+}

@@ -1,0 +1,196 @@
+{
+  "card_id": "socio_economic__low_income__small_landholding__017",
+  "production_system": "Socio_Economic",
+  "observed_stress": "low_income",
+  "causal_pathway": "small_landholding",
+  "context": {
+    "agro_climatic_zones": [
+      "humid",
+      "perhumid"
+    ],
+    "aquifer_types": [
+      "coastal"
+    ],
+    "terrain_types": [
+      "plains"
+    ],
+    "rainfall_regime": "humid",
+    "geographic_examples": [
+      "Andaman & Nicobar",
+      "Lakshadweep"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "lulc_cropland_ha",
+        "village_total_population"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "(lulc_cropland_ha[-1] / (village_total_population + 1e-9)) < 0.2",
+        "qualitative_description": "Per-capita cropland availability below 0.2 ha per person indicates severe land scarcity consistent with marginal or sub-marginal holding sizes in island contexts.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "In island ecoregions such as Andaman & Nicobar and Lakshadweep, total cultivable land is geographically constrained. Dividing MWS cropland by village population gives a proxy for average per-capita land availability. A ratio below 0.2 ha/person strongly suggests that most households operate marginal holdings (<1 ha), limiting marketable surplus and creditworthiness. Shrinking average landholding size is a documented driver of stagnant farmer incomes in India (Gulati et al. 2021).",
+      "interaction_with": [
+        "sig_02",
+        "sig_03"
+      ]
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "cropping_intensity"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "mean_cropping_intensity <= 1.15",
+        "qualitative_description": "Mean cropping intensity at or below 1.15 indicates that small holders are not compensating for land scarcity through double-cropping or multi-season cultivation.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "Higher cropping intensity is one of the few mechanisms by which small holders can increase effective production without additional land. A mean cropping intensity at or below 1.15 (close to single-crop systems) means that the income constraint from small landholding is not being offset by intensification. In humid island environments with year-round rainfall, low cropping intensity is particularly diagnostic of structural barriers — poor market access, lack of inputs, or labour constraints — rather than climatic limitation alone.",
+      "interaction_with": [
+        "sig_01"
+      ]
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "dist_apmc_km"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "dist_apmc_km > 50",
+        "qualitative_description": "Distance to nearest APMC exceeding 50 km is typical for island communities and indicates that small holders face severe market access barriers, reducing price realisation.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "high",
+      "direction": "amplifies",
+      "explanation": "Small holders near APMCs benefit from competitive price discovery; remote smallholders are exploited by intermediaries who capture most of the value chain margin. In island territories, distances to regulated markets are structurally large due to geography, compounding the income loss from small holding size. FPO formation has been recommended as a countermeasure to restore bargaining power for such isolated smallholders (Trebbin & Hassler 2012; Gulati et al. 2021).",
+      "interaction_with": [
+        "sig_01",
+        "sig_04"
+      ]
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "nrega_community_assets_count",
+        "organization_domains"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "nrega_community_assets_count < 5 and ('livelihoods' not in organization_domains and 'fisheries' not in organization_domains)",
+        "qualitative_description": "Fewer than 5 cumulative MGNREGA community asset works combined with absence of NGO support in livelihoods or fisheries domains indicates a weak safety net and limited diversification support for small holders.",
+        "threshold_confidence": "low",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "MGNREGA community asset works provide supplementary off-farm income and productive infrastructure for marginal households. NGO presence in livelihoods, fisheries, or extension domains signals available diversification pathways. When both are absent, small holders in island contexts have no institutional buffer against income shocks, deepening the income stress caused by small landholding. Studies on small-scale farmers in India confirm that households relying solely on small-scale agriculture have lower monthly incomes and wellbeing compared to those with access to off-farm diversification (Kadiyala et al. 2016).",
+      "interaction_with": [
+        "sig_03"
+      ]
+    }
+  ],
+  "confounders": [
+    {
+      "confounder": "Low income driven by market failure or price collapse rather than landholding size per se",
+      "how_to_distinguish": "If dist_apmc_km is high but lulc_cropland_ha per capita is moderate (>0.3 ha/person) and cropping_intensity is above 1.3, the primary driver is likely market access failure rather than land fragmentation. Check whether organization_domains includes 'marketing' or 'value chain' support — if so, market failure is the more proximate cause. The small_landholding pathway is confirmed when both land scarcity (sig_01) and market remoteness (sig_03) co-occur."
+    },
+    {
+      "confounder": "Low cropping intensity caused by seasonal waterlogging or soil constraints rather than structural small-holder barriers",
+      "how_to_distinguish": "In humid and perhumid island zones, waterlogging during heavy rainfall periods can suppress double-cropping even on adequately sized holdings. If mean_annual_precipitation_mm exceeds 2500 mm and lulc_cropland_ha shows no trend decline, low cropping intensity may reflect agronomic constraints rather than income-driven under-investment. Cross-check with dist_dairy_km and nrega_community_assets_count — if both indicate strong support infrastructure yet intensity remains low, agronomic constraints are more likely than the small_landholding pathway."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "landholding_size_distribution",
+      "question_to_user": "What proportion of farming households in your village own less than 1 hectare of land? Would you estimate it is less than a quarter, about half, or more than three-quarters of all farming families?",
+      "how_answer_updates_diagnosis": "If more than half of households own less than 1 ha, this directly confirms the small_landholding pathway as the primary driver of low income. If most households own 1–2 ha or more, the diagnosis should shift toward market access failure or input cost stress as the primary causal pathway."
+    },
+    {
+      "missing_variable": "household_income_inr",
+      "question_to_user": "Can you estimate the average annual household income from farming alone (excluding wages, fishing, or government transfers) for a typical family in your village? Is it below Rs 50,000, between Rs 50,000–1,00,000, or above Rs 1,00,000 per year?",
+      "how_answer_updates_diagnosis": "Farm income below Rs 50,000 per year for a household confirms severe income insufficiency. If farm income is supplemented substantially by fishing or wage labour, the diagnosis should note livelihood diversification as a partial buffer, and recommendations should focus on strengthening those non-farm channels rather than land consolidation alone."
+    },
+    {
+      "missing_variable": "market_price_crop",
+      "question_to_user": "For your main crop, what price do you typically receive at the farm gate compared to the government Minimum Support Price (MSP)? Do you receive close to MSP, significantly below MSP, or is MSP not relevant for your crop?",
+      "how_answer_updates_diagnosis": "A large gap between farm-gate price and MSP confirms that market failure is amplifying the income loss from small landholding. If prices are close to MSP, the income stress is more purely a function of low volume (small area) rather than price exploitation, pointing toward FPO formation and lease-land models as priority interventions."
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Gulati2021",
+      "title": "Revitalizing Indian Agriculture and Boosting Farmer Incomes",
+      "authors": [
+        "Gulati, Ashok",
+        "Roy, Ranjana",
+        "Saini, Shweta"
+      ],
+      "year": 2021,
+      "doi": "10.1007/978-981-15-9335-2",
+      "source_type": "book_chapter",
+      "relevance_note": "Documents shrinking average landholding size as a structural driver of stagnant farmer incomes in India and links agricultural growth to poverty reduction; provides policy context for income enhancement interventions."
+    },
+    {
+      "source_id": "Trebbin2012",
+      "title": "Farmer producer organisations: Innovative institutions for upliftment of small farmers",
+      "authors": [
+        "Trebbin, Anika"
+      ],
+      "year": 2019,
+      "doi": "10.56093/ijas.v89i9.93451",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Reviews FPO evidence showing that collective marketing through farmer producer organisations restores bargaining power and market access for small and marginal holders who individually lack scale."
+    },
+    {
+      "source_id": "Kadiyala2016",
+      "title": "The interplay between household food security and wellbeing among small-scale farmers in the context of rapid agrarian change",
+      "authors": [
+        "Kadiyala, Suneetha",
+        "Harris, Jody",
+        "Headey, Derek",
+        "Yosef, Sivan",
+        "Gillespie, Stuart"
+      ],
+      "year": 2016,
+      "doi": "10.1186/s40066-015-0036-2",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Empirical study from rural Tamil Nadu showing that households solely dependent on small-scale agriculture have lower monthly incomes and wellbeing; confirms that livelihood diversification into off-farm employment improves income even when it reduces food sufficiency."
+    },
+    {
+      "source_id": "FanRue2020",
+      "title": "The Role of Smallholder Farms in a Changing World",
+      "authors": [
+        "Fan, Shenggen",
+        "Rue, Connie"
+      ],
+      "year": 2020,
+      "doi": "10.1007/978-3-030-42148-9_2",
+      "source_type": "book_chapter",
+      "relevance_note": "Provides the 'move up or move out' typology for smallholders, identifying limited market access, financial capital, and infrastructure as soft constraints addressable through FPOs, credit, and non-farm skill development — directly relevant to island smallholder contexts."
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-07-15",
+    "last_updated": "2025-07-15",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 19,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  }
+}

@@ -1,0 +1,255 @@
+{
+  "card_id": "agriculture__water_scarcity__groundwater_stress__015",
+  "production_system": "Agriculture",
+  "observed_stress": "water_scarcity",
+  "causal_pathway": "groundwater_stress",
+  "context": {
+    "agro_climatic_zones": [
+      "humid",
+      "perhumid"
+    ],
+    "aquifer_types": [
+      "alluvium"
+    ],
+    "terrain_types": [
+      "plains",
+      "hilly"
+    ],
+    "rainfall_regime": "humid",
+    "geographic_examples": [
+      "Kerala",
+      "Konkan Maharashtra",
+      "Goa"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "soge_dev_percent",
+        "soge_class_name"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "soge_dev_percent > 70 or soge_class_name in ['Semi-critical', 'Critical', 'Over-exploited']",
+        "qualitative_description": "Block-level SOGE exceeds 70% or CGWB classifies the block as Semi-critical, Critical, or Over-exploited, indicating extraction pressure on alluvial aquifers even in high-rainfall zones.",
+        "threshold_confidence": "high",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "In humid and perhumid coastal zones such as Kerala and Konkan, high annual rainfall does not automatically guarantee adequate groundwater recharge if extraction is concentrated in the dry rabi and zaid seasons. Alluvial aquifers along river valleys and coastal plains can be over-exploited locally even where block-level rainfall is high. CGWB SOGE thresholds (Safe <70%, Semi-critical 70–90%, Critical 90–100%, Over-exploited >100%) remain the primary regulatory signal for extraction stress. A block classified Semi-critical or above in a perhumid zone is a strong indicator that seasonal extraction is outpacing recharge, consistent with findings on alluvial aquifer depletion dynamics documented in the literature."
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "trend_annual_delta_g_mm",
+        "annual_delta_g_mm"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "trend_annual_delta_g_mm < 0 and mean_annual_delta_g_mm < 0",
+        "qualitative_description": "Both the linear trend in annual groundwater recharge (P - ET - Runoff) and the multi-year mean are negative, indicating that despite high rainfall, net groundwater balance is chronically negative — a hallmark of extraction exceeding recharge.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "A sustained negative delta_g trend in a perhumid zone is particularly diagnostic because it cannot be attributed to low rainfall alone. If ET and runoff together consume more than precipitation, or if extraction is not captured in the water balance, the result is chronic aquifer drawdown. Global analyses confirm that rapid groundwater-level declines (>0.5 m/year) are widespread even in regions with substantial rainfall when cropland irrigation demand is high. In alluvial coastal settings, this can also trigger saline intrusion from the sea, further reducing usable water availability.",
+      "interaction_with": [
+        "sig_01",
+        "sig_03"
+      ]
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "aquifer_class",
+        "aquifer_lithology_percent"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "aquifer_class == 'alluvium' and aquifer_lithology_percent.get('alluvium', 0) > 40",
+        "qualitative_description": "Dominant alluvial aquifer with more than 40% of the micro-watershed area underlain by alluvial lithology, confirming the aquifer type context and its recharge-discharge dynamics.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "Alluvial aquifers in coastal humid zones (Kerala river deltas, Konkan coastal plains, Goa laterite-alluvium interfaces) have higher storativity than hard rock aquifers but are vulnerable to over-extraction during dry seasons when recharge from monsoon has ceased. Unlike hard rock aquifers that show seasonal emptying and filling, alluvial aquifers can sustain multi-year depletion trends if abstraction consistently exceeds recharge. The lithological composition of the micro-watershed determines recharge potential; higher alluvial percentage indicates better but not unlimited recharge capacity. Management approaches effective in peninsular hard-rock systems may not be directly transferable to alluvial settings, requiring tailored institutional and technical solutions.",
+      "interaction_with": [
+        "sig_01",
+        "sig_02"
+      ]
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "nrega_swc_count"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "nrega_swc_count < 10",
+        "qualitative_description": "Fewer than 10 cumulative MGNREGA soil and water conservation works in the micro-watershed, indicating underinvestment in recharge infrastructure relative to the extraction pressure in a high-rainfall zone.",
+        "threshold_confidence": "low",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "In humid and perhumid zones, the paradox of groundwater stress despite high rainfall is often explained by rapid surface runoff — particularly on lateritic and hilly terrain — that does not infiltrate to recharge aquifers. MGNREGA-funded SWC works (check dams, trenches, percolation ponds, gabion structures) are the primary public investment mechanism for enhancing in-situ recharge. India has historically invested in over 500,000 tanks and ponds for recharge augmentation, and managed aquifer recharge through streambed structures is well-documented as effective in Indian conditions. Low SWC counts in a stressed block signal a missed recharge opportunity and amplify extraction-driven depletion. A threshold of fewer than 10 works is conservative for a perhumid zone where runoff volumes are large and recharge potential is high.",
+      "interaction_with": [
+        "sig_02"
+      ]
+    },
+    {
+      "signal_id": "sig_05",
+      "variables": [
+        "annual_well_depth_m"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Farmers report that they have had to deepen existing dug wells or borewells over recent years, or that shallow dug wells that previously held water through the dry season now run dry by February–March, indicating a declining static water level in the alluvial aquifer.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Well depth data are not available in the framework for this context, but farmer-reported well deepening or seasonal drying of previously perennial wells is a reliable field proxy for groundwater table decline. In alluvial coastal aquifers, shallow dug wells (typically 5–15 m) are the primary irrigation source for smallholders in Kerala and Konkan. Increasing well depth requirements or dry-season failure of shallow wells directly confirms that the water table has declined below the previous static level, consistent with extraction exceeding recharge. This signal is especially important for rabi and zaid season water scarcity diagnosis."
+    }
+  ],
+  "overall_reasoning_note": "Groundwater stress in humid and perhumid alluvial aquifer zones presents a diagnostic paradox: high annual rainfall coexists with seasonal water scarcity because monsoon runoff is rapid and dry-season recharge is negligible. Confirmation requires at least two of the three primary signals: elevated SOGE classification, chronic negative delta_g trend, or farmer-reported well failure. The alluvial aquifer context (sig_03) is a prerequisite for this card — if aquifer_class indicates hard rock or crystalline basement, redirect to the hard rock groundwater stress card. Low SWC investment (sig_04) amplifies but does not confirm stress on its own. In coastal alluvial settings, also consider saline intrusion as a co-occurring pathway that reduces usable groundwater even where the water table has not declined significantly. Management solutions for alluvial aquifers in humid zones differ from hard rock peninsular approaches and require community-level governance, managed aquifer recharge infrastructure, and demand-side regulation rather than supply augmentation alone.",
+  "confounders": [
+    {
+      "confounder": "Seasonal surface water scarcity (stream or tank drying) misattributed to groundwater depletion",
+      "how_to_distinguish": "Check whether water scarcity is reported only during peak dry season (March–May) or persists into early monsoon onset. If delta_g trend is flat or positive and SOGE is Safe, the stress is likely surface water seasonal variability rather than aquifer depletion. Ask whether dug wells also fail or only surface sources — dug well failure confirms groundwater pathway."
+    },
+    {
+      "confounder": "Coastal saline intrusion reducing water quality rather than quantity, presenting as apparent water scarcity",
+      "how_to_distinguish": "If SOGE is moderate (<70%) but farmers report water is unusable (salty, leaves deposits, crops show salt damage), saline intrusion rather than volumetric depletion is the primary pathway. This is common in Kerala coastal talukas and Goa estuarine zones. Groundwater salinity measurement (EC) would distinguish the two pathways — high EC with moderate SOGE points to intrusion, not over-extraction."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "annual_well_depth_m",
+      "question_to_user": "Have you or nearby farmers had to deepen your dug wells or borewells in the last 5–10 years? If yes, by roughly how many feet or metres? Do shallow dug wells that used to hold water through summer now run dry earlier in the year than before?",
+      "how_answer_updates_diagnosis": "Confirmed well deepening of more than 2–3 metres over 5–8 years, or earlier seasonal drying of previously perennial wells, strongly confirms the groundwater stress pathway in alluvial aquifers. If wells have not required deepening and do not run dry, the water scarcity may be attributable to surface water or distribution constraints rather than aquifer depletion."
+    },
+    {
+      "missing_variable": "borewell_density",
+      "question_to_user": "Approximately how many borewells or tubewells are there in your village or panchayat? Have many new borewells been drilled in the last 5 years? Are there any large users (hotels, industries, plantations) with high-capacity pumps nearby?",
+      "how_answer_updates_diagnosis": "High borewell density, especially with recent rapid proliferation or large commercial users, confirms localised over-extraction not captured by block-level SOGE. In Kerala and Goa, tourism and plantation sectors are significant groundwater users that can stress local alluvial aquifers even where the block SOGE appears Safe."
+    },
+    {
+      "missing_variable": "groundwater_salinity",
+      "question_to_user": "Has the taste of well or borewell water changed in recent years — becoming saltier or brackish? Do you notice white crusty deposits on pipes or irrigation equipment? Have any crops shown unusual leaf burn or poor germination that might indicate salt in the irrigation water?",
+      "how_answer_updates_diagnosis": "Reported salinity increase in coastal alluvial aquifers (Kerala, Goa, Konkan) indicates saline intrusion as a co-occurring or alternative pathway. This changes the solution set from recharge augmentation to managed aquifer recharge with freshwater barriers and demand reduction, and may require desalination or alternative water sources for sensitive crops."
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Sekhri2023_alluvial",
+      "title": "Addressing Depletion in Alluvial Aquifers",
+      "authors": [
+        "Sekhri, Sheetal"
+      ],
+      "year": 2023,
+      "doi": "10.37773/ees.v8i1.1122",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Argues that alluvial aquifer management requires different institutional and technical approaches from hard rock peninsular systems; documents that abstraction exceeding recharge causes gradual decline in alluvial settings, and that Ostrom's IAD framework should guide governance solutions"
+    },
+    {
+      "source_id": "Jasechko2024_global",
+      "title": "Rapid groundwater decline and some cases of recovery in aquifers globally",
+      "authors": [
+        "Jasechko, Scott",
+        "Seybold, Hansjorg",
+        "Perrone, Debra",
+        "Fan, Ying",
+        "Shamsudduha, Mohammad",
+        "Taylor, Richard G.",
+        "Fallatah, Othman",
+        "Kirchner, James W."
+      ],
+      "year": 2024,
+      "doi": "10.1038/s41586-023-06879-8",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents that rapid groundwater-level declines (>0.5 m/year) are widespread globally including in cropland-intensive regions, and that declines have accelerated in 30% of regional aquifers; also shows recovery is possible through policy change and managed aquifer recharge"
+    },
+    {
+      "source_id": "Dillon2019_MAR",
+      "title": "Sixty years of global progress in managed aquifer recharge",
+      "authors": [
+        "Dillon, Peter",
+        "Stuyfzand, Pieter",
+        "Grischek, Thomas",
+        "Lluria, Manuel",
+        "Pyne, R.D.G.",
+        "Jain, R.C.",
+        "Bear, Jacob",
+        "Schwarz, Jorg",
+        "Wang, Wei",
+        "Fernandez, Enrique",
+        "Stefan, Catalin",
+        "Pettenati, Marie",
+        "van der Gun, Jac",
+        "Sprenger, Carsten",
+        "Massmann, Gudrun",
+        "Scanlon, Bridget R.",
+        "Xanke, Julian",
+        "Jokela, Pekka",
+        "Zheng, Yan",
+        "Rossetto, Rudy",
+        "Shamrukh, Mohammad",
+        "Pavelic, Paul",
+        "Murray, Evan",
+        "Ross, Andrew",
+        "Bonilla Valverde, Juan Pablo",
+        "Palma Nava, Adriana",
+        "Ansems, Nienke",
+        "Posavec, Kristijan",
+        "Ha, Kyoochul",
+        "Martin, Rolf",
+        "Sapiano, Mauro"
+      ],
+      "year": 2019,
+      "doi": "10.1007/s10040-018-1841-z",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents India's extensive history of tank and percolation pond construction for aquifer recharge (>500,000 structures), the role of CGWB and irrigation departments in artificial recharge, and the effectiveness of streambed structures for recharge augmentation — directly supporting SWC-based solutions recommended for this pathway"
+    },
+    {
+      "source_id": "CGWB2023",
+      "title": "National Compilation of Dynamic Ground Water Resources of India 2022",
+      "authors": [
+        "Central Ground Water Board"
+      ],
+      "year": 2023,
+      "url": "https://cgwb.gov.in",
+      "source_type": "government_report",
+      "relevance_note": "Defines SOGE class thresholds (Safe <70%, Semi-critical 70–90%, Critical 90–100%, Over-exploited >100%) used in sig_01; provides block-level groundwater development classifications for Kerala, Goa, and Maharashtra coastal districts"
+    },
+    {
+      "source_id": "Thomas2019_WesternGhats",
+      "title": "GIS and AHP Techniques Based Delineation of Groundwater Potential Zones: a case study from Southern Western Ghats, India",
+      "authors": [
+        "Thomas, Jobin",
+        "Joseph, Sabu",
+        "Thrivikramji, K.P."
+      ],
+      "year": 2019,
+      "doi": "10.1038/s41598-019-38567-x",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Demonstrates that in Western Ghats tropical river basins (directly relevant to Kerala and Konkan context), approximately 59% of basin area falls under moderate groundwater potential and only 11% under high potential, confirming that even in high-rainfall zones groundwater availability is spatially constrained and recharge zones must be identified and protected"
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-01-27",
+    "last_updated": "2025-01-27",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 24,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  }
+}

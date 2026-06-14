@@ -1,0 +1,370 @@
+You are extracting one evidence card for an agro-ecological diagnosis system in India.
+
+Return ONLY a single JSON object (no markdown fences) matching the EvidenceCard schema.
+
+Required card_id: agriculture__water_scarcity__irrigation_challenges__010
+Production system: Agriculture
+Observed stress: water_scarcity
+Causal pathway: irrigation_challenges
+
+Pathway description: Irrigation infrastructure is present but insufficient, costly, or seasonally fails.
+Stress description: Farmers report insufficient water for crop production, particularly for rabi and zaid seasons or during dry spells in kharif.
+
+Target context (use exactly these context field values):
+{
+  "agro_climatic_zones": [
+    "humid",
+    "perhumid"
+  ],
+  "aquifer_types": [
+    "alluvium"
+  ],
+  "terrain_types": [
+    "plains"
+  ],
+  "rainfall_regime": "humid",
+  "geographic_examples": [
+    "West Bengal",
+    "Assam",
+    "eastern Bihar"
+  ]
+}
+
+AER reference for this context:
+AER-15: Bengal and Assam Plains, hot sub-humid (moist) to humid ecoregion | states=['West Bengal', 'Assam', 'Bihar (eastern)'] | rainfall=1600-3000mm | aquifer=alluvium
+
+Diagnostic variables from the framework (use these variable names in signals):
+[
+  {
+    "variable": "swb_total_area_ha",
+    "rationale": "Trend in total SWB area over years indicates whether storage infrastructure is expanding or contracting",
+    "availability": "available"
+  },
+  {
+    "variable": "swb_kharif_area_ha",
+    "rationale": "SWB area in kharif vs rabi vs zaid shows persistence of water storage; rapid drying indicates siltation or poor design",
+    "availability": "available"
+  },
+  {
+    "variable": "swb_count",
+    "rationale": "Number of surface water bodies; low count relative to MWS area indicates infrastructure gap",
+    "availability": "available"
+  },
+  {
+    "variable": "annual_well_depth_m",
+    "rationale": "Deep wells imply high lifting costs, disadvantaging marginal farmers; user-supplied when CoRE data unavailable",
+    "availability": "not_available"
+  },
+  {
+    "variable": "river_name",
+    "rationale": "Presence of a named river can indicate potential for diversion or lift irrigation",
+    "availability": "available"
+  },
+  {
+    "variable": "nrega_swc_count",
+    "rationale": "Cumulative SWC and irrigation works indicate historical investment in water harvesting infrastructure",
+    "availability": "available"
+  },
+  {
+    "variable": "dist_cooperative_km",
+    "rationale": "Distance to nearest agricultural cooperative society (PACS/marketing co-op) relates to access to institutional credit for irrigation investment",
+    "availability": "available"
+  }
+]
+
+Recommended solutions for this pathway:
+[
+  "Tank desilting and repair through MGNREGA",
+  "Micro-irrigation promotion (drip/sprinkler) to improve water use efficiency",
+  "Community-managed surface water storage structures",
+  "Solar pump installation for groundwater lift irrigation"
+]
+
+Variable types for this pathway (from data_dictionary.json):
+  swb_total_area_ha (unknown, availability=available): Trend in total SWB area over years indicates whether storage infrastructure is expanding or contracting
+  swb_kharif_area_ha (unknown, availability=available): SWB area in kharif vs rabi vs zaid shows persistence of water storage; rapid drying indicates siltation or poor design
+  swb_count (static, availability=available): Number of distinct surface water bodies intersecting the MWS
+  annual_well_depth_m (time_series, availability=not_available): Framework alias for well_depth_m — user-supplied time series keyed by agricultural year.
+  river_name (static, availability=available): Name of river passing through or adjacent to MWS (null if none)
+  nrega_swc_count (unknown, availability=available): Cumulative SWC and irrigation works indicate historical investment in water harvesting infrastructure
+  dist_cooperative_km (static, availability=available): Minimum road distance from intersecting villages to nearest agricultural cooperative society (agri_industry_co_operatives_societies in facilities_proximity). Us
+
+Signal expression rules (CRITICAL — downstream diagnosis evaluates these step-by-step as Python booleans):
+- Every diagnostic_signals[].condition MUST include a non-empty "expression" for types quantitative, trend, and composite.
+- type=qualitative WITHOUT expression is allowed ONLY for variables with availability=not_available in the framework list above.
+  Variables marked not_available (annual_well_depth_m) may use type=qualitative with qualitative_description only and expression omitted.
+- The expression is shown to a reasoning model as the evaluable condition. It MUST be a single valid Python boolean expression using variable names exactly as in data_dictionary.json.
+- Put interpretive prose ONLY in "explanation" and optional supporting "qualitative_description". NEVER put prose paragraphs in "expression".
+- Time-series variables (e.g. lulc_*_ha, cropping_intensity, annual_runoff_mm, drought_weeks_severe) are dicts keyed by year strings "2017".."2024". Use [-1] for latest year, [0] for earliest: cropping_intensity[-1] <= 1.15
+- Scalar NREGA totals (nrega_swc_count, nrega_irrigation_count, nrega_community_assets_count) are numeric aggregates — compare directly: nrega_irrigation_count < 3 (NOT .values() or dict indexing).
+- Null/absent categorical values: use `canal_name is None`, never SQL syntax like `IS NULL`.
+- List variables: organization_domains is a Python list — use `'fisheries' not in organization_domains`.
+- terrain_cluster_id is an integer: 1 = Mostly Plains, 3 = Broad Plains and Slopes. Use explicit comparisons, e.g. terrain_cluster_id == 3 for sloping terrain; do NOT describe terrain in prose without a numeric test.
+- String equality: aquifer_class == 'crystalline_basement' (single quotes inside the JSON string).
+- Ratios and compound conditions: parenthesize explicitly — (lulc_single_kharif_ha[-1] / (lulc_single_kharif_ha[-1] + lulc_double_crop_ha[-1] + 1e-9)) > 0.75
+- Derived mean/trend scalars are computed at diagnosis time from the raw time series and injected alongside present_variables. Prefer them for multi-year patterns instead of prose:
+  trend_annual_delta_g_mm < 0, mean_cropping_intensity <= 1.15, trend_swb_total_area_ha < -5
+
+Derived/computed variables (scalars — use directly in expressions):
+  mean_annual_precipitation_mm: mean of annual_precipitation_mm time series
+  trend_annual_precipitation_mm: linear slope of annual_precipitation_mm (mm/year)
+  mean_annual_et_mm: mean of annual_et_mm time series
+  trend_annual_et_mm: linear slope of annual_et_mm (mm/year)
+  mean_annual_runoff_mm: mean of annual_runoff_mm time series
+  trend_annual_runoff_mm: linear slope of annual_runoff_mm (mm/year)
+  mean_annual_delta_g_mm: mean of P−ET−Runoff groundwater balance
+  trend_annual_delta_g_mm: linear slope of annual_delta_g_mm (mm/year)
+  mean_cropping_intensity: mean of cropping_intensity time series
+  trend_cropping_intensity: linear slope of cropping_intensity (ratio/year)
+  mean_kharif_cropped_area_ha: mean of lulc_single_kharif_ha time series
+  trend_kharif_cropped_area_ha: linear slope of lulc_single_kharif_ha (ha/year)
+  mean_double_crop_area_ha: mean of lulc_double_crop_ha time series
+  trend_double_crop_area_ha: linear slope of lulc_double_crop_ha (ha/year)
+  drought_moderate_return_period: average years between moderate drought kharif seasons
+  drought_severe_return_period: average years between severe drought kharif seasons
+  mean_swb_total_area_ha: mean of swb_total_area_ha time series
+  trend_swb_total_area_ha: linear slope of swb_total_area_ha (ha/year)
+  mean_swb_rabi_kharif_ratio: mean of swb_rabi_area_ha / swb_kharif_area_ha ratio
+  trend_swb_rabi_kharif_ratio: linear slope of SWB rabi/kharif ratio
+
+BAD example (current corpus bug — do NOT reproduce):
+  "type": "qualitative",
+  "qualitative_description": "Terrain cluster indicates sloping plateau or hilly terrain..."
+  (no expression — model cannot evaluate TRUE/FALSE; also contradicts terrain_cluster_id == 1 = Mostly Plains)
+
+GOOD example for terrain_cluster_id on rainfed_risk:
+  "type": "quantitative",
+  "expression": "terrain_cluster_id == 3 and annual_runoff_mm[-1] > 80",
+  "qualitative_description": "Broad plains and slopes (cluster 3) with high runoff reduce in-field moisture retention.",
+  "threshold_confidence": "medium",
+  "context_sensitivity": "regional"
+
+The example card below may contain legacy qualitative-only conditions — ignore those patterns; your output must follow these expression rules.
+
+Rules:
+- Include 3-5 diagnostic_signals using available variables where possible.
+- For variables marked availability not_available, add missing_variable_questions.
+- Include 1-2 confounders distinguishing this pathway from alternatives.
+- Ground claims in the paper excerpts below; cite sources with realistic source_id citekeys.
+- Each source source_type must be exactly one of: peer_reviewed_journal, government_report, ngo_report, grey_literature, expert_guideline, book_chapter (use grey_literature for theses/working papers).
+- Each diagnostic_signals[].condition.type must be exactly one of: quantitative, qualitative, trend, composite (use composite for multi-part conditions, not "compound").
+- Set metadata.created_by to "llm_extraction_v1", reviewed_by_expert to false,
+  extraction_model to "claude-sonnet-4-6", confidence_overall to medium/high/low as appropriate,
+  created_at and last_updated to today's date.
+- At embedding time, semantic aliases from metadata/semantic_aliases.json are appended
+  automatically for pathway "irrigation_challenges" — do not duplicate alias
+  phrases in overall_reasoning_note.
+
+Example card (structure reference):
+{
+  "card_id": "agriculture__water_scarcity__groundwater_stress__001",
+  "production_system": "Agriculture",
+  "observed_stress": "water_scarcity",
+  "causal_pathway": "groundwater_stress",
+  "context": {
+    "agro_climatic_zones": [
+      "semi-arid",
+      "sub-humid"
+    ],
+    "aquifer_types": [
+      "hard_rock"
+    ],
+    "terrain_types": [
+      "plateau",
+      "plains"
+    ],
+    "rainfall_regime": "semi-arid",
+    "crop_systems": [
+      "kharif rainfed",
+      "cotton",
+      "soybean"
+    ],
+    "geographic_examples": [
+      "Vidarbha Maharashtra",
+      "Telangana",
+      "Karnataka Deccan Plateau"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "soge_dev_percent",
+        "soge_class_name"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "soge_dev_percent > 70 or soge_class_name in ['Semi-critical', 'Critical', 'Over-exploited']",
+        "threshold_confidence": "high",
+        "context_sensitivity": "global"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "CGWB defines groundwater stress classes based on extraction as a percentage of net annual recharge. In hard rock aquifers, even 'Safe' SOGE values above 60% can indicate localised stress because storativity is low and recharge is spatially heterogeneous \u2014 a block-level Safe classification may mask critical depletion at the micro-watershed scale."
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "annual_well_depth_m"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "annual_well_depth_m[-1] - annual_well_depth_m[0] > 3",
+        "qualitative_description": "Well depth has increased by more than 3 metres over the available multi-year record (2017\u20132025), indicating declining static water level.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Deepening well depth is a direct proxy for declining groundwater table. A 3m decline over 8 years (~0.4m/year) is considered significant in hard rock aquifers where storage is limited to weathered and fractured zones typically 10\u201330m deep. Faster rates indicate imminent failure of shallow dug wells.",
+      "interaction_with": [
+        "sig_01",
+        "sig_03"
+      ]
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "annual_delta_g_mm"
+      ],
+      "condition": {
+        "type": "trend",
+        "qualitative_description": "Annual delta_g (P - ET - Runoff) is negative in more than 4 of the last 8 years, indicating chronic excess extraction over recharge.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "A consistently negative delta_g across multiple years means outflows (ET + runoff) persistently exceed precipitation, leaving no surplus for groundwater recharge. In semi-arid hard rock settings, even small negative balances accumulate quickly due to low aquifer storage."
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "nrega_swc_count"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "sum(nrega_swc_count.values()) < 5",
+        "qualitative_description": "Fewer than 5 cumulative SWC works in the MWS over the MGNREGA record, indicating low investment in recharge infrastructure.",
+        "threshold_confidence": "low",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Low historical SWC investment means natural recharge opportunities (check dams, percolation ponds, farm bunds) have not been exploited, amplifying the depletion caused by extraction. It also signals an opportunity for intervention rather than a terminal condition.",
+      "interaction_with": [
+        "sig_03"
+      ]
+    }
+  ],
+  "overall_reasoning_note": "Groundwater stress in hard rock aquifers should be confirmed by at least two of the three primary signals: elevated SOGE, deepening well trend, or chronic negative delta_g. A single signal may reflect data noise or spatial mismatch (SOGE is block-level). The absence of SWC investment (sig_04) amplifies the other signals but does not confirm stress on its own. If SOGE is Safe but well depth is increasing rapidly, prioritise the well depth trend \u2014 block-level SOGE masks micro-watershed heterogeneity in hard rock terrain. Always ask the user about borewell density and crop water demand (irrigated vs rainfed) before finalising diagnosis.",
+  "confounders": [
+    {
+      "confounder": "drought (meteorological) causing apparent groundwater stress through reduced recharge rather than over-extraction",
+      "how_to_distinguish": "Compare drought_weeks_severe and annual_precipitation_mm against historical baseline. If drought years co-occur with the delta_g decline, drought is the primary driver and groundwater stress is secondary. Check soge_dev_percent \u2014 if it is low (<50%) but delta_g is still negative, drought rather than extraction is likely primary."
+    },
+    {
+      "confounder": "Seasonal variation in well depth misread as multi-year trend",
+      "how_to_distinguish": "Ensure well depth comparisons are made for the same season (preferably pre-monsoon) across years, not across seasons."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "borewell_density",
+      "question_to_user": "Roughly how many borewells or tubewells are there in your village or nearby villages? Would you say there are very few (less than 10), a moderate number (10\u201350), or a large number (more than 50)?",
+      "how_answer_updates_diagnosis": "High borewell density in a hard rock aquifer with low SOGE confirms localised over-extraction not captured by the block-level SOGE figure, strongly confirming the groundwater stress pathway."
+    },
+    {
+      "missing_variable": "groundwater_salinity",
+      "question_to_user": "Have farmers noticed that borewell or well water has become saltier, leaves white deposits, or is no longer suitable for certain crops?",
+      "how_answer_updates_diagnosis": "Salinity in hard rock aquifers can indicate deep borewell penetration into saline zones, a secondary consequence of over-extraction, or a different causal pathway (saline intrusion) that changes solution recommendations."
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Shah2009",
+      "title": "Taming the anarchy: Groundwater governance in South Asia",
+      "authors": [
+        "Shah, Tushaar"
+      ],
+      "year": 2009,
+      "source_type": "book_chapter",
+      "relevance_note": "Documents hard rock aquifer depletion dynamics and the inadequacy of block-level SOGE to capture local depletion in peninsular India"
+    },
+    {
+      "source_id": "CGWB2023",
+      "title": "National Compilation of Dynamic Ground Water Resources of India 2022",
+      "authors": [
+        "Central Ground Water Board"
+      ],
+      "year": 2023,
+      "url": "https://cgwb.gov.in",
+      "source_type": "government_report",
+      "relevance_note": "Defines SOGE class thresholds (Safe <70%, Semi-critical 70\u201390%, Critical 90\u2013100%, Over-exploited >100%) used in sig_01"
+    },
+    {
+      "source_id": "Fishman2011",
+      "title": "Can the groundwater crisis in rural India be attributed to well deepening?",
+      "authors": [
+        "Fishman, R.",
+        "Devineni, N.",
+        "Raman, S."
+      ],
+      "year": 2011,
+      "doi": "10.1029/2011WR010477",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents well deepening as a reliable proxy for groundwater table decline in Indian hard rock and alluvial settings"
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2026-06-07",
+    "last_updated": "2026-06-07",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium"
+  }
+}
+
+Paper excerpts:
+[Chunk 1] paper=doi__10.5194_hess-19-1905-2015 type=abstract title=Why is the Arkavathy River drying? A multiple-hypothesis approach in a data-scarce region
+Abstract. Water planning decisions are only as good as our ability to explain historical trends and make reasonable predictions of future water availability. But predicting water availability can be a challenge in rapidly growing regions, where human modifications of land and waterscapes are changing the hydrologic system. Yet, many regions of the world lack the long-term hydrologic monitoring records needed to understand past changes and predict future trends. We investigated this "predictions under change" problem in the data-scarce Thippagondanahalli (TG Halli) catchment of the Arkavathy sub-basin in southern India. Inflows into TG Halli reservoir have declined sharply since the 1970s. The causes of the drying are poorly understood, resulting in misdirected or counter-productive management responses. Five plausible hypotheses that could explain the decline were tested using data from field surveys and secondary sources: (1) changes in rainfall amount, seasonality and intensity; (2) increases in temperature; (3) groundwater extraction; (4) expansion of eucalyptus plantations; and (5) fragmentation of the river channel. Our results suggest that groundwater pumping, expansion of eucalyptus plantations and, to a lesser extent, channel fragmentation are much more likely to have caused the decline in surface flows in the TG Halli catchment than changing climate. The multiple-hypothesis approach presents a systematic way to quantify the relative contributions of proximate anthropogenic and climate drivers to hydrological change. The approach not only makes a meaningful contribution to the policy debate but also helps prioritize and design future research. The approach is a first step to conducting use-inspired socio-hydrologic research in a watershed.
+
+[Chunk 2] paper=doi__10.59327_ipcc_ar5-9789291691432 type=abstract title=Climate Change 2014 - Synthesis Report
+The Synthesis Report (SYR) distils and integrates the findings of the three Working Group contributions to the Fifth Assessment Report (AR5) of the Intergovernmental Panel on Climate Change (IPCC), the most comprehensive assessment of climate change undertaken thus far by the IPCC: Climate Change 2013: The Physical Science Basis; Climate Change 2014: Impacts, Adaptation, and Vulnerability; and Climate Change 2014: Mitigation of Climate Change. The SYR also incorporates the findings of two Special Reports on Renewable Energy Sources and Climate Change Mitigation (2011) and on Managing the Risks of Extreme Events and Disasters to Advance Climate Change Adaptation (2011).
+
+[Chunk 3] paper=doi__10.1371_journal.pone.0032688 type=abstract title=Global Monthly Water Scarcity: Blue Water Footprints versus Blue Water Availability
+Freshwater scarcity is a growing concern, placing considerable importance on the accuracy of indicators used to characterize and map water scarcity worldwide. We improve upon past efforts by using estimates of blue water footprints (consumptive use of ground- and surface water flows) rather than water withdrawals, accounting for the flows needed to sustain critical ecological functions and by considering monthly rather than annual values. We analyzed 405 river basins for the period 1996-2005. In 201 basins with 2.67 billion inhabitants there was severe water scarcity during at least one month of the year. The ecological and economic consequences of increasing degrees of water scarcity--as evidenced by the Rio Grande (Rio Bravo), Indus, and Murray-Darling River Basins--can include complete desiccation during dry seasons, decimation of aquatic biodiversity, and substantial economic disruption.
+
+[Chunk 4] paper=doi__10.1126_science.1092958 type=abstract title=Global Food Security: Challenges and Policies
+Global food security will remain a worldwide concern for the next 50 years and beyond. Recently, crop yield has fallen in many areas because of declining investments in research and infrastructure, as well as increasing water scarcity. Climate change and HIV/AIDS are also crucial factors affecting food security in many regions. Although agroecological approaches offer some promise for improving yields, food security in developing countries could be substantially improved by increased investment and policy reforms.
+
+[Chunk 5] paper=doi__10.1007_s10040-019-01951-y type=abstract title=Hydrologic and cost benefit analysis at local scale of streambed recharge structures in Rajasthan (India) and their valu
+A hydrological study of four streambed recharge structures, locally called check dams, in a monsoonal area of hard-rock terrain in Rajasthan, India, was conducted over 3 years to evaluate their contribution to agricultural production. Their catchment area totalled 3,003 ha, and mean annual recharge from the 4 impoundments was 779,000 m3 or 26 mm. The calculated components of the annual water balance of these check dams are presented, together with a sensitivity analysis on unmeasured parameters and documentation of capital and maintenance costs of check dams. The maximum recharge was found to occur in the wettest year for the two structures on first-order streams; however, for the two structures on second-order streams, the maximum recharge occurred in the average rainfall year because, at these sites, groundwater levels rose so that the stream became hydraulically connected to the aquifer for a period in the wettest year causing mean dry weather infiltration rates to diminish. The study also evaluated the effect of manual desilting and mechanical desilting on mean dry-weather-infiltration rate. For the check dam that was manually desilted, the recharge increased by 84% over that of the preceding year, whereas for the mechanically desilted check dam it reduced by 18%, and the two control check dams increased by 13%. A present value analysis for net benefits of additional crop production attributable to recharge from check dams indicated that, after accounting for average annual maintenance costs 2.9% of capital costs, the benefit:cost ratio of the four check dams averaged 4.1. Hence this study shows that these check dams are economically attractive at the local level for securing irrigation water supplies.
+
+[Chunk 6] paper=doi__10.1007_s10040-019-01951-y type=body title=Hydrologic and cost benefit analysis at local scale of streambed recharge structures in Rajasthan (India) and their valu
+Their 5%evaporated. The estimated proportionofinflowthatwas impact will be felt greatest in relation to natural recharge rechargedfromallcheckdamswas37,70and10%for2014, in dry years, and atthese times, the reduced spillcould be 2015 and 2016 respectively. Conversely spill accounted for conspicuous for downstream communities. The results 57,18and87%ofinflowandevaporationfor7,16and3% suggest that longer-term studies are required in order to over these years. Total annual recharge from the four check produce reliable conclusions on long-term or average per- damsintheseyearswasestimatedtobe976,000,510,000and formance of check dams. In this study, by good fortune, 850,000m3respectively. rainfall patterns were favourable, including dry, average Therechargetocapacityratiovariedbetweencheckdams and wet years, but this cannot generally be relied upon in andyears,withameanof1.66andrangefrom0.17to3.40. design of recharge studies. Furthermore, an economic Table1 Checkdamdimensionsinrelationtocatchmentarea(adaptedfromDashoraetal.2018) Site Recharge Totaldeptha Waterspread Capacityb Catchment Stream Checkdamareab Checkdamcapacityb No. structure (m) areab(m2) (m3) area(ha) Order as%ofitscatchment asmmovercatchment (%) (mm) 1 Badgaon 1.57 39,000 42,000c 338 1 1.15 12.4 2 Dharta 1.82 136,600 140,000c 1,705 2 0.80 8.2 3 Hinta 2.62 127,200 223,000 851 2 1.49 26.2 4 Sunderpura 2.05 62,800 64,400 109 1 5.77 59.1 aDepthfromweircresttoconcreteapronatstreambedlevelwhichisthebaseofthegaugeboard bCalculatedfromarea-elevationandvolume-elevationcurveswhenwaterelevationisattheweircrest cMeanofpre-andpost-scrapingvolumes 1896 HydrogeolJ(2019)27:1889–1909 Fig.3 Waterbalanceplotsforthe fourcheckdams—Badgaon, Dharta,HintaandSunderpura— inyear2016.Eachplotshows rainfallandstoragevolume historyinthecheckdam.Theflux componentsareshownas cumulativevolumes,inflow,spill, rechargeandevaporation.The dashedlineindicatesthecapacity ofthecheckdam(thevolume abovewhichspillwouldoccur). Waterbalancemethodologyand resultsforthesamecheckdamsin 2014and2015arepresentedby Dashoraetal.(2018) analysis of the whole catchment is also warranted to in- downstream) and benefits (reduced flood risk), such as corporate effects of reduced downstream flow including have been evaluated by Chinnasamy et al. (2018b) for costs (e.g. risk of reduced agricultural production flood water harvesting in the Ramganga Basin, India. HydrogeolJ(2019)27:1889–1909 1897 Table2 Componentsoftheannualwaterbalanceforfourcheckdams(2014–201
+
+[Chunk 7] paper=doi__10.1007_s10040-019-01951-y type=body title=Hydrologic and cost benefit analysis at local scale of streambed recharge structures in Rajasthan (India) and their valu
+de- (monsoon season crop), which is mainly maize (food grain) mand management to sustain and maximise livelihoods followedbyguar(clusterbean),jowar(sorghum:fodderand (Dillonetal.2009). HydrogeolJ(2019)27:1889–1909 1891 Fig.1 Locationmapofthestudyarea(fromDashoraetal.2018) Rechargeestimation check dam. In summary, for each check dam, the area- and volume-elevationcurveshadbeendeterminedfromasurvey The monitoring and recharge estimation offour check dams oftopographiclevel.Duringdryweather,themeasureddaily for3years(2014–2016)wasdoneasdescribedforthe2014 declineintheimpoundedwaterlevelwasattributedtothedry- and2015yearsinDashoraetal.(2018)usingasimpledaily weather-infiltration rate (DWIR) and evaporation, where waterbalancemethodappliedtothewaterimpoundedbyeach evaporationwasestimatedasauniform5mm/day,byscaling 1892 HydrogeolJ(2019)27:1889–1909 from the mean daily evaporation in the A-class pan itsstructuralintegrity. Hencemaintenanceshouldbeconsid- evaporimeter at CTAE, Udaipur meteorological station eredanintegralpartofestablishingcheckdamsiftheyareto (Dashoraetal.2018).Therewasnodirectuseofwaterfrom continuetoperformasexpected.IntheDhartacatchment,the checkdams.Duringwetweather,whenlevelsremainedbelow watershed department had given priority to building new thespillway,inflowswerecalculatedusingwaterlevelchange checkdamsovermaintenanceofexistingcheckdams,inthe accountingformeanDWIR(overtheperiodinthatyearwhen absence of information on the effects of siltation and thecheckdamcontainedwater)rainfallandevaporation—that desiltationonrecharge. is,thevolumeofdailyrechargeinwetweatherwasassumed As part of this study, two methods of removing silt from tooccuratthemeanDWIRmultipliedbytheaveragesurface- checkdamsinthedryseasonwereemployed;handscraping water area over the day, and did not depend on estimated and mechanical scraping (Fig. 2), to determine the effect of inflow.Whenthewaterlevelexceededthecease-to-flowlevel these methods on mean dry-weather-infiltration rates ofthespillway,theinstantaneousdischargeratewascalculat- (MDWIRs).AtBadgaonbeforethe2015monsoon,scraping ed using a weir discharge formula for a horizontal broad- of silt by manual labour was undertaken; note, this was the crested weir. The average of the flow rates for the current only check dam studied tobe scraped by hand. At the same andprecedingdayswas assumedtooccuroverthe full24h time, mechanical scraping of Dharta check dam was per- to crudely estimate the daily spill and this was added to t
+
+[Chunk 8] paper=doi__10.1007_s10040-019-01951-y type=body title=Hydrologic and cost benefit analysis at local scale of streambed recharge structures in Rajasthan (India) and their valu
+water levels and found that estimatedwet-weather-infiltrationrate(WWIR)werecalculat- 96%ofreadingswerewithin±1cmofvaluesfromconcurrent ed. Results for the Hinta check dam (the largest check dam photographs as read by a university researcher. In summary, studied) in 2014 (the Baverage^ year) are shown in Table 3. whilerunoffestimatesareconsideredunreliable,therecharge Each parameter in turn was increased from its Bbase case^ estimates were found to be relatively insensitive to unmea- value by 20% and the corresponding percentage change in suredparametersandareconsideredrobust. each of the water balance components was calculated. Increasing the rate of evaporation by 20% gives a directly Runoffcoefficient proportional increase in the volume evaporated; however, thereductioninrechargeisonly3.5%becausetheevaporation Thecheck-daminflowvolumewascalculatedonadailybasis wasonly18%oftherechargeforthebasecase.Increasingthe using water level measurements and area-volume elevation weircoefficienthasadirectlyproportionalimpactonspilland curves, to calculate inflow, spill, recharge and evaporation. increasesthecalculatedinflowby7.5%buthasnoeffecton No information on runoff coefficients (ROC) was available recharge as the recharge calculation does not make use of inthesecheckdamcatchments,soresultswerecomparedwith inflow or outflow. Increasing the WWIR by 20% increases estimates from Strange’s table (source: Subramanya 2008), thecalculatedrechargebyonly2.4%andinflowby1.2%with whichiscommonlyusedinIndiatoestimateannualmonsoon averysmalldeclineincalculatedevaporation.Themainrea- runoffwithouttheabilitytovalidatepredictions.Knowingthe sonforlowsensitivityofrechargetoWWIRisthat87%ofthe low level of accuracy of the spill calculation based on only Bbasecase^rechargeoccurredindryweather.Thelowsensi- daily water level readings, this analysis was partitioned to tivity of calculated recharge to these parameters that are ex- focusononlytheyearsandcheckdamswithnospill,where trapolatedtoremotestreambedstructures,orestimatedonthe inflow estimates were considered reliable. Rainfall was re- basis ofdaily gaugeboardreadingsbyfarmers,suggeststhat corded only at a single rain gauge in or adjacent to each Table3 SensitivityanalysisofthewaterbalancecomponentsatHintacheckdam2014 Parameter Initialvalue Adjustedvalue Changefrombasecase(Δ%) Recharge(Δ%) Inflow(Δ%) Spill(Δ%) Evaporation(Δ%) Evaporation(mm/day) 5 6 20 –3.5 0 0 20 Weircoefficient(C) 1.6 1.92 20 0 7.5 20 0 1 WWIRa(mm/day) 26 31 20 2
+
+[Chunk 9] paper=doi__10.1007_s10040-019-01951-y type=body title=Hydrologic and cost benefit analysis at local scale of streambed recharge structures in Rajasthan (India) and their valu
+the impact of wetter years Meandry-weatherinfiltrationrate(MDWIR) resulting in higher natural recharge to the unconfined hard- rockaquifercausingwatertabletoriseandhydraulicconnec- There are two main factors that dictate recharge from any tionwiththeimpoundedsurfacewater.Theprocessofhydrau- check dam, the presence of water in the check dam and its licconnectionhasbeenstudiedandmodelledwithaboundary rate of infiltration. The MDWIR, measured over days when element model having a moving upper surface and found to waterlevelislowerthantheweircrestandfallingatleastas quicklyreducetherechargeratetoabout10–20%ofthepre- fastastheevaporationrate,istakentobetherateofrecharge cedinghydraulicallydisconnectedrate, due tochangeinhy- duringallothertimes,wheninflowsareestimated.Theerrors, draulic gradient surrounding the streambed (Dillon and some compensating, associated with this approximation are Liggett1983)andtheeffectislargerforwiderimpoundments discussedbyDashoraetal.(2018). such as check dams (from electrical resistance analogue During this study, MDWIRs ranged between 10 and models, Bouwer 1978; and using a boundary element 57mm/day,andthemeanwas27mm/day,morethan5times model, Dillon 1984). The differences in MDWIR between theestimatedevaporationratefromthedamsurfaceof5mm/ checkdamsinanyyear(exceptthefirstbeforeanydesilting) day(Table5).Importantly,thehighestDWIRwasobservedat weresimilartoorlargerthandifferencesbetweenyears,sug- Badgaonin2015,immediatelyfollowingmanualscrapingto gestingthattheeffectsofdesilting,combinedwithothervar- removesiltfromthefloorofthecheckdam.Thetwolowest iationsbetweensites,wereassignificantasvariationsbetween rateswererecordedinDhartaandHintacheckdamsimmedi- years(Fig.4).Theyearofleaststandarddeviationandcoef- atelyfollowingmechanicalscrapingofthecheckdams,with ficient of variation was 2014, before desilting commenced. the lowest rate after two successive years of mechanical The check dam with highest standard deviation across the desilting.MDWIRinthedriestyear2015isparticularlyclear three years, more than twice that of others, was Badgaon, where the largest increase from 2014 occurred in the hand- themanuallyscrapedcheckdam,suggestingthatthischange scrapedcheckdamandtheonlydeclinewasinthemechani- wassignificant. callyscrapedcheckdam.Thisappearstobeevidenceofsoil ThechangesinMDWIRbetween2014and2015wouldbe compaction by the heavy machinery used at Dharta check the changes least influenced by groundwater interactions. dam, which actually 
+
+[Chunk 10] paper=doi__10.1007_s10040-019-01951-y type=body title=Hydrologic and cost benefit analysis at local scale of streambed recharge structures in Rajasthan (India) and their valu
+HydrogeologyJournal(2019)27:1889–1909 https://doi.org/10.1007/s10040-019-01951-y PAPER Hydrologic and cost benefit analysis at local scale of streambed recharge structures in Rajasthan (India) and their value for securing irrigation water supplies Y.Dashora1 &P.Dillon2&B.Maheshwari3&P.Soni4&H.K.Mittal1&R.Dashora1&P.K.Singh1&R.C.Purohit1& P.Katara1 Received:9July2018/Accepted:18February2019/Publishedonline:25April2019 #TheAuthor(s)2019 Abstract A hydrological study offour streambed recharge structures, locally called check dams, in a monsoonal area of hard-rock terrain in Rajasthan, India, was conducted over 3 years to evaluate their contribution to agricultural production. Their catchment area totalled 3,003 ha, and mean annual recharge from the 4 impoundments was 779,000 m3 or 26 mm. The calculated components of the annual water balance of these check dams are presented, together with a sensitivity analysis on unmeasured parameters and documentation of capital and maintenance costs of check dams. The maximum recharge was found to occur in the wettest year for the two structures on first-order streams; however, for the two structures on second-order streams, the maximum recharge occurred in the average rainfall year because, at these sites, groundwater levels rose so that the stream became hydraulically connected to the aquifer for a period in the wettest year causing mean dry weather infiltration rates to diminish. The study also evaluated the effect of manual desilting and mechanical desilting on mean dry-weather-infiltration rate. For the check dam that was manually desilted, the recharge increased by 84% over that of the preceding year, whereas for the mechanically desilted check dam it reduced by 18%, and the two control check dams increased by 13%. A present value analysis for net benefits of additional crop produc- tionattributabletorechargefromcheckdamsindicatedthat,afteraccountingforaverageannualmaintenancecosts2.9% ofcapitalcosts,thebenefit:costratioofthefourcheckdamsaveraged4.1.Hencethisstudyshowsthatthesecheckdams are economically attractive at the local level for securing irrigation water supplies. Keywords Checkdam .Groundwaterrecharge/waterbudget .Costbenefitanalysis .Artificialrecharge .India Introduction * Y.Dashora Rechargestructuresinbedsofephemeral streams havebeen dashora.yogita@gmail.com reliedoninmajorprogramsinthelast60yearsforaugment- inggroundwaterrechargeinhard-rockaquifersforirrigation P.Dillon pdillon500@gmail.com anddrinkingwa
+
+[Chunk 11] paper=doi__10.1007_s10040-019-01951-y type=body title=Hydrologic and cost benefit analysis at local scale of streambed recharge structures in Rajasthan (India) and their valu
+land Checkdamsaccumulateanysiltthatisnotdischargedoverthe inundatedoroccupiedbythecheckdamsbecausetheponding spillway.Suchsiltimpairstheperformanceofcheckdamsin areaofmostcheckdamsisunderpastureorforestlandalready twoways.Firstly,itreducesthestoragecapacityofthecheck ingovernmentpossession. damsoitsabilitytoretainandrechargewaterisdiminished— The maintenance costs were provided by the Watershed asanexample,itwasobservedin2013thatone5-year-old,2- Department and these were costs charged by contractors for m-deepcheckdaminGujarathadfilledcompletelywithsilt, mechanical methods of desilting. At one site desilting was anaccumulationaveraging40cm/year.Moredataareneeded performed by farmers and local pottery makers using hand todetermineaveragesiltationrateanditsrelationshiptocatch- labourandattheothersitwasperformedbymechanicalex- ment conditions and check dam location and design, and to cavator. The volume of silt removed was determined by estimatetypicalfrequencyofdesiltingneeded. counting trailer loads moved and estimating the capacity of Secondly,thesiltretainedinthecheckdamislikelytohave eachtrailer. afinerparticlesizedistributionthanthealluvialsedimentsin Operating costs such as annual inspections for structural thestreamdepositedunderhigherwatervelocitiesbeforethe damage, are very small per check dam in comparison with checkdamwasinstalled.Hence,accumulationoflowerper- maintenancecostsandwereneglected.Also,thecostofmon- meabilitysedimentonthefloorofthecheckdamislikelyto itoringtoassesstherechargeeffectivenessofcheckdamswas reduceinfiltrationrateovertime. neglected.Asimplegaugeboardtemplateisavailabletoeasily Other types ofmaintenance occasionallyrequiredinclude paint gaugeboards onto sidewalls to enable farmer measure- repairs to concrete weirs, side walls, and aprons to prevent mentsofgroundwaterlevels.Thereisalsoafreemobilephone leakageofwaterthroughoraroundthestructure,andtoensure app(MyWell;Dalyetal.2018)toenableBJstouploaddaily HydrogeolJ(2019)27:1889–1909 1893 Fig.2 Desiltingmethodsusedfor checkdamsbeforethe2015and 2016monsoons:amanual desiltingofBadgaoncheckdam before2015monsoon,b mechanicaldesiltingofHinta checkdam waterlevelreadings(andphotographsofthegaugeboard)toa typical of a concrete structure, possibly conservatively, websitetoallowcheckingandhelpifrequiredwithestimating as many check dams older than 50 years can be found MDWIR, to thereby assess the need for desilting. Training in hard rock areas of India. programs for BJs ata large scale ar
+
+[Chunk 12] paper=doi__10.1007_s10040-019-01951-y type=body title=Hydrologic and cost benefit analysis at local scale of streambed recharge structures in Rajasthan (India) and their valu
+with lowest MDWIR in 2015 were scraped. Unfortunately, rates. Finally, as the season ends, the rate of infiltration in- this was by mechanical scraping and MDWIR decreased in creasesatmostcheckdams. both cases, but decreases were recorded at all check dams. Although the air temperature ranges from 15 to 30 °C More data will be needed to help formulate appropriate during the ponding period, there was no correlation found strategies, accounting for the benefits and costs of desilting, between DWIR and air temperature. Air temperature falls withagreateremphasisonmethodsthatavoidcompactionof at the end of each monsoon season when infiltration rates sediments. Elsewhere, it has been shown that scraping has increase; hence, daily air temperature was not responsible improved recharge capacity. In a study by Mousavi and for the observed increase in infiltration rates. As water Rezai (1999) of three artificial recharge sites in Isfahan level rises within a check dam it had been expected that Province,centralIran,onaverage,theaverageinfiltrationca- this would increase the hydraulic gradient for seepage; pacity of the untreated recharge facilities had declined to however, this is not supported by the observations. 20.3%ofitsinitialvalue,andthat68.3%ofinitialinfiltration These show lower DWIRs at higher storage levels, but capacitywasrestoredafterscrapingoffthetop15cmofsilt. due to the larger surface area, daily volumes of recharge are less affected. Factorsaffectingdryweatherinfiltrationrate(DWIR) Groundwater levels were monitored daily at three wells closest to each check dam when they contained water and VariationsinDWIRareshownoverthe3yearsandfoursites weeklythroughouttherestoftheyear.AtBadgaontheclosest in Fig. 5. Each site and year follows a pattern of high rates wellwas68mupstreamoftheweir.Forothersites,theclosest Fig.4 Meandry-weather- infiltrationratesforeachyearand eachcheckdam 1900 HydrogeolJ(2019)27:1889–1909 Fig.5 Dry-weather-infiltration ratesforfourcheckdamswith respecttotime Fig.6 WaterlevelinBadgaoncheckdamandnearbywell(B9)withdailyDWIR(2014–2016) HydrogeolJ(2019)27:1889–1909 1901 well was >470 m from the check dam. Figure 6 compares 2014, 2015 and 2016, the peak groundwater level reached daily values for the groundwater in the proximal well and RL 97.7 m (the lowest ground surface), 95, and 98.7 m theBadgaoncheckdamwaterlevel.Theterm‘reducedlevel’ respectively. The DWIR reduces to approximately zero (RL)isusedastheceasetoflow(spillwaycrest)levelofthe
+
+Semantic aliases (appended at embed time, not in card JSON):
+Related themes: tank siltation. water body shrinking. pond drying faster. check dam not working. irrigation infrastructure failure. surface water storage declining. water harvesting structure poor. canal irrigation absent. lift irrigation cost. micro irrigation not adopted. drip sprinkler not available. water use efficiency low. rabi irrigation inadequate. second crop water access. SWB area declin...
+
+JSON schema summary (required top-level keys):
+["card_id", "production_system", "observed_stress", "causal_pathway", "context", "diagnostic_signals", "confounders", "sources"]

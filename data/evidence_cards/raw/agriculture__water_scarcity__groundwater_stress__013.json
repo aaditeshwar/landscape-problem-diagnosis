@@ -1,0 +1,240 @@
+{
+  "card_id": "agriculture__water_scarcity__groundwater_stress__013",
+  "production_system": "Agriculture",
+  "observed_stress": "water_scarcity",
+  "causal_pathway": "groundwater_stress",
+  "context": {
+    "agro_climatic_zones": [
+      "perhumid"
+    ],
+    "aquifer_types": [
+      "semi-consolidated"
+    ],
+    "terrain_types": [
+      "hilly"
+    ],
+    "rainfall_regime": "humid",
+    "geographic_examples": [
+      "Meghalaya",
+      "Nagaland",
+      "Mizoram",
+      "Assam hills"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "soge_dev_percent",
+        "soge_class_name"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "soge_dev_percent > 70 or soge_class_name in ['Semi-critical', 'Critical', 'Over-exploited']",
+        "qualitative_description": "Block-level SOGE exceeds 70% or is classified Semi-critical or worse, indicating extraction pressure relative to recharge even in a high-rainfall zone.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "In the perhumid North-Eastern Hills, high annual rainfall (2000–12000 mm) normally ensures abundant recharge, so an elevated SOGE value is a strong signal of localised over-extraction or structurally limited aquifer storage in semi-consolidated sedimentary soft-rock formations. Block-level SOGE may understate micro-watershed stress in steep hilly terrain where recharge zones are spatially restricted. CGWB thresholds define Safe <70%, Semi-critical 70–90%, Critical 90–100%, Over-exploited >100%."
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "trend_annual_delta_g_mm",
+        "annual_delta_g_mm"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "trend_annual_delta_g_mm < 0 and mean_annual_delta_g_mm < 0",
+        "qualitative_description": "Both the linear trend and the multi-year mean of annual groundwater balance (P - ET - Runoff) are negative, indicating that recharge is chronically insufficient despite high rainfall.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "A negative trend in delta_g alongside a negative mean value across the observation period signals that outflows (ET + runoff) persistently exceed precipitation inputs available for recharge. In hilly perhumid terrain, rapid surface runoff on steep slopes can route most rainfall to streams before infiltration occurs, leaving groundwater recharge lower than raw precipitation figures suggest. Sustained negative delta_g in this context confirms structural recharge limitation rather than extraction pressure alone, consistent with findings on aquifer depletion dynamics globally.",
+      "interaction_with": [
+        "sig_01",
+        "sig_03"
+      ]
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "aquifer_class",
+        "aquifer_lithology_percent"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "aquifer_class == 'sedimentary_soft_rock' and aquifer_lithology_percent.get('alluvium', 0) < 20",
+        "qualitative_description": "Aquifer is classified as sedimentary soft rock with less than 20% alluvial lithology, indicating limited storage capacity and poor lateral recharge connectivity in hilly terrain.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Semi-consolidated sedimentary soft-rock aquifers in the North-Eastern Hills (AER-17) have moderate storativity but are highly heterogeneous in hilly terrain. Low alluvial fraction means fewer high-permeability zones for lateral recharge transmission. Steep slopes accelerate runoff, reducing infiltration opportunity. This lithological context amplifies any extraction-driven stress because recovery after drawdown is slower than in alluvial systems. GIS-based groundwater potential studies confirm that geology and slope are primary determinants of recharge capacity in hilly Indian settings.",
+      "interaction_with": [
+        "sig_02"
+      ]
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "nrega_swc_count"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "nrega_swc_count < 5",
+        "qualitative_description": "Fewer than 5 cumulative SWC works recorded under MGNREGA in the micro-watershed, indicating underinvestment in recharge infrastructure despite high runoff potential.",
+        "threshold_confidence": "low",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "In perhumid hilly terrain, high-intensity monsoon rainfall generates substantial surface runoff that could be intercepted for groundwater recharge through check dams, trenches, and gabion structures. Low MGNREGA SWC investment means this recharge opportunity has not been exploited, amplifying any depletion signal. India's managed aquifer recharge literature documents that more than 500,000 tanks and ponds have historically been used to detain monsoon runoff for recharge, and government investment in percolation structures has been substantial in drought-prone areas — the absence of such works in a high-rainfall zone is therefore anomalous and diagnostically significant.",
+      "interaction_with": [
+        "sig_02"
+      ]
+    },
+    {
+      "signal_id": "sig_05",
+      "variables": [
+        "annual_well_depth_m"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Farmers report that wells or springs have dried up seasonally or that they have had to deepen wells or shift to deeper sources in recent years, particularly during the dry rabi or pre-monsoon period.",
+        "threshold_confidence": "low",
+        "context_sensitivity": "local"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Well depth trend data are not available in the framework for this context. However, farmer-reported well deepening or spring failure is a direct field indicator of declining groundwater table. In semi-consolidated hilly aquifers, springs fed by shallow perched water tables are particularly vulnerable to seasonal depletion and can fail even in high-rainfall years if recharge zones are degraded or extraction is concentrated. This qualitative signal should be elicited through the missing variable question below."
+    }
+  ],
+  "overall_reasoning_note": "Groundwater stress in the perhumid North-Eastern Hills is paradoxical given very high annual rainfall, and requires at least two confirming signals before diagnosis is finalised. The primary mechanism is not rainfall deficit but rather rapid runoff on steep hilly terrain limiting infiltration, combined with localised extraction from semi-consolidated aquifers with heterogeneous storage. Elevated SOGE (sig_01) and chronic negative delta_g trend (sig_02) are the strongest confirming signals. Lithological context (sig_03) and low SWC investment (sig_04) are amplifying signals. If SOGE is Safe but delta_g trend is negative and farmers report spring or well failure, prioritise the water balance and field evidence over the block-level SOGE, which may mask micro-watershed heterogeneity in hilly terrain. Solutions should focus on in-situ recharge enhancement (trenches, check dams, gabions) rather than demand restriction alone, given the high rainfall endowment.",
+  "confounders": [
+    {
+      "confounder": "High surface runoff causing apparent groundwater stress through recharge bypass rather than over-extraction",
+      "how_to_distinguish": "Check mean_annual_runoff_mm relative to mean_annual_precipitation_mm. If runoff fraction exceeds 60% of precipitation in a perhumid zone, rapid runoff routing rather than extraction is the primary driver of low recharge. In this case, the solution pathway shifts to runoff interception and managed recharge rather than extraction control. Compare soge_dev_percent — if it is low (<50%) but delta_g is still negative, runoff bypass rather than over-extraction is likely primary."
+    },
+    {
+      "confounder": "Seasonal spring or stream drying misidentified as chronic groundwater depletion",
+      "how_to_distinguish": "Assess whether water shortage is confined to the pre-monsoon dry season (March–May) or persists into the early kharif period. Purely seasonal drying of shallow springs in hilly terrain is normal in semi-consolidated aquifers and does not confirm chronic depletion. Chronic depletion is indicated by progressive worsening across years (trend_annual_delta_g_mm < 0) and increasing well depth over multiple years, not just seasonal fluctuation."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "annual_well_depth_m",
+      "question_to_user": "Have farmers in this area had to deepen their wells or bore new, deeper holes in recent years? Approximately how deep were wells 5–10 years ago compared to now? Have any springs or shallow wells dried up permanently or for longer periods than before?",
+      "how_answer_updates_diagnosis": "Confirmed well deepening of more than 2–3 metres over 5 years, or permanent spring failure, strongly confirms the groundwater stress pathway even if SOGE data appear Safe at block level. It indicates declining static water levels in the semi-consolidated aquifer and shifts diagnosis confidence from medium to high."
+    },
+    {
+      "missing_variable": "borewell_density",
+      "question_to_user": "Approximately how many borewells, tubewells, or mechanised pumps are operating in this village or micro-watershed? Has the number increased significantly in the last 5–10 years?",
+      "how_answer_updates_diagnosis": "High or rapidly increasing borewell density in a hilly semi-consolidated aquifer confirms localised extraction pressure not captured by block-level SOGE. A recent surge in borewells coinciding with reported water shortage strongly supports the groundwater stress pathway over a purely climate-driven explanation."
+    },
+    {
+      "missing_variable": "groundwater_salinity",
+      "question_to_user": "Have farmers noticed any change in the taste or quality of well or spring water — for example, becoming brackish, leaving deposits, or causing crop damage when used for irrigation?",
+      "how_answer_updates_diagnosis": "Salinity in a perhumid hilly context is unusual and may indicate deep borewell penetration into mineralised zones or contamination from agricultural inputs, which would redirect the diagnosis toward water quality rather than quantity stress and change solution recommendations accordingly."
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "CGWB2023",
+      "title": "National Compilation of Dynamic Ground Water Resources of India 2022",
+      "authors": [
+        "Central Ground Water Board"
+      ],
+      "year": 2023,
+      "url": "https://cgwb.gov.in",
+      "source_type": "government_report",
+      "relevance_note": "Defines SOGE class thresholds (Safe <70%, Semi-critical 70–90%, Critical 90–100%, Over-exploited >100%) used in sig_01; provides AER-17 aquifer classification for North-Eastern Hills as sedimentary soft rock."
+    },
+    {
+      "source_id": "Gleeson2012",
+      "title": "A Snapshot of the World's Groundwater Challenges",
+      "authors": [
+        "Gleeson, Tom",
+        "VanderSteen, Joep",
+        "Sophocleous, Marios A.",
+        "Taniguchi, Makoto",
+        "Alley, William M.",
+        "Allen, Diana M.",
+        "Zhou, Yangxiao"
+      ],
+      "year": 2012,
+      "doi": "10.1146/annurev-environ-102017-025800",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents that changing climate and hydrologic extremes amplify groundwater use and threaten recharge; supports the paradox of groundwater stress in high-rainfall zones due to runoff dynamics."
+    },
+    {
+      "source_id": "Jasechko2023",
+      "title": "Rapid groundwater decline and some cases of recovery in aquifers globally",
+      "authors": [
+        "Jasechko, Scott",
+        "Seybold, Hansjörg",
+        "Perrone, Debra",
+        "Fan, Ying",
+        "Shamsudduha, Mohammad",
+        "Taylor, Richard G.",
+        "Fallatah, Othman",
+        "Kirchner, James W."
+      ],
+      "year": 2023,
+      "doi": "10.1038/s41586-023-06879-8",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Demonstrates that rapid groundwater-level declines (>0.5 m/year) are widespread globally and have accelerated in 30% of regional aquifers; also shows that depletion trends can reverse with managed aquifer recharge and policy changes, supporting the recharge-focused solution pathway for AER-17."
+    },
+    {
+      "source_id": "Dillon2019",
+      "title": "Sixty years of global progress in managed aquifer recharge",
+      "authors": [
+        "Dillon, Peter",
+        "Stuyfzand, Pieter",
+        "Grischek, Thomas",
+        "Lluria, Manuel",
+        "Pyne, R.D.G.",
+        "Jain, R.C.",
+        "Bear, Jacob",
+        "Schwarz, Jörg",
+        "Wang, Wei",
+        "Fernandez, Enrique"
+      ],
+      "year": 2019,
+      "doi": "10.1007/s10040-018-1841-z",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents India's extensive history of tank and percolation pond construction for monsoon runoff detention and aquifer recharge; supports the diagnostic value of low MGNREGA SWC count as an amplifying signal and the solution pathway of trench, check-dam, and gabion construction in hilly terrain."
+    },
+    {
+      "source_id": "Srivastava2022",
+      "title": "Impact of climate change on groundwater hydrology: a comprehensive review and current status of the Indian hydrogeology",
+      "authors": [
+        "Srivastava, Prashant Kumar",
+        "Han, Dawei",
+        "Rico-Ramirez, Miguel Angel",
+        "Bray, Michaela",
+        "Islam, Tanvir"
+      ],
+      "year": 2022,
+      "doi": "10.1007/s13201-022-01652-0",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Reviews linkages between climate, anthropogenic activity, and groundwater availability in India; supports the use of water balance (delta_g) trend analysis and GRACE-based recharge estimation as diagnostic tools for confirming groundwater stress."
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-01-30",
+    "last_updated": "2025-01-30",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 24,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  }
+}

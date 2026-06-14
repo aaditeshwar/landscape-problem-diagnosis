@@ -89,14 +89,82 @@ Recommended solutions for this pathway:
   "Crop insurance and risk mitigation advisory"
 ]
 
+Variable types for this pathway (from data_dictionary.json):
+  lulc_single_kharif_ha (unknown, availability=available): Large area under single kharif cropping indicates rainfed dependence; no rabi cropping without irrigation
+  lulc_double_crop_ha (unknown, availability=available): Low double-cropped area relative to total cropland confirms limited irrigation access
+  cropping_intensity (time_series, availability=available): Cropping intensity (total harvested area / net sown area) per agricultural_year.
+  swb_rabi_area_ha (unknown, availability=available): Low SWB area persisting into rabi suggests limited surface water storage for post-monsoon irrigation
+  canal_name (static, availability=available): Name and project of irrigation canal intersecting MWS (null if none)
+  nrega_irrigation_count (unknown, availability=available): Low count of MGNREGA irrigation works suggests poor irrigation infrastructure investment
+  irrigated_area_ha (time_series, availability=not_available): Net irrigated area from all sources. Proxy: double_crop_area_ha + triple_crop_area_ha + single non-kharif area.
+  annual_runoff_mm (unknown, availability=available): High runoff relative to rainfall indicates rapid water loss; potential for in-situ water harvesting
+  terrain_cluster_id (static, availability=available): Terrain cluster: 1=Mostly Plains, 3=Broad Plains and Slopes
+
+Signal expression rules (CRITICAL — downstream diagnosis evaluates these step-by-step as Python booleans):
+- Every diagnostic_signals[].condition MUST include a non-empty "expression" for types quantitative, trend, and composite.
+- type=qualitative WITHOUT expression is allowed ONLY for variables with availability=not_available in the framework list above.
+  Variables marked not_available (irrigated_area_ha) may use type=qualitative with qualitative_description only and expression omitted.
+- The expression is shown to a reasoning model as the evaluable condition. It MUST be a single valid Python boolean expression using variable names exactly as in data_dictionary.json.
+- Put interpretive prose ONLY in "explanation" and optional supporting "qualitative_description". NEVER put prose paragraphs in "expression".
+- Time-series variables (e.g. lulc_*_ha, cropping_intensity, annual_runoff_mm, drought_weeks_severe) are dicts keyed by year strings "2017".."2024". Use [-1] for latest year, [0] for earliest: cropping_intensity[-1] <= 1.15
+- Scalar NREGA totals (nrega_swc_count, nrega_irrigation_count, nrega_community_assets_count) are numeric aggregates — compare directly: nrega_irrigation_count < 3 (NOT .values() or dict indexing).
+- Null/absent categorical values: use `canal_name is None`, never SQL syntax like `IS NULL`.
+- List variables: organization_domains is a Python list — use `'fisheries' not in organization_domains`.
+- terrain_cluster_id is an integer: 1 = Mostly Plains, 3 = Broad Plains and Slopes. Use explicit comparisons, e.g. terrain_cluster_id == 3 for sloping terrain; do NOT describe terrain in prose without a numeric test.
+- String equality: aquifer_class == 'crystalline_basement' (single quotes inside the JSON string).
+- Ratios and compound conditions: parenthesize explicitly — (lulc_single_kharif_ha[-1] / (lulc_single_kharif_ha[-1] + lulc_double_crop_ha[-1] + 1e-9)) > 0.75
+- Derived mean/trend scalars are computed at diagnosis time from the raw time series and injected alongside present_variables. Prefer them for multi-year patterns instead of prose:
+  trend_annual_delta_g_mm < 0, mean_cropping_intensity <= 1.15, trend_swb_total_area_ha < -5
+
+Derived/computed variables (scalars — use directly in expressions):
+  mean_annual_precipitation_mm: mean of annual_precipitation_mm time series
+  trend_annual_precipitation_mm: linear slope of annual_precipitation_mm (mm/year)
+  mean_annual_et_mm: mean of annual_et_mm time series
+  trend_annual_et_mm: linear slope of annual_et_mm (mm/year)
+  mean_annual_runoff_mm: mean of annual_runoff_mm time series
+  trend_annual_runoff_mm: linear slope of annual_runoff_mm (mm/year)
+  mean_annual_delta_g_mm: mean of P−ET−Runoff groundwater balance
+  trend_annual_delta_g_mm: linear slope of annual_delta_g_mm (mm/year)
+  mean_cropping_intensity: mean of cropping_intensity time series
+  trend_cropping_intensity: linear slope of cropping_intensity (ratio/year)
+  mean_kharif_cropped_area_ha: mean of lulc_single_kharif_ha time series
+  trend_kharif_cropped_area_ha: linear slope of lulc_single_kharif_ha (ha/year)
+  mean_double_crop_area_ha: mean of lulc_double_crop_ha time series
+  trend_double_crop_area_ha: linear slope of lulc_double_crop_ha (ha/year)
+  drought_moderate_return_period: average years between moderate drought kharif seasons
+  drought_severe_return_period: average years between severe drought kharif seasons
+  mean_swb_total_area_ha: mean of swb_total_area_ha time series
+  trend_swb_total_area_ha: linear slope of swb_total_area_ha (ha/year)
+  mean_swb_rabi_kharif_ratio: mean of swb_rabi_area_ha / swb_kharif_area_ha ratio
+  trend_swb_rabi_kharif_ratio: linear slope of SWB rabi/kharif ratio
+
+BAD example (current corpus bug — do NOT reproduce):
+  "type": "qualitative",
+  "qualitative_description": "Terrain cluster indicates sloping plateau or hilly terrain..."
+  (no expression — model cannot evaluate TRUE/FALSE; also contradicts terrain_cluster_id == 1 = Mostly Plains)
+
+GOOD example for terrain_cluster_id on rainfed_risk:
+  "type": "quantitative",
+  "expression": "terrain_cluster_id == 3 and annual_runoff_mm[-1] > 80",
+  "qualitative_description": "Broad plains and slopes (cluster 3) with high runoff reduce in-field moisture retention.",
+  "threshold_confidence": "medium",
+  "context_sensitivity": "regional"
+
+The example card below may contain legacy qualitative-only conditions — ignore those patterns; your output must follow these expression rules.
+
 Rules:
 - Include 3-5 diagnostic_signals using available variables where possible.
 - For variables marked availability not_available, add missing_variable_questions.
 - Include 1-2 confounders distinguishing this pathway from alternatives.
 - Ground claims in the paper excerpts below; cite sources with realistic source_id citekeys.
+- Each source source_type must be exactly one of: peer_reviewed_journal, government_report, ngo_report, grey_literature, expert_guideline, book_chapter (use grey_literature for theses/working papers).
+- Each diagnostic_signals[].condition.type must be exactly one of: quantitative, qualitative, trend, composite (use composite for multi-part conditions, not "compound").
 - Set metadata.created_by to "llm_extraction_v1", reviewed_by_expert to false,
   extraction_model to "claude-sonnet-4-6", confidence_overall to medium/high/low as appropriate,
   created_at and last_updated to today's date.
+- At embedding time, semantic aliases from metadata/semantic_aliases.json are appended
+  automatically for pathway "rainfed_risk" — do not duplicate alias
+  phrases in overall_reasoning_note.
 
 Example card (structure reference):
 {
@@ -305,6 +373,9 @@ Maize is one of the most important food crops in the world and, together with ri
 
 [Chunk 12] paper=doi__10.1007_s12571-011-0140-5 type=body title=Crops that feed the world 6. Past successes and future challenges to the role played by maize in global food security
 with prices of other commod- maize production. The challenge will be to provide maize ities,especiallywheat,maizepriceshaveincreasedby43% farmers with the means to respond both to the threats and since 2008 and are projected to increase in the future in opportunities posed by climate change. response to increasing demand and constraints for expand- The combined challenges of increasing demand, con- ing supplies. Such increases will impose great hardship on tinuingpovertyandmalnutrition,naturalresourcedepletion the poor,asthefoodpricesurgeof2008andearly2011have and climate change will require the world to double the madeabundantlyclear.Inaddition,laggingdomesticproduc- productivityanddramaticallyincreasethesustainabilityand tion will place a huge and politically risky burden on resilience of maize-based farming systems. This require- developingcountryeconomies,drivinguptheirmaizeimports ment can only be met through a concerted engagement of from about the 7% of today’s demand to 24% in 2050, a farming communities, international and national research- proportion that will be priced at around USD 30 billion ers, policy makers, the private sector, and many other (Rosegrantetal.,2009).Unlessvigorousmeasuresare taken development partners which intrinsically involves target to accelerate the growth of yield, the outcome will be less communitiesandnational governmentsindesigning appro- affordable food for millions of poor maize consumers. priate and pro-poor solutions. This review article is, hence, Farmers, governments, researchers and input suppliers a synthesis of a series of debates, discussions and action have been responding to the expanding demand for maize. plans on how maize can continue to contribute to food and During 2003–08, maize production increased annually by livelihood security of poor producers and consumers at the 6.0% in Asia, 5.0% in Latin America, and 2.3% in sub- global level and especially in the developing regions. SaharanAfrica(FAOSTAT2010).Nonetheless,theincreases The article is structured as follows: in Section 2 we fell short of those needed to prevent price hikes in 2008. present the role of maize for food, nutrition and livelihood Part of the response to increasing demand has involved security—looking at the importance of maize in the bringing new land into cultivation, increasing maize area in growing demand for food, feed and other uses at the AsiaandLatinAmericaby3.5%annually(FAOSTAT2010, regional and global levels. Section 3 hig
+
+Semantic aliases (appended at embed time, not in card JSON):
+Related themes: rainfed farming vulnerability. no irrigation access. single crop season. kharif only farming. rain dependent agriculture. dryland farming stress. unirrigated land. water harvesting needed. farm pond deficit. crop insurance requirement. rainfall dependent livelihood. weather dependent crop. climate exposure smallholder. risk farming semi-arid. resilience rainfed system. social ecolo...
 
 JSON schema summary (required top-level keys):
 ["card_id", "production_system", "observed_stress", "causal_pathway", "context", "diagnostic_signals", "confounders", "sources"]

@@ -1,0 +1,180 @@
+{
+  "card_id": "agriculture__water_scarcity__rainfed_risk__012",
+  "production_system": "Agriculture",
+  "observed_stress": "water_scarcity",
+  "causal_pathway": "rainfed_risk",
+  "context": {
+    "agro_climatic_zones": [
+      "perhumid"
+    ],
+    "aquifer_types": [
+      "hard_rock"
+    ],
+    "terrain_types": [
+      "hilly"
+    ],
+    "rainfall_regime": "humid",
+    "geographic_examples": [
+      "Sikkim",
+      "Arunachal Pradesh",
+      "NE hill states"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "lulc_single_kharif_ha",
+        "lulc_double_crop_ha"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "(mean_kharif_cropped_area_ha / (mean_kharif_cropped_area_ha + mean_double_crop_area_ha + 1e-9)) > 0.75",
+        "qualitative_description": "More than 75% of cropped area is under single kharif season over the multi-year mean, indicating dominant rainfed dependence with negligible irrigated double-cropping.",
+        "threshold_confidence": "high",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "In perhumid hill states such as Sikkim and Arunachal Pradesh, the dominance of single kharif cropping relative to double-cropped area is a direct indicator of rainfed dependence. Despite high annual rainfall (2000–5000 mm in AER-16), steep terrain and hard rock aquifers limit water retention and irrigation infrastructure, confining most cultivation to the monsoon window. A ratio above 0.75 confirms that farmers cannot sustain a second crop without reliable irrigation access."
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "cropping_intensity"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "mean_cropping_intensity <= 1.15",
+        "qualitative_description": "Mean cropping intensity at or below 1.15 over the available record indicates near-single-season farming, consistent with rainfed systems lacking post-monsoon irrigation.",
+        "threshold_confidence": "high",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Cropping intensity close to 1.0 implies that almost all cultivated land is harvested only once per year, which is the hallmark of rainfed single-kharif systems. In the Eastern Himalayan hill states, even where rainfall is abundant during the monsoon, the absence of irrigation infrastructure prevents rabi or zaid cultivation. A mean cropping intensity at or below 1.15 across multiple years confirms structural rainfed dependence rather than a transient drought effect.",
+      "interaction_with": [
+        "sig_01"
+      ]
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "annual_runoff_mm",
+        "terrain_cluster_id"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "mean_annual_runoff_mm > 600 and terrain_cluster_id == 3",
+        "qualitative_description": "High mean annual runoff (>600 mm) combined with broad plains and slopes terrain (cluster 3) indicates rapid water loss from sloping fields, reducing in-field moisture availability despite high rainfall.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "In hilly perhumid zones, high rainfall is paradoxically associated with high runoff losses on sloping terrain. Hard rock aquifers in the Eastern Himalayas have low storativity, so water that runs off is not recharged into accessible groundwater. Terrain cluster 3 (broad plains and slopes) combined with high runoff confirms that in-situ water harvesting potential is being lost, amplifying the effective water scarcity experienced by farmers during dry spells within the kharif season and in post-monsoon periods. This finding aligns with the observation that highest unproductive water losses occur under tropical regimes with intense rainy seasons followed by dry periods.",
+      "interaction_with": [
+        "sig_01",
+        "sig_04"
+      ]
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "nrega_irrigation_count",
+        "canal_name"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "nrega_irrigation_count < 3 and canal_name is None",
+        "qualitative_description": "Fewer than 3 MGNREGA irrigation works recorded and no canal infrastructure present, confirming minimal irrigation investment in the micro-watershed.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "The absence of canal irrigation and low MGNREGA irrigation work counts together confirm that the micro-watershed has received minimal irrigation infrastructure investment. In the NE hill states, canal irrigation is rare due to terrain constraints, and MGNREGA works represent the primary public investment channel for small-scale water harvesting. A count below 3 indicates that even this safety net has not been effectively deployed, leaving farmers entirely dependent on rainfall. This is consistent with the characterisation of less-favoured rainfed areas as having had minimum development attention.",
+      "interaction_with": [
+        "sig_03"
+      ]
+    },
+    {
+      "signal_id": "sig_05",
+      "variables": [
+        "irrigated_area_ha"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Net irrigated area data are not available for this micro-watershed. Field reports and farmer accounts indicate negligible irrigation access, with most households relying entirely on monsoon rainfall for crop production. Proxy evidence from double-crop area and cropping intensity (sig_01, sig_02) substitutes for this missing variable."
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Direct irrigated area statistics are not available for the NE hill states at micro-watershed scale. However, the combination of low double-crop area, low cropping intensity, absence of canals, and low MGNREGA irrigation counts provides strong convergent evidence that net irrigated area is negligible. Farmers in these areas report water insufficiency particularly for rabi and zaid seasons, consistent with near-zero irrigation access."
+    }
+  ],
+  "confounders": [
+    {
+      "confounder": "High rainfall masking rainfed risk — perhumid zones may appear water-secure due to high annual precipitation even though seasonal dry spells and terrain-driven runoff create effective water scarcity",
+      "how_to_distinguish": "Check mean_annual_runoff_mm relative to mean_annual_precipitation_mm. If runoff fraction exceeds 40% and cropping intensity remains below 1.15, the high rainfall is not being retained for crop use. Also verify swb_rabi_area_ha — if surface water bodies shrink sharply post-monsoon (low mean_swb_rabi_kharif_ratio), seasonal water scarcity is real despite high annual totals. This distinguishes rainfed_risk from a situation where irrigation infrastructure is adequate."
+    },
+    {
+      "confounder": "Soil degradation or shifting cultivation (jhum) causing low cropping intensity rather than water scarcity per se",
+      "how_to_distinguish": "If cropping intensity is low but canal_name is not None or nrega_irrigation_count is high, the limiting factor may be land management or soil quality rather than water access. Confirm with farmer interviews whether fallow periods are water-driven or practice-driven. Rainfed_risk is confirmed when farmers explicitly report inability to grow rabi crops due to water unavailability, not when fallow is a deliberate rotational choice under jhum systems common in NE hill states."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "irrigated_area_ha",
+      "question_to_user": "Approximately what share of your cultivated land can be irrigated during the dry season (rabi or summer)? Would you say none, less than 10%, 10–30%, or more than 30% of your fields have access to irrigation from any source (canal, pump, tank, or spring)?",
+      "how_answer_updates_diagnosis": "If farmers confirm that less than 10% of land is irrigated, this strongly confirms the rainfed_risk pathway and justifies prioritising in-situ water harvesting and farm pond interventions. If more than 30% report irrigation access, the diagnosis should be revisited to check whether the stress is driven by irrigation system failure or groundwater stress rather than structural rainfed dependence."
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Devendra2011",
+      "title": "Rainfed Areas and Animal Agriculture in Asia: The Wanting Agenda for Transforming Productivity Growth and Rural Poverty",
+      "authors": [
+        "Devendra, C."
+      ],
+      "year": 2011,
+      "doi": "10.5713/ajas.2011.r.09",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Characterises rainfed less-favoured areas in Asia including humid and sub-humid uplands, noting minimum development attention and vulnerability to variable rainfall and poor soil quality — directly relevant to NE hill state context"
+    },
+    {
+      "source_id": "Farooq2014",
+      "title": "Management of crop water under drought: a review",
+      "authors": [
+        "Farooq, M.",
+        "Hussain, M.",
+        "Wahid, A.",
+        "Siddique, K.H.M."
+      ],
+      "year": 2014,
+      "doi": "10.1007/s13593-015-0283-4",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents that highest unproductive water losses (runoff and evaporation) occur under tropical residual moisture regimes with short intense rainy seasons, supporting the runoff-loss mechanism in perhumid hilly terrain"
+    },
+    {
+      "source_id": "ICAR_NE_Rainfed",
+      "title": "Integrated Farming Systems for Rainfed Agriculture in North-East India",
+      "authors": [
+        "Indian Council of Agricultural Research"
+      ],
+      "year": 2018,
+      "source_type": "government_report",
+      "relevance_note": "Documents the structural rainfed dependence of NE hill states, limited irrigation infrastructure, and the role of in-situ water harvesting and farm ponds as primary interventions for water security"
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-07-14",
+    "last_updated": "2025-07-14",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 20,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  }
+}

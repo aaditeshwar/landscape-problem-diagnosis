@@ -31,6 +31,7 @@ Target context (use exactly these context field values):
 }
 
 AER reference for this context:
+AER-3: Deccan Plateau, hot arid ecoregion | states=['Karnataka', 'Andhra Pradesh (western)'] | rainfall=<740mm | aquifer=crystalline_basement
 AER-6: Deccan Plateau, hot semi-arid ecoregion | states=['Maharashtra (Vidarbha, Marathwada)', 'Telangana', 'Karnataka (northern)'] | rainfall=500-960mm | aquifer=volcanic
 
 Diagnostic variables from the framework (use these variable names in signals):
@@ -96,15 +97,83 @@ Recommended solutions for this pathway:
   "Access to Kisan Credit Card and institutional credit for investment"
 ]
 
+Variable types for this pathway (from data_dictionary.json):
+  landholding_size_distribution (unknown, availability=not_available): Direct measure of landholding fragmentation; proportion of marginal (<1ha) and small (1–2ha) holders
+  village_total_population (unknown, availability=available): Combined with MWS cropland area, gives a proxy for average farm size per household
+  lulc_cropland_ha (unknown, availability=available): Total cropland divided by village population gives approximate per-capita land availability
+  cropping_intensity (time_series, availability=available): Cropping intensity (total harvested area / net sown area) per agricultural_year.
+  dist_apmc_km (unknown, availability=available): Small holders near APMCs have better price discovery; remote smallholders are exploited by intermediaries
+  dist_dairy_km (unknown, availability=available): Proximity to dairy infrastructure enables livestock income diversification for small holders
+  organization_domains (static, availability=available): Domains of work of NGOs/organisations present in MWS (e.g. Agroforestry, Fisheries, Watershed management, Seed management). Coverage is partial.
+  nrega_community_assets_count (unknown, availability=available): MGNREGA off-farm livelihood asset works provide supplementary income; cumulative count reflects safety net strength
+  household_income_inr (static, availability=not_available): Mean annual household income by source
+  market_price_crop (time_series, availability=not_available): Local market price realised for key crops vs MSP
+
+Signal expression rules (CRITICAL — downstream diagnosis evaluates these step-by-step as Python booleans):
+- Every diagnostic_signals[].condition MUST include a non-empty "expression" for types quantitative, trend, and composite.
+- type=qualitative WITHOUT expression is allowed ONLY for variables with availability=not_available in the framework list above.
+  Variables marked not_available (landholding_size_distribution, household_income_inr, market_price_crop) may use type=qualitative with qualitative_description only and expression omitted.
+- The expression is shown to a reasoning model as the evaluable condition. It MUST be a single valid Python boolean expression using variable names exactly as in data_dictionary.json.
+- Put interpretive prose ONLY in "explanation" and optional supporting "qualitative_description". NEVER put prose paragraphs in "expression".
+- Time-series variables (e.g. lulc_*_ha, cropping_intensity, annual_runoff_mm, drought_weeks_severe) are dicts keyed by year strings "2017".."2024". Use [-1] for latest year, [0] for earliest: cropping_intensity[-1] <= 1.15
+- Scalar NREGA totals (nrega_swc_count, nrega_irrigation_count, nrega_community_assets_count) are numeric aggregates — compare directly: nrega_irrigation_count < 3 (NOT .values() or dict indexing).
+- Null/absent categorical values: use `canal_name is None`, never SQL syntax like `IS NULL`.
+- List variables: organization_domains is a Python list — use `'fisheries' not in organization_domains`.
+- terrain_cluster_id is an integer: 1 = Mostly Plains, 3 = Broad Plains and Slopes. Use explicit comparisons, e.g. terrain_cluster_id == 3 for sloping terrain; do NOT describe terrain in prose without a numeric test.
+- String equality: aquifer_class == 'crystalline_basement' (single quotes inside the JSON string).
+- Ratios and compound conditions: parenthesize explicitly — (lulc_single_kharif_ha[-1] / (lulc_single_kharif_ha[-1] + lulc_double_crop_ha[-1] + 1e-9)) > 0.75
+- Derived mean/trend scalars are computed at diagnosis time from the raw time series and injected alongside present_variables. Prefer them for multi-year patterns instead of prose:
+  trend_annual_delta_g_mm < 0, mean_cropping_intensity <= 1.15, trend_swb_total_area_ha < -5
+
+Derived/computed variables (scalars — use directly in expressions):
+  mean_annual_precipitation_mm: mean of annual_precipitation_mm time series
+  trend_annual_precipitation_mm: linear slope of annual_precipitation_mm (mm/year)
+  mean_annual_et_mm: mean of annual_et_mm time series
+  trend_annual_et_mm: linear slope of annual_et_mm (mm/year)
+  mean_annual_runoff_mm: mean of annual_runoff_mm time series
+  trend_annual_runoff_mm: linear slope of annual_runoff_mm (mm/year)
+  mean_annual_delta_g_mm: mean of P−ET−Runoff groundwater balance
+  trend_annual_delta_g_mm: linear slope of annual_delta_g_mm (mm/year)
+  mean_cropping_intensity: mean of cropping_intensity time series
+  trend_cropping_intensity: linear slope of cropping_intensity (ratio/year)
+  mean_kharif_cropped_area_ha: mean of lulc_single_kharif_ha time series
+  trend_kharif_cropped_area_ha: linear slope of lulc_single_kharif_ha (ha/year)
+  mean_double_crop_area_ha: mean of lulc_double_crop_ha time series
+  trend_double_crop_area_ha: linear slope of lulc_double_crop_ha (ha/year)
+  drought_moderate_return_period: average years between moderate drought kharif seasons
+  drought_severe_return_period: average years between severe drought kharif seasons
+  mean_swb_total_area_ha: mean of swb_total_area_ha time series
+  trend_swb_total_area_ha: linear slope of swb_total_area_ha (ha/year)
+  mean_swb_rabi_kharif_ratio: mean of swb_rabi_area_ha / swb_kharif_area_ha ratio
+  trend_swb_rabi_kharif_ratio: linear slope of SWB rabi/kharif ratio
+
+BAD example (current corpus bug — do NOT reproduce):
+  "type": "qualitative",
+  "qualitative_description": "Terrain cluster indicates sloping plateau or hilly terrain..."
+  (no expression — model cannot evaluate TRUE/FALSE; also contradicts terrain_cluster_id == 1 = Mostly Plains)
+
+GOOD example for terrain_cluster_id on rainfed_risk:
+  "type": "quantitative",
+  "expression": "terrain_cluster_id == 3 and annual_runoff_mm[-1] > 80",
+  "qualitative_description": "Broad plains and slopes (cluster 3) with high runoff reduce in-field moisture retention.",
+  "threshold_confidence": "medium",
+  "context_sensitivity": "regional"
+
+The example card below may contain legacy qualitative-only conditions — ignore those patterns; your output must follow these expression rules.
+
 Rules:
 - Include 3-5 diagnostic_signals using available variables where possible.
 - For variables marked availability not_available, add missing_variable_questions.
 - Include 1-2 confounders distinguishing this pathway from alternatives.
 - Ground claims in the paper excerpts below; cite sources with realistic source_id citekeys.
 - Each source source_type must be exactly one of: peer_reviewed_journal, government_report, ngo_report, grey_literature, expert_guideline, book_chapter (use grey_literature for theses/working papers).
+- Each diagnostic_signals[].condition.type must be exactly one of: quantitative, qualitative, trend, composite (use composite for multi-part conditions, not "compound").
 - Set metadata.created_by to "llm_extraction_v1", reviewed_by_expert to false,
   extraction_model to "claude-sonnet-4-6", confidence_overall to medium/high/low as appropriate,
   created_at and last_updated to today's date.
+- At embedding time, semantic aliases from metadata/semantic_aliases.json are appended
+  automatically for pathway "small_landholding" — do not duplicate alias
+  phrases in overall_reasoning_note.
 
 Example card (structure reference):
 {
@@ -313,6 +382,9 @@ India Studies in Business and Economics Ashok Gulati Ranjana Roy Shweta Saini Ed
 
 [Chunk 12] paper=doi__10.1007_978-981-15-9335-2 type=body title=Revitalizing Indian Agriculture and Boosting Farmer Incomes
 a healthy life. Moreover, India is home to 1.3 billion people and will soon cross China’s population (United Nations Population Projection,2017revision).Producingfoodforsuchahugepopulationisapressing issuefortheIndiangovernmentgiventheshrinkingaveragelandholdingsize.Thus, increasingfooddemandshavetobemetbyimplementinginterventionstoaugment farmers’ income in an efficient, inclusive, scalable and sustainable manner. It has been found in many studies worldwide that one per cent growth in agri- culture is at least two to three times more powerful in reducing poverty than the same growth in non-agricultural sectors (World Development Report, 2008). Astrongagriculture–poverty–nutritionlinkageisexpectedinadevelopingcountry likeIndiawithseriousmalnourishmentamongruralpopulationthatdependslargely on agriculture for sustenance. It has also been observed that agricultural growth ratesinIndiafluctuatemorethantheoverallGDPgrowthratesbecausealmost52% of the country’s gross cropped area still relies on the monsoon. Growth rate in farmers’ income has remained unsatisfactory. It is against this backdrop that this book deals with the magnitude, sources and driversofagriculturegrowthinthecountryandselectedstatesusingqualitativeand quantitative methods. The target states include Bihar, Odisha and Uttar Pradesh, whichhavealargesectionofthepoorandthemalnourished,andGujarat,Madhya Pradesh and Punjab that are seen as models in terms of agricultural performance. Thestudyestablishesalinkbetweenagriculturalgrowth,povertyandmalnutrition. It also draws lessons from well-performing states that can be used to revamp the agricultural growth of moderate performing states and reduce poverty. Based on v vi Foreword econometricanalysesandareviewofexistingpolicies,thebookrecommendsaset of policies that can help the states in achieving higher agricultural growth and higher incomes for their farmers. New Delhi, India Rajat Kathuria Director and Chief Executive ICRIER Acknowledgements Indoingthisbook,wehavereceivedsupportfromseveralquartersandindividuals. Wewouldliketoexpressoursinceregratitudeforthefinancialsupportprovidedby the Bill and Melinda Gates Foundation (BMGF) for this project. In particular, we would like tothank Dr. Hari Menon, Mr. Brantley Browning and Dr. Purvi Mehta from BMGF for their inputs from the very beginning of the project and their sug- gestions as the work proceeded. We would also like to express our gratitude to Mr. Ramesh Inder Singh (Former Chief Secretary, Governmen
+
+Semantic aliases (appended at embed time, not in card JSON):
+Related themes: marginal farmer. small farmer income. tiny land holding. fragmented land. uneconomic farm size. subsistence farmer stress. smallholder income problem. low marketable surplus. credit access poor small farmer. FPO farmer producer needed. cooperative farming needed. land consolidation. social ecological small farm. livelihood small farmer. family farm income insufficient. agricultural...
 
 JSON schema summary (required top-level keys):
 ["card_id", "production_system", "observed_stress", "causal_pathway", "context", "diagnostic_signals", "confounders", "sources"]

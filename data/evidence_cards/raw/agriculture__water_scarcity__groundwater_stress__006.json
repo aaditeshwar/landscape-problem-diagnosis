@@ -33,61 +33,52 @@
         "type": "quantitative",
         "expression": "soge_dev_percent > 70 or soge_class_name in ['Semi-critical', 'Critical', 'Over-exploited']",
         "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "global"
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "CGWB defines groundwater stress classes based on extraction as a percentage of net annual recharge. In coastal alluvial aquifers, SOGE values above 70% signal Semi-critical or worse conditions. Unlike hard rock aquifers, alluvial coastal aquifers have higher storativity but are vulnerable to seawater intrusion once extraction exceeds recharge, making the SOGE threshold a reliable block-level indicator. Rapid groundwater-level declines (>0.5 m/year) are documented as widespread in dry regions with extensive croplands globally, and coastal alluvial plains under intensive irrigation are particularly susceptible.",
-      "sources_cited": [
-        "CGWB2023",
-        "Jasechko2023"
-      ]
+      "explanation": "CGWB defines groundwater stress classes based on extraction as a percentage of net annual recharge. In coastal alluvial aquifers, SOGE values above 70% indicate that extraction is approaching or exceeding sustainable recharge limits. Coastal alluvial aquifers are particularly vulnerable because over-extraction can induce seawater intrusion, permanently degrading water quality in addition to reducing quantity. Block-level SOGE values above 90% (Critical) or 100% (Over-exploited) confirm chronic over-extraction relative to recharge in the coastal plain setting."
     },
     {
       "signal_id": "sig_02",
       "variables": [
-        "annual_well_depth_m"
+        "trend_annual_delta_g_mm",
+        "annual_delta_g_mm"
       ],
       "condition": {
-        "type": "trend",
-        "expression": "annual_well_depth_m[-1] - annual_well_depth_m[0] > 2",
-        "qualitative_description": "Well depth has increased by more than 2 metres over the available multi-year record, indicating declining static water level in the coastal alluvial zone.",
+        "type": "composite",
+        "expression": "trend_annual_delta_g_mm < 0 and mean_annual_delta_g_mm < 0",
+        "qualitative_description": "Both the linear trend and the multi-year mean of annual groundwater recharge (P - ET - Runoff) are negative, indicating chronic depletion rather than a single drought year anomaly.",
         "threshold_confidence": "medium",
         "context_sensitivity": "regional"
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "Deepening well depth is a direct proxy for declining groundwater table. In coastal alluvial plains, a 2m decline over the monitoring period is significant because shallow water tables in these settings are critical for both irrigation and preventing saline intrusion from the sea. Accelerating declines in 30% of the world's regional aquifers have been documented, with coastal alluvial systems particularly at risk due to the dual pressure of extraction and reduced recharge from land-use change.",
+      "explanation": "A sustained negative trend in delta_g combined with a negative multi-year mean confirms that outflows (ET + runoff) persistently exceed precipitation inputs, leaving no surplus for aquifer recharge. In coastal alluvial plains receiving 900-1400 mm annual rainfall (AER-18), a negative mean delta_g is particularly significant because these aquifers should theoretically benefit from monsoon recharge. Chronic negative balance despite sub-humid rainfall indicates extraction pressure is the dominant driver. Global analysis of groundwater monitoring wells confirms that rapid groundwater-level declines (>0.5 m/year) are widespread in cropland-intensive regions, and that acceleration of decline over recent decades signals an urgent need for intervention.",
       "interaction_with": [
         "sig_01",
         "sig_03"
-      ],
-      "sources_cited": [
-        "Jasechko2023"
       ]
     },
     {
       "signal_id": "sig_03",
       "variables": [
-        "annual_delta_g_mm",
-        "trend_annual_delta_g_mm"
+        "aquifer_class",
+        "aquifer_lithology_percent"
       ],
       "condition": {
-        "type": "trend",
-        "qualitative_description": "Annual delta_g is negative in more than 3 of the last 6 years, and cumulative_g_mm shows a sustained downward trend, indicating chronic excess extraction over recharge in the coastal alluvial system.",
+        "type": "quantitative",
+        "expression": "aquifer_class == 'alluvium' and aquifer_lithology_percent.get('alluvium', 0) > 50",
+        "qualitative_description": "Dominant alluvial aquifer lithology (>50% of MWS area) in a coastal plain setting confirms high recharge potential but also high extraction vulnerability due to ease of borewell installation and intensive irrigation demand.",
         "threshold_confidence": "medium",
         "context_sensitivity": "regional"
       },
       "severity": "moderate",
-      "direction": "confirms",
-      "explanation": "A consistently negative delta_g across multiple years means outflows (ET + runoff) persistently exceed precipitation, leaving no surplus for groundwater recharge. In coastal alluvial plains with sub-humid rainfall (900–1400mm), this is particularly concerning because the monsoon recharge window is relatively short and extraction for rabi and zaid irrigation draws down the aquifer between monsoon seasons. A sustained negative cumulative_g trend confirms that the aquifer is not recovering between seasons.",
+      "direction": "amplifies",
+      "explanation": "Alluvial aquifers in coastal plains have higher storativity than hard-rock aquifers, meaning depletion manifests more gradually but can reach large volumes before becoming apparent. India has the largest area equipped for groundwater irrigation globally (39 million ha), and alluvial aquifers bear the greatest share of this extraction pressure. In coastal settings, alluvial aquifer depletion is compounded by the risk of seawater intrusion when hydraulic gradients reverse due to over-pumping, making recovery more difficult than in inland alluvial systems. The ease of borewell installation in alluvium also leads to rapid proliferation of extraction points that outpaces governance capacity.",
       "interaction_with": [
         "sig_01",
         "sig_02"
-      ],
-      "sources_cited": [
-        "Siebert2010",
-        "Jasechko2023"
       ]
     },
     {
@@ -97,48 +88,60 @@
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "sum(nrega_swc_count.values()) < 5",
-        "qualitative_description": "Fewer than 5 cumulative SWC works in the micro-watershed over the MGNREGA record, indicating low investment in recharge infrastructure despite the availability of coastal drainage lines and tank systems.",
+        "expression": "nrega_swc_count < 5",
+        "qualitative_description": "Fewer than 5 cumulative SWC works recorded under MGNREGA in the micro-watershed, indicating low investment in recharge infrastructure relative to extraction pressure.",
         "threshold_confidence": "low",
         "context_sensitivity": "local"
       },
       "severity": "moderate",
       "direction": "amplifies",
-      "explanation": "India has more than 500,000 tanks and ponds historically used to detain surface runoff for irrigation and aquifer recharge, many thousands of years old. Low MGNREGA SWC investment in coastal alluvial plains means that this traditional recharge infrastructure has not been maintained or expanded, amplifying depletion caused by extraction. The Indian government and NGO investment in percolation tanks to infiltrate detained monsoon runoff has been documented as a critical managed aquifer recharge strategy in southern India, and its absence signals a missed recharge opportunity.",
+      "explanation": "In coastal alluvial plains, managed aquifer recharge through check dams, percolation tanks, and streambed structures is critical to sustaining groundwater levels. India has a long history of tank and pond-based recharge infrastructure, with over 500,000 tanks and ponds historically used to detain monsoon runoff for both direct irrigation and aquifer recharge. Low MGNREGA SWC investment signals that this recharge infrastructure has not been maintained or expanded, amplifying depletion caused by extraction. It also represents an actionable intervention opportunity: MGNREGA-funded SWC works, trench-and-check-dam construction, and community pond desilting can meaningfully augment recharge in alluvial coastal plains.",
       "interaction_with": [
-        "sig_03"
-      ],
-      "sources_cited": [
-        "Dillon2019"
+        "sig_02"
       ]
-    }
-  ],
-  "overall_reasoning_note": "Groundwater stress in coastal alluvial aquifers should be confirmed by at least two of the three primary signals: elevated SOGE classification, deepening well trend, or chronic negative delta_g / declining groundwater recharge trend. A single signal may reflect data noise or seasonal variation. The absence of SWC investment (sig_04) amplifies the other signals but does not confirm stress on its own. Coastal alluvial aquifers differ critically from hard rock aquifers: they have higher storativity but face the additional risk of seawater intrusion once the freshwater head declines, which can render the aquifer permanently unusable for irrigation. Always ask the user about borewell density and observed water salinity before finalising diagnosis, as saline intrusion is a distinct but related pathway in coastal settings. If SOGE is Safe but well depth is increasing and water is becoming saline, prioritise the well depth trend and salinity signal — block-level SOGE may mask localised coastal depletion near the shoreline.",
-  "confounders": [
-    {
-      "confounder": "Seawater intrusion causing water quality failure rather than quantity depletion as the primary constraint on irrigation",
-      "how_to_distinguish": "If farmers report that water is available in wells but is too salty or leaves white deposits, the primary pathway is saline intrusion rather than volumetric groundwater depletion. Check groundwater_salinity data if available. Seawater intrusion is triggered by over-extraction in coastal aquifers but requires different solutions (managed recharge to maintain freshwater head, rather than demand reduction alone). SOGE may appear moderate while salinity renders the available water unusable."
     },
     {
-      "confounder": "Seasonal or inter-annual rainfall deficit (meteorological drought) causing apparent groundwater stress through reduced monsoon recharge rather than structural over-extraction",
-      "how_to_distinguish": "Compare annual_precipitation_mm against the long-term baseline for the AER (900–1400mm for AER-18). If delta_g is negative only in drought years and recovers in normal rainfall years, drought is the primary driver and groundwater stress is episodic rather than chronic. Check soge_dev_percent — if it remains below 50% but delta_g is negative in drought years, drought rather than extraction is likely primary. Chronic stress is indicated when delta_g remains negative even in years with near-normal rainfall."
+      "signal_id": "sig_05",
+      "variables": [
+        "annual_well_depth_m"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Farmers report that borewell or dug-well depth has increased over recent years, or that previously productive shallow wells have dried up or require deepening to maintain yield, particularly during rabi season or dry spells in kharif.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Increasing well depth is a direct proxy for declining groundwater table. In alluvial coastal aquifers, well deepening is particularly significant because it may indicate that farmers are penetrating deeper into the aquifer profile where water quality may be poorer or where saline intrusion from the coast is more likely. Unlike hard-rock aquifers where seasonal emptying and refilling is normal, alluvial aquifer depletion tends to be more gradual and cumulative, making multi-year well depth trends a reliable indicator of chronic over-extraction."
+    }
+  ],
+  "overall_reasoning_note": "Groundwater stress in coastal alluvial aquifers (AER-18) should be confirmed by at least two primary signals: elevated SOGE classification, chronic negative delta_g trend, or farmer-reported well deepening. The alluvial aquifer context distinguishes this card from hard-rock pathway cards: depletion is more gradual and volumetrically larger, but the coastal location adds the compounding risk of seawater intrusion once hydraulic gradients reverse. A block-level Safe SOGE classification should not be taken as reassuring if delta_g trend is negative and nrega_swc_count is low — alluvial aquifer depletion in the Indo-Gangetic and coastal plains requires different management approaches than peninsular hard-rock systems, including demand-side governance mechanisms and participatory groundwater management. Always probe for groundwater salinity and borewell density before finalising diagnosis, as coastal saline intrusion may require different solutions than simple recharge augmentation.",
+  "confounders": [
+    {
+      "confounder": "Seasonal salinity intrusion from coastal proximity causing apparent water scarcity through quality degradation rather than quantity depletion",
+      "how_to_distinguish": "Ask farmers whether well water has become saltier or leaves white deposits (groundwater_salinity proxy). If salinity is the primary complaint and SOGE is below 70%, the pathway may be coastal saline intrusion rather than over-extraction depletion. Check whether the problem is worse in dry season when freshwater head is lowest — this pattern is more consistent with intrusion than with chronic over-extraction."
+    },
+    {
+      "confounder": "Reduced monsoon recharge due to meteorological drought causing temporary groundwater decline rather than structural over-extraction",
+      "how_to_distinguish": "Compare trend_annual_precipitation_mm against the delta_g trend. If precipitation has declined significantly (trend_annual_precipitation_mm < -10 mm/year) and SOGE remains below 70%, drought-driven recharge reduction is likely the primary driver rather than extraction pressure. Groundwater stress from drought should recover in good monsoon years; chronic over-extraction will not recover without demand-side intervention even in good rainfall years."
     }
   ],
   "missing_variable_questions": [
     {
+      "missing_variable": "annual_well_depth_m",
+      "question_to_user": "Has the depth of borewells or dug-wells in your area increased over the past 5-10 years? Have any previously productive shallow wells dried up or needed to be deepened? If possible, can you share the depth (in feet or metres) of wells drilled in different years?",
+      "how_answer_updates_diagnosis": "A reported increase in well depth of more than 2-3 metres over 5-8 years in a coastal alluvial setting strongly confirms chronic groundwater depletion. If farmers report that shallow dug-wells (less than 10m) have failed and been replaced by deeper borewells (20-40m), this indicates the water table has dropped below the shallow alluvial zone, confirming the groundwater stress pathway."
+    },
+    {
       "missing_variable": "borewell_density",
-      "question_to_user": "Roughly how many borewells or tubewells are there in your village or in nearby villages? Would you say there are very few (less than 10), a moderate number (10–50), or a large number (more than 50)? Has the number increased noticeably in the last 5–10 years?",
-      "how_answer_updates_diagnosis": "High borewell density in a coastal alluvial aquifer with moderate SOGE confirms localised over-extraction not captured by the block-level SOGE figure, strongly confirming the groundwater stress pathway. Rapid recent increase in borewell numbers suggests accelerating extraction pressure that may not yet be reflected in SOGE data."
+      "question_to_user": "Roughly how many borewells or tubewells are there in your village or the surrounding area? Has the number of borewells increased significantly in the last 10 years? Are there many borewells installed for paddy or other irrigated crops?",
+      "how_answer_updates_diagnosis": "High borewell density in a coastal alluvial plain with moderate SOGE confirms localised over-extraction not captured by block-level statistics. Rapid proliferation of borewells over the past decade, particularly for paddy irrigation, would strongly confirm the groundwater stress pathway and indicate that demand-side governance (participatory groundwater management, crop diversification) is needed alongside recharge infrastructure."
     },
     {
       "missing_variable": "groundwater_salinity",
-      "question_to_user": "Have farmers noticed that borewell or well water has become saltier, tastes different, leaves white or crusty deposits on soil or pipes, or is no longer suitable for certain crops? Has this worsened in recent years or during dry seasons?",
-      "how_answer_updates_diagnosis": "Increasing salinity in coastal alluvial aquifers indicates seawater intrusion driven by declining freshwater head — a consequence of over-extraction. This changes the diagnosis from simple volumetric depletion to saline intrusion, which requires managed aquifer recharge to restore freshwater pressure as the primary intervention, rather than demand reduction alone. Seasonal salinity (worse in dry season) is typical of coastal aquifers under extraction stress."
-    },
-    {
-      "missing_variable": "annual_well_depth_m",
-      "question_to_user": "Have farmers noticed that well or borewell depth has increased over the past several years? Can you estimate how much deeper wells are now compared to 5–8 years ago (e.g., less than 1 m, 1–3 m, more than 3 m)?",
-      "how_answer_updates_diagnosis": "A reported increase of more than 3 m over 5–8 years strongly confirms groundwater table decline and supports the groundwater stress pathway even when block-level SOGE appears Safe. Stable or shallow well depths suggest extraction pressure or drought rather than structural depletion."
+      "question_to_user": "Have farmers noticed that borewell or well water has become saltier, tastes different, leaves white or crusty deposits on soil or equipment, or is no longer suitable for certain crops? Has this problem worsened in recent dry seasons?",
+      "how_answer_updates_diagnosis": "Increasing salinity in coastal alluvial aquifers can indicate seawater intrusion triggered by over-extraction lowering the freshwater hydraulic head. If salinity is confirmed, the diagnosis shifts to include coastal saline intrusion as a co-pathway, and solutions must prioritise reducing extraction near the coast and restoring freshwater head through managed recharge, rather than simply increasing recharge volume."
     }
   ],
   "sources": [
@@ -151,102 +154,106 @@
       "year": 2023,
       "url": "https://cgwb.gov.in",
       "source_type": "government_report",
-      "relevance_note": "Defines SOGE class thresholds (Safe <70%, Semi-critical 70–90%, Critical 90–100%, Over-exploited >100%) used in sig_01; provides block-level groundwater assessment for coastal Tamil Nadu, Andhra Pradesh and Odisha"
+      "relevance_note": "Defines SOGE class thresholds (Safe <70%, Semi-critical 70-90%, Critical 90-100%, Over-exploited >100%) used in sig_01; provides block-level groundwater development data for coastal Tamil Nadu, Andhra Pradesh, and Odisha"
     },
     {
-      "source_id": "Jasechko2023",
+      "source_id": "Jasechko2024",
       "title": "Rapid groundwater decline and some cases of recovery in aquifers globally",
       "authors": [
-        "Jasechko, S.",
-        "Seybold, H.",
-        "Perrone, D.",
-        "Fan, Y.",
-        "Shamsudduha, M.",
-        "Taylor, R.G.",
-        "Fallatah, O.",
-        "Kirchner, J.W."
+        "Jasechko, Scott",
+        "Seybold, Hansjorg",
+        "Perrone, Debra",
+        "Fan, Ying",
+        "Shamsudduha, Mohammad",
+        "Taylor, Richard G.",
+        "Fallatah, Othman",
+        "Kirchner, James W."
       ],
-      "year": 2023,
+      "year": 2024,
       "doi": "10.1038/s41586-023-06879-8",
       "source_type": "peer_reviewed_journal",
-      "relevance_note": "Documents rapid groundwater-level declines (>0.5 m/year) as widespread in dry regions with extensive croplands; shows 30% of regional aquifers have accelerating declines; also documents cases of recovery through managed recharge and policy change, supporting intervention recommendations"
-    },
-    {
-      "source_id": "Dillon2019",
-      "title": "Sixty years of global progress in managed aquifer recharge",
-      "authors": [
-        "Dillon, P.",
-        "Stuyfzand, P.",
-        "Grischek, T.",
-        "Lluria, M.",
-        "Pyne, R.D.G.",
-        "Jain, R.C.",
-        "Bear, J.",
-        "Schwarz, J.",
-        "Wang, W.",
-        "Fernandez, E.",
-        "Stefan, C.",
-        "Pettenati, M.",
-        "van der Gun, J.",
-        "Sprenger, C.",
-        "Massmann, G.",
-        "Scanlon, B.R.",
-        "Xanke, J.",
-        "Jokela, P.",
-        "Zheng, Y.",
-        "Rossetto, R.",
-        "Shamrukh, M.",
-        "Pavelic, P.",
-        "Murray, E.",
-        "Ross, A.",
-        "Bonilla Valverde, J.P.",
-        "Palma Nava, A.",
-        "Ansems, N.",
-        "Posavec, K.",
-        "Ha, K.",
-        "Martin, R.",
-        "Sapiano, M."
-      ],
-      "year": 2019,
-      "doi": "10.1007/s10040-018-1841-z",
-      "source_type": "peer_reviewed_journal",
-      "relevance_note": "Documents India's 500,000+ historical tanks and ponds for recharge; describes government and NGO investment in percolation tanks in southern India as a major managed aquifer recharge strategy; supports recommendations for trench/check-dam construction and community pond repair in coastal alluvial settings"
+      "relevance_note": "Documents that rapid groundwater-level declines (>0.5 m/year) are widespread in cropland-intensive dry regions globally, and that 30% of regional aquifers show accelerating decline; also documents cases of recovery following policy intervention and managed aquifer recharge, supporting the solution recommendations"
     },
     {
       "source_id": "Siebert2010",
       "title": "Groundwater use for irrigation – a global inventory",
       "authors": [
-        "Siebert, S.",
-        "Burke, J.",
-        "Faures, J.M.",
-        "Frenken, K.",
-        "Hoogeveen, J.",
-        "Döll, P.",
-        "Portmann, F.T."
+        "Siebert, Stefan",
+        "Burke, Joanna",
+        "Faures, Jean Marc",
+        "Frenken, Karen",
+        "Hoogeveen, Jippe",
+        "Doll, Petra",
+        "Portmann, Felix T."
       ],
       "year": 2010,
       "doi": "10.5194/hess-14-1863-2010",
       "source_type": "peer_reviewed_journal",
-      "relevance_note": "Documents India as having the largest area equipped for groundwater irrigation globally (39 million ha); establishes that groundwater use in irrigation is increasing, leading to extraction above recharge rates — directly relevant to coastal alluvial plains under intensive rabi and zaid irrigation"
+      "relevance_note": "Documents India as having the largest area equipped for groundwater irrigation globally (39 million ha), with groundwater use increasing in absolute terms and as a percentage of total irrigation, directly relevant to alluvial aquifer depletion context"
     },
     {
-      "source_id": "Sikdar2022",
+      "source_id": "Kulkarni2022",
       "title": "Addressing Depletion in Alluvial Aquifers",
       "authors": [
-        "Sikdar, P.K."
+        "Kulkarni, Himanshu",
+        "Shankar, P.S. Vijay"
       ],
       "year": 2022,
       "doi": "10.37773/ees.v8i1.1122",
       "source_type": "peer_reviewed_journal",
-      "relevance_note": "Argues that management approaches for alluvial aquifers must differ from hard rock systems; documents that abstraction far exceeds natural recharge in alluvial aquifers; supports the need for demand-side and institutional approaches (Panchayat-NGO governance) alongside supply-side SWC works"
+      "relevance_note": "Argues that alluvial aquifer management requires different approaches from peninsular hard-rock systems; uses Ostrom's IAD framework to distinguish management needs; directly relevant to the coastal alluvial context of this card and the recommendation for participatory groundwater governance"
+    },
+    {
+      "source_id": "Dillon2019",
+      "title": "Sixty years of global progress in managed aquifer recharge",
+      "authors": [
+        "Dillon, Peter",
+        "Stuyfzand, Pieter",
+        "Grischek, Thomas",
+        "Lluria, Manuel",
+        "Pyne, R.D.G.",
+        "Jain, R.C.",
+        "Bear, Jacob",
+        "Schwarz, Jorg",
+        "Wang, Wei",
+        "Fernandez, Enrique",
+        "Stefan, Catalin",
+        "Pettenati, Marie",
+        "van der Gun, Jac",
+        "Sprenger, Carsten",
+        "Massmann, Gudrun",
+        "Scanlon, Bridget R.",
+        "Xanke, Julian",
+        "Jokela, Pekka",
+        "Zheng, Yan",
+        "Rossetto, Rudy",
+        "Shamrukh, Mohammad",
+        "Pavelic, Paul",
+        "Murray, Evan",
+        "Ross, Andrew",
+        "Bonilla Valverde, Juan Pablo",
+        "Palma Nava, Adriana",
+        "Ansems, Nienke",
+        "Posavec, Kristijan",
+        "Ha, Kyoochul",
+        "Martin, Rolf",
+        "Sapiano, Marija"
+      ],
+      "year": 2019,
+      "doi": "10.1007/s10040-018-1841-z",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents India's long history of tank and pond-based recharge infrastructure (>500,000 structures) and government investment in percolation tanks for monsoon runoff detention; supports the MGNREGA SWC and check-dam recommendations for coastal alluvial recharge augmentation"
     }
   ],
   "metadata": {
     "created_by": "llm_extraction_v1",
     "reviewed_by_expert": false,
-    "created_at": "2025-07-14",
-    "last_updated": "2025-07-14",
+    "created_at": "2025-01-27",
+    "last_updated": "2025-01-27",
     "extraction_model": "claude-sonnet-4-6",
-    "confidence_overall": "medium"
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 24,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
   }
 }

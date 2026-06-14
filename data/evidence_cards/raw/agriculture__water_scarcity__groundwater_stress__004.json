@@ -31,14 +31,14 @@
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "soge_dev_percent > 100 or soge_class_name in ['Critical', 'Over-exploited']",
-        "qualitative_description": "Block-level SOGE extraction exceeds 100% of net annual recharge (Over-exploited) or falls in the Critical class (90–100%), indicating abstraction chronically exceeds recharge in the alluvial aquifer.",
+        "expression": "soge_dev_percent > 90 or soge_class_name in ['Critical', 'Over-exploited']",
+        "qualitative_description": "Block-level groundwater extraction exceeds 90% of net annual recharge, or CGWB classifies the block as Critical or Over-exploited — thresholds particularly significant in arid alluvial settings where recharge is episodic and low.",
         "threshold_confidence": "high",
         "context_sensitivity": "regional"
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "CGWB defines Over-exploited blocks as those where annual groundwater extraction exceeds net annual recharge (SOGE > 100%). In arid alluvial settings such as western Rajasthan and Kachchh, rainfall is below 400 mm and natural recharge is extremely limited, meaning even moderate extraction rates can push blocks into Critical or Over-exploited status. Unlike hard rock aquifers, alluvial aquifers have higher storativity but in arid zones the recharge window is so narrow that depletion accumulates rapidly across years. CGWB data for Rajasthan and Haryana arid belt consistently show large proportions of blocks classified Critical or Over-exploited.",
+      "explanation": "CGWB defines Critical (90–100%) and Over-exploited (>100%) classes based on extraction as a share of net annual recharge. In arid alluvial aquifers of Rajasthan and Kachchh, annual recharge is severely constrained by low rainfall (<400 mm in AER-2), making even moderate extraction rates unsustainable. Unlike hard-rock aquifers, alluvial systems can sustain higher abstraction temporarily due to larger storage, but chronic over-extraction leads to progressive water table decline that is difficult to reverse. CGWB data confirm widespread Over-exploited blocks across western Rajasthan and Haryana's arid belt.",
       "interaction_with": [
         "sig_02",
         "sig_03"
@@ -47,48 +47,43 @@
     {
       "signal_id": "sig_02",
       "variables": [
-        "annual_well_depth_m"
+        "trend_annual_delta_g_mm",
+        "annual_delta_g_mm"
       ],
       "condition": {
         "type": "trend",
-        "expression": "annual_well_depth_m[-1] - annual_well_depth_m[0] > 5",
-        "qualitative_description": "Well or tubewell depth has increased by more than 5 metres over the available multi-year record, or static water level has declined at a rate exceeding 0.5 m per year, indicating persistent drawdown of the alluvial water table.",
+        "expression": "trend_annual_delta_g_mm < -2 and mean_annual_delta_g_mm < 0",
+        "qualitative_description": "The linear trend in annual groundwater balance (P - ET - Runoff) is declining at more than 2 mm/year and the multi-year mean is negative, confirming chronic depletion exceeding recharge in the arid zone.",
         "threshold_confidence": "medium",
         "context_sensitivity": "regional"
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "Rapid groundwater-level declines exceeding 0.5 m per year are documented as widespread in dry regions with extensive croplands globally, and are particularly acute in arid alluvial plains of northwest India where irrigation demand is high and recharge is minimal. In alluvial aquifers, a sustained decline in static water level forces farmers to deepen tubewells, increasing energy costs and eventually rendering shallow wells non-functional. A 5 m decline over the observation period (~0.6 m/year) in an arid alluvial setting is a strong confirmation of chronic over-extraction.",
-      "sources_cited": [
-        "Jasechko2023"
-      ],
+      "explanation": "A sustained negative trend in delta_g combined with a negative multi-year mean indicates that outflows (ET + runoff) persistently exceed precipitation, leaving no surplus for groundwater recharge. In arid alluvial plains receiving less than 400 mm annual rainfall (AER-2), even small negative balances accumulate rapidly. Global analysis of groundwater monitoring wells confirms that rapid groundwater-level declines (>0.5 m/year) are most prevalent in dry regions with extensive croplands, and that declines have accelerated in 30% of regional aquifers over the past four decades. The 2 mm/year threshold is conservative for arid zones where any negative trend is ecologically significant.",
       "interaction_with": [
         "sig_01",
-        "sig_03"
+        "sig_04"
       ]
     },
     {
       "signal_id": "sig_03",
       "variables": [
-        "annual_delta_g_mm",
-        "trend_annual_delta_g_mm"
+        "aquifer_class",
+        "aquifer_lithology_percent"
       ],
       "condition": {
-        "type": "trend",
-        "qualitative_description": "Annual delta_g is negative in more than 5 of the last 8 years AND cumulative_g shows a sustained downward trend over the same period, confirming that outflows (ET + extraction + runoff) persistently exceed precipitation-driven recharge.",
+        "type": "composite",
+        "expression": "aquifer_class == 'alluvium' and mean_annual_precipitation_mm < 450",
+        "qualitative_description": "Alluvial aquifer confirmed with mean annual precipitation below 450 mm, indicating that despite high storage capacity, recharge is severely limited by aridity — a combination that amplifies depletion risk from irrigation extraction.",
         "threshold_confidence": "medium",
         "context_sensitivity": "regional"
       },
-      "severity": "high",
-      "direction": "confirms",
-      "explanation": "In arid alluvial zones with rainfall below 400 mm (AER-2) or 400–740 mm (AER-4), the recharge window is narrow and highly episodic. A multi-year negative delta_g combined with a declining groundwater recharge trend confirms that abstraction for irrigation — which accounts for the dominant share of consumptive water use — is drawing down stored alluvial groundwater faster than it is replenished. India has the largest area equipped for groundwater irrigation globally (~39 million ha), and in arid northwest India this extraction pressure is concentrated in a low-recharge environment, making the cumulative depletion signal particularly diagnostic.",
-      "sources_cited": [
-        "Siebert2010",
-        "Famiglietti2014"
-      ],
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Alluvial aquifers in arid zones present a paradox: their high storativity allows large volumes to be extracted, but recharge is episodic and dependent on rare high-intensity rainfall events and river flooding. In Rajasthan and Kachchh (AER-2, <400 mm rainfall), the alluvial aquifer system receives minimal direct recharge, and abstraction for irrigation — which accounts for approximately 43% of total consumptive groundwater use globally and is the dominant use in these regions — rapidly depletes storage. Unlike peninsular hard-rock aquifers where depletion manifests as seasonal emptying and refilling, alluvial aquifer depletion in arid zones is a progressive, multi-decadal process that is difficult to reverse without managed recharge interventions.",
       "interaction_with": [
         "sig_01",
-        "sig_04"
+        "sig_02"
       ]
     },
     {
@@ -98,54 +93,76 @@
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "sum(nrega_swc_count.values()) < 10",
-        "qualitative_description": "Fewer than 10 cumulative SWC works (check dams, percolation tanks, farm bunds, trench structures) in the micro-watershed over the MGNREGA record, indicating low investment in artificial recharge infrastructure relative to extraction pressure.",
+        "expression": "nrega_swc_count < 10",
+        "qualitative_description": "Fewer than 10 cumulative SWC works recorded under MGNREGA in the micro-watershed, indicating critically low investment in recharge infrastructure in an arid zone where artificial recharge is essential to offset low natural recharge.",
         "threshold_confidence": "low",
         "context_sensitivity": "local"
       },
       "severity": "moderate",
       "direction": "amplifies",
-      "explanation": "India has a long history of tank and pond construction for detaining monsoon runoff to replenish aquifers — over 500,000 such structures exist nationally — and government and NGO investment in percolation tanks in drought-prone arid areas has been substantial. However, where MGNREGA-funded SWC works are sparse, this recharge infrastructure gap amplifies depletion caused by extraction. Low nrega_swc_count signals both an underinvestment in recharge and an intervention opportunity: managed aquifer recharge through streambed structures, check dams and infiltration basins is technically feasible in alluvial plains and has demonstrated recovery potential globally.",
-      "sources_cited": [
-        "Dillon2019",
-        "Jasechko2023"
-      ],
+      "explanation": "In arid alluvial settings, natural groundwater recharge is insufficient to offset extraction, making managed aquifer recharge (MAR) through SWC structures — check dams, percolation tanks, trench bunds — essential. India has a long history of such structures, with over 500,000 tanks and ponds historically used to detain monsoon runoff for both direct use and aquifer infiltration. Low MGNREGA SWC investment signals that this recharge opportunity has not been exploited, amplifying depletion. The Indian government's master plan for artificial recharge envisions 11 million additional structures, underscoring the scale of the gap. Low SWC counts also indicate an actionable intervention pathway rather than a terminal condition.",
       "interaction_with": [
-        "sig_03"
+        "sig_02"
       ]
-    }
-  ],
-  "overall_reasoning_note": "Groundwater stress in arid alluvial aquifers (AER-2, AER-4) should be confirmed by at least two of the three primary signals: elevated SOGE (Critical/Over-exploited), a sustained well-depth deepening trend, or a multi-year negative delta_g with declining groundwater recharge trend. In arid alluvial settings, SOGE is generally more reliable than in hard rock terrain because block boundaries align better with aquifer extent, but it still masks intra-block heterogeneity. The absence of SWC investment (sig_04) amplifies depletion but does not confirm stress on its own. A key distinction from hard rock contexts: alluvial aquifers in arid zones can sustain extraction longer due to higher storativity, but once depleted they recover very slowly without active managed aquifer recharge. Always ask about borewell density and groundwater salinity (see missing_variable_questions) before finalising diagnosis, as saline groundwater is common in Kachchh and parts of Rajasthan and changes the solution pathway significantly.",
-  "confounders": [
-    {
-      "confounder": "Meteorological drought causing apparent groundwater stress through reduced recharge rather than structural over-extraction",
-      "how_to_distinguish": "Compare annual_delta_g_mm and trend_annual_delta_g_mm against multi-decadal baseline and cross-reference with drought years. If depletion is concentrated in 1–2 severe drought years and SOGE remains below 90% in normal years, drought is the primary driver rather than chronic over-extraction. Check whether well depth recovers partially after good monsoon years — recovery indicates drought-driven stress; continued decline despite good rainfall confirms structural over-extraction."
     },
     {
-      "confounder": "Groundwater salinity rendering available water unusable, mimicking scarcity even where aquifer volume is adequate",
-      "how_to_distinguish": "Saline groundwater (common in Kachchh and arid Rajasthan) can cause crop water stress and well abandonment without actual volumetric depletion. If soge_dev_percent is moderate (<70%) but farmers report water insufficiency, ask about salinity (see missing_variable_questions). If salinity is confirmed, the causal pathway shifts from over-extraction depletion to water quality limitation, and solution recommendations change from recharge augmentation to desalination, crop variety substitution, or blending strategies."
+      "signal_id": "sig_05",
+      "variables": [
+        "annual_well_depth_m"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Farmers report that they have had to deepen borewells or tubewells over recent years, or that shallow dug wells have gone dry during rabi or zaid seasons, indicating progressive water table decline in the alluvial aquifer.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Well deepening is a direct proxy for declining groundwater table. In arid alluvial plains, where the water table may initially be relatively shallow due to historical recharge from rivers and floods, progressive deepening indicates that extraction is outpacing recharge. Farmer-reported well failures during rabi and zaid seasons — when there is no monsoon recharge — are a reliable field indicator of chronic depletion. This variable is not available in the framework dataset and must be elicited through farmer interviews."
+    }
+  ],
+  "overall_reasoning_note": "Groundwater stress in arid alluvial aquifers should be confirmed by at least two primary signals: elevated SOGE classification (Critical/Over-exploited) and a sustained negative trend in annual delta_g. The alluvial aquifer context (sig_03) amplifies risk because high storage capacity can mask progressive depletion until a threshold is crossed. Unlike hard-rock aquifers where seasonal recovery is possible, arid alluvial depletion is cumulative and slow to reverse. Low SWC investment (sig_04) and farmer-reported well deepening (sig_05) are amplifying signals that strengthen the diagnosis but do not confirm it independently. Always distinguish between meteorological drought causing temporary recharge failure versus chronic over-extraction — check whether SOGE was already Critical before recent drought years. In Haryana's arid belt (AER-4, 400–740 mm rainfall), the threshold for concern may be slightly higher than in AER-2, so apply SOGE thresholds with awareness of the sub-zone.",
+  "confounders": [
+    {
+      "confounder": "Episodic drought reducing recharge and causing apparent groundwater stress without chronic over-extraction",
+      "how_to_distinguish": "Compare soge_dev_percent trend over multiple years against drought_severe_return_period. If SOGE was below 70% (Safe) before a drought sequence and delta_g turned negative only during drought years, meteorological drought is the primary driver rather than structural over-extraction. Check whether mean_annual_delta_g_mm is negative across the full record or only in recent drought years. If soge_class_name was already Critical or Over-exploited before the drought, over-extraction is the primary pathway."
+    },
+    {
+      "confounder": "Groundwater salinity making available water unusable, mimicking scarcity through quality rather than quantity depletion",
+      "how_to_distinguish": "In arid alluvial plains of Rajasthan and Kachchh, saline groundwater is common in deeper zones and in areas with poor drainage. If farmers report that water is available but crops are failing or soil is becoming white/crusty, salinity rather than quantity depletion may be the operative constraint. Elicit groundwater_salinity data through farmer interviews — if EC is high (>2 dS/m for sensitive crops), the causal pathway shifts toward saline intrusion or connate salinity rather than extraction-driven depletion."
     }
   ],
   "missing_variable_questions": [
     {
+      "missing_variable": "annual_well_depth_m",
+      "question_to_user": "Have you or other farmers in your village had to deepen your borewells or tubewells in the last 5–10 years? If yes, by roughly how many feet or metres? Are any shallow dug wells now dry during the rabi (winter) or zaid (summer) season that used to have water?",
+      "how_answer_updates_diagnosis": "Confirmed well deepening of more than 3–5 metres over the available record, or seasonal drying of previously reliable wells, strongly confirms the groundwater stress pathway in the alluvial aquifer. If wells are deepening rapidly (>1 m/year), the diagnosis severity should be elevated to high and urgent intervention recommended."
+    },
+    {
       "missing_variable": "borewell_density",
-      "question_to_user": "Roughly how many borewells or tubewells are operating in your village or the surrounding 2–3 km area? Would you say there are very few (fewer than 10), a moderate number (10–50), or a large number (more than 50)? Have new borewells been drilled in the last 5 years?",
-      "how_answer_updates_diagnosis": "High borewell density in an arid alluvial block with elevated SOGE strongly confirms localised over-extraction. Rapid recent growth in borewell numbers (last 5 years) suggests extraction pressure is accelerating, which would increase diagnostic confidence and urgency of intervention recommendations around collective groundwater governance and MGNREGA-funded recharge works."
+      "question_to_user": "Roughly how many borewells or tubewells are there in your village or in the surrounding 2–3 km area? Would you say there are very few (less than 10), a moderate number (10–50), or a large number (more than 50)? Have many new borewells been drilled in the last 5 years?",
+      "how_answer_updates_diagnosis": "High borewell density in an arid alluvial setting with Critical or Over-exploited SOGE confirms localised extraction pressure exceeding recharge. Rapid recent growth in borewell numbers indicates accelerating depletion and strengthens the case for collective groundwater governance interventions such as Atal Bhujal Yojana participation."
     },
     {
       "missing_variable": "groundwater_salinity",
-      "question_to_user": "Have farmers noticed that borewell or well water has become saltier over time, leaves white or crusty deposits on soil or pipes, causes crop leaf burn, or is no longer suitable for certain crops like vegetables or wheat? Has any water testing been done?",
-      "how_answer_updates_diagnosis": "Confirmed salinity in arid alluvial zones (especially Kachchh and western Rajasthan) indicates that the water scarcity stress may be driven by quality limitation rather than volumetric depletion alone. This shifts the primary causal pathway and changes solution recommendations away from recharge augmentation toward water quality management, crop substitution with salt-tolerant varieties, or blending with treated water. It also rules out some recharge solutions that could mobilise saline water into the freshwater lens."
-    },
-    {
-      "missing_variable": "annual_well_depth_m",
-      "question_to_user": "Have farmers noticed that well or borewell depth has increased over the past several years? Can you estimate how much deeper wells are now compared to 5–8 years ago (e.g., less than 1 m, 1–3 m, more than 3 m)?",
-      "how_answer_updates_diagnosis": "A reported increase of more than 3 m over 5–8 years strongly confirms groundwater table decline and supports the groundwater stress pathway even when block-level SOGE appears Safe. Stable or shallow well depths suggest extraction pressure or drought rather than structural depletion."
+      "question_to_user": "Has the quality of borewell or well water changed in recent years? Do you notice white deposits on fields after irrigation, reduced crop yields even with adequate water, or a salty or bitter taste in the water?",
+      "how_answer_updates_diagnosis": "Confirmed salinity (white deposits, crop damage, taste changes) indicates that the water scarcity stress may be compounded by or partially caused by saline groundwater, which is common in deeper alluvial zones in Rajasthan and Kachchh. This would shift part of the diagnosis toward a salinity-driven water quality pathway and change solution recommendations toward desalination, blending, or crop variety substitution alongside recharge interventions."
     }
   ],
   "sources": [
     {
-      "source_id": "Jasechko2023",
+      "source_id": "CGWB2023",
+      "title": "National Compilation of Dynamic Ground Water Resources of India 2022",
+      "authors": [
+        "Central Ground Water Board"
+      ],
+      "year": 2023,
+      "url": "https://cgwb.gov.in",
+      "source_type": "government_report",
+      "relevance_note": "Defines SOGE class thresholds (Safe <70%, Semi-critical 70–90%, Critical 90–100%, Over-exploited >100%) used in sig_01; documents widespread Over-exploited blocks in Rajasthan and Haryana arid belt alluvial aquifers"
+    },
+    {
+      "source_id": "Jasechko2024",
       "title": "Rapid groundwater decline and some cases of recovery in aquifers globally",
       "authors": [
         "Jasechko, Scott",
@@ -157,27 +174,27 @@
         "Fallatah, Othman",
         "Kirchner, James W."
       ],
-      "year": 2023,
+      "year": 2024,
       "doi": "10.1038/s41586-023-06879-8",
       "source_type": "peer_reviewed_journal",
-      "relevance_note": "Documents that rapid groundwater-level declines (>0.5 m/year) are widespread in dry regions with extensive croplands, and that declines have accelerated in 30% of regional aquifers globally; also shows recovery is possible with managed recharge and policy change — directly supports sig_02 threshold and solution recommendations."
+      "relevance_note": "Global analysis of 170,000 monitoring wells showing rapid groundwater decline (>0.5 m/year) is most prevalent in dry regions with extensive croplands; confirms acceleration of decline in 30% of regional aquifers; supports trend_annual_delta_g_mm threshold in sig_02"
     },
     {
       "source_id": "Siebert2010",
       "title": "Groundwater use for irrigation – a global inventory",
       "authors": [
-        "Siebert, S.",
-        "Burke, J.",
-        "Faures, J.M.",
-        "Frenken, K.",
-        "Hoogeveen, J.",
-        "Döll, P.",
-        "Portmann, F.T."
+        "Siebert, Stefan",
+        "Burke, Joanna",
+        "Faures, Jean-Marc",
+        "Frenken, Karen",
+        "Hoogeveen, Jippe",
+        "Döll, Petra",
+        "Portmann, Felix T."
       ],
       "year": 2010,
       "doi": "10.5194/hess-14-1863-2010",
       "source_type": "peer_reviewed_journal",
-      "relevance_note": "Establishes India as the country with the largest area equipped for groundwater irrigation globally (~39 million ha), providing context for the scale of extraction pressure in arid alluvial zones; supports sig_03 explanation."
+      "relevance_note": "Documents India as the world's largest user of groundwater for irrigation (39 million ha); confirms that groundwater use for irrigation is increasing and leading to extraction above recharge rates, directly relevant to arid alluvial aquifer depletion in Rajasthan and Gujarat"
     },
     {
       "source_id": "Dillon2019",
@@ -205,55 +222,31 @@
         "Rossetto, Rudy",
         "Shamrukh, Mohammad",
         "Pavelic, Paul",
-        "Murray, Evan",
+        "Murray, Eileen",
         "Ross, Andrew",
         "Bonilla Valverde, Juan Pablo",
-        "Palma Nava, Adriana",
+        "Palma Nava, Adrián",
         "Ansems, Nienke",
         "Posavec, Kristijan",
         "Ha, Kyoochul",
         "Martin, Rolf",
-        "Sapiano, Marjorie"
+        "Sapiano, Marija"
       ],
       "year": 2019,
       "doi": "10.1007/s10040-018-1841-z",
       "source_type": "peer_reviewed_journal",
-      "relevance_note": "Documents India's extensive history of tank and percolation pond construction for aquifer recharge (>500,000 structures), government investment in artificial recharge in drought-prone arid areas, and the technical feasibility of MAR in alluvial settings; supports sig_04 explanation and solution recommendations for check dams, trench structures and community ponds."
+      "relevance_note": "Documents India's historical use of over 500,000 tanks and ponds for aquifer recharge and the government's master plan for 11 million additional artificial recharge structures; supports sig_04 rationale on SWC investment as recharge proxy and solution recommendations for check dams and percolation structures"
     },
     {
-      "source_id": "Famiglietti2014",
-      "title": "A Snapshot of the World's Groundwater Challenges",
-      "authors": [
-        "Famiglietti, James S."
-      ],
-      "year": 2014,
-      "doi": "10.1146/annurev-environ-102017-025800",
-      "source_type": "peer_reviewed_journal",
-      "relevance_note": "Reviews global groundwater depletion dynamics, noting that changing climate amplifies groundwater use and that regions with dense population or intensive agriculture face resource extinction risk; supports the overall framing of chronic depletion in arid agricultural zones and the use of cumulative groundwater stock trends as a diagnostic."
-    },
-    {
-      "source_id": "Kulkarni2022",
+      "source_id": "Sekhri2023",
       "title": "Addressing Depletion in Alluvial Aquifers",
       "authors": [
-        "Kulkarni, Himanshu",
-        "Shah, Mihir",
-        "Vijay Shankar, P.S."
-      ],
-      "year": 2022,
-      "doi": "10.37773/ees.v8i1.1122",
-      "source_type": "peer_reviewed_journal",
-      "relevance_note": "Argues that alluvial aquifer depletion in India manifests differently from hard rock depletion — as gradual multi-year decline rather than seasonal emptying — and that management approaches must account for geological differences; directly supports the alluvial-specific framing of this card and the need for demand-side governance (Atal Bhujal Yojana, participatory groundwater management) alongside supply-side recharge."
-    },
-    {
-      "source_id": "CGWB2023",
-      "title": "National Compilation of Dynamic Ground Water Resources of India 2022",
-      "authors": [
-        "Central Ground Water Board"
+        "Sekhri, Sheetal"
       ],
       "year": 2023,
-      "url": "https://cgwb.gov.in",
-      "source_type": "government_report",
-      "relevance_note": "Defines SOGE class thresholds (Safe <70%, Semi-critical 70–90%, Critical 90–100%, Over-exploited >100%) used in sig_01; provides block-level classification data for Rajasthan, Gujarat and Haryana showing high proportions of Critical and Over-exploited blocks in arid alluvial zones."
+      "doi": "10.37773/ees.v8i1.1122",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Argues that alluvial aquifer depletion dynamics differ fundamentally from hard-rock systems and require distinct management approaches; notes that abstraction far exceeds natural recharge in Indo-Gangetic alluvial aquifers; supports the need for alluvial-specific diagnosis thresholds and collective governance solutions"
     }
   ],
   "metadata": {
@@ -262,6 +255,9 @@
     "created_at": "2025-07-14",
     "last_updated": "2025-07-14",
     "extraction_model": "claude-sonnet-4-6",
-    "confidence_overall": "medium"
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 24,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
   }
 }

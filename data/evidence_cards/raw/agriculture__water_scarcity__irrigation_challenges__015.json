@@ -1,0 +1,195 @@
+{
+  "card_id": "agriculture__water_scarcity__irrigation_challenges__015",
+  "production_system": "Agriculture",
+  "observed_stress": "water_scarcity",
+  "causal_pathway": "irrigation_challenges",
+  "context": {
+    "agro_climatic_zones": [
+      "humid",
+      "perhumid"
+    ],
+    "aquifer_types": [
+      "alluvium"
+    ],
+    "terrain_types": [
+      "plains",
+      "hilly"
+    ],
+    "rainfall_regime": "humid",
+    "geographic_examples": [
+      "Kerala",
+      "Konkan Maharashtra",
+      "Goa"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "swb_total_area_ha",
+        "swb_count"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "trend_swb_total_area_ha < -5 and swb_count < 3",
+        "qualitative_description": "Total surface water body area is declining at more than 5 ha/year and fewer than 3 distinct SWBs are present in the MWS, indicating shrinking or absent storage infrastructure.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "In humid and perhumid coastal zones such as Kerala and Konkan, seasonal tanks and ponds are the primary irrigation buffer for rabi and zaid crops. A declining trend in total SWB area combined with a low count of water bodies signals that storage infrastructure is contracting — through siltation, encroachment, or neglect — faster than it is being replenished. Even in high-rainfall zones, the dry season (January–May) creates acute water deficits if surface storage has degraded.",
+      "interaction_with": [
+        "sig_02",
+        "sig_03"
+      ]
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "swb_kharif_area_ha"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "mean_swb_rabi_kharif_ratio < 0.4",
+        "qualitative_description": "The mean ratio of SWB rabi area to kharif area is below 0.4, indicating that water bodies dry out rapidly after the monsoon and cannot sustain post-kharif irrigation.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "A low rabi-to-kharif SWB area ratio indicates that surface water bodies lose most of their storage quickly after the monsoon ends. This is a strong indicator of either siltation reducing effective storage capacity or structural failure of bunds and weirs. Dashora et al. (2019) demonstrated that siltation in check dams reduces storage capacity and infiltration rates over time, with one 5-year-old check dam in Gujarat found completely silted. In coastal humid zones, rapid post-monsoon drying of tanks directly constrains rabi and zaid season irrigation.",
+      "interaction_with": [
+        "sig_01"
+      ]
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "nrega_swc_count"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "nrega_swc_count < 5",
+        "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA in the MWS, indicating low historical investment in water harvesting infrastructure.",
+        "threshold_confidence": "low",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Low MGNREGA investment in SWC and irrigation works means that existing tanks and ponds have not been desilted or repaired, and new storage structures have not been created. Dashora et al. (2019) showed that manual desilting of check dams increased recharge by 84% over the preceding year, with a benefit-to-cost ratio of 4.1 across four structures. The absence of such works in the MGNREGA record is a missed opportunity that amplifies irrigation failure during dry spells.",
+      "interaction_with": [
+        "sig_01",
+        "sig_02"
+      ]
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "river_name",
+        "dist_cooperative_km"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "river_name is None and dist_cooperative_km > 10",
+        "qualitative_description": "No named river passes through or adjacent to the MWS, and the nearest agricultural cooperative is more than 10 km away, indicating limited access to both surface diversion potential and institutional credit for irrigation investment.",
+        "threshold_confidence": "low",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "In coastal humid zones, rivers and streams are the primary source for lift irrigation and diversion schemes. Absence of a named river removes the option of low-cost gravity or lift diversion. Simultaneously, distance to a cooperative society limits farmers' ability to access institutional credit for pump sets, micro-irrigation equipment, or tank repair — compounding the infrastructure gap. Together these factors indicate structural isolation from both water sources and investment capital.",
+      "interaction_with": [
+        "sig_03"
+      ]
+    },
+    {
+      "signal_id": "sig_05",
+      "variables": [
+        "annual_well_depth_m"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Farmers report that open wells or shallow borewells run dry or yield insufficient water during the pre-monsoon months (March–May) or during extended dry spells within the kharif season, indicating that groundwater backup for irrigation is also unreliable.",
+        "threshold_confidence": "low",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "In alluvial coastal plains, shallow open wells can supplement surface irrigation during dry spells. However, if well water is insufficient or wells run dry seasonally, it confirms that neither surface nor groundwater infrastructure is adequate to bridge irrigation gaps. This signal is user-supplied because annual_well_depth_m data is not available in the framework for this context."
+    }
+  ],
+  "confounders": [
+    {
+      "confounder": "High rainfall masking irrigation infrastructure failure — the humid/perhumid context may lead diagnosticians to dismiss water scarcity as implausible",
+      "how_to_distinguish": "Check the rabi-to-kharif SWB ratio (sig_02) and the seasonal distribution of cropping. In Kerala and Konkan, the dry season (January–May) receives less than 10% of annual rainfall; even with 2000–5000 mm annual rainfall, rabi and zaid crops face acute water deficits if storage infrastructure has degraded. If mean_swb_rabi_kharif_ratio < 0.4 and nrega_swc_count < 5, irrigation infrastructure failure is the primary pathway, not meteorological drought."
+    },
+    {
+      "confounder": "Groundwater stress pathway being confused with irrigation infrastructure failure in alluvial settings",
+      "how_to_distinguish": "In alluvial coastal aquifers (AER-19), groundwater is generally recharged adequately by high monsoon rainfall. If SWB area is declining and NREGA investment is low but groundwater indicators are stable, the pathway is irrigation infrastructure failure rather than groundwater depletion. Conversely, if wells are deepening and delta_g is chronically negative, groundwater stress is the primary pathway and should be diagnosed separately. Ask users whether the problem is seasonal (post-monsoon dry season) or year-round — seasonal failure points to surface storage infrastructure, year-round failure points to groundwater stress."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "annual_well_depth_m",
+      "question_to_user": "Do farmers in this area rely on open wells or shallow borewells for irrigation during the dry season (January to May)? If so, do these wells run dry or produce insufficient water before the monsoon arrives? Has this problem worsened over the past 5 years?",
+      "how_answer_updates_diagnosis": "If wells run dry seasonally but were reliable in earlier years, it suggests declining shallow groundwater storage, which may compound surface irrigation failure. If wells have always been unreliable in the dry season, it confirms that the MWS depends entirely on surface storage infrastructure, making tank and pond degradation the primary irrigation constraint. Worsening well performance over time would also trigger consideration of the groundwater_stress pathway alongside irrigation_challenges."
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Dashora2019",
+      "title": "Hydrologic and cost benefit analysis at local scale of streambed recharge structures in Rajasthan (India) and their value for securing irrigation water supplies",
+      "authors": [
+        "Dashora, Y.",
+        "Dillon, P.",
+        "Maheshwari, B.",
+        "Soni, P.",
+        "Mittal, H.K.",
+        "Dashora, R.",
+        "Singh, P.K.",
+        "Purohit, R.C.",
+        "Katara, P."
+      ],
+      "year": 2019,
+      "doi": "10.1007/s10040-019-01951-y",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Demonstrates that siltation reduces check dam storage capacity and infiltration rates over time, that manual desilting can increase recharge by 84%, and that benefit-to-cost ratios of 4.1 make tank desilting economically attractive for securing irrigation water supplies — directly supporting the tank desilting recommendation and the siltation-driven SWB area decline signal."
+    },
+    {
+      "source_id": "IPCC2014SYR",
+      "title": "Climate Change 2014 - Synthesis Report",
+      "authors": [
+        "IPCC"
+      ],
+      "year": 2014,
+      "doi": "10.59327/ipcc_ar5-9789291691432",
+      "source_type": "government_report",
+      "relevance_note": "Documents increasing variability in seasonal rainfall patterns in South Asia, supporting the rationale that even humid zones face dry-season irrigation deficits that require functional storage infrastructure."
+    },
+    {
+      "source_id": "Mekonnen2016",
+      "title": "Global Monthly Water Scarcity: Blue Water Footprints versus Blue Water Availability",
+      "authors": [
+        "Mekonnen, M.M.",
+        "Hoekstra, A.Y."
+      ],
+      "year": 2016,
+      "doi": "10.1371/journal.pone.0032688",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Establishes that water scarcity is a monthly phenomenon — river basins with high annual rainfall can still experience severe water scarcity during dry months, supporting the diagnosis of irrigation infrastructure failure in humid coastal zones during the January–May dry season."
+    }
+  ],
+  "overall_reasoning_note": "In humid and perhumid coastal zones (AER-19: Kerala, Konkan, Goa), water scarcity for rabi and zaid crops is paradoxical given high annual rainfall (2000–5000 mm) but is explained by the concentration of rainfall in the June–September monsoon and the failure of surface storage infrastructure to carry water through the January–May dry season. Diagnosis should be confirmed by at least two of: declining SWB area trend (sig_01), low rabi-to-kharif SWB ratio (sig_02), or low MGNREGA investment (sig_03). The absence of a river and distance to cooperatives (sig_04) amplify but do not confirm the pathway. Do not dismiss water scarcity in this context on the basis of high annual rainfall alone — seasonal distribution and storage infrastructure condition are the critical factors.",
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-07-14",
+    "last_updated": "2025-07-14",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 20,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  }
+}

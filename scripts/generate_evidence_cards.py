@@ -56,6 +56,7 @@ OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434").rstrip("/")
 EMBED_CHAR_LIMIT = int(os.getenv("OLLAMA_EMBED_CHAR_LIMIT", "6000"))
 CLAUDE_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-6")
 DEFAULT_PATHWAY_PREFIX = "agriculture__water_scarcity"
+GENERATE_CARD_DELAY_SECONDS = float(os.getenv("GENERATE_CARD_DELAY_SECONDS", "0"))
 MAX_CHUNKS_PER_PATHWAY = 12
 MAX_CHUNK_CHARS = 2500
 
@@ -649,11 +650,40 @@ def main() -> int:
     parser.add_argument("--limit", type=int, default=0, help="Generate only N cards (smoke test)")
     parser.add_argument("--force", action="store_true", help="Replace existing cards with same card_id")
     parser.add_argument(
+        "--skip-existing",
+        action="store_true",
+        default=False,
+        help="Generate only cards missing from MongoDB (default when --force is not set)",
+    )
+    parser.add_argument(
         "--pathway-prefix",
         default=DEFAULT_PATHWAY_PREFIX,
         help=f"Pathway key prefix filter (default: {DEFAULT_PATHWAY_PREFIX})",
     )
+    parser.add_argument(
+        "--delay-seconds",
+        type=float,
+        default=None,
+        help="Pause between Claude API calls (default: GENERATE_CARD_DELAY_SECONDS env or 0)",
+    )
+    parser.add_argument(
+        "--card-id",
+        action="append",
+        dest="card_ids",
+        metavar="ID",
+        help="Process only this card_id (repeatable)",
+    )
+    parser.add_argument(
+        "--card-id-file",
+        type=Path,
+        help="File with one card_id per line (merged with --card-id)",
+    )
     args = parser.parse_args()
+    delay_seconds = GENERATE_CARD_DELAY_SECONDS if args.delay_seconds is None else args.delay_seconds
+    skip_existing = not args.force
+    if args.skip_existing and args.force:
+        log.error("Use either --skip-existing or --force, not both")
+        return 1
 
     api_key = os.getenv("ANTHROPIC_API_KEY", "").strip()
     if not args.dry_run and not api_key:
@@ -662,16 +692,36 @@ def main() -> int:
 
     schema = load_json(META / "evidence_card_schema.json")
     example = load_json(META / "evidence_card_example.json")
-    pathways = pathway_keys(args.pathway_prefix)
+
+    selected_card_ids: set[str] = set(args.card_ids or [])
+    if args.card_id_file:
+        lines = args.card_id_file.read_text(encoding="utf-8").splitlines()
+        selected_card_ids.update(line.strip() for line in lines if line.strip() and not line.startswith("#"))
+
+    pathway_prefix = "" if selected_card_ids else args.pathway_prefix
+    pathways = pathway_keys(pathway_prefix)
     if not pathways:
         log.error(f"No pathways match prefix '{args.pathway_prefix}'")
         return 1
 
     jobs: list[tuple[str, dict]] = []
     for pathway_key in pathways:
-        info = pathway_framework_info(pathway_key)
         for cluster in CONTEXT_CLUSTERS:
             jobs.append((pathway_key, cluster))
+
+    if selected_card_ids:
+        jobs = [
+            (pathway_key, cluster)
+            for pathway_key, cluster in jobs
+            if card_id_for(pathway_key, cluster["suffix"]) in selected_card_ids
+        ]
+        missing_ids = selected_card_ids - {card_id_for(pk, c["suffix"]) for pk, c in jobs}
+        if missing_ids:
+            log.error(f"Unknown or invalid card_id(s): {', '.join(sorted(missing_ids))}")
+            return 1
+        if not jobs:
+            log.error("No jobs matched --card-id / --card-id-file")
+            return 1
 
     if args.limit:
         jobs = jobs[: args.limit]
@@ -680,6 +730,12 @@ def main() -> int:
     log.info(f"Planned cards: {len(jobs)}")
     if not args.dry_run:
         log.info(f"Claude model: {CLAUDE_MODEL}  Ollama: {OLLAMA_URL}")
+        if skip_existing:
+            log.info("Mode: skip-existing (only missing card_ids; use --force to replace)")
+        else:
+            log.info("Mode: force (replace all matching card_ids)")
+        if delay_seconds > 0:
+            log.info(f"Inter-card delay: {delay_seconds}s (rate-limit throttle)")
 
     mongo_uri = os.getenv("MONGO_URI", "mongodb://localhost:27017")
     db_client = MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
@@ -702,8 +758,8 @@ def main() -> int:
         card_id = card_id_for(pathway_key, cluster["suffix"])
         log.info(f"[{n}/{len(jobs)}] {card_id} ({cluster['label']})")
 
-        if not args.force and col.count_documents({"_id": card_id}, limit=1):
-            log.info("  Skip (already exists)")
+        if skip_existing and col.count_documents({"_id": card_id}, limit=1):
+            log.info("  Skip (already in MongoDB)")
             skipped += 1
             continue
 
@@ -739,9 +795,12 @@ def main() -> int:
             )
             log.info("  Stored in evidence_cards")
             generated += 1
+            if delay_seconds > 0 and n < len(jobs):
+                log.info(f"  Sleeping {delay_seconds}s before next card…")
+                time.sleep(delay_seconds)
         except Exception as exc:
             failed += 1
-            log.error(f"  Failed: {exc}")
+            log.exception(f"  Failed: {type(exc).__name__}: {exc}")
 
     if args.dry_run:
         log.info(f"=== DRY RUN: {len(jobs)} prompts prepared in {RAW_DIR} ===")

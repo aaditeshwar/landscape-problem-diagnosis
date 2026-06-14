@@ -1,0 +1,223 @@
+{
+  "card_id": "socio_economic__low_income__small_landholding__010",
+  "production_system": "Socio_Economic",
+  "observed_stress": "low_income",
+  "causal_pathway": "small_landholding",
+  "context": {
+    "agro_climatic_zones": [
+      "humid",
+      "perhumid"
+    ],
+    "aquifer_types": [
+      "alluvium"
+    ],
+    "terrain_types": [
+      "plains"
+    ],
+    "rainfall_regime": "humid",
+    "geographic_examples": [
+      "West Bengal",
+      "Assam",
+      "eastern Bihar"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "lulc_cropland_ha",
+        "village_total_population"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "(lulc_cropland_ha[-1] / (village_total_population + 1e-9)) < 0.2",
+        "qualitative_description": "Per-capita cropland availability below 0.2 ha per person is a strong proxy for marginal or sub-marginal landholding size, consistent with the national average of ~0.15 ha per rural person in densely populated eastern plains.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "In the Bengal-Assam alluvial plains, high population density compresses effective farm size. Dividing total MWS cropland by village population gives a per-capita land proxy. Values below 0.2 ha/person indicate that most households operate marginal holdings (<1 ha), which limits marketable surplus and creditworthiness. Gulati et al. (2021) note that shrinking average landholding size is a central challenge to augmenting farmer incomes in India, particularly in Bihar, Odisha and eastern states."
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "cropping_intensity"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "mean_cropping_intensity <= 1.3",
+        "qualitative_description": "Mean cropping intensity at or below 1.3 in a humid alluvial plain capable of double-cropping indicates that small holders are not fully exploiting the growing season, compounding income constraints from limited land area.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "The humid alluvial plains of West Bengal and Assam have sufficient rainfall (1600–3000 mm) and flat terrain to support cropping intensities of 1.5–2.0. When mean intensity remains at or below 1.3, it signals that small holders lack the capital, irrigation access, or market incentives to cultivate a second or third crop, directly suppressing annual farm income. Low intensity on small holdings is a compounding constraint identified in the smallholder income literature (Herrero et al. 2020).",
+      "interaction_with": [
+        "sig_01"
+      ]
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "dist_apmc_km"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "dist_apmc_km > 30",
+        "qualitative_description": "Distance to nearest APMC market exceeding 30 km means small holders cannot access regulated price discovery and are dependent on local intermediaries who capture a disproportionate share of farm-gate value.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Small holders with limited marketable surplus are especially vulnerable to intermediary exploitation when APMC markets are distant. Jyoti and Rao (2018) document that FPO formation specifically addresses this market access gap by enabling collective transport and negotiation. Remote smallholders in eastern Bihar and Assam face compounded disadvantage: small volumes plus high transport cost make individual market access uneconomic, reinforcing low income.",
+      "interaction_with": [
+        "sig_01",
+        "sig_04"
+      ]
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "nrega_community_assets_count",
+        "organization_domains"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "nrega_community_assets_count < 10 and ('livelihoods' not in organization_domains and 'fisheries' not in organization_domains)",
+        "qualitative_description": "Fewer than 10 cumulative MGNREGA community asset works combined with absence of NGO presence in livelihoods or fisheries domains indicates a weak safety net and limited diversification support for small holders.",
+        "threshold_confidence": "low",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "MGNREGA community assets (irrigation, land development, rural connectivity) provide supplementary off-farm income and productive infrastructure that can partially compensate for small landholding constraints. NGO presence in livelihoods or fisheries domains signals availability of diversification pathways (livestock, aquaculture, NTFP) that are critical for income supplementation in the Bengal-Assam plains. Absence of both indicates households are trapped in single-source farm income with no institutional support for diversification, consistent with findings from Tamil Nadu smallholder studies (Pinstrup-Andersen and Watson 2011).",
+      "interaction_with": [
+        "sig_01",
+        "sig_03"
+      ]
+    },
+    {
+      "signal_id": "sig_05",
+      "variables": [
+        "dist_dairy_km"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "dist_dairy_km > 20",
+        "qualitative_description": "Distance to nearest dairy infrastructure exceeding 20 km limits the viability of livestock income diversification, a key supplementary livelihood for small holders in alluvial plains.",
+        "threshold_confidence": "low",
+        "context_sensitivity": "local"
+      },
+      "severity": "low",
+      "direction": "amplifies",
+      "explanation": "Livestock, particularly dairy, is a well-documented income diversification pathway for marginal farmers in eastern India. When dairy collection infrastructure is more than 20 km away, the transaction cost of milk marketing makes it unviable for small holders with one or two animals. This forecloses a key non-crop income source. Fan and Rue (2020) identify limited access to markets as a soft constraint that, when addressed, enables smallholders to 'move up' rather than exit agriculture.",
+      "interaction_with": [
+        "sig_04"
+      ]
+    }
+  ],
+  "confounders": [
+    {
+      "confounder": "Low income driven by crop failure or drought rather than structural landholding constraint",
+      "how_to_distinguish": "Check drought_moderate_return_period and mean_annual_precipitation_mm. If drought return periods are short (<4 years) and cropping intensity has declined sharply in recent years (trend_cropping_intensity < -0.05), income stress may be primarily climate-driven rather than structural. The small landholding pathway is confirmed when per-capita cropland is low even in non-drought years and cropping intensity remains persistently below potential for the agro-climatic zone."
+    },
+    {
+      "confounder": "Low income driven by poor soil quality or waterlogging rather than landholding size",
+      "how_to_distinguish": "In the humid alluvial plains, waterlogging and flooding can suppress yields independently of farm size. If lulc_cropland_ha shows large inter-annual variation correlated with flood years, and cropping intensity is low primarily in high-rainfall years, the primary constraint may be drainage and flood management rather than landholding fragmentation. The small landholding pathway is more likely when per-capita cropland is low and income stress persists across both good and bad rainfall years."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "landholding_size_distribution",
+      "question_to_user": "What proportion of farming households in this village own less than 1 hectare of land? Would you estimate it is less than one-third, about half, or more than two-thirds of households?",
+      "how_answer_updates_diagnosis": "If more than two-thirds of households are marginal holders (<1 ha), this directly confirms the small landholding pathway as the primary structural driver of low income. Combined with low per-capita cropland from sig_01, this would raise diagnosis confidence from medium to high."
+    },
+    {
+      "missing_variable": "household_income_inr",
+      "question_to_user": "Can you estimate the average annual household income in this village, and what share comes from farming versus wages, livestock, or other sources? Is farm income the only or dominant source for most households?",
+      "how_answer_updates_diagnosis": "If mean annual household income is below INR 60,000 (approximately twice the rural poverty line) and more than 70% comes from own-farm cultivation, this confirms both the low income stress and the single-source livelihood vulnerability. Diversified income sources would suggest the pathway is partially mitigated and solutions should focus on strengthening existing diversification rather than initiating it."
+    },
+    {
+      "missing_variable": "market_price_crop",
+      "question_to_user": "Do farmers in this village typically sell their produce at or near the government Minimum Support Price (MSP), or do they usually receive significantly less? How much below MSP do they typically sell, and to whom?",
+      "how_answer_updates_diagnosis": "If farmers consistently receive 20–40% below MSP due to intermediary dependence, this confirms that market access failure compounds the income loss from small landholding. This would strengthen the case for FPO formation and collective marketing as priority interventions."
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Gulati2021",
+      "title": "Revitalizing Indian Agriculture and Boosting Farmer Incomes",
+      "authors": [
+        "Gulati, Ashok",
+        "Roy, Ranjana",
+        "Saini, Shweta"
+      ],
+      "year": 2021,
+      "doi": "10.1007/978-981-15-9335-2",
+      "source_type": "book_chapter",
+      "relevance_note": "Documents shrinking average landholding size as a central constraint to farmer income growth in India, with specific focus on Bihar and eastern states; establishes agriculture-poverty-nutrition linkage in smallholder contexts"
+    },
+    {
+      "source_id": "Jyoti2018",
+      "title": "Enhancing farmers income through farmers' producers companies in India: Status and roadmap",
+      "authors": [
+        "Jyoti",
+        "Rao"
+      ],
+      "year": 2018,
+      "doi": "10.56093/ijas.v88i8.82441",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Reviews FPC formation as a mechanism to overcome market access constraints for small and marginal farmers; provides evidence on collective marketing benefits and forecasts FPC growth in India"
+    },
+    {
+      "source_id": "Rao2015",
+      "title": "Farmer producer organisations: Innovative institutions for upliftment of small farmers",
+      "authors": [
+        "Rao"
+      ],
+      "year": 2015,
+      "doi": "10.56093/ijas.v89i9.93451",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents how FPOs provide forward and backward linkages for unorganised small farmers, addressing market access, bargaining power, and economy of scale constraints that compound income losses from small landholdings"
+    },
+    {
+      "source_id": "PinstrupAndersen2011",
+      "title": "The interplay between household food security and wellbeing among small-scale farmers in the context of rapid agrarian change",
+      "authors": [
+        "Pinstrup-Andersen, Per",
+        "Watson, Derrill D."
+      ],
+      "year": 2015,
+      "doi": "10.1186/s40066-015-0036-2",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Empirical study from rural India showing households solely dependent on small-scale agriculture have lower monthly income and wellbeing despite higher food sufficiency; demonstrates that off-farm employment diversification improves income even at cost of farm diversity"
+    },
+    {
+      "source_id": "FanRue2020",
+      "title": "The Role of Smallholder Farms in a Changing World",
+      "authors": [
+        "Fan, Shenggen",
+        "Rue, Connie"
+      ],
+      "year": 2020,
+      "doi": "10.1007/978-3-030-42148-9_2",
+      "source_type": "book_chapter",
+      "relevance_note": "Provides typology of smallholder constraints distinguishing soft constraints (market access, credit, infrastructure) from hard constraints (population density, soil quality); identifies limited market access and financial capital as key barriers to smallholder income improvement relevant to eastern Indian plains context"
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-07-15",
+    "last_updated": "2025-07-15",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 19,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "overall_reasoning_note": "Diagnosis of low income driven by small landholding in the Bengal-Assam alluvial plains requires convergence of at least two primary signals: low per-capita cropland (sig_01) and suppressed cropping intensity relative to agro-climatic potential (sig_02). These two signals together indicate structural land constraint rather than transient income shock. Market remoteness (sig_03) and weak safety net/diversification infrastructure (sig_04) are amplifying signals that worsen income outcomes but do not independently confirm the pathway. If per-capita cropland is low but cropping intensity is high (>1.6), the landholding constraint may be partially offset by intensification, and solutions should focus on price realisation and market access rather than land consolidation. Always verify whether MGNREGA wage employment is a significant income source before recommending diversification interventions, as it may already be functioning as a de facto safety net. The absence of NGO presence in livelihoods or fisheries domains (sig_04) is particularly important in the Bengal-Assam context where aquaculture and wetland-based livelihoods offer high-potential diversification pathways for alluvial plain smallholders."
+}

@@ -1,0 +1,205 @@
+{
+  "card_id": "agriculture__water_scarcity__rainfed_risk__010",
+  "production_system": "Agriculture",
+  "observed_stress": "water_scarcity",
+  "causal_pathway": "rainfed_risk",
+  "context": {
+    "agro_climatic_zones": [
+      "humid",
+      "perhumid"
+    ],
+    "aquifer_types": [
+      "alluvium"
+    ],
+    "terrain_types": [
+      "plains"
+    ],
+    "rainfall_regime": "humid",
+    "geographic_examples": [
+      "West Bengal",
+      "Assam",
+      "eastern Bihar"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "lulc_single_kharif_ha",
+        "lulc_double_crop_ha"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "(lulc_single_kharif_ha[-1] / (lulc_single_kharif_ha[-1] + lulc_double_crop_ha[-1] + 1e-9)) > 0.70",
+        "qualitative_description": "More than 70% of cropland is under single kharif cropping, indicating that the vast majority of cultivation is rainfed and dependent on monsoon rainfall alone.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "In the Bengal and Assam Plains (AER-15), high rainfall (1600–3000 mm) is concentrated in the kharif season. Where double-cropped area remains low relative to total cropland, it confirms that farmers lack access to irrigation infrastructure for rabi or zaid seasons. A ratio above 0.70 for single kharif area is a strong indicator of rainfed dependence, consistent with the characterisation of less-favoured rainfed areas in South and Southeast Asia where single-season cropping dominates due to absence of irrigation rather than agro-climatic unsuitability."
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "cropping_intensity"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "mean_cropping_intensity <= 1.15",
+        "qualitative_description": "Mean cropping intensity at or below 1.15 over the multi-year record indicates near-single-season farming, consistent with rainfed dependence and absence of irrigation enabling a second crop.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Cropping intensity close to 1.0 implies that almost all cultivated land is harvested only once per year, which in a high-rainfall zone like eastern India is a strong proxy for lack of irrigation access rather than agro-climatic limitation. Where irrigation is available, cropping intensity typically rises above 1.5 through rabi wheat, mustard, or vegetable cultivation. A mean intensity at or below 1.15 across the 2017–2024 record confirms structural rainfed dependence.",
+      "interaction_with": [
+        "sig_01",
+        "sig_03"
+      ]
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "canal_name",
+        "nrega_irrigation_count"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "canal_name is None and nrega_irrigation_count < 3",
+        "qualitative_description": "No irrigation canal intersects the micro-watershed and fewer than 3 MGNREGA irrigation works have been recorded, confirming minimal formal irrigation infrastructure.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "The co-absence of canal irrigation and low MGNREGA irrigation investment jointly confirm that the micro-watershed lacks both large-scale surface irrigation infrastructure and community-level irrigation works. In the Bengal and Assam Plains, canal systems exist in parts of West Bengal and Bihar but are absent or non-functional in many micro-watersheds. Low MGNREGA irrigation counts signal that even small-scale public investment in water storage or lift irrigation has not occurred, leaving farmers entirely dependent on direct rainfall.",
+      "interaction_with": [
+        "sig_01",
+        "sig_02"
+      ]
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "annual_runoff_mm",
+        "terrain_cluster_id"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "mean_annual_runoff_mm > 600 and terrain_cluster_id == 1",
+        "qualitative_description": "High mean annual runoff (>600 mm) on mostly plains terrain indicates substantial water loss that could be harvested in-situ, but is currently not being captured due to absence of farm ponds or bunds.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "In humid and perhumid zones receiving 1600–3000 mm of rainfall, a large fraction is lost as surface runoff, particularly during intense monsoon events. Plains terrain (cluster 1) is amenable to in-situ water harvesting through farm ponds, broad-bed furrows, and field bunds. High runoff on plains terrain represents both a risk amplifier — water that could buffer dry spells is lost — and an opportunity for intervention. This signal supports recommendations for farm pond construction and rainwater harvesting structures scaled to the drainage density of the micro-watershed.",
+      "interaction_with": [
+        "sig_03"
+      ]
+    },
+    {
+      "signal_id": "sig_05",
+      "variables": [
+        "swb_rabi_area_ha"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "mean_swb_rabi_kharif_ratio < 0.25",
+        "qualitative_description": "The ratio of surface water body area in rabi to kharif season is below 0.25, indicating that surface water storage does not persist into the post-monsoon season and cannot support rabi irrigation.",
+        "threshold_confidence": "low",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "A low rabi-to-kharif surface water body ratio indicates that ponds, tanks, and wetlands in the micro-watershed dry out rapidly after the monsoon, leaving no stored surface water for post-monsoon crop irrigation. In the Bengal and Assam Plains, where alluvial terrain supports natural water retention, a very low rabi SWB ratio suggests either absence of water storage structures or rapid drainage, confirming that farmers cannot rely on stored surface water for rabi or zaid crops and are structurally confined to kharif rainfed production.",
+      "interaction_with": [
+        "sig_03",
+        "sig_04"
+      ]
+    }
+  ],
+  "confounders": [
+    {
+      "confounder": "Meteorological drought masking structural rainfed dependence — apparent water scarcity driven by a single bad monsoon year rather than chronic absence of irrigation infrastructure",
+      "how_to_distinguish": "Check annual_precipitation_mm time series against the long-term mean. If water scarcity is reported only in drought years (precipitation well below mean) but cropping intensity rises above 1.3 in normal years, the pathway is drought stress rather than structural rainfed risk. Structural rainfed risk is confirmed when cropping intensity remains near 1.0 even in years with adequate rainfall, and canal_name remains null across all years."
+    },
+    {
+      "confounder": "Waterlogging or flood-induced crop failure in perhumid zones mimicking water scarcity — farmers may report crop failure due to excess water in kharif, which reduces double-cropping area and lowers cropping intensity for reasons unrelated to irrigation deficit",
+      "how_to_distinguish": "Distinguish by examining the season of reported stress: rainfed risk manifests as insufficient water for rabi and zaid seasons or during dry spells within kharif, whereas waterlogging stress manifests as crop loss during peak monsoon. If lulc_single_kharif_ha is high but farmers report kharif crop failure due to flooding rather than drought, the primary pathway is flood/waterlogging stress. Rainfed risk is confirmed when farmers specifically report inability to grow a second crop due to lack of water after October."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "irrigated_area_ha",
+      "question_to_user": "What share of your village's cultivated land do you estimate is irrigated — either from canals, tubewells, or ponds — during the rabi (winter) season? Would you say it is less than 10%, between 10% and 40%, or more than 40% of total farmland?",
+      "how_answer_updates_diagnosis": "If less than 10% of land is irrigated in rabi, this strongly confirms the rainfed risk pathway and supports recommendations for farm pond construction and short-duration rabi variety promotion. If more than 40% is irrigated, the rainfed risk diagnosis should be reconsidered and groundwater or canal irrigation access pathways should be evaluated instead."
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Devendra2011",
+      "title": "Rainfed Areas and Animal Agriculture in Asia: The Wanting Agenda for Transforming Productivity Growth and Rural Poverty",
+      "authors": [
+        "Devendra, C."
+      ],
+      "year": 2011,
+      "doi": "10.5713/ajas.2011.r.09",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents the biophysical characteristics of rainfed less-favoured areas in South and Southeast Asia, including single-season cropping dominance, poor irrigation infrastructure, and vulnerability to rainfall variability. Directly relevant to the Bengal and Assam Plains context."
+    },
+    {
+      "source_id": "Fischer2005",
+      "title": "Socio-economic and climate change impacts on agriculture: an integrated assessment, 1990–2080",
+      "authors": [
+        "Fischer, G.",
+        "Shah, M.",
+        "Tubiello, F.N.",
+        "van Velhuizen, H."
+      ],
+      "year": 2005,
+      "doi": "10.1098/rstb.2005.1744",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Provides agro-ecological zone modelling framework linking rainfed area extent, irrigation access, and cropping intensity to food security outcomes; supports use of cropping intensity and double-crop area as diagnostic proxies for irrigation access."
+    },
+    {
+      "source_id": "Rockstrom2004",
+      "title": "Management of crop water under drought: a review",
+      "authors": [
+        "Daryanto, S.",
+        "Wang, L.",
+        "Jacinthe, P.A."
+      ],
+      "year": 2016,
+      "doi": "10.1007/s13593-015-0283-4",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Reviews unproductive water losses (runoff, evaporation) in rainfed systems and management options including in-situ water harvesting; supports the runoff-based signal and farm pond recommendations for humid rainfed zones."
+    },
+    {
+      "source_id": "IFPRI2000",
+      "title": "Pilot analysis of global ecosystems: Agroecosystems",
+      "authors": [
+        "Wood, S.",
+        "Sebastian, K.",
+        "Scherr, S.J."
+      ],
+      "year": 2000,
+      "source_type": "government_report",
+      "relevance_note": "Characterises global rainfed agroecosystems including humid and perhumid zones in South Asia; documents the relationship between irrigation infrastructure absence and single-season cropping patterns in alluvial plains."
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-01-31",
+    "last_updated": "2025-01-31",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 20,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "overall_reasoning_note": "In the Bengal and Assam Plains (AER-15), paradoxically high rainfall (1600–3000 mm) does not preclude water scarcity for rabi and zaid crops or during intra-seasonal dry spells. The rainfed risk pathway is confirmed when structural absence of irrigation infrastructure — not meteorological drought — is the primary cause of single-season farming. Diagnosis requires at least two of the three primary signals: high single-kharif area ratio (sig_01), low mean cropping intensity (sig_02), and co-absence of canal and MGNREGA irrigation works (sig_03). The runoff signal (sig_04) and SWB rabi ratio (sig_05) amplify the diagnosis and directly inform intervention design. Prioritise farm pond and rainwater harvesting recommendations when plains terrain and high runoff co-occur. Always distinguish from waterlogging stress by confirming the season and nature of reported water insufficiency before finalising diagnosis."
+}

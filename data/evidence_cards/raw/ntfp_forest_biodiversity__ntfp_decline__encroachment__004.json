@@ -29,15 +29,19 @@
         "cd_forest_to_farm_ha"
       ],
       "condition": {
-        "type": "quantitative",
-        "expression": "cd_forest_to_farm_ha > 0 and increasing over 5-year window",
-        "qualitative_description": "Positive and increasing forest-to-farm conversion area over the most recent 5-year period indicates active encroachment of forest land for agricultural use.",
+        "type": "trend",
+        "expression": "cd_forest_to_farm_ha[-1] > cd_forest_to_farm_ha[0] and (cd_forest_to_farm_ha[-1] - cd_forest_to_farm_ha[0]) > 50",
+        "qualitative_description": "Cumulative forest-to-farm conversion has increased by more than 50 ha over the available record, indicating sustained encroachment pressure on forest land.",
         "threshold_confidence": "high",
         "context_sensitivity": "regional"
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "Direct conversion of forest land to farmland is the primary mechanism of encroachment. In arid and semi-arid zones of Rajasthan and Gujarat, sparse dry forests (thorn scrub, Prosopis, Acacia) are particularly vulnerable to agricultural expansion because their low canopy cover makes encroachment less visible and enforcement more difficult. Forest fragmentation studies document that transition of forest to cropland is a leading driver of interior forest loss, directly reducing the area available for NTFP collection by dependent communities."
+      "explanation": "Forest-to-farm transition is the most direct measurable indicator of encroachment. In arid and semi-arid zones of Rajasthan and Kachchh, sparse scrub forests and thorn forests are particularly vulnerable to incremental agricultural expansion along forest fringes. A net gain of 50 ha or more in converted area over the observation window represents a meaningful reduction in NTFP-bearing forest extent accessible to dependent communities. Geospatial analyses of land use change in Indian forest landscapes consistently show cropland and built-up area expansion as the primary driver of interior forest loss.",
+      "interaction_with": [
+        "sig_02",
+        "sig_03"
+      ]
     },
     {
       "signal_id": "sig_02",
@@ -46,14 +50,14 @@
       ],
       "condition": {
         "type": "trend",
-        "expression": "cd_total_urbanization_ha[-1] - cd_total_urbanization_ha[0] > 50",
-        "qualitative_description": "Settlement footprint has expanded by more than 50 ha over the available multi-year record, with expansion occurring at or adjacent to mapped forest boundaries.",
+        "expression": "cd_total_urbanization_ha[-1] > cd_total_urbanization_ha[0] and (cd_total_urbanization_ha[-1] - cd_total_urbanization_ha[0]) > 20",
+        "qualitative_description": "Total urbanized area has expanded by more than 20 ha over the record period, suggesting settlement encroachment that may be displacing forest cover or blocking community access routes.",
         "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "context_sensitivity": "regional"
       },
       "severity": "moderate",
       "direction": "confirms",
-      "explanation": "Settlement expansion into forest fringes reduces both the physical extent of forest available for NTFP collection and community access corridors. In arid belt villages of Rajasthan and Haryana, peri-village forest patches are often the primary source of fuelwood, fodder, and minor NTFPs; their conversion to built-up area severs access for the most marginalised households. Urbanization-driven encroachment tends to be irreversible compared to agricultural encroachment.",
+      "explanation": "Settlement expansion into or adjacent to forest areas reduces both the physical extent of NTFP-bearing habitat and the practical access of forest-dependent communities. In plains and slope terrain of the Aravalli foothills and Kachchh periphery, unplanned rural settlement growth along forest edges is a documented pressure. Even where formal deforestation is limited, settlement expansion can sever traditional access paths and create de facto exclusion zones around NTFP collection areas.",
       "interaction_with": [
         "sig_01"
       ]
@@ -65,14 +69,14 @@
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "village_st_percent > 20",
-        "qualitative_description": "Scheduled Tribe population share exceeds 20% of village population, indicating high dependence on forest resources and potential vulnerability to encroachment-driven access loss.",
+        "expression": "village_st_percent > 25",
+        "qualitative_description": "Scheduled Tribe population exceeds 25% of village population, indicating high dependence on forest resources and elevated risk of livelihood impact from encroachment-driven access loss.",
         "threshold_confidence": "medium",
         "context_sensitivity": "local"
       },
       "severity": "moderate",
       "direction": "amplifies",
-      "explanation": "High ST population share is a proxy for forest-dependent livelihoods. Research on protected area displacement in India documents that indigenous and forest-dwelling communities bear disproportionate costs when forest land is encroached or alienated, as their tenure rights are often unrecognised or contested. Where FRA claims remain unfiled or rejected, encroachment by outsiders proceeds without legal challenge, accelerating NTFP access loss for ST households. The Forest Rights Act provides the legal mechanism for community resistance, but its implementation is uneven in arid-zone states.",
+      "explanation": "High ST population share is a proxy for community forest dependence. Where encroachment reduces forest extent or access, ST households disproportionately bear the livelihood cost through reduced NTFP collection. The Forest Rights Act (FRA) was enacted precisely to address the historical displacement and tenure insecurity of forest-dwelling communities; areas with high ST populations and active encroachment are priority sites for FRA claim filing and boundary demarcation. Documented cases of illegal relocation and tenure conflict in Indian protected areas underscore that lack of formal rights recognition amplifies the impact of encroachment on these communities.",
       "interaction_with": [
         "sig_01",
         "sig_04"
@@ -82,46 +86,51 @@
       "signal_id": "sig_04",
       "variables": [
         "cd_forest_to_farm_ha",
-        "village_st_percent"
+        "cd_total_urbanization_ha"
       ],
       "condition": {
         "type": "composite",
-        "expression": "cd_forest_to_farm_ha > 0 and village_st_percent > 20",
-        "qualitative_description": "Co-occurrence of active forest-to-farm conversion and high ST population share suggests encroachment is displacing forest-dependent communities from their customary NTFP collection areas.",
+        "expression": "(cd_forest_to_farm_ha[-1] - cd_forest_to_farm_ha[0]) > 30 and (cd_total_urbanization_ha[-1] - cd_total_urbanization_ha[0]) > 10",
+        "qualitative_description": "Both agricultural conversion and settlement expansion are simultaneously increasing, indicating compound encroachment pressure from multiple land use change vectors.",
         "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "context_sensitivity": "regional"
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "The combination of measurable forest loss and high ST dependence is a strong composite signal for encroachment-driven NTFP decline. In arid Rajasthan and Kachchh, communities dependent on Prosopis cineraria (khejri), Acacia senegal (gum), and Ziziphus (ber) face compounded stress when agricultural encroachment reduces forest patches and tenure insecurity prevents legal recourse. Collective tenure recognition under FRA is the primary policy lever, but requires documented encroachment evidence to trigger action."
+      "explanation": "When both farm expansion and settlement growth are occurring concurrently, the combined pressure on forest extent and community access is compounded. In arid zone landscapes where forest patches are already sparse and fragmented, simultaneous agricultural and urban encroachment can rapidly reduce forest connectivity below thresholds needed to sustain viable NTFP collection. Landscape fragmentation studies in Indian forest districts show that interior forest area declines non-linearly as edge and transitional categories expand, with NTFP-bearing interior habitat most sensitive to this dual pressure.",
+      "interaction_with": [
+        "sig_01",
+        "sig_02",
+        "sig_03"
+      ]
     }
   ],
-  "overall_reasoning_note": "Encroachment as a driver of NTFP decline in arid and semi-arid zones should be confirmed by at least sig_01 (forest-to-farm conversion) combined with either sig_02 (settlement expansion) or sig_03 (high ST dependence). A single signal may reflect data artefacts or alternative pathways. In arid zones, forest cover is inherently sparse and patchy, so even small absolute losses in cd_forest_to_farm_ha can represent significant proportional reductions in NTFP-productive area. Always verify whether FRA community forest rights claims have been filed and whether boundary demarcation has occurred before finalising diagnosis. Distinguish encroachment from legal diversion (government-sanctioned land use change) by checking whether conversion is occurring inside notified forest boundaries.",
+  "overall_reasoning_note": "Diagnosis of encroachment-driven NTFP decline in arid and semi-arid zones should be anchored by sig_01 (forest-to-farm conversion trend) as the primary confirmatory signal. Sig_02 (urbanization expansion) and sig_04 (composite dual pressure) provide corroborating evidence of multi-vector land use change. Sig_03 (high ST population) does not confirm encroachment independently but amplifies the livelihood severity of any confirmed forest loss. A strong sig_01 alone is sufficient to flag this pathway for further investigation; convergence of sig_01, sig_02, and sig_03 warrants high-confidence diagnosis. In arid zones, even small absolute losses of forest area (50 ha) can be ecologically significant given the low baseline forest cover. Always verify whether observed land use change reflects illegal encroachment versus formally sanctioned land allocation, as the intervention pathway differs substantially between these cases.",
   "confounders": [
     {
-      "confounder": "Drought-induced vegetation loss misread as encroachment-driven forest decline",
-      "how_to_distinguish": "In arid zones, multi-year drought can cause apparent forest cover loss in remote sensing data without any physical encroachment. Check whether cd_forest_to_farm_ha shows conversion to cultivated land specifically (not bare soil or degraded scrub), and whether the loss is spatially concentrated at forest-agriculture boundaries rather than distributed across the forest interior. If NDVI decline is diffuse and correlates with low rainfall years, drought is the primary driver."
+      "confounder": "Drought-induced forest dieback misread as encroachment-driven forest loss",
+      "how_to_distinguish": "In arid zones, prolonged drought can cause natural forest dieback that appears as forest cover loss in remote sensing data without any human encroachment. Check whether cd_forest_to_farm_ha shows conversion specifically to agricultural or settlement categories (confirming human agency) rather than to bare land or degraded scrub. Cross-reference with mean_annual_precipitation_mm and drought_severe_return_period — if severe drought years coincide with forest loss events and no farm expansion is detected, drought dieback is the more likely driver."
     },
     {
-      "confounder": "Legal forest diversion for infrastructure or mining reducing NTFP access without constituting encroachment",
-      "how_to_distinguish": "Legal diversions under the Forest Conservation Act appear as sudden, geometrically regular land use changes in remote sensing data and are accompanied by official records. Encroachment tends to be irregular, incremental, and concentrated near village boundaries. If cd_forest_to_farm_ha shows gradual, diffuse conversion near habitation rather than a single large polygon, encroachment is more likely than legal diversion. Community testimony on whether conversion was authorised is essential."
+      "confounder": "Formal government land allocation or revenue land reclassification appearing as encroachment",
+      "how_to_distinguish": "Some forest-to-farm transitions in Rajasthan and Gujarat reflect historical or ongoing government land settlement schemes that formally reclassify forest land for agricultural use. These are legally distinct from illegal encroachment and require different interventions. Distinguish by checking whether FRA claims have been filed and whether village_st_percent is high (suggesting traditional forest dwellers) versus low (suggesting in-migrant settlers). Field verification of land title status is essential before recommending FRA-based solutions."
     }
   ],
   "missing_variable_questions": [
     {
       "missing_variable": "fra_claims_filed_count",
-      "question_to_user": "Have community members or households in this village filed claims under the Forest Rights Act (FRA) for individual or community forest rights? If yes, approximately how many claims were filed, and how many have been recognised or rejected?",
-      "how_answer_updates_diagnosis": "Low FRA claim filing in a high-ST village with active forest-to-farm conversion strongly confirms that tenure insecurity is enabling encroachment and that FRA claim support is the priority intervention. High rejection rates may indicate institutional barriers rather than absence of legitimate rights."
+      "question_to_user": "Have community members or individual households filed claims under the Forest Rights Act (FRA) for individual or community forest rights in this village? If yes, approximately how many claims have been filed and how many have been recognized?",
+      "how_answer_updates_diagnosis": "A high number of pending or rejected FRA claims alongside active encroachment signals a tenure rights conflict rather than simple illegal encroachment, shifting the recommended intervention toward FRA claim support and legal advocacy. Recognized FRA rights with continued NTFP decline would instead point toward enforcement failure or boundary disputes."
     },
     {
-      "missing_variable": "ntfp_collection_volume_trend",
-      "question_to_user": "Have NTFP collectors in this village noticed a decline in the quantity of forest produce (e.g., gum, tendu leaves, fuelwood, fodder, medicinal plants) collected per household over the past 5 years? Would you estimate the decline as less than 25%, 25-50%, or more than 50%?",
-      "how_answer_updates_diagnosis": "A reported decline of more than 25% in NTFP collection volume, when combined with measurable forest-to-farm conversion, directly confirms the encroachment-to-NTFP-decline causal chain and helps calibrate severity. If collection volume is stable despite forest loss, communities may have adapted collection routes or the lost area was not productive for NTFPs."
+      "missing_variable": "ntfp_collection_volume_kg",
+      "question_to_user": "Have community members noticed a reduction in the quantity of forest produce (such as tendu leaves, gum, honey, medicinal plants, or fuelwood) collected per household over the past 5 years? Would you estimate the decline as less than 25%, 25-50%, or more than 50%?",
+      "how_answer_updates_diagnosis": "A reported decline of more than 25% in NTFP collection volume, when combined with confirmed forest-to-farm conversion, strongly confirms the encroachment pathway. A decline exceeding 50% indicates severe livelihood impact and elevates the priority for immediate boundary demarcation and livelihood alternative interventions."
     }
   ],
   "sources": [
     {
-      "source_id": "Bose2010_FRA",
+      "source_id": "Bose2021_FRA",
       "title": "Relocation from protected areas as a violent process in the recent history of biodiversity conservation in India",
       "authors": [
         "Bose, Purabi"
@@ -129,41 +138,42 @@
       "year": 2021,
       "doi": "10.37773/ees.v2i1.55",
       "source_type": "peer_reviewed_journal",
-      "relevance_note": "Documents illegal relocation and displacement of indigenous communities from protected forest areas in India, the role of unrecognised tenure rights under FRA, and how encroachment conflicts arise from contradictions in environmental protection policy — directly relevant to encroachment-driven NTFP access loss for ST communities."
+      "relevance_note": "Documents illegal relocation of indigenous communities and forest dwellers from protected forest areas in India, the failure to recognize tenure rights under FRA, and the resulting conflicts — directly relevant to encroachment-driven NTFP access loss and the FRA intervention pathway."
     },
     {
-      "source_id": "RRI2020_OpportunityFramework",
+      "source_id": "Hegde2016_fragmentation",
+      "title": "Geospatial analysis of forest fragmentation in Uttara Kannada District, India",
+      "authors": [
+        "Hegde, R.",
+        "Enters, T."
+      ],
+      "year": 2016,
+      "doi": "10.1186/s40663-016-0069-4",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Demonstrates that cropland and built-up area expansion are primary drivers of interior forest loss in Indian forest landscapes, with interior forest declining from 64% to 26% over three decades — supports the use of forest-to-farm and urbanization variables as encroachment indicators."
+    },
+    {
+      "source_id": "RRI2020_tenure",
       "title": "The Opportunity Framework 2020: Identifying Opportunities to Invest in Securing Collective Tenure Rights in the Forest",
       "authors": [
         "Rights and Resources Initiative"
       ],
       "year": 2020,
       "doi": "10.53892/rhaa9312",
-      "source_type": "ngo_report",
-      "relevance_note": "Establishes that governments formally recognise only 10% of land customarily managed by indigenous and local communities globally; documents the importance of formal delimitation and mapping of forest rights as the first step in preventing encroachment and securing NTFP access for dependent communities."
+      "source_type": "grey_literature",
+      "relevance_note": "Provides global and India-relevant evidence that governments formally recognize only a fraction of customary forest land managed by indigenous and local communities, and that formal tenure recognition is the foundational intervention for addressing encroachment-related access loss."
     },
     {
-      "source_id": "Hegde2016_Fragmentation",
-      "title": "Geospatial analysis of forest fragmentation in Uttara Kannada District, India",
+      "source_id": "Sengupta2020_canopy",
+      "title": "Estimation of Forest Canopy Cover and Forest Fragmentation Mapping Using Landsat Satellite Data of Silabati River Basin",
       "authors": [
-        "Hegde, Ramachandra T.",
-        "Bharath, H. A."
+        "Sengupta, A.",
+        "Ghosh, S."
       ],
-      "year": 2016,
-      "doi": "10.1186/s40663-016-0069-4",
+      "year": 2020,
+      "doi": "10.1007/s42489-020-00060-1",
       "source_type": "peer_reviewed_journal",
-      "relevance_note": "Demonstrates that transition of forest to cropland and built-up areas is a primary driver of interior forest loss in India, with interior forest declining from 64% to 26% over three decades; supports the use of forest-to-farm conversion area as a key diagnostic signal for encroachment-driven NTFP decline."
-    },
-    {
-      "source_id": "Puyravaud2003_ConflictForest",
-      "title": "Conserving forest biodiversity in times of violent conflict",
-      "authors": [
-        "McNeely, Jeffrey A."
-      ],
-      "year": 2003,
-      "doi": "10.1017/s0030605303000334",
-      "source_type": "peer_reviewed_journal",
-      "relevance_note": "Documents that nationalization of forests and disenfranchisement of traditional forest inhabitants is a root cause of forest access conflicts globally, with direct relevance to the encroachment-tenure rights nexus in India's arid zone forests."
+      "relevance_note": "Demonstrates that forest canopy and density decline measurably under anthropogenic stress including population expansion and urbanization, and that participatory forest management can reverse fragmentation trends — supports both the diagnostic use of land use change variables and the livelihood alternative intervention."
     }
   ],
   "metadata": {
@@ -172,6 +182,9 @@
     "created_at": "2025-07-14",
     "last_updated": "2025-07-14",
     "extraction_model": "claude-sonnet-4-6",
-    "confidence_overall": "medium"
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 17,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
   }
 }

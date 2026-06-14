@@ -1,0 +1,185 @@
+{
+  "card_id": "agriculture__water_scarcity__irrigation_challenges__016",
+  "production_system": "Agriculture",
+  "observed_stress": "water_scarcity",
+  "causal_pathway": "irrigation_challenges",
+  "context": {
+    "agro_climatic_zones": [
+      "arid"
+    ],
+    "aquifer_types": [
+      "hard_rock"
+    ],
+    "terrain_types": [
+      "hilly",
+      "valley"
+    ],
+    "rainfall_regime": "arid",
+    "geographic_examples": [
+      "Ladakh",
+      "high Himalaya cold desert"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "swb_total_area_ha",
+        "swb_count"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "mean_swb_total_area_ha < 5 and swb_count < 3",
+        "qualitative_description": "Very few and small surface water bodies in the MWS indicate minimal storage infrastructure relative to agricultural demand in this cold arid zone.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "In the cold arid Ladakh region with rainfall below 150 mm annually, surface water storage is the primary irrigation source. A very low count and area of surface water bodies signals that storage infrastructure is absent or grossly insufficient to support even limited kharif and rabi cropping. Hard rock aquifers in this terrain offer minimal groundwater buffering, making surface storage critical."
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "swb_total_area_ha",
+        "swb_kharif_area_ha"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "trend_swb_total_area_ha < -1 or mean_swb_rabi_kharif_ratio < 0.3",
+        "qualitative_description": "Declining SWB area over time or very low rabi-to-kharif SWB ratio indicates that water storage is not persisting into the dry rabi season, consistent with siltation, structural failure, or inadequate design.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "A declining trend in total SWB area (>1 ha/year loss) or a rabi/kharif SWB ratio below 0.3 indicates that water bodies dry out rapidly after the monsoon or snowmelt pulse, leaving insufficient storage for rabi and zaid irrigation. In hard rock hilly terrain, siltation of check dams and small tanks is a well-documented cause of reduced storage capacity — manual desilting has been shown to increase recharge by up to 84% in comparable hard rock settings in India (Dashora2019).",
+      "interaction_with": [
+        "sig_01",
+        "sig_03"
+      ]
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "nrega_swc_count"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "nrega_swc_count < 3",
+        "qualitative_description": "Fewer than 3 cumulative soil and water conservation or irrigation works recorded under MGNREGA, indicating very low historical investment in water harvesting infrastructure.",
+        "threshold_confidence": "low",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Low MGNREGA investment in SWC and irrigation works in a cold arid MWS indicates that community-level water harvesting infrastructure has not been developed or maintained. In Ladakh and similar high Himalayan cold deserts, traditional irrigation channels (kuls) and small impoundments are the backbone of agriculture; absence of modern supplementary works amplifies seasonal water stress. The low count also signals an opportunity for targeted intervention through MGNREGA-funded tank desilting and check dam construction.",
+      "interaction_with": [
+        "sig_01",
+        "sig_02"
+      ]
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "river_name"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "river_name is None",
+        "qualitative_description": "No named river passes through or adjacent to the MWS, eliminating the possibility of diversion or lift irrigation from a perennial surface water source.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "In cold arid Himalayan valleys, glacial meltwater streams and rivers are the primary perennial water source for irrigation. If no named river is present in or adjacent to the MWS, farmers cannot rely on diversion channels or lift irrigation from surface flows, making the MWS entirely dependent on limited rainfall, snowmelt storage, and groundwater — all of which are severely constrained in this context."
+    },
+    {
+      "signal_id": "sig_05",
+      "variables": [
+        "annual_well_depth_m"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Farmers report that wells or borewells have become deeper over recent years, or that shallow dug wells have dried up seasonally, indicating declining groundwater availability that cannot substitute for surface irrigation infrastructure gaps."
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "In hard rock aquifers of hilly cold arid terrain, groundwater storage is confined to shallow weathered and fractured zones. If farmers report increasing well depths or seasonal well failure, this confirms that groundwater cannot compensate for surface irrigation infrastructure deficits. This variable is not available in the framework data and must be elicited from farmers directly."
+    }
+  ],
+  "confounders": [
+    {
+      "confounder": "Meteorological drought or reduced glacial meltwater causing water scarcity independent of irrigation infrastructure adequacy",
+      "how_to_distinguish": "Check mean_annual_precipitation_mm and trend_annual_precipitation_mm. If precipitation has declined significantly (trend < -3 mm/year over 8 years) or drought_severe_return_period < 3 years, climate variability may be the primary driver rather than infrastructure failure. In Ladakh, reduced snowpack and earlier snowmelt timing can cause apparent irrigation failure even where infrastructure is adequate. If swb_count and nrega_swc_count are both adequate but water stress is still reported, prioritise the climate/hydrology pathway over irrigation_challenges."
+    },
+    {
+      "confounder": "Groundwater depletion (over-extraction) rather than surface irrigation infrastructure failure as the primary cause of water scarcity",
+      "how_to_distinguish": "In cold arid hard rock terrain, groundwater extraction is typically limited due to low aquifer yield and high drilling costs. If swb_count and swb_total_area_ha are adequate but farmers still report water scarcity, and if user-reported well depths are increasing rapidly, consider the groundwater_stress pathway. The irrigation_challenges pathway is more likely when surface storage infrastructure is visibly absent, silted, or seasonally failing rather than when groundwater levels are declining under extraction pressure."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "annual_well_depth_m",
+      "question_to_user": "Have the wells or borewells in your village become deeper over the past 5–10 years? Have any shallow dug wells dried up during the rabi season or summer months? Approximately how deep are the working wells now compared to when they were first dug?",
+      "how_answer_updates_diagnosis": "If farmers confirm increasing well depths or seasonal well failure, this strengthens the irrigation_challenges diagnosis by showing that groundwater cannot substitute for surface storage deficits. If well depths are stable and yields are adequate, the diagnosis should shift toward examining surface water infrastructure more closely or considering climate variability as the primary driver."
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Dashora2019",
+      "title": "Hydrologic and cost benefit analysis at local scale of streambed recharge structures in Rajasthan (India) and their value for securing irrigation water supplies",
+      "authors": [
+        "Dashora, Y.",
+        "Dillon, P.",
+        "Maheshwari, B.",
+        "Soni, P.",
+        "Mittal, H.K.",
+        "Dashora, R.",
+        "Singh, P.K.",
+        "Purohit, R.C.",
+        "Katara, P."
+      ],
+      "year": 2019,
+      "doi": "10.1007/s10040-019-01951-y",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents that siltation of check dams in hard rock terrain reduces storage capacity and infiltration rates, and that manual desilting increased recharge by 84%; benefit-cost ratio of 4.1 supports investment in small storage structures for irrigation security. Directly relevant to sig_02 and recommended solutions."
+    },
+    {
+      "source_id": "IPCC2014SYR",
+      "title": "Climate Change 2014 - Synthesis Report",
+      "authors": [
+        "IPCC"
+      ],
+      "year": 2014,
+      "doi": "10.59327/ipcc_ar5-9789291691432",
+      "source_type": "government_report",
+      "relevance_note": "Documents that water scarcity is intensifying in arid and semi-arid regions under climate change, with mountain cryosphere changes affecting seasonal water availability — relevant to the cold arid Himalayan context where glacial meltwater timing affects irrigation."
+    },
+    {
+      "source_id": "Mekonnen2016",
+      "title": "Global Monthly Water Scarcity: Blue Water Footprints versus Blue Water Availability",
+      "authors": [
+        "Mekonnen, M.M.",
+        "Hoekstra, A.Y."
+      ],
+      "year": 2016,
+      "doi": "10.1371/journal.pone.0032688",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Establishes that severe water scarcity occurs seasonally in river basins with low blue water availability, supporting the diagnosis framework for arid zones where monthly water availability is critically low outside the snowmelt pulse."
+    }
+  ],
+  "overall_reasoning_note": "In the cold arid Ladakh context (AER-1), irrigation water scarcity is primarily driven by the near-total absence of rainfall (< 150 mm/year) and dependence on glacial snowmelt and limited surface storage. The irrigation_challenges pathway is confirmed when surface water body count and area are very low (sig_01), storage is declining or fails to persist into rabi season (sig_02), MGNREGA investment in water harvesting is minimal (sig_03), and no perennial river source is available for diversion (sig_04). At least two of sig_01, sig_02, and sig_04 should be positive before confirming this pathway. The absence of MGNREGA works (sig_03) amplifies but does not independently confirm. Always distinguish from meteorological drought (check precipitation trend) and from groundwater depletion (elicit well depth history via missing_variable_question). Recommended interventions include community-managed surface storage structures, tank desilting through MGNREGA, and micro-irrigation promotion to maximise efficiency of scarce water.",
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-01-31",
+    "last_updated": "2025-01-31",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 20,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  }
+}

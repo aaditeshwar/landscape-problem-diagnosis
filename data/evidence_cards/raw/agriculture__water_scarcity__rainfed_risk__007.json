@@ -1,0 +1,203 @@
+{
+  "card_id": "agriculture__water_scarcity__rainfed_risk__007",
+  "production_system": "Agriculture",
+  "observed_stress": "water_scarcity",
+  "causal_pathway": "rainfed_risk",
+  "context": {
+    "agro_climatic_zones": [
+      "sub-humid",
+      "humid"
+    ],
+    "aquifer_types": [
+      "hard_rock"
+    ],
+    "terrain_types": [
+      "plateau",
+      "hilly"
+    ],
+    "rainfall_regime": "humid",
+    "geographic_examples": [
+      "Jharkhand",
+      "West Bengal (western)",
+      "Odisha (northern)"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "lulc_single_kharif_ha",
+        "lulc_double_crop_ha"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "(mean_kharif_cropped_area_ha / (mean_kharif_cropped_area_ha + mean_double_crop_area_ha + 1e-9)) > 0.75",
+        "qualitative_description": "More than 75% of cropped area is under single kharif cultivation over the multi-year mean, indicating dominant rainfed dependence with negligible rabi or irrigated double cropping.",
+        "threshold_confidence": "high",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "In the Chhota Nagpur Plateau and Eastern Ghats (AER-12), rainfall of 1200–1600 mm is concentrated in the kharif season. Where irrigation infrastructure is absent, farmers can only cultivate a single kharif crop. A ratio of single-kharif to total cropped area exceeding 0.75 is a strong structural indicator of rainfed dependence. This is consistent with the characterisation of less-favoured rainfed areas in South Asia where variable rainfall and poor soil quality constrain cropping to a single season (doi__10.5713_ajas.2011.r.09)."
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "cropping_intensity"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "mean_cropping_intensity <= 1.15 and trend_cropping_intensity <= 0.005",
+        "qualitative_description": "Mean cropping intensity at or below 1.15 with no upward trend over the observation period confirms persistent single-season rainfed farming without expansion of irrigated area.",
+        "threshold_confidence": "high",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Cropping intensity near 1.0 indicates that almost no land is cultivated beyond the kharif season, which is only possible with irrigation. A value at or below 1.15 with a flat or declining trend confirms that irrigation access has not improved. In rainfed sub-humid plateaus, the absence of surface water storage and the low storativity of crystalline basement aquifers prevent post-monsoon cultivation. This structural constraint is well documented for less-favoured rainfed areas in South and Southeast Asia (doi__10.5713_ajas.2011.r.09).",
+      "interaction_with": [
+        "sig_01"
+      ]
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "annual_runoff_mm",
+        "terrain_cluster_id"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "terrain_cluster_id == 3 and mean_annual_runoff_mm > 600",
+        "qualitative_description": "Broad plains and slopes terrain (cluster 3) combined with high mean annual runoff (>600 mm) indicates rapid lateral drainage off the plateau, reducing in-field moisture retention and limiting recharge of shallow hard rock aquifers.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "In the Chhota Nagpur Plateau, sloping terrain accelerates surface runoff, reducing the fraction of rainfall available for crop water use and groundwater recharge. High runoff relative to rainfall (often exceeding 50% in hard rock plateau settings) means that even in a humid rainfall regime, effective moisture availability for crops is substantially lower than total precipitation suggests. This is consistent with findings that unproductive water losses via runoff are highest in tropical residual moisture regimes with short intense rainy seasons (doi__10.1007_s13593-015-0283-4). The combination of sloping terrain and high runoff also identifies the potential for in-situ water harvesting interventions.",
+      "interaction_with": [
+        "sig_01",
+        "sig_04"
+      ]
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "canal_name",
+        "nrega_irrigation_count"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "canal_name is None and nrega_irrigation_count < 5",
+        "qualitative_description": "No irrigation canal intersects the micro-watershed and fewer than 5 MGNREGA irrigation works have been recorded, confirming absence of both surface irrigation infrastructure and public investment in water harvesting.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "The absence of a named canal indicates no access to surface irrigation schemes. Low MGNREGA irrigation work counts signal that public investment in farm ponds, check dams, or diversion weirs has been minimal. Together these confirm that the micro-watershed lacks the infrastructure needed to extend cultivation beyond the rainfed kharif season. In less-favoured rainfed areas of India, minimum development attention and an unfinished infrastructure agenda are defining characteristics (doi__10.5713_ajas.2011.r.09). Low NREGA irrigation investment also represents an opportunity for targeted intervention.",
+      "interaction_with": [
+        "sig_02"
+      ]
+    },
+    {
+      "signal_id": "sig_05",
+      "variables": [
+        "swb_rabi_area_ha"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "mean_swb_rabi_kharif_ratio < 0.25",
+        "qualitative_description": "Mean rabi-to-kharif surface water body area ratio below 0.25 indicates that surface water bodies largely dry up after the monsoon, leaving insufficient stored water for post-monsoon supplemental irrigation.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "In hard rock plateau terrain, natural surface water bodies (tanks, ponds, seasonal streams) fill during the kharif monsoon but drain rapidly due to high runoff and low aquifer storage. A low rabi-to-kharif SWB area ratio confirms that post-monsoon water storage is insufficient to support rabi cropping. This structural water deficit in the dry season is a primary driver of single-season rainfed farming in AER-12. Drought management literature emphasises that sites with a climatic dry season require adaptation via phenology and water saving to ensure stable yields (doi__10.1007_s13593-015-0283-4).",
+      "interaction_with": [
+        "sig_01",
+        "sig_02"
+      ]
+    }
+  ],
+  "confounders": [
+    {
+      "confounder": "Meteorological drought causing apparent rainfed risk through reduced kharif rainfall rather than structural absence of irrigation",
+      "how_to_distinguish": "Check mean_annual_precipitation_mm and drought_severe_return_period. If precipitation is within the expected 1200–1600 mm range for AER-12 but cropping intensity remains low and single-kharif dominance persists across wet and dry years alike, the pathway is structural rainfed dependence rather than episodic drought. If low cropping intensity co-occurs only with drought years (drought_severe_return_period < 4 years), drought stress may be the primary driver and rainfed risk is a secondary amplifier."
+    },
+    {
+      "confounder": "Farmer choice or market factors limiting rabi cultivation even where supplemental irrigation is technically available",
+      "how_to_distinguish": "If canal_name is not None or nrega_irrigation_count >= 10 but cropping intensity remains low, the constraint may be economic (input costs, market access, labour) rather than water availability. In this case, the rainfed risk pathway is not confirmed and socio-economic barriers should be investigated. Cross-check with lulc_double_crop_ha trend — if double-cropped area is increasing despite low overall intensity, irrigation access is improving and the rainfed risk diagnosis should be downgraded."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "irrigated_area_ha",
+      "question_to_user": "Do you have any information on the net irrigated area in this micro-watershed — for example from district agriculture census records or state irrigation department data? Approximately what share of the cultivated land receives any irrigation (even supplemental) during kharif or rabi seasons?",
+      "how_answer_updates_diagnosis": "If net irrigated area exceeds 25–30% of net sown area, the rainfed risk diagnosis should be moderated and the analysis should examine whether irrigation is concentrated among a subset of farmers (equity issue) or broadly distributed. Very low irrigated area (<10%) strongly confirms the rainfed risk pathway and supports prioritisation of water harvesting interventions."
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Devendra2011",
+      "title": "Rainfed Areas and Animal Agriculture in Asia: The Wanting Agenda for Transforming Productivity Growth and Rural Poverty",
+      "authors": [
+        "Devendra, C.",
+        "Thomas, D."
+      ],
+      "year": 2011,
+      "doi": "10.5713/ajas.2011.r.09",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents the structural characteristics of rainfed less-favoured areas in South Asia including variable rainfall, poor soil quality, minimum development attention, and single-season cropping constraints; directly relevant to AER-12 sub-humid plateau context"
+    },
+    {
+      "source_id": "Daryanto2016",
+      "title": "Global Synthesis of Drought Effects on Maize and Wheat Production",
+      "authors": [
+        "Daryanto, S.",
+        "Wang, L.",
+        "Jacinthe, P.A."
+      ],
+      "year": 2016,
+      "doi": "10.1371/journal.pone.0156362",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Provides evidence on yield reduction under water stress in dryland versus non-dryland regions, supporting the severity assessment of rainfed risk for kharif crops"
+    },
+    {
+      "source_id": "Hsiao2015",
+      "title": "Management of crop water under drought: a review",
+      "authors": [
+        "Hsiao, T.C.",
+        "Steduto, P.",
+        "Fereres, E."
+      ],
+      "year": 2015,
+      "doi": "10.1007/s13593-015-0283-4",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents that unproductive water losses via runoff are highest in tropical residual moisture regimes with short intense rainy seasons, and that sites with a climatic dry season require phenological adaptation and water saving — directly relevant to plateau rainfed systems in AER-12"
+    },
+    {
+      "source_id": "NRAA2012",
+      "title": "Prioritization of Rainfed Areas in India",
+      "authors": [
+        "National Rainfed Area Authority"
+      ],
+      "year": 2012,
+      "source_type": "government_report",
+      "relevance_note": "Identifies Jharkhand, western West Bengal, and northern Odisha as priority rainfed regions with low cropping intensity and high dependence on monsoon rainfall; provides baseline for AER-12 diagnostic thresholds"
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-07-14",
+    "last_updated": "2025-07-14",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 20,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "overall_reasoning_note": "Diagnosis of rainfed risk in AER-12 (Chhota Nagpur Plateau and Eastern Ghats) should be confirmed by at least three of the five signals. The two primary structural signals are sig_01 (single-kharif dominance >75%) and sig_02 (mean cropping intensity ≤1.15 with flat trend); both must be present for a confident diagnosis. Sig_04 (no canal, low NREGA irrigation count) provides infrastructure confirmation. Sig_03 (sloping terrain with high runoff) and sig_05 (low rabi SWB ratio) amplify the diagnosis and identify the biophysical mechanism. A high-rainfall year that temporarily raises cropping intensity should not override the multi-year mean assessment. Always verify whether low cropping intensity reflects water constraint versus economic or market barriers before finalising the rainfed risk pathway."
+}

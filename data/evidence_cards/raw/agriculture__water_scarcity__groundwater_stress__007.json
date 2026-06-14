@@ -1,0 +1,237 @@
+{
+  "card_id": "agriculture__water_scarcity__groundwater_stress__007",
+  "production_system": "Agriculture",
+  "observed_stress": "water_scarcity",
+  "causal_pathway": "groundwater_stress",
+  "context": {
+    "agro_climatic_zones": [
+      "sub-humid",
+      "humid"
+    ],
+    "aquifer_types": [
+      "hard_rock"
+    ],
+    "terrain_types": [
+      "plateau",
+      "hilly"
+    ],
+    "rainfall_regime": "humid",
+    "geographic_examples": [
+      "Jharkhand",
+      "West Bengal (western)",
+      "Odisha (northern)"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "soge_dev_percent",
+        "soge_class_name"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "soge_dev_percent > 70 or soge_class_name in ['Semi-critical', 'Critical', 'Over-exploited']",
+        "qualitative_description": "Block-level SOGE exceeds 70% or CGWB classification is Semi-critical or worse, indicating extraction pressure on a low-storativity crystalline basement aquifer.",
+        "threshold_confidence": "high",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "In the Chhota Nagpur Plateau, aquifers are hosted in crystalline basement (granite-gneiss) with very low storativity confined to weathered and fractured zones typically 10–30 m deep. Even a block-level SOGE of 70–90% (Semi-critical) can mask severe localised depletion because recharge is spatially heterogeneous across the plateau surface. CGWB defines Safe as <70%, Semi-critical as 70–90%, Critical as 90–100%, and Over-exploited as >100% of net annual recharge. In hard rock terrain, seasonal emptying and refilling dynamics mean that extraction stress manifests rapidly even at moderate SOGE values.",
+      "interaction_with": [
+        "sig_02",
+        "sig_03"
+      ]
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "trend_annual_delta_g_mm",
+        "annual_delta_g_mm"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "trend_annual_delta_g_mm < 0 and mean_annual_delta_g_mm < 0",
+        "qualitative_description": "Both the linear trend and the multi-year mean of annual groundwater recharge (P - ET - Runoff) are negative, indicating chronic depletion rather than a single drought year anomaly.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "A negative trend in annual delta_g combined with a negative multi-year mean confirms that outflows (ET + runoff) persistently exceed precipitation inputs, leaving no surplus for aquifer recharge. In the sub-humid to humid Chhota Nagpur Plateau, annual rainfall of 1200–1600 mm is generally sufficient for recharge, so a chronic negative delta_g is a strong indicator of extraction-driven depletion rather than purely meteorological deficit. This is consistent with global evidence that rapid groundwater-level declines (>0.5 m/year) are accelerating in cropland-intensive regions.",
+      "interaction_with": [
+        "sig_01",
+        "sig_04"
+      ]
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "aquifer_class",
+        "aquifer_lithology_percent"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "aquifer_class == 'crystalline_basement' and aquifer_lithology_percent.get('alluvium', 0) < 20",
+        "qualitative_description": "Dominant aquifer class is crystalline basement with less than 20% alluvial lithology, confirming low recharge capacity and high vulnerability to depletion.",
+        "threshold_confidence": "high",
+        "context_sensitivity": "regional"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Crystalline basement aquifers (granite, gneiss, schist) characteristic of the Chhota Nagpur Plateau have very low primary porosity and depend entirely on secondary fracture and weathered zone storage. Unlike alluvial aquifers of the Indo-Gangetic Plain, these hard rock systems cannot buffer extraction over multiple seasons — depletion manifests as seasonal emptying with incomplete monsoon refilling. A low alluvial fraction (<20%) confirms that the MWS lacks the buffering capacity of mixed lithology systems. This structural vulnerability means that even moderate extraction rates can cause wells to fail during rabi and zaid seasons.",
+      "interaction_with": [
+        "sig_01"
+      ]
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "nrega_swc_count"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "nrega_swc_count < 10",
+        "qualitative_description": "Fewer than 10 cumulative SWC works recorded under MGNREGA in the MWS, indicating underinvestment in recharge infrastructure relative to the plateau terrain's runoff generation potential.",
+        "threshold_confidence": "low",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "The Chhota Nagpur Plateau generates high surface runoff due to shallow soils over impermeable crystalline rock and steep terrain. Without adequate SWC infrastructure (check dams, gabions, percolation ponds, farm bunds), monsoon runoff exits the watershed rapidly without contributing to groundwater recharge. India has historically invested in percolation tanks and streambed structures for artificial recharge, and MGNREGA-funded SWC works are the primary delivery mechanism in tribal plateau districts. A low cumulative SWC count signals a missed recharge opportunity that amplifies extraction-driven depletion. This also identifies a clear intervention pathway.",
+      "interaction_with": [
+        "sig_02"
+      ]
+    },
+    {
+      "signal_id": "sig_05",
+      "variables": [
+        "annual_well_depth_m"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Farmers report that they have had to deepen existing dug wells or bore new deeper borewells over the past 3–5 years to access water, particularly before the monsoon (pre-kharif) or during rabi season. This is a direct field indicator of declining static water levels in the crystalline basement aquifer."
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Well deepening is a reliable proxy for groundwater table decline in Indian hard rock settings. In crystalline basement aquifers of the Chhota Nagpur Plateau, the saturated weathered zone is typically only 10–25 m thick; a decline of even 3–5 m can render shallow dug wells non-functional for rabi irrigation. Farmer-reported well deepening, especially when corroborated by SOGE and delta_g signals, strongly confirms the groundwater stress pathway. This variable is not available in the framework data and must be elicited through field inquiry.",
+      "interaction_with": [
+        "sig_01",
+        "sig_02"
+      ]
+    }
+  ],
+  "overall_reasoning_note": "Groundwater stress in the Chhota Nagpur crystalline basement context should be confirmed by at least two of the three primary signals: elevated SOGE (sig_01), chronic negative delta_g trend (sig_02), or farmer-reported well deepening (sig_05). The aquifer lithology signal (sig_03) is a structural amplifier that raises prior probability of stress but does not confirm it independently. Low SWC investment (sig_04) amplifies depletion and identifies intervention opportunity. A key distinction from semi-arid hard rock contexts (e.g., Deccan Plateau) is that the Chhota Nagpur region receives 1200–1600 mm annual rainfall — if delta_g is chronically negative despite this rainfall, extraction pressure is the dominant driver rather than meteorological deficit alone. Block-level SOGE may understate local stress in hilly plateau terrain where recharge zones are spatially restricted to valley bottoms and lineament zones. Always cross-check with farmer reports on seasonal well failure patterns, particularly for rabi and zaid crop water availability.",
+  "confounders": [
+    {
+      "confounder": "High monsoon runoff on plateau terrain causing apparent recharge deficit (negative delta_g) due to rapid drainage rather than extraction-driven depletion",
+      "how_to_distinguish": "Check trend_annual_runoff_mm — if runoff is increasing while delta_g is declining, the primary issue may be runoff loss rather than extraction. In this case, SWC infrastructure deficit (sig_04) becomes the primary causal factor and the pathway shifts toward runoff management rather than demand-side groundwater governance. SOGE remaining low (<50%) despite negative delta_g would support this interpretation."
+    },
+    {
+      "confounder": "Seasonal or inter-annual drought reducing recharge and mimicking chronic groundwater depletion",
+      "how_to_distinguish": "Compare mean_annual_precipitation_mm and trend_annual_precipitation_mm against the 1200–1600 mm baseline for AER-12. If precipitation has declined significantly (trend_annual_precipitation_mm < -15 mm/year) and drought_severe_return_period is short (<4 years), meteorological drought is a co-driver. However, if SOGE is elevated (>70%) and precipitation remains near baseline, extraction is the primary driver. Chronic negative delta_g persisting even in above-average rainfall years is the clearest indicator of extraction-driven rather than drought-driven depletion."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "annual_well_depth_m",
+      "question_to_user": "Have farmers in this area had to deepen their dug wells or drill new borewells deeper than before over the past 3–5 years? If yes, roughly how many metres deeper are they now compared to 5 years ago?",
+      "how_answer_updates_diagnosis": "A reported increase in well depth of more than 3 metres over 5 years (~0.6 m/year) in a crystalline basement aquifer strongly confirms the groundwater stress pathway. This is especially significant if it occurs in the pre-monsoon period (April–May), indicating incomplete recharge recovery during the previous monsoon. Combined with elevated SOGE or negative delta_g trend, this makes the diagnosis high-confidence."
+    },
+    {
+      "missing_variable": "borewell_density",
+      "question_to_user": "Approximately how many borewells or tubewells are there in your village or the surrounding 2–3 km area? Would you say very few (fewer than 10), a moderate number (10–30), or a large number (more than 30)?",
+      "how_answer_updates_diagnosis": "High borewell density (>30 in a small area) in a crystalline basement aquifer with spatially limited fracture zones confirms localised over-extraction that block-level SOGE cannot capture. This would elevate diagnosis confidence to high even if block-level SOGE appears Safe, because multiple borewells competing for the same fracture network can rapidly deplete local storage."
+    },
+    {
+      "missing_variable": "groundwater_salinity",
+      "question_to_user": "Have farmers noticed that water from borewells or dug wells has become brackish, leaves white or yellowish deposits on soil or equipment, or causes crop damage not seen before?",
+      "how_answer_updates_diagnosis": "Salinity in crystalline basement aquifers of the Chhota Nagpur Plateau is uncommon but can occur when deep borewells penetrate into saline fracture zones or when over-extraction concentrates dissolved minerals in residual water. If confirmed, this indicates a more severe depletion stage and may require a different intervention approach (managed aquifer recharge prioritised over demand management alone). It also rules out simple seasonal water table fluctuation as the explanation."
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "CGWB2023",
+      "title": "National Compilation of Dynamic Ground Water Resources of India 2022",
+      "authors": [
+        "Central Ground Water Board"
+      ],
+      "year": 2023,
+      "url": "https://cgwb.gov.in",
+      "source_type": "government_report",
+      "relevance_note": "Defines SOGE class thresholds (Safe <70%, Semi-critical 70–90%, Critical 90–100%, Over-exploited >100%) used in sig_01; provides block-level groundwater development data for Jharkhand, West Bengal, and Odisha districts in AER-12."
+    },
+    {
+      "source_id": "Villholth2022",
+      "title": "Impact of climate change on groundwater hydrology: a comprehensive review and current status of the Indian hydrogeology",
+      "authors": [
+        "Villholth, K.G."
+      ],
+      "year": 2022,
+      "doi": "10.1007/s13201-022-01652-0",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Reviews groundwater-climate linkages in India including hard rock aquifer vulnerability; discusses GRACE-based evidence for groundwater depletion trends relevant to sig_02 and the role of anthropogenic extraction versus climate drivers."
+    },
+    {
+      "source_id": "Jasechko2024",
+      "title": "Rapid groundwater decline and some cases of recovery in aquifers globally",
+      "authors": [
+        "Jasechko, S.",
+        "Seybold, H.",
+        "Perrone, D.",
+        "Fan, Y.",
+        "Shamsudduha, M.",
+        "Taylor, R.G.",
+        "Fallatah, O.",
+        "Kirchner, J.W."
+      ],
+      "year": 2024,
+      "doi": "10.1038/s41586-023-06879-8",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Global synthesis of 170,000 monitoring wells showing rapid groundwater decline (>0.5 m/year) is widespread in cropland-intensive regions; documents that declines have accelerated in 30% of regional aquifers, supporting the trend-based diagnosis in sig_02. Also documents recovery cases following managed aquifer recharge interventions, supporting SWC-based solutions."
+    },
+    {
+      "source_id": "Chinnasamy2022",
+      "title": "Addressing Depletion in Alluvial Aquifers",
+      "authors": [
+        "Chinnasamy, P."
+      ],
+      "year": 2022,
+      "doi": "10.37773/ees.v8i1.1122",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Explicitly distinguishes hard rock aquifer depletion dynamics (seasonal emptying and filling, low storativity) from alluvial aquifer depletion; argues that management approaches must account for geology. Directly supports sig_03 rationale and the context-specific framing for crystalline basement aquifers of the Chhota Nagpur Plateau."
+    },
+    {
+      "source_id": "Dillon2019",
+      "title": "Sixty years of global progress in managed aquifer recharge",
+      "authors": [
+        "Dillon, P.",
+        "Stuyfzand, P.",
+        "Grischek, T.",
+        "Lluria, M.",
+        "Pyne, R.D.G.",
+        "Jain, R.C.",
+        "Bear, J.",
+        "Schwarz, J.",
+        "Wang, W.",
+        "Fernandez, E."
+      ],
+      "year": 2019,
+      "doi": "10.1007/s10040-018-1841-z",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents India's extensive historical investment in percolation tanks, check dams, and streambed recharge structures; notes that more than 500,000 tanks and ponds have been constructed across India for monsoon runoff detention and aquifer recharge. Supports the SWC-based intervention recommendations and the sig_04 rationale for MGNREGA-funded recharge infrastructure in plateau terrain."
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-01-27",
+    "last_updated": "2025-01-27",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 24,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  }
+}

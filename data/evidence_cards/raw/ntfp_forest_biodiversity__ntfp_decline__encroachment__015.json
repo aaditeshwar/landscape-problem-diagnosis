@@ -1,0 +1,208 @@
+{
+  "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__015",
+  "production_system": "NTFP_Forest_Biodiversity",
+  "observed_stress": "ntfp_decline",
+  "causal_pathway": "encroachment",
+  "context": {
+    "agro_climatic_zones": [
+      "humid",
+      "perhumid"
+    ],
+    "aquifer_types": [
+      "alluvium"
+    ],
+    "terrain_types": [
+      "plains",
+      "hilly"
+    ],
+    "rainfall_regime": "humid",
+    "geographic_examples": [
+      "Kerala",
+      "Konkan Maharashtra",
+      "Goa"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "cd_forest_to_farm_ha"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "cd_forest_to_farm_ha > 50",
+        "qualitative_description": "More than 50 ha of forest has been converted to farmland in the micro-watershed, indicating measurable encroachment pressure on forest extent.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Forest-to-farm conversion is the most direct indicator of encroachment. In the humid and perhumid West Coast ecoregion (AER-19), even modest conversion of 50+ ha can significantly reduce NTFP availability because high-value species such as wild pepper, cardamom, and medicinal plants are concentrated in interior forest patches. Geospatial studies in Uttara Kannada (Central Western Ghats) document a decline in interior forest from 64% to 26% between 1979 and 2013, driven substantially by cropland and plantation expansion at forest fringes, directly reducing NTFP-bearing habitat."
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "cd_forest_to_farm_ha"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "cd_forest_to_farm_ha > 20",
+        "qualitative_description": "Forest-to-farm conversion exceeds 20 ha, and when assessed over multiple periods shows a continuing or accelerating trend of forest loss at the landscape scale.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "A sustained trend of forest-to-farm conversion, even at lower absolute levels, signals progressive encroachment that cumulatively fragments NTFP-bearing habitat. Forest fragmentation research in the Western Ghats demonstrates that interior forest loss accelerates non-linearly once patch sizes fall below critical thresholds, reducing both species diversity and community access corridors for NTFP collection.",
+      "interaction_with": [
+        "sig_01",
+        "sig_03"
+      ]
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "cd_total_urbanization_ha"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "cd_total_urbanization_ha > 30",
+        "qualitative_description": "More than 30 ha of new settlement or built-up area has expanded into or adjacent to forest zones, indicating settlement-driven encroachment pressure.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Settlement expansion into forest fringes in Kerala, Goa, and Konkan Maharashtra is a documented driver of forest boundary erosion. Urbanization not only directly converts forest land but also increases access pressure on remaining forest, facilitating informal encroachment by fringe households. Forest canopy density studies in river basins show that unscientific urbanization is a primary driver of forest fragmentation and canopy loss.",
+      "interaction_with": [
+        "sig_01"
+      ]
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "village_st_percent"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "(village_st_percent > 25) and (cd_forest_to_farm_ha > 20)",
+        "qualitative_description": "Villages with more than 25% Scheduled Tribe population combined with measurable forest-to-farm conversion may indicate unresolved Forest Rights Act tenure disputes or displacement of forest-dependent communities.",
+        "threshold_confidence": "low",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "High ST population share in villages adjacent to encroached forest areas is a proxy for communities whose customary NTFP access rights may be contested or unrecognised. Research on protected area relocations in India documents that illegal displacement of indigenous communities and forest dwellers, in contravention of FRA provisions, directly reduces NTFP access for dependent households. Where FRA community forest rights remain unfiled or rejected, encroachment by outsiders goes unchallenged, accelerating forest loss.",
+      "interaction_with": [
+        "sig_01",
+        "sig_03"
+      ]
+    },
+    {
+      "signal_id": "sig_05",
+      "variables": [
+        "cd_forest_to_farm_ha",
+        "cd_total_urbanization_ha"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "(cd_forest_to_farm_ha + cd_total_urbanization_ha) > 100",
+        "qualitative_description": "Combined forest-to-farm and urbanization conversion exceeds 100 ha, indicating that cumulative land use change has substantially reduced forest extent available for NTFP collection.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "The combined footprint of agricultural encroachment and settlement expansion provides a composite measure of total forest loss pressure. In the West Coast humid ecoregion, where alluvial plains meet forested hilly terrain, both pathways operate simultaneously — lowland plains are converted to paddy or horticulture while hillside forests face settlement pressure. A combined conversion exceeding 100 ha in a micro-watershed is likely to have materially reduced NTFP-bearing forest area and community access routes.",
+      "interaction_with": [
+        "sig_01",
+        "sig_03",
+        "sig_04"
+      ]
+    }
+  ],
+  "confounders": [
+    {
+      "confounder": "Legal forest diversion for infrastructure or plantations (not informal encroachment) causing similar LULC signals",
+      "how_to_distinguish": "Check whether forest-to-farm or urbanization transitions correspond to notified diversions under the Forest Conservation Act (FCA) or government plantation schemes. If cd_forest_to_farm_ha increases coincide with documented FCA diversions or social forestry records, the driver is legal diversion rather than informal encroachment. Ask local forest department staff or panchayat records about any sanctioned land use changes in the period."
+    },
+    {
+      "confounder": "Natural forest regeneration masking ongoing encroachment at different locations within the micro-watershed",
+      "how_to_distinguish": "Aggregate LULC change figures may show net forest stability if regeneration in one part offsets encroachment elsewhere. Examine spatial distribution of cd_forest_to_farm_ha changes — if losses are concentrated at forest-agriculture boundaries while gains are in interior or degraded patches, encroachment is still occurring. Cross-check with village_st_percent and community reports of reduced NTFP access despite stable aggregate forest cover figures."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "fra_claims_filed_count",
+      "question_to_user": "Have households or gram sabhas in this village filed individual or community forest rights claims under the Forest Rights Act (FRA)? If yes, how many claims have been filed, and how many have been approved, rejected, or are pending?",
+      "how_answer_updates_diagnosis": "A high number of pending or rejected FRA claims alongside measurable forest-to-farm conversion strongly confirms the encroachment pathway — it indicates that tenure insecurity is leaving forest boundaries contested and NTFP access unprotected. Approved community forest rights (CFR) claims would suggest the community has legal standing to resist encroachment, shifting the diagnosis toward enforcement failure rather than rights absence."
+    },
+    {
+      "missing_variable": "ntfp_collection_trend_qualitative",
+      "question_to_user": "Have NTFP collectors in this village noticed a decline in the quantity or variety of forest produce (e.g. wild fruits, medicinal plants, honey, bamboo) over the past 5-10 years? Do they attribute this to reduced forest area, restricted access, or reduced forest quality?",
+      "how_answer_updates_diagnosis": "Community-reported decline in NTFP quantity or access, attributed to reduced forest area or blocked access routes, directly corroborates the encroachment pathway. If collectors attribute decline to reduced forest quality (e.g. invasive species, fire) without mentioning area loss, alternative pathways such as forest degradation or fire should be weighted more heavily."
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Bharath2016",
+      "title": "Geospatial analysis of forest fragmentation in Uttara Kannada District, India",
+      "authors": [
+        "Bharath, H.A.",
+        "Chandan, M.C.",
+        "Vinay, S.",
+        "Ramachandra, T.V."
+      ],
+      "year": 2016,
+      "doi": "10.1186/s40663-016-0069-4",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents forest-to-cropland and plantation conversion in Uttara Kannada (Central Western Ghats), showing interior forest decline from 64% to 26% between 1979 and 2013; directly supports use of cd_forest_to_farm_ha as encroachment indicator in humid West Coast ecoregion."
+    },
+    {
+      "source_id": "Bose2021",
+      "title": "Relocation from protected areas as a violent process in the recent history of biodiversity conservation in India",
+      "authors": [
+        "Bose, P."
+      ],
+      "year": 2021,
+      "doi": "10.37773/ees.v2i1.55",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents illegal displacement of indigenous communities and forest dwellers from protected areas in India in contravention of FRA, supporting the use of village_st_percent and FRA claim status as diagnostic signals for encroachment-driven NTFP access loss."
+    },
+    {
+      "source_id": "RRI2020",
+      "title": "The Opportunity Framework 2020: Identifying Opportunities to Invest in Securing Collective Tenure Rights in the Forest",
+      "authors": [
+        "Rights and Resources Initiative"
+      ],
+      "year": 2020,
+      "doi": "10.53892/rhaa9312",
+      "source_type": "government_report",
+      "relevance_note": "Provides global and India-relevant evidence that governments recognise legal ownership of only 10% of customarily managed forest land, supporting the diagnostic link between unrecognised tenure rights, encroachment vulnerability, and NTFP access decline for forest-dependent communities."
+    },
+    {
+      "source_id": "Mondal2021",
+      "title": "Estimation of Forest Canopy Cover and Forest Fragmentation Mapping Using Landsat Satellite Data of Silabati River Basin",
+      "authors": [
+        "Mondal, I.",
+        "Thakkar, S.",
+        "Bandyopadhyay, J."
+      ],
+      "year": 2021,
+      "doi": "10.1007/s42489-020-00060-1",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Demonstrates that unscientific urbanization and population expansion are primary drivers of forest canopy loss and fragmentation, supporting cd_total_urbanization_ha as a signal for settlement-driven encroachment on NTFP-bearing forest."
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-01-24",
+    "last_updated": "2025-01-24",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 17,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  }
+}

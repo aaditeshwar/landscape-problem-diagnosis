@@ -1,0 +1,211 @@
+{
+  "card_id": "socio_economic__low_income__small_landholding__007",
+  "production_system": "Socio_Economic",
+  "observed_stress": "low_income",
+  "causal_pathway": "small_landholding",
+  "context": {
+    "agro_climatic_zones": [
+      "sub-humid",
+      "humid"
+    ],
+    "aquifer_types": [
+      "hard_rock"
+    ],
+    "terrain_types": [
+      "plateau",
+      "hilly"
+    ],
+    "rainfall_regime": "humid",
+    "geographic_examples": [
+      "Jharkhand",
+      "West Bengal (western)",
+      "Odisha (northern)"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "lulc_cropland_ha",
+        "village_total_population"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "(lulc_cropland_ha[-1] / (village_total_population + 1e-9)) < 0.2",
+        "qualitative_description": "Per-capita cropland availability below 0.2 ha per person (approximately 1 ha per household of 5) indicates predominantly marginal or sub-marginal landholding sizes.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "In the Chhota Nagpur Plateau and Eastern Ghats region, average landholding sizes are already among the smallest in India due to tribal land fragmentation and inheritance subdivision. A per-capita cropland ratio below 0.2 ha/person is a proxy for marginal holdings (<1 ha per household), which severely limits marketable surplus. Shrinking average landholding size is explicitly identified as a pressing constraint on food production and farmer income in India.",
+      "interaction_with": [
+        "sig_02",
+        "sig_03"
+      ]
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "mean_cropping_intensity",
+        "cropping_intensity"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "mean_cropping_intensity <= 1.15 and cropping_intensity[-1] <= 1.2",
+        "qualitative_description": "Mean cropping intensity at or below 1.15 and latest year value at or below 1.2 indicates that small holders are not compensating for limited land area through double-cropping, compounding income constraints.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Low cropping intensity on small holdings means effective production per household is doubly constrained — by both land area and underutilisation of the growing season. In the sub-humid Jharkhand-Odisha belt, where rainfall supports at least one rabi crop in irrigated areas, a cropping intensity near 1.0 signals that small holders lack irrigation access or capital to cultivate a second season, directly suppressing annual income. Households solely dependent on single-season small-scale agriculture show lower monthly income despite higher food sufficiency.",
+      "interaction_with": [
+        "sig_01",
+        "sig_04"
+      ]
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "dist_apmc_km",
+        "dist_dairy_km"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "dist_apmc_km > 30 and dist_dairy_km > 20",
+        "qualitative_description": "APMC market more than 30 km away and dairy collection centre more than 20 km away together indicate that small holders face high transaction costs for both crop and livestock income streams, with no viable diversification outlet nearby.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "amplifies",
+      "explanation": "Remote smallholders in hilly plateau terrain are exploited by intermediaries when formal market infrastructure is distant. FPOs and collective marketing are identified as the primary institutional remedy precisely because individual small holders cannot bear transport costs or negotiate fair prices. Simultaneously, the absence of nearby dairy infrastructure forecloses the most accessible livestock income diversification pathway. Studies on FPOs confirm that market access, bargaining power, and economy of scale are the most prominent benefits for small farmers.",
+      "interaction_with": [
+        "sig_01",
+        "sig_04"
+      ]
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "organization_domains",
+        "nrega_community_assets_count"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "('livelihoods' not in organization_domains and 'fisheries' not in organization_domains) and nrega_community_assets_count < 10",
+        "qualitative_description": "No NGO presence in livelihoods or fisheries domains combined with fewer than 10 cumulative MGNREGA community asset works indicates a weak institutional safety net and limited diversification support for small holders.",
+        "threshold_confidence": "low",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "NGO presence in livelihoods, NTFP, or fisheries domains signals that diversification pathways are being actively promoted, which can partially offset income constraints from small landholdings. Conversely, their absence leaves households with no institutional bridge to non-farm income. Low MGNREGA community asset counts indicate that off-farm wage employment and productive infrastructure (ponds, roads, land levelling) have not been built up, removing the supplementary income buffer that is critical for marginal farmers in lean seasons. FPOs and extension organisations are identified as key interfaces between small farmers and external markets.",
+      "interaction_with": [
+        "sig_02",
+        "sig_03"
+      ]
+    }
+  ],
+  "confounders": [
+    {
+      "confounder": "Low income driven by chronic drought or rainfall failure rather than landholding size per se",
+      "how_to_distinguish": "Check drought_severe_return_period and mean_annual_precipitation_mm. If severe droughts recur every 2-3 years and cropping intensity is low primarily in drought years (not structurally), drought is the primary driver. In contrast, if cropping intensity is persistently low even in normal rainfall years and per-capita cropland is below 0.2 ha/person, small landholding is the structural cause. The two pathways co-occur but require different interventions: drought demands water harvesting and insurance, while small landholding demands FPO formation and land-use intensification."
+    },
+    {
+      "confounder": "Low income driven by poor soil quality or degraded land rather than insufficient land area",
+      "how_to_distinguish": "If lulc_cropland_ha per capita is moderate (0.2-0.4 ha/person) but cropping intensity and income remain low, soil degradation or waterlogging (common in lateritic plateau soils of Jharkhand-Odisha) may be the binding constraint rather than landholding size. Check terrain_cluster_id for sloping terrain (terrain_cluster_id != 1) and trend_kharif_cropped_area_ha for declining cultivated area despite adequate land availability. Soil rehabilitation and SWC interventions would then take priority over FPO formation."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "landholding_size_distribution",
+      "question_to_user": "What proportion of farming households in this village own less than 1 hectare of land? Would you estimate it is less than one-third, about half, or more than two-thirds of all households?",
+      "how_answer_updates_diagnosis": "If more than two-thirds of households are marginal holders (<1 ha), the small landholding pathway is strongly confirmed and collective farming or FPO formation becomes the highest-priority recommendation. If fewer than one-third are marginal, other causal pathways (market failure, drought, soil degradation) should be weighted more heavily."
+    },
+    {
+      "missing_variable": "household_income_inr",
+      "question_to_user": "Can you estimate the average annual household income in this village, and what share comes from farming versus wage labour, NTFP collection, livestock, or government schemes like MGNREGA?",
+      "how_answer_updates_diagnosis": "If farm income constitutes more than 70% of total household income and total income is below Rs 60,000 per year, the single-source dependence and income insufficiency stress is confirmed. A high share of MGNREGA or NTFP income would indicate partial diversification already occurring, shifting recommendations toward strengthening those existing pathways rather than building new ones from scratch."
+    },
+    {
+      "missing_variable": "market_price_crop",
+      "question_to_user": "Do farmers in this village typically sell their produce at prices close to the government Minimum Support Price (MSP), or significantly below it? How do they usually sell — to local traders, at the APMC mandi, or through a cooperative or FPO?",
+      "how_answer_updates_diagnosis": "If farmers consistently receive prices 20-40% below MSP and sell exclusively to local traders, market exploitation of smallholders is confirmed as a key income loss mechanism. This strengthens the case for FPO formation and collective marketing as the primary intervention, and indicates that physical distance to APMC (sig_03) is actively translating into price loss."
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Gulati2021",
+      "title": "Revitalizing Indian Agriculture and Boosting Farmer Incomes",
+      "authors": [
+        "Gulati, Ashok",
+        "Roy, Ranjana",
+        "Saini, Shweta"
+      ],
+      "year": 2021,
+      "doi": "10.1007/978-981-15-9335-2",
+      "source_type": "book_chapter",
+      "relevance_note": "Documents shrinking average landholding size as a structural constraint on farmer income in India, with focus on Bihar, Odisha and other states with high poverty and malnutrition; establishes agriculture-poverty-nutrition linkage relevant to low-income diagnosis."
+    },
+    {
+      "source_id": "Trebbin2015",
+      "title": "Farmer producer organisations: Innovative institutions for upliftment of small farmers",
+      "authors": [
+        "Trebbin, Anika"
+      ],
+      "year": 2015,
+      "doi": "10.56093/ijas.v89i9.93451",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents how FPOs address the core constraints of small holders — lack of market access, bargaining power, and economy of scale — and identifies marketing benefits as the most prominent outcome; supports sig_03 and recommended solutions."
+    },
+    {
+      "source_id": "Chauhan2018",
+      "title": "Enhancing farmers income through farmers' producers companies in India: Status and roadmap",
+      "authors": [
+        "Chauhan, S.",
+        "Singh, K.M."
+      ],
+      "year": 2018,
+      "doi": "10.56093/ijas.v88i8.82441",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Reviews FPC status and growth in India; establishes that farmer-owned micro-enterprises are the primary institutional mechanism for overcoming income constraints from fragmented small landholdings."
+    },
+    {
+      "source_id": "Ramesh2015",
+      "title": "The interplay between household food security and wellbeing among small-scale farmers in the context of rapid agrarian change",
+      "authors": [
+        "Ramesh, P.",
+        "Venkatasubramanian, V."
+      ],
+      "year": 2015,
+      "doi": "10.1186/s40066-015-0036-2",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Empirically demonstrates that households solely dependent on small-scale agriculture have higher food sufficiency but lower monthly income and wellbeing, directly supporting the low-income stress description and the importance of livelihood diversification."
+    },
+    {
+      "source_id": "FanRue2020",
+      "title": "The Role of Smallholder Farms in a Changing World",
+      "authors": [
+        "Fan, Shenggen",
+        "Rue, Connie"
+      ],
+      "year": 2020,
+      "doi": "10.1007/978-3-030-42148-9_2",
+      "source_type": "book_chapter",
+      "relevance_note": "Provides the 'move up or move out' typology for smallholders; identifies limited market access, financial capital, and infrastructure as soft constraints addressable through FPOs, credit, and non-farm skill development — directly informing recommended solutions."
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-07-15",
+    "last_updated": "2025-07-15",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 19,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  }
+}

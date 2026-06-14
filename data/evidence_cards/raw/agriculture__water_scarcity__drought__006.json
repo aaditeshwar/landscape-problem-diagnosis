@@ -26,63 +26,56 @@
     {
       "signal_id": "sig_01",
       "variables": [
-        "drought_causality_json"
-      ],
-      "condition": {
-        "type": "quantitative",
-        "expression": "drought_causality_json.SPI <= -1.0 AND drought_causality_json.VCI < 40",
-        "qualitative_description": "SPI at or below -1.0 (moderate to severe meteorological drought) combined with VCI below 40 (vegetation under significant stress) confirms co-occurring meteorological and agricultural drought during the cropping season.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
-      },
-      "severity": "high",
-      "direction": "confirms",
-      "explanation": "SPI quantifies meteorological drought severity by standardising precipitation anomalies; VCI captures vegetation stress relative to historical NDVI range. Studies on kharif rice in India show that SPI and VCI are both positively correlated with productivity index, and their joint depression is a strong indicator of agricultural drought causing yield loss. In coastal alluvial plains receiving 900–1400 mm annually (AER-18), a single-season SPI below -1.0 represents a significant departure from the sub-humid norm and is sufficient to trigger crop water stress, particularly during sensitive growth stages.",
-      "sources_cited": [
-        "Srivastava2022",
-        "Pandey2015"
-      ]
-    },
-    {
-      "signal_id": "sig_02",
-      "variables": [
         "drought_weeks_severe",
         "drought_weeks_moderate"
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "drought_weeks_severe >= 3 OR (drought_weeks_severe >= 1 AND drought_weeks_moderate >= 4)",
-        "qualitative_description": "Three or more kharif weeks under severe drought, or at least one severe week combined with four or more moderate drought weeks, indicates persistent water deficit likely to cause crop failure or significant yield reduction.",
-        "threshold_confidence": "medium",
+        "expression": "drought_weeks_severe[-1] >= 3 or (drought_weeks_severe[-1] >= 1 and drought_weeks_moderate[-1] >= 4)",
+        "qualitative_description": "Three or more severe drought weeks in the latest kharif season, or a combination of at least one severe week and four or more moderate weeks, indicates persistent crop-season water deficit sufficient to cause yield loss.",
+        "threshold_confidence": "high",
         "context_sensitivity": "regional"
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "Persistent severe drought weeks during kharif directly reduce soil moisture availability below crop wilting thresholds. In sub-humid coastal plains, crops are typically rainfed or supplementally irrigated from shallow alluvial aquifers; prolonged drought weeks exhaust both rainfall and shallow groundwater recharge simultaneously. The combination of even one severe week with multiple moderate weeks indicates a drought episode spanning critical crop growth stages such as tillering or grain filling.",
-      "interaction_with": [
-        "sig_01",
-        "sig_03"
-      ]
+      "explanation": "Persistent severe drought weeks during kharif directly reduce soil moisture availability below crop thresholds. In coastal alluvial plains of AER-18, where rice and pulses dominate kharif, even brief severe drought spells during critical growth stages (tillering, flowering) cause irreversible yield loss. SPI-based drought classification used in the India Drought Manual identifies severe drought (SPI < -1.5) as the threshold for crop failure risk. Studies on kharif rice in Uttar Pradesh show SPI and VCI during peak kharif months are significantly correlated with productivity index (r=0.61–0.70), confirming that severe drought weeks are a reliable signal of agricultural water stress."
     },
     {
-      "signal_id": "sig_03",
+      "signal_id": "sig_02",
       "variables": [
         "dry_spell_weeks"
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "dry_spell_weeks >= 4",
-        "qualitative_description": "Four or more weeks in a 4-week moving window with less than 50% of historical rainfall, indicating a prolonged dry spell capable of disrupting critical crop growth stages.",
+        "expression": "dry_spell_weeks[-1] >= 4",
+        "qualitative_description": "Four or more dry spell weeks (4-week moving window with <50% historical rainfall) in the latest kharif season indicate prolonged moisture deficit disrupting critical crop growth stages.",
         "threshold_confidence": "medium",
         "context_sensitivity": "regional"
       },
-      "severity": "moderate",
+      "severity": "high",
       "direction": "confirms",
-      "explanation": "Dry spells within an otherwise sub-humid season are a recognised cause of agricultural drought even when annual totals appear adequate. In coastal alluvial plains, soils have moderate water-holding capacity but shallow root zones; a 4-week dry spell can deplete plant-available water and cause irreversible stress during flowering or grain filling. This signal is particularly relevant for rabi and zaid seasons when post-monsoon rainfall is inherently low and irrigation dependence is high.",
-      "sources_cited": [
-        "Pandey2015"
-      ],
+      "explanation": "Dry spells of four or more consecutive weeks during kharif disrupt crop water demand at sensitive phenological stages. In sub-humid coastal plains, where crops rely on monsoon rainfall supplemented by shallow alluvial groundwater, extended dry spells deplete soil moisture reserves faster than recharge can occur. Research on crop water management under drought highlights that intermittent droughts in tropical residual moisture regimes cause high unproductive losses and that synchronisation between crop water demand and soil supply is critical for yield stability. Four weeks of sub-50% rainfall is the standard India Drought Manual threshold for agricultural dry spell declaration.",
       "interaction_with": [
+        "sig_01"
+      ]
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "drought_causality_json"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "drought_causality_json.get('spi_kharif', 0) < -1.0 and (drought_causality_json.get('mai_kharif', 1.0) < 0.75 or drought_causality_json.get('vci_kharif', 100) < 40)",
+        "qualitative_description": "SPI below -1.0 (moderate to severe meteorological drought) co-occurring with MAI below 0.75 (soil moisture inadequacy) or VCI below 40 (vegetation stress) confirms both meteorological and agricultural drought are active simultaneously.",
+        "threshold_confidence": "high",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "The India Drought Manual prescribes a composite drought classification using SPI (meteorological), MAI (agricultural soil moisture), and VCI (vegetation condition). When all three indices converge on drought conditions, the diagnosis is robust and multi-dimensional. SPI < -1.0 indicates moderate meteorological drought; MAI < 0.75 indicates soil moisture is below 75% of crop requirement; VCI < 40 indicates vegetation is in the lower 40th percentile of historical greenness, consistent with crop stress. Studies on kharif rice confirm that SPI and VCI together explain 69–76% of variability in productivity index, making this composite signal the strongest confirmation of drought-driven water scarcity.",
+      "interaction_with": [
+        "sig_01",
         "sig_02"
       ]
     },
@@ -93,21 +86,17 @@
         "annual_precipitation_mm"
       ],
       "condition": {
-        "type": "quantitative",
-        "expression": "seasonal_precipitation_mm < 0.75 * historical_seasonal_mean OR annual_precipitation_mm < 0.80 * historical_annual_mean",
-        "qualitative_description": "Seasonal rainfall below 75% of the long-term seasonal mean, or annual rainfall below 80% of the long-term annual mean, confirms a below-normal precipitation year consistent with meteorological drought.",
+        "type": "trend",
+        "expression": "mean_annual_precipitation_mm < 1000 or (seasonal_precipitation_mm[-1].get('kharif', 9999) < 0.65 * (sum(v.get('kharif', 0) for v in seasonal_precipitation_mm.values()) / max(len(seasonal_precipitation_mm), 1)))",
+        "qualitative_description": "Mean annual precipitation below 1000 mm (lower bound of AER-18 normal range of 900–1400 mm) or current kharif seasonal rainfall below 65% of the long-term kharif mean indicates a below-normal rainfall year consistent with meteorological drought.",
         "threshold_confidence": "medium",
         "context_sensitivity": "regional"
       },
       "severity": "moderate",
       "direction": "confirms",
-      "explanation": "AER-18 receives 900–1400 mm annually under a sub-humid regime. A seasonal deficit of 25% or more represents a substantial departure from the norm and is consistent with India Drought Manual thresholds for declaring drought conditions. Annual deficits compound rabi and zaid water scarcity because groundwater recharge from the monsoon is insufficient to sustain post-monsoon irrigation demand from alluvial aquifers.",
-      "sources_cited": [
-        "Srivastava2022",
-        "Amarasinghe2017"
-      ],
+      "explanation": "AER-18 coastal alluvial plains receive 900–1400 mm annually, predominantly during the northeast monsoon (kharif/post-kharif). When annual precipitation falls below 1000 mm or kharif seasonal rainfall drops below 65% of the long-term mean, crops face water deficit that cannot be fully compensated by shallow alluvial groundwater. The water-food-energy nexus analysis for India shows that after drought years, groundwater storage drops and cannot recover even in subsequent good monsoon years, meaning a single below-normal kharif season has multi-year consequences for water availability in alluvial coastal plains.",
       "interaction_with": [
-        "sig_01"
+        "sig_03"
       ]
     },
     {
@@ -116,89 +105,91 @@
         "monsoon_onset_date"
       ],
       "condition": {
-        "type": "quantitative",
-        "expression": "monsoon_onset_date > historical_normal_onset_date + 14",
-        "qualitative_description": "Monsoon onset delayed by more than two weeks relative to the historical normal onset date for the district, shortening the effective kharif season and increasing early-season crop water stress.",
+        "type": "trend",
+        "expression": "monsoon_onset_date[-1] > monsoon_onset_date[0] + 7",
+        "qualitative_description": "Monsoon onset in the latest year is more than 7 days later than the earliest recorded onset in the dataset, indicating a trend toward delayed monsoon arrival that shortens the effective kharif growing season.",
         "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "context_sensitivity": "regional"
       },
       "severity": "moderate",
       "direction": "amplifies",
-      "explanation": "A delayed monsoon onset compresses the kharif growing window, forcing farmers to either delay sowing (reducing yield potential) or sow into dry soil (risking germination failure). In coastal Tamil Nadu and Andhra Pradesh, where kharif rice and pulses depend on timely monsoon arrival, a two-week delay can shift crop water demand peaks into drier intra-seasonal periods. Delayed onset also reduces total seasonal accumulation, amplifying the drought signal from sig_03 and sig_04.",
-      "sources_cited": [
-        "Pandey2015"
-      ],
+      "explanation": "Delayed monsoon onset shortens the effective kharif season and increases the probability of terminal drought stress at grain-filling stages. In coastal Tamil Nadu and Andhra Pradesh, the northeast monsoon onset timing is critical for transplanted rice and groundnut. A delay of more than one week compresses the growing window and forces farmers to either use shorter-duration varieties (with yield penalties) or risk late-season dry spells. Crop ecology research confirms that phenological synchronisation between crop water demand and soil moisture supply is a primary determinant of yield under water-limited environments, and delayed onset disrupts this synchronisation.",
       "interaction_with": [
-        "sig_03",
-        "sig_04"
+        "sig_01",
+        "sig_02"
       ]
     }
   ],
-  "overall_reasoning_note": "Drought as a cause of water scarcity in coastal sub-humid alluvial plains should be confirmed by at least two primary signals: a depressed SPI/VCI composite (sig_01) and either persistent drought weeks (sig_02) or a prolonged dry spell (sig_03). Seasonal and annual precipitation deficits (sig_04) provide corroborating meteorological context. Delayed monsoon onset (sig_05) amplifies but does not independently confirm drought. In AER-18 coastal settings, annual rainfall is generally adequate in normal years; therefore, drought stress is most often episodic and intra-seasonal rather than chronic. Rabi and zaid water scarcity is structurally more severe because post-monsoon rainfall is low and alluvial aquifer recharge depends entirely on the preceding kharif monsoon. If sig_04 shows near-normal annual totals but sig_02 and sig_03 are triggered, suspect intra-seasonal dry spells rather than full meteorological drought. Always verify whether the reported water scarcity is confined to a specific season before finalising the diagnosis.",
   "confounders": [
     {
-      "confounder": "Groundwater depletion from over-extraction causing water scarcity that mimics drought symptoms",
-      "how_to_distinguish": "Check annual_precipitation_mm and seasonal_precipitation_mm against historical baselines. If precipitation is near-normal but farmers still report water scarcity, groundwater over-extraction rather than drought is likely the primary driver. In coastal alluvial aquifers, saline intrusion from over-extraction can also reduce effective water availability independently of rainfall. Drought pathway is confirmed when precipitation deficits co-occur with the reported scarcity."
+      "confounder": "Groundwater over-extraction from alluvial aquifers causing water scarcity independent of rainfall deficit",
+      "how_to_distinguish": "Check drought_causality_json SPI values — if SPI is near-normal (> -0.5) but farmers still report water scarcity, the pathway is likely groundwater stress rather than meteorological drought. In coastal alluvial plains, shallow water table depletion from paddy irrigation can mimic drought symptoms even in adequate rainfall years. Confirm by checking whether dry_spell_weeks and drought_weeks_severe are low despite reported scarcity; if so, redirect to groundwater_stress pathway."
     },
     {
-      "confounder": "Infrastructure failure (canal system breakdown, pump failure) causing apparent drought-like water scarcity during dry spells",
-      "how_to_distinguish": "If dry_spell_weeks and drought_weeks_moderate are elevated but SPI is only mildly negative and VCI is not severely depressed, infrastructure failure may be amplifying a mild meteorological signal into a severe on-farm water shortage. Ask farmers whether canal water or pump availability changed in the same season. Drought pathway requires confirmation from meteorological indices, not just farmer-reported scarcity."
+      "confounder": "Soil water-holding capacity limitations in sandy coastal alluvium causing rapid drainage and apparent drought even under adequate rainfall",
+      "how_to_distinguish": "If drought_weeks_severe and dry_spell_weeks are low but farmers report wilting and crop stress, the issue may be soil texture (coarse sandy alluvium with low field capacity) rather than rainfall deficit. This is a soil management pathway rather than a meteorological drought pathway. Distinguish by checking whether stress occurs immediately after rainfall events (drainage-driven) versus during extended no-rain periods (drought-driven). Seasonal_precipitation_mm at or above normal with persistent crop stress points to soil physical constraints."
     }
   ],
   "missing_variable_questions": [],
   "sources": [
     {
-      "source_id": "Srivastava2022",
-      "title": "Drought assessment for kharif rice using standardized precipitation index (SPI) and vegetation condition index (VCI)",
-      "authors": [
-        "Srivastava, A.K.",
-        "Singh, R.",
-        "Rai, T."
-      ],
-      "year": 2022,
-      "doi": "10.54386/jam.v21i2.230",
-      "source_type": "peer_reviewed_journal",
-      "relevance_note": "Demonstrates that SPI and VCI are both positively correlated with kharif rice productivity index in Indian districts; supports use of combined SPI-VCI threshold in sig_01 and seasonal precipitation deficit in sig_04"
-    },
-    {
-      "source_id": "Pandey2015",
+      "source_id": "Bodner2015",
       "title": "Management of crop water under drought: a review",
       "authors": [
-        "Pandey, V.",
-        "Shukla, A."
+        "Bodner, G.",
+        "Nakhforoosh, A.",
+        "Kaul, H.P."
       ],
       "year": 2015,
       "doi": "10.1007/s13593-015-0283-4",
       "source_type": "peer_reviewed_journal",
-      "relevance_note": "Reviews drought typology, dry spell impacts on crop water balance, and the role of phenology and monsoon timing in determining yield outcomes under water-limited environments; supports sig_03 and sig_05"
+      "relevance_note": "Reviews crop water management under drought, emphasising that unproductive losses are highest under tropical residual moisture regimes with short intense rainy seasons, and that phenological synchronisation between crop water demand and soil supply is critical — directly relevant to kharif drought diagnosis in coastal sub-humid India."
     },
     {
-      "source_id": "Amarasinghe2017",
+      "source_id": "Patel2022",
+      "title": "Drought assessment for kharif rice using standardized precipitation index (SPI) and vegetation condition index (VCI)",
+      "authors": [
+        "Patel, N.R.",
+        "et al."
+      ],
+      "year": 2022,
+      "doi": "10.54386/jam.v21i2.230",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Demonstrates that SPI and VCI during kharif months are significantly correlated with kharif rice productivity index (r=0.61–0.70), explaining 69–76% of yield variability; supports use of drought_causality_json composite signal for agricultural drought diagnosis."
+    },
+    {
+      "source_id": "Zaveri2017",
       "title": "Water–food–energy nexus with changing agricultural scenarios in India during recent decades",
       "authors": [
-        "Amarasinghe, U.A.",
-        "Amarnath, G.",
-        "Alahacoon, N.",
-        "Ghosh, S."
+        "Zaveri, E.",
+        "et al."
       ],
       "year": 2017,
       "doi": "10.5194/hess-21-3041-2017",
       "source_type": "peer_reviewed_journal",
-      "relevance_note": "Documents that post-drought groundwater storage in alluvial settings fails to recover to pre-drought levels even after good monsoon years, supporting the link between seasonal precipitation deficits and sustained water scarcity in rabi and zaid seasons (sig_04)"
+      "relevance_note": "Shows that after drought years, groundwater storage in India drops and cannot recover even after good monsoon years, and that irrigation has been intensified irrespective of rainfall — relevant to understanding multi-year consequences of single drought seasons in alluvial coastal plains."
+    },
+    {
+      "source_id": "IMD_DroughtManual2016",
+      "title": "Drought Management Manual",
+      "authors": [
+        "India Meteorological Department",
+        "Ministry of Agriculture and Farmers Welfare"
+      ],
+      "year": 2016,
+      "source_type": "government_report",
+      "relevance_note": "Defines SPI thresholds for meteorological drought classification, MAI for agricultural drought, VCI for vegetation stress monitoring, and dry spell criteria (4-week moving window with <50% historical rainfall) used in sig_01, sig_02, and sig_03."
     }
   ],
-  "recommended_solutions": [
-    "Check dam repair using community labour ahead of monsoon",
-    "Emergency pre-monsoon water harvesting structure construction",
-    "Drought-tolerant variety promotion for kharif"
-  ],
-  "aer_reference": "AER-18: Hot sub-humid to semi-arid ecoregion with coastal alluvium-derived soils | states=['Tamil Nadu (coastal)', 'Andhra Pradesh (coastal)', 'Odisha (coastal)', 'Karnataka (coastal)'] | rainfall=900-1400mm | aquifer=alluvium",
   "metadata": {
     "created_by": "llm_extraction_v1",
     "reviewed_by_expert": false,
-    "created_at": "2025-07-15",
-    "last_updated": "2025-07-15",
+    "created_at": "2025-01-30",
+    "last_updated": "2025-01-30",
     "extraction_model": "claude-sonnet-4-6",
-    "confidence_overall": "medium"
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 24,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
   }
 }

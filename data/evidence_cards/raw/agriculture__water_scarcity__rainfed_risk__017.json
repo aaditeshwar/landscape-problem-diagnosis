@@ -1,0 +1,200 @@
+{
+  "card_id": "agriculture__water_scarcity__rainfed_risk__017",
+  "production_system": "Agriculture",
+  "observed_stress": "water_scarcity",
+  "causal_pathway": "rainfed_risk",
+  "context": {
+    "agro_climatic_zones": [
+      "humid",
+      "perhumid"
+    ],
+    "aquifer_types": [
+      "coastal"
+    ],
+    "terrain_types": [
+      "plains"
+    ],
+    "rainfall_regime": "humid",
+    "geographic_examples": [
+      "Andaman & Nicobar",
+      "Lakshadweep"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "lulc_single_kharif_ha",
+        "lulc_double_crop_ha"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "(lulc_single_kharif_ha[-1] / (lulc_single_kharif_ha[-1] + lulc_double_crop_ha[-1] + 1e-9)) > 0.75",
+        "qualitative_description": "More than 75% of cropped area is under single kharif season only, indicating near-total dependence on monsoon rainfall with negligible double-cropping.",
+        "threshold_confidence": "high",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "In island ecosystems such as Andaman & Nicobar and Lakshadweep, despite high annual rainfall (1600–3000 mm), the absence of irrigation infrastructure means cropping is confined to the kharif season when rainfall is reliable. A ratio above 0.75 for single-kharif area relative to total cropped area is a strong indicator of rainfed dependence. This mirrors the broader pattern documented for rainfed areas in Asia, where less-favoured areas with variable rainfall and minimal development attention remain locked in single-season farming (doi__10.5713_ajas.2011.r.09)."
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "cropping_intensity"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "mean_cropping_intensity <= 1.15",
+        "qualitative_description": "Mean cropping intensity at or below 1.15 across the multi-year record confirms that the vast majority of cultivated land is harvested only once per year, consistent with rainfed single-season farming.",
+        "threshold_confidence": "high",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Cropping intensity near 1.0 indicates single-season rainfed farming; values above 1.5 typically reflect irrigated double or triple cropping. Island agricultural systems in AER-20 lack the canal or reservoir infrastructure needed to sustain rabi or zaid crops, so intensity remains close to 1.0. A mean at or below 1.15 over the 2017–2024 period confirms structural rainfed dependence rather than a transient drought effect.",
+      "interaction_with": [
+        "sig_01",
+        "sig_03"
+      ]
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "canal_name",
+        "nrega_irrigation_count"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "canal_name is None and nrega_irrigation_count < 3",
+        "qualitative_description": "No irrigation canal intersects the micro-watershed and fewer than 3 MGNREGA irrigation works have been recorded, confirming absence of surface irrigation infrastructure.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "The co-absence of canal infrastructure and low MGNREGA irrigation investment jointly confirm that no formal or community-level irrigation system exists to supplement rainfall. In island settings with volcanic or coastal aquifers, surface water storage is limited and groundwater is often brackish near the coast, making canal or tank irrigation the only viable supplement. Low MGNREGA irrigation counts signal that even low-cost public investment in water harvesting has not occurred, leaving farmers entirely exposed to monsoon variability.",
+      "interaction_with": [
+        "sig_01",
+        "sig_04"
+      ]
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "annual_runoff_mm",
+        "terrain_cluster_id"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "mean_annual_runoff_mm > 600 and terrain_cluster_id == 1",
+        "qualitative_description": "High mean annual runoff (>600 mm) on mostly plains terrain (cluster 1) indicates substantial harvestable water that is currently lost, representing an untapped in-situ water harvesting opportunity.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Island ecosystems in AER-20 receive 1600–3000 mm of rainfall annually, generating high runoff volumes. On plains terrain (cluster 1), this runoff is not naturally retained and drains rapidly to the sea. High runoff relative to rainfall indicates that a large fraction of precipitation is lost as surface flow rather than infiltrating to support crop water needs during dry spells within the kharif season or into rabi. This amplifies rainfed risk because even in high-rainfall years, intra-seasonal dry spells can cause crop stress. Farm ponds and bunds on plains terrain could intercept this runoff for supplemental irrigation (doi__10.1007_s13593-015-0283-4).",
+      "interaction_with": [
+        "sig_03"
+      ]
+    },
+    {
+      "signal_id": "sig_05",
+      "variables": [
+        "swb_rabi_area_ha"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "swb_rabi_area_ha[-1] < 10",
+        "qualitative_description": "Surface water body area persisting into the rabi season is negligible (<10 ha), indicating that monsoon-season water storage does not carry over to support post-monsoon cropping.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "Low rabi-season surface water body area confirms that natural or constructed water storage is insufficient to sustain irrigation after the monsoon ends. In island settings, small watershed areas and permeable volcanic or sandy coastal soils mean that surface water bodies dry up rapidly post-monsoon. This directly explains why rabi and zaid cropping is absent or negligible, corroborating the rainfed risk diagnosis.",
+      "interaction_with": [
+        "sig_01",
+        "sig_02"
+      ]
+    }
+  ],
+  "confounders": [
+    {
+      "confounder": "High absolute rainfall masking rainfed risk — the humid to perhumid rainfall regime of AER-20 (1600–3000 mm/year) may suggest adequate water availability, leading to misclassification as low-risk rather than rainfed-risk.",
+      "how_to_distinguish": "Check cropping_intensity and lulc_single_kharif_ha ratios. High rainfall does not translate to year-round water availability if storage infrastructure is absent. Confirm canal_name is None and nrega_irrigation_count is low. If rabi cropping area is near zero despite high annual rainfall, rainfed risk is confirmed — the issue is intra-seasonal and inter-seasonal distribution, not total volume. Intra-seasonal dry spells within kharif are documented even in humid island systems."
+    },
+    {
+      "confounder": "Soil or salinity constraints reducing cropping intensity rather than water scarcity — coastal aquifer settings may have saline soils or waterlogging that independently suppress double-cropping and rabi cultivation.",
+      "how_to_distinguish": "If cropping_intensity is low but annual_runoff_mm is also low (suggesting water is not the limiting factor), investigate soil quality and salinity. Rainfed risk is confirmed when runoff is high (water physically available but not stored) and canal infrastructure is absent. If runoff is low and soils are waterlogged during kharif, the primary constraint may be drainage rather than water scarcity, pointing to a different causal pathway."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "irrigated_area_ha",
+      "question_to_user": "Do farmers in this area have access to any form of irrigation — such as pumped wells, drip systems, government canals, or community tanks — that they use during the dry season or during dry spells within the monsoon? If yes, roughly what share of cultivated land is irrigated?",
+      "how_answer_updates_diagnosis": "If irrigated area is reported as negligible (<5% of cultivated land), this strongly confirms the rainfed risk pathway. If a meaningful irrigated area exists (>20%), the diagnosis should be revisited to assess whether water scarcity is driven by irrigation system failure or groundwater stress rather than structural rainfed dependence."
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Devendra2011",
+      "title": "Rainfed Areas and Animal Agriculture in Asia: The Wanting Agenda for Transforming Productivity Growth and Rural Poverty",
+      "authors": [
+        "Devendra, C."
+      ],
+      "year": 2011,
+      "doi": "10.5713/ajas.2011.r.09",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents the extent and characteristics of rainfed areas in Asia including humid and sub-humid zones, highlighting minimal development attention and single-season cropping as defining features of less-favoured rainfed areas."
+    },
+    {
+      "source_id": "Daryanto2016",
+      "title": "Global Synthesis of Drought Effects on Maize and Wheat Production",
+      "authors": [
+        "Daryanto, S.",
+        "Wang, L.",
+        "Jacinthe, P.-A."
+      ],
+      "year": 2016,
+      "doi": "10.1371/journal.pone.0156362",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Provides evidence that dryland rainfed systems are more prone to yield loss from intra-seasonal dry spells, supporting the diagnosis that even humid-zone rainfed systems face water stress during irregular rainfall distribution."
+    },
+    {
+      "source_id": "Daryanto2015",
+      "title": "Management of crop water under drought: a review",
+      "authors": [
+        "Daryanto, S.",
+        "Wang, L.",
+        "Jacinthe, P.-A."
+      ],
+      "year": 2015,
+      "doi": "10.1007/s13593-015-0283-4",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Reviews unproductive water losses via runoff and evaporation in tropical rainfall regimes, supporting the recommendation for in-situ water harvesting (farm ponds, bunds) to capture high runoff on plains terrain in island ecosystems."
+    },
+    {
+      "source_id": "ICAR_AER20",
+      "title": "Agro-Ecological Regions of India: AER-20 Islands of Andaman-Nicobar and Lakshadweep",
+      "authors": [
+        "Indian Council of Agricultural Research"
+      ],
+      "year": 2020,
+      "source_type": "government_report",
+      "relevance_note": "Defines AER-20 as a hot humid to perhumid island ecoregion with 1600–3000 mm rainfall and volcanic aquifer, providing the biophysical baseline for diagnosing rainfed risk in the absence of irrigation infrastructure."
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-01-31",
+    "last_updated": "2025-01-31",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 20,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  }
+}

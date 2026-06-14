@@ -1,0 +1,224 @@
+{
+  "card_id": "socio_economic__low_income__small_landholding__016",
+  "production_system": "Socio_Economic",
+  "observed_stress": "low_income",
+  "causal_pathway": "small_landholding",
+  "context": {
+    "agro_climatic_zones": [
+      "arid"
+    ],
+    "aquifer_types": [
+      "hard_rock"
+    ],
+    "terrain_types": [
+      "hilly",
+      "valley"
+    ],
+    "rainfall_regime": "arid",
+    "geographic_examples": [
+      "Ladakh",
+      "high Himalaya cold desert"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "lulc_cropland_ha",
+        "village_total_population"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "(lulc_cropland_ha[-1] / (village_total_population + 1e-9)) < 0.2",
+        "qualitative_description": "Per-capita cropland availability below 0.2 ha/person indicates extreme land scarcity relative to population, a proxy for marginal or sub-marginal average farm size.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "In cold arid Ladakh, cultivable land is confined to narrow valley floors and glacial outwash terraces. Dividing total MWS cropland by village population gives a rough per-capita land availability figure. Values below 0.2 ha/person are consistent with average household holdings well under 1 ha, placing most households in the marginal farmer category. Shrinking average landholding size is a documented driver of insufficient farm income in India, as surplus production and creditworthiness both depend on scale.",
+      "interaction_with": [
+        "sig_02",
+        "sig_03"
+      ]
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "cropping_intensity"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "mean_cropping_intensity <= 1.15",
+        "qualitative_description": "Mean cropping intensity at or below 1.15 indicates that most cropland supports only a single crop per year, limiting total output from already small holdings.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "In the cold arid Himalayan context, the short frost-free growing window (typically 90–120 days) constrains double-cropping. A mean cropping intensity at or below 1.15 confirms that effective production per unit land is near its minimum. For small holders, low cropping intensity compounds the income constraint because there is no second harvest to supplement the primary crop income. This aligns with findings that households solely dependent on small-scale agriculture have lower monthly incomes.",
+      "interaction_with": [
+        "sig_01"
+      ]
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "dist_apmc_km"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "dist_apmc_km > 50",
+        "qualitative_description": "Distance to nearest APMC market exceeding 50 km severely limits price discovery and marketable surplus realisation for small holders in remote Himalayan valleys.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Remote smallholders in Ladakh face extreme market isolation due to high-altitude terrain and seasonal road closures. Without access to regulated markets, small holders are exploited by intermediaries and cannot realise fair prices for their limited surplus. Market access is a critical determinant of whether small holders can convert even modest production into adequate income. FPO formation and collective marketing are recommended precisely to overcome this barrier.",
+      "interaction_with": [
+        "sig_01",
+        "sig_04"
+      ]
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "nrega_community_assets_count",
+        "organization_domains"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "nrega_community_assets_count < 5 and ('livelihoods' not in organization_domains and 'watershed_management' not in organization_domains)",
+        "qualitative_description": "Fewer than 5 MGNREGA community asset works combined with absence of livelihood or watershed NGOs indicates a weak safety net and limited diversification support for small holders.",
+        "threshold_confidence": "low",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "MGNREGA off-farm works provide supplementary wage income that can partially offset low farm earnings for marginal holders. A low cumulative count of community assets suggests the programme has not been leveraged effectively as a safety net. Simultaneously, the absence of NGOs working on livelihoods or watershed management means there is no institutional support for income diversification into livestock, NTFP, or skill development — pathways that studies show can raise wellbeing even when farm income remains constrained.",
+      "interaction_with": [
+        "sig_03"
+      ]
+    },
+    {
+      "signal_id": "sig_05",
+      "variables": [
+        "dist_dairy_km"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "dist_dairy_km > 30",
+        "qualitative_description": "Distance to nearest dairy infrastructure exceeding 30 km prevents small holders from accessing livestock income diversification, a key pathway out of farm-income poverty.",
+        "threshold_confidence": "low",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Livestock rearing (yak, sheep, goat) is a traditional livelihood in Ladakh that can supplement crop income for small holders. However, without proximity to dairy collection or processing infrastructure, milk and livestock products cannot be marketed efficiently. Studies on smallholder wellbeing in India confirm that households combining agriculture with livestock income achieve better income outcomes than those relying solely on small-scale farming.",
+      "interaction_with": [
+        "sig_04"
+      ]
+    }
+  ],
+  "confounders": [
+    {
+      "confounder": "Low income driven by arid climate and crop failure rather than landholding size per se",
+      "how_to_distinguish": "Check mean_annual_precipitation_mm and drought_severe_return_period. If precipitation is below 150 mm and severe droughts recur frequently (return period < 3 years), climate stress is the primary income driver. In this case, even larger holdings would yield insufficient income, and the pathway shifts to climate-induced production failure rather than structural landholding fragmentation. Landholding size remains a compounding factor but not the root cause."
+    },
+    {
+      "confounder": "Low income caused by market failure or price exploitation rather than small landholding",
+      "how_to_distinguish": "If dist_apmc_km is very high (>100 km) but lulc_cropland_ha per capita is moderate (>0.4 ha/person), market isolation rather than land scarcity is the primary constraint. Ask users whether farmers produce adequate quantities but cannot sell at fair prices — this points to market failure pathway. If both land scarcity and market isolation co-occur, both pathways are active and solutions must address both FPO formation and land consolidation simultaneously."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "landholding_size_distribution",
+      "question_to_user": "What is the typical size of a farm plot in your village? Would you say most households farm less than half a hectare (about 1 acre), between half and 1 hectare, or more than 1 hectare? Are plots scattered across multiple locations or consolidated?",
+      "how_answer_updates_diagnosis": "If most households report holdings under 0.5 ha and plots are fragmented across multiple terraces, this strongly confirms the small landholding pathway. Fragmentation across terraces in Ladakh also prevents mechanisation, further compressing income. If holdings are larger but income is still low, the diagnosis should shift weight toward market isolation or climate stress pathways."
+    },
+    {
+      "missing_variable": "household_income_inr",
+      "question_to_user": "Can you estimate the approximate annual household income from all sources — farm crops, livestock, government wages (MGNREGA), remittances, or other jobs? Is farm income the main source, or do most households depend on non-farm income?",
+      "how_answer_updates_diagnosis": "If annual household income is below INR 60,000 and farm income constitutes more than 70% of total income, this confirms both low income and single-source livelihood dependence. If non-farm income already dominates, the diagnosis should focus on why farm income is not supplementing adequately, and solutions should prioritise value chain access rather than diversification."
+    },
+    {
+      "missing_variable": "market_price_crop",
+      "question_to_user": "What price do farmers typically receive for their main crops (e.g., barley, peas, vegetables)? Is this price close to the government Minimum Support Price (MSP), or significantly lower? Do traders come to the village or do farmers have to travel to sell?",
+      "how_answer_updates_diagnosis": "A large gap between realised price and MSP (more than 30% below MSP) confirms that market failure is amplifying the income loss from small holdings. If prices are near MSP, the income problem is primarily a volume problem (too little surplus from small holdings), confirming the landholding size pathway as primary."
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Gulati2021",
+      "title": "Revitalizing Indian Agriculture and Boosting Farmer Incomes",
+      "authors": [
+        "Gulati, Ashok",
+        "Roy, Ranjana",
+        "Saini, Shweta"
+      ],
+      "year": 2021,
+      "doi": "10.1007/978-981-15-9335-2",
+      "source_type": "book_chapter",
+      "relevance_note": "Documents shrinking average landholding size as a structural driver of insufficient farm income in India, and the link between agricultural growth, poverty, and malnutrition in states with large marginal farmer populations."
+    },
+    {
+      "source_id": "Fan2020",
+      "title": "The Role of Smallholder Farms in a Changing World",
+      "authors": [
+        "Fan, Shenggen",
+        "Rue, Connie"
+      ],
+      "year": 2020,
+      "doi": "10.1007/978-3-030-42148-9_2",
+      "source_type": "book_chapter",
+      "relevance_note": "Provides the 'move up or move out' typology for smallholders, identifying hard constraints (low rainfall, remote location, high population density) that limit profit potential and require differentiated support strategies including FPO formation, non-farm employment, and social safety nets."
+    },
+    {
+      "source_id": "Patel2015",
+      "title": "The interplay between household food security and wellbeing among small-scale farmers in the context of rapid agrarian change",
+      "authors": [
+        "Patel, Kirit"
+      ],
+      "year": 2015,
+      "doi": "10.1186/s40066-015-0036-2",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Empirically demonstrates that households solely dependent on small-scale agriculture have higher food sufficiency but lower monthly income and wellbeing, while those combining agriculture with off-farm employment achieve better income outcomes — directly supporting the diversification recommendations for this pathway."
+    },
+    {
+      "source_id": "Sharma2018",
+      "title": "Farmer producer organisations: Innovative institutions for upliftment of small farmers",
+      "authors": [
+        "Sharma, V.P."
+      ],
+      "year": 2018,
+      "doi": "10.56093/ijas.v89i9.93451",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents how FPOs provide forward and backward linkages, market access, bargaining power, and economy of scale for unorganised small farmers who lack individual creditworthiness and market access — directly supporting FPO formation as the primary recommended solution."
+    },
+    {
+      "source_id": "Tripathi2018",
+      "title": "Enhancing farmers income through farmers' producers companies in India: Status and roadmap",
+      "authors": [
+        "Tripathi, A.",
+        "Priyadarshi, A."
+      ],
+      "year": 2018,
+      "doi": "10.56093/ijas.v88i8.82441",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Reviews the status and growth of Farmer Producer Companies in India as farmer-owned micro-enterprises that overcome the constraints of fragmented small holdings through collective action, providing the evidence base for FPC formation as a solution to small landholding income constraints."
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-01-24",
+    "last_updated": "2025-01-24",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 19,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "overall_reasoning_note": "In the cold arid Ladakh context, the small landholding pathway to low income operates through three compounding mechanisms: (1) absolute land scarcity on valley floors limits total production volume, (2) a short frost-free season prevents double-cropping and thus limits effective output per unit land, and (3) extreme market remoteness prevents realisation of fair prices for whatever surplus is produced. Diagnosis requires at least two of the three primary signals (sig_01 per-capita cropland, sig_02 low cropping intensity, sig_03 market distance) to confirm the pathway. The safety net signals (sig_04, sig_05) amplify severity but do not confirm the pathway independently. The key diagnostic question is whether low income is driven by structural land scarcity (this pathway) versus climate-induced crop failure (climate stress pathway) or market exploitation (market failure pathway) — these often co-occur in Ladakh and may require combined solutions. Prioritise asking users about actual plot sizes and income sources before finalising diagnosis."
+}

@@ -1,0 +1,207 @@
+{
+  "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__016",
+  "production_system": "NTFP_Forest_Biodiversity",
+  "observed_stress": "ntfp_decline",
+  "causal_pathway": "forest_degradation",
+  "context": {
+    "agro_climatic_zones": [
+      "arid"
+    ],
+    "aquifer_types": [
+      "hard_rock"
+    ],
+    "terrain_types": [
+      "hilly",
+      "valley"
+    ],
+    "rainfall_regime": "arid",
+    "geographic_examples": [
+      "Ladakh",
+      "high Himalaya cold desert"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "lulc_tree_forest_ha"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "lulc_tree_forest_ha[-1] < lulc_tree_forest_ha[0]",
+        "qualitative_description": "Forest area in the micro-watershed has declined from the earliest to the latest available year (2017–2024), indicating net loss of NTFP-bearing tree cover.",
+        "threshold_confidence": "high",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "A net reduction in forest area over the monitoring period directly reduces the habitat and resource base for NTFP-bearing trees and understory species. In the cold arid Himalayan zone (Ladakh, AER-1), sparse natural forest patches are highly sensitive to disturbance; even small absolute losses represent disproportionate ecological impact given the low baseline cover and extremely slow regeneration rates under <150 mm annual rainfall. Declining forest area is the primary structural driver of NTFP decline in this pathway.",
+      "interaction_with": [
+        "sig_02",
+        "sig_03"
+      ]
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "cd_total_deforestation_ha",
+        "cd_total_afforestation_ha"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "cd_total_deforestation_ha > 0 and (cd_total_afforestation_ha == 0 or cd_total_deforestation_ha > cd_total_afforestation_ha)",
+        "qualitative_description": "Cumulative deforestation exceeds afforestation, or afforestation is absent entirely, indicating a net forest deficit with no compensatory recovery.",
+        "threshold_confidence": "high",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "When total deforested area exceeds total afforested area, the landscape is in a net forest deficit. In the cold arid Himalayan ecoregion, natural regeneration is extremely slow due to harsh climate, shallow soils, and low precipitation; afforestation without active community management rarely succeeds. The absence of compensatory planting signals weak institutional forest protection, consistent with findings on the need for community-based forest governance under India's Forest Rights Act to sustain NTFP-bearing landscapes.",
+      "interaction_with": [
+        "sig_01",
+        "sig_04"
+      ]
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "cd_total_deforestation_ha"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "cd_total_deforestation_ha > 10",
+        "qualitative_description": "Total deforested area exceeds 10 ha, representing a meaningful absolute loss of forest habitat in a landscape where baseline forest cover is already sparse.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "In the cold arid Himalayan zone, forest patches are small and fragmented. A loss of even 10 ha can eliminate key NTFP-bearing microhabitats such as riparian willow groves, juniper stands, or seabuckthorn thickets that are critical for dependent communities. NTFP availability is highly sensitive to patch-level forest loss because species richness and abundance are concentrated in these remnant patches. Certification and sustainable harvest frameworks for NTFPs in India emphasise that declining wild populations result from destructive collection compounded by habitat loss.",
+      "interaction_with": [
+        "sig_01"
+      ]
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "organization_domains"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "expression": "'Agroforestry' not in organization_domains and 'Forest management' not in organization_domains and 'NTFP' not in organization_domains",
+        "qualitative_description": "No NGO or organisation active in the micro-watershed has a domain focus on agroforestry, forest management, or NTFP support, indicating an absence of institutional support for forest protection and NTFP recovery.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "The absence of organisations working on agroforestry, forest management, or NTFP value chains means communities lack technical and institutional support for forest protection, assisted regeneration, or sustainable harvest practices. In remote cold arid zones like Ladakh, where state forest department capacity is limited, NGO presence is often the primary channel for implementing Joint Forest Management, Community Forest Resource rights under FRA, or community plantation programmes. Lack of such support amplifies the risk that forest degradation will continue unchecked.",
+      "interaction_with": [
+        "sig_02"
+      ]
+    },
+    {
+      "signal_id": "sig_05",
+      "variables": [
+        "ntfp_species_presence"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Field surveys or community reports indicate reduced abundance, distribution, or seasonal availability of key NTFP species such as seabuckthorn (Hippophae rhamnoides), juniper (Juniperus spp.), or medicinal herbs in the micro-watershed.",
+        "threshold_confidence": "high",
+        "context_sensitivity": "local"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Direct evidence of declining NTFP species presence or abundance is the most diagnostic indicator of this pathway. In the cold arid Himalayan zone, key NTFPs include seabuckthorn berries, juniper resin, and high-altitude medicinal plants. Community-reported declines in collection quantities or access distances are reliable proxies for habitat degradation. Studies on NTFP dependence in India confirm that livelihood losses track closely with ecological degradation of forest resources, and that win-lose outcomes emerge when ecological costs of harvest compound with habitat loss."
+    }
+  ],
+  "confounders": [
+    {
+      "confounder": "Over-harvesting of NTFPs by dependent communities causing species decline without net forest cover loss",
+      "how_to_distinguish": "Check whether lulc_tree_forest_ha is stable or increasing while NTFP collection is declining. If forest area is maintained but NTFP species are depleted, over-harvesting rather than forest degradation is the primary driver. Ask communities whether collection effort (distance travelled, time spent) has increased even as yields fall — this pattern indicates resource depletion within intact forest rather than habitat loss. The forest_degradation pathway requires evidence of actual forest cover reduction (sig_01, sig_02, sig_03)."
+    },
+    {
+      "confounder": "Climate-driven vegetation stress in cold arid zone reducing NTFP productivity without anthropogenic forest degradation",
+      "how_to_distinguish": "Compare trend_annual_precipitation_mm and mean_annual_precipitation_mm against historical baseline. If precipitation has declined significantly and forest area is stable, climate stress rather than degradation may be suppressing NTFP yields. The forest_degradation pathway is confirmed when cd_total_deforestation_ha is positive and lulc_tree_forest_ha shows a declining trend independent of precipitation anomalies. In Ladakh, permafrost thaw and glacial retreat can also alter soil moisture regimes affecting understory species without direct deforestation."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "ntfp_species_presence",
+      "question_to_user": "Have community members noticed a reduction in the availability of key forest products such as seabuckthorn berries, juniper, medicinal herbs, or other plants they collect from the forest? Are people now travelling further or spending more time to collect the same amount as before?",
+      "how_answer_updates_diagnosis": "Confirmed decline in NTFP species abundance or increased collection effort strongly confirms the forest_degradation pathway. If species are declining but forest area appears stable, this shifts the diagnosis toward over-harvesting as the primary driver rather than habitat loss. If both forest area and species abundance are declining together, the forest_degradation pathway is strongly confirmed."
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Yadav2013",
+      "title": "Non-timber forest products certification in India: opportunities and challenges",
+      "authors": [
+        "Yadav, M.",
+        "Dugaya, D."
+      ],
+      "year": 2013,
+      "doi": "10.1007/s10668-012-9393-1",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents declining wild NTFP populations in India due to destructive collection and habitat loss; highlights socio-economic importance of NTFPs for forest-dwelling communities and the need for sustainable management standards."
+    },
+    {
+      "source_id": "Shaanker2004",
+      "title": "Livelihood gains and ecological costs of non-timber forest product dependence: assessing the roles of dependence, ecological knowledge and market structure",
+      "authors": [
+        "Shaanker, R. U.",
+        "Ganeshaiah, K. N.",
+        "Krishnan, S.",
+        "Ramya, R.",
+        "Meera, C.",
+        "Aravind, N. A.",
+        "Kumar, A.",
+        "Rao, D.",
+        "Venugopal, V. S.",
+        "Bhattacharya, S.",
+        "Ghazoul, J."
+      ],
+      "year": 2004,
+      "doi": "10.1017/s0376892904001596",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Demonstrates that NTFP-dependent livelihoods shift from win-lose to lose-lose outcomes when ecological degradation of forest resources is not addressed; identifies forest habitat quality as a key determinant of NTFP availability."
+    },
+    {
+      "source_id": "Springate-Baginski2010",
+      "title": "Potential for Recognition of Community Forest Resource Rights Under India's Forest Rights Act",
+      "authors": [
+        "Springate-Baginski, O."
+      ],
+      "year": 2010,
+      "doi": "10.53892/ugvt5889",
+      "source_type": "grey_literature",
+      "relevance_note": "Describes the Forest Rights Act framework for Community Forest Resource rights as a mechanism to transform forest governance and protect NTFP-dependent livelihoods for over 150 million forest-dwelling people across India."
+    },
+    {
+      "source_id": "Pettenella2019",
+      "title": "Sustainable Forest Management Beyond the Timber-Oriented Status Quo: Transitioning to Co-production of Timber and Non-woody Forest Products",
+      "authors": [
+        "Pettenella, D.",
+        "Kloehn, S.",
+        "Boecher, M."
+      ],
+      "year": 2019,
+      "doi": "10.1007/s40725-019-00107-1",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Reviews the critical role of property rights, access, and forest governance in sustaining NTFP availability; notes that policy and tenure insecurity directly reduce NTFP resource sustainability."
+    }
+  ],
+  "overall_reasoning_note": "Diagnosis of the forest_degradation pathway for NTFP decline in the cold arid Himalayan zone (Ladakh, AER-1) should be confirmed by at least two of the three primary structural signals: declining forest area (sig_01), net deforestation exceeding afforestation (sig_02), or meaningful absolute deforestation (sig_03). The absence of institutional support (sig_04) amplifies risk but does not confirm the pathway alone. Direct NTFP species evidence (sig_05) is the most diagnostic but requires field or community survey data not available in remote sensing datasets. In this ecoregion, forest patches are sparse, regeneration is extremely slow under <150 mm rainfall, and hard rock terrain limits soil development — meaning even small forest losses have outsized impacts on NTFP availability. Distinguish from over-harvesting (stable forest area, declining species) and climate stress (declining precipitation, stable forest area) before finalising diagnosis. Community Forest Resource rights under FRA and assisted natural regeneration are priority interventions where institutional gaps are confirmed.",
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-01-30",
+    "last_updated": "2025-01-30",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 25,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  }
+}

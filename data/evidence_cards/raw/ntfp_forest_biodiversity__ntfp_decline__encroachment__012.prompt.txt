@@ -1,0 +1,344 @@
+You are extracting one evidence card for an agro-ecological diagnosis system in India.
+
+Return ONLY a single JSON object (no markdown fences) matching the EvidenceCard schema.
+
+Required card_id: ntfp_forest_biodiversity__ntfp_decline__encroachment__012
+Production system: NTFP_Forest_Biodiversity
+Observed stress: ntfp_decline
+Causal pathway: encroachment
+
+Pathway description: Forest land encroached for agriculture or settlement, reducing forest extent and community access.
+Stress description: Non-timber forest produce collection declining in quantity or quality; reduced access for dependent communities.
+
+Target context (use exactly these context field values):
+{
+  "agro_climatic_zones": [
+    "perhumid"
+  ],
+  "aquifer_types": [
+    "hard_rock"
+  ],
+  "terrain_types": [
+    "hilly"
+  ],
+  "rainfall_regime": "humid",
+  "geographic_examples": [
+    "Sikkim",
+    "Arunachal Pradesh",
+    "NE hill states"
+  ]
+}
+
+AER reference for this context:
+AER-16: Eastern Himalayas, warm perhumid ecoregion | states=['Sikkim', 'Arunachal Pradesh', 'Meghalaya', 'Mizoram', 'Nagaland', 'Manipur', 'Tripura'] | rainfall=2000-5000mm | aquifer=himalayan_and_sub_himalayan
+
+Diagnostic variables from the framework (use these variable names in signals):
+[
+  {
+    "variable": "cd_forest_to_farm_ha",
+    "rationale": "Forest-to-farm transition directly measures encroachment",
+    "availability": "available"
+  },
+  {
+    "variable": "cd_total_urbanization_ha",
+    "rationale": "Settlement expansion into forest areas can indicate encroachment",
+    "availability": "available"
+  },
+  {
+    "variable": "village_st_percent",
+    "rationale": "High ST population with declining NTFP access may indicate forest rights disputes or displacement",
+    "availability": "available"
+  }
+]
+
+Recommended solutions for this pathway:
+[
+  "Forest Rights Act (FRA) claim filing support for individual and community rights",
+  "Boundary demarcation and signage of forest land",
+  "Livelihood alternatives for encroacher households to reduce pressure"
+]
+
+Variable types for this pathway (from data_dictionary.json):
+  cd_forest_to_farm_ha (unknown, availability=available): Forest-to-farm transition directly measures encroachment
+  cd_total_urbanization_ha (unknown, availability=available): Settlement expansion into forest areas can indicate encroachment
+  village_st_percent (static, availability=available): High ST population with declining NTFP access may indicate forest rights disputes or displacement
+
+Signal expression rules (CRITICAL — downstream diagnosis evaluates these step-by-step as Python booleans):
+- Every diagnostic_signals[].condition MUST include a non-empty "expression" for types quantitative, trend, and composite.
+- type=qualitative WITHOUT expression is allowed ONLY for variables with availability=not_available in the framework list above.
+  All pathway variables are available — every signal must have a Python expression.
+- The expression is shown to a reasoning model as the evaluable condition. It MUST be a single valid Python boolean expression using variable names exactly as in data_dictionary.json.
+- Put interpretive prose ONLY in "explanation" and optional supporting "qualitative_description". NEVER put prose paragraphs in "expression".
+- Time-series variables (e.g. lulc_*_ha, cropping_intensity, annual_runoff_mm, drought_weeks_severe) are dicts keyed by year strings "2017".."2024". Use [-1] for latest year, [0] for earliest: cropping_intensity[-1] <= 1.15
+- Scalar NREGA totals (nrega_swc_count, nrega_irrigation_count, nrega_community_assets_count) are numeric aggregates — compare directly: nrega_irrigation_count < 3 (NOT .values() or dict indexing).
+- Null/absent categorical values: use `canal_name is None`, never SQL syntax like `IS NULL`.
+- List variables: organization_domains is a Python list — use `'fisheries' not in organization_domains`.
+- terrain_cluster_id is an integer: 1 = Mostly Plains, 3 = Broad Plains and Slopes. Use explicit comparisons, e.g. terrain_cluster_id == 3 for sloping terrain; do NOT describe terrain in prose without a numeric test.
+- String equality: aquifer_class == 'crystalline_basement' (single quotes inside the JSON string).
+- Ratios and compound conditions: parenthesize explicitly — (lulc_single_kharif_ha[-1] / (lulc_single_kharif_ha[-1] + lulc_double_crop_ha[-1] + 1e-9)) > 0.75
+- Derived mean/trend scalars are computed at diagnosis time from the raw time series and injected alongside present_variables. Prefer them for multi-year patterns instead of prose:
+  trend_annual_delta_g_mm < 0, mean_cropping_intensity <= 1.15, trend_swb_total_area_ha < -5
+
+Derived/computed variables (scalars — use directly in expressions):
+  mean_annual_precipitation_mm: mean of annual_precipitation_mm time series
+  trend_annual_precipitation_mm: linear slope of annual_precipitation_mm (mm/year)
+  mean_annual_et_mm: mean of annual_et_mm time series
+  trend_annual_et_mm: linear slope of annual_et_mm (mm/year)
+  mean_annual_runoff_mm: mean of annual_runoff_mm time series
+  trend_annual_runoff_mm: linear slope of annual_runoff_mm (mm/year)
+  mean_annual_delta_g_mm: mean of P−ET−Runoff groundwater balance
+  trend_annual_delta_g_mm: linear slope of annual_delta_g_mm (mm/year)
+  mean_cropping_intensity: mean of cropping_intensity time series
+  trend_cropping_intensity: linear slope of cropping_intensity (ratio/year)
+  mean_kharif_cropped_area_ha: mean of lulc_single_kharif_ha time series
+  trend_kharif_cropped_area_ha: linear slope of lulc_single_kharif_ha (ha/year)
+  mean_double_crop_area_ha: mean of lulc_double_crop_ha time series
+  trend_double_crop_area_ha: linear slope of lulc_double_crop_ha (ha/year)
+  drought_moderate_return_period: average years between moderate drought kharif seasons
+  drought_severe_return_period: average years between severe drought kharif seasons
+  mean_swb_total_area_ha: mean of swb_total_area_ha time series
+  trend_swb_total_area_ha: linear slope of swb_total_area_ha (ha/year)
+  mean_swb_rabi_kharif_ratio: mean of swb_rabi_area_ha / swb_kharif_area_ha ratio
+  trend_swb_rabi_kharif_ratio: linear slope of SWB rabi/kharif ratio
+
+BAD example (current corpus bug — do NOT reproduce):
+  "type": "qualitative",
+  "qualitative_description": "Terrain cluster indicates sloping plateau or hilly terrain..."
+  (no expression — model cannot evaluate TRUE/FALSE; also contradicts terrain_cluster_id == 1 = Mostly Plains)
+
+GOOD example for terrain_cluster_id on rainfed_risk:
+  "type": "quantitative",
+  "expression": "terrain_cluster_id == 3 and annual_runoff_mm[-1] > 80",
+  "qualitative_description": "Broad plains and slopes (cluster 3) with high runoff reduce in-field moisture retention.",
+  "threshold_confidence": "medium",
+  "context_sensitivity": "regional"
+
+The example card below may contain legacy qualitative-only conditions — ignore those patterns; your output must follow these expression rules.
+
+Rules:
+- Include 3-5 diagnostic_signals using available variables where possible.
+- For variables marked availability not_available, add missing_variable_questions.
+- Include 1-2 confounders distinguishing this pathway from alternatives.
+- Ground claims in the paper excerpts below; cite sources with realistic source_id citekeys.
+- Each source source_type must be exactly one of: peer_reviewed_journal, government_report, ngo_report, grey_literature, expert_guideline, book_chapter (use grey_literature for theses/working papers).
+- Each diagnostic_signals[].condition.type must be exactly one of: quantitative, qualitative, trend, composite (use composite for multi-part conditions, not "compound").
+- Set metadata.created_by to "llm_extraction_v1", reviewed_by_expert to false,
+  extraction_model to "claude-sonnet-4-6", confidence_overall to medium/high/low as appropriate,
+  created_at and last_updated to today's date.
+- At embedding time, semantic aliases from metadata/semantic_aliases.json are appended
+  automatically for pathway "encroachment" — do not duplicate alias
+  phrases in overall_reasoning_note.
+
+Example card (structure reference):
+{
+  "card_id": "agriculture__water_scarcity__groundwater_stress__001",
+  "production_system": "Agriculture",
+  "observed_stress": "water_scarcity",
+  "causal_pathway": "groundwater_stress",
+  "context": {
+    "agro_climatic_zones": [
+      "semi-arid",
+      "sub-humid"
+    ],
+    "aquifer_types": [
+      "hard_rock"
+    ],
+    "terrain_types": [
+      "plateau",
+      "plains"
+    ],
+    "rainfall_regime": "semi-arid",
+    "crop_systems": [
+      "kharif rainfed",
+      "cotton",
+      "soybean"
+    ],
+    "geographic_examples": [
+      "Vidarbha Maharashtra",
+      "Telangana",
+      "Karnataka Deccan Plateau"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "soge_dev_percent",
+        "soge_class_name"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "soge_dev_percent > 70 or soge_class_name in ['Semi-critical', 'Critical', 'Over-exploited']",
+        "threshold_confidence": "high",
+        "context_sensitivity": "global"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "CGWB defines groundwater stress classes based on extraction as a percentage of net annual recharge. In hard rock aquifers, even 'Safe' SOGE values above 60% can indicate localised stress because storativity is low and recharge is spatially heterogeneous \u2014 a block-level Safe classification may mask critical depletion at the micro-watershed scale."
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "annual_well_depth_m"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "annual_well_depth_m[-1] - annual_well_depth_m[0] > 3",
+        "qualitative_description": "Well depth has increased by more than 3 metres over the available multi-year record (2017\u20132025), indicating declining static water level.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Deepening well depth is a direct proxy for declining groundwater table. A 3m decline over 8 years (~0.4m/year) is considered significant in hard rock aquifers where storage is limited to weathered and fractured zones typically 10\u201330m deep. Faster rates indicate imminent failure of shallow dug wells.",
+      "interaction_with": [
+        "sig_01",
+        "sig_03"
+      ]
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "annual_delta_g_mm"
+      ],
+      "condition": {
+        "type": "trend",
+        "qualitative_description": "Annual delta_g (P - ET - Runoff) is negative in more than 4 of the last 8 years, indicating chronic excess extraction over recharge.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "A consistently negative delta_g across multiple years means outflows (ET + runoff) persistently exceed precipitation, leaving no surplus for groundwater recharge. In semi-arid hard rock settings, even small negative balances accumulate quickly due to low aquifer storage."
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "nrega_swc_count"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "sum(nrega_swc_count.values()) < 5",
+        "qualitative_description": "Fewer than 5 cumulative SWC works in the MWS over the MGNREGA record, indicating low investment in recharge infrastructure.",
+        "threshold_confidence": "low",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Low historical SWC investment means natural recharge opportunities (check dams, percolation ponds, farm bunds) have not been exploited, amplifying the depletion caused by extraction. It also signals an opportunity for intervention rather than a terminal condition.",
+      "interaction_with": [
+        "sig_03"
+      ]
+    }
+  ],
+  "overall_reasoning_note": "Groundwater stress in hard rock aquifers should be confirmed by at least two of the three primary signals: elevated SOGE, deepening well trend, or chronic negative delta_g. A single signal may reflect data noise or spatial mismatch (SOGE is block-level). The absence of SWC investment (sig_04) amplifies the other signals but does not confirm stress on its own. If SOGE is Safe but well depth is increasing rapidly, prioritise the well depth trend \u2014 block-level SOGE masks micro-watershed heterogeneity in hard rock terrain. Always ask the user about borewell density and crop water demand (irrigated vs rainfed) before finalising diagnosis.",
+  "confounders": [
+    {
+      "confounder": "drought (meteorological) causing apparent groundwater stress through reduced recharge rather than over-extraction",
+      "how_to_distinguish": "Compare drought_weeks_severe and annual_precipitation_mm against historical baseline. If drought years co-occur with the delta_g decline, drought is the primary driver and groundwater stress is secondary. Check soge_dev_percent \u2014 if it is low (<50%) but delta_g is still negative, drought rather than extraction is likely primary."
+    },
+    {
+      "confounder": "Seasonal variation in well depth misread as multi-year trend",
+      "how_to_distinguish": "Ensure well depth comparisons are made for the same season (preferably pre-monsoon) across years, not across seasons."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "borewell_density",
+      "question_to_user": "Roughly how many borewells or tubewells are there in your village or nearby villages? Would you say there are very few (less than 10), a moderate number (10\u201350), or a large number (more than 50)?",
+      "how_answer_updates_diagnosis": "High borewell density in a hard rock aquifer with low SOGE confirms localised over-extraction not captured by the block-level SOGE figure, strongly confirming the groundwater stress pathway."
+    },
+    {
+      "missing_variable": "groundwater_salinity",
+      "question_to_user": "Have farmers noticed that borewell or well water has become saltier, leaves white deposits, or is no longer suitable for certain crops?",
+      "how_answer_updates_diagnosis": "Salinity in hard rock aquifers can indicate deep borewell penetration into saline zones, a secondary consequence of over-extraction, or a different causal pathway (saline intrusion) that changes solution recommendations."
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Shah2009",
+      "title": "Taming the anarchy: Groundwater governance in South Asia",
+      "authors": [
+        "Shah, Tushaar"
+      ],
+      "year": 2009,
+      "source_type": "book_chapter",
+      "relevance_note": "Documents hard rock aquifer depletion dynamics and the inadequacy of block-level SOGE to capture local depletion in peninsular India"
+    },
+    {
+      "source_id": "CGWB2023",
+      "title": "National Compilation of Dynamic Ground Water Resources of India 2022",
+      "authors": [
+        "Central Ground Water Board"
+      ],
+      "year": 2023,
+      "url": "https://cgwb.gov.in",
+      "source_type": "government_report",
+      "relevance_note": "Defines SOGE class thresholds (Safe <70%, Semi-critical 70\u201390%, Critical 90\u2013100%, Over-exploited >100%) used in sig_01"
+    },
+    {
+      "source_id": "Fishman2011",
+      "title": "Can the groundwater crisis in rural India be attributed to well deepening?",
+      "authors": [
+        "Fishman, R.",
+        "Devineni, N.",
+        "Raman, S."
+      ],
+      "year": 2011,
+      "doi": "10.1029/2011WR010477",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents well deepening as a reliable proxy for groundwater table decline in Indian hard rock and alluvial settings"
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2026-06-07",
+    "last_updated": "2026-06-07",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium"
+  }
+}
+
+Paper excerpts:
+[Chunk 1] paper=doi__10.18520_cs_v114_i05_976-981 type=abstract title=Mangrove Forests of India
+Mangrove forests of India are globally unique with the highest record of biodiversity, gifted with the mangrove genetic paradise at Bhitarkanika, and the globally threatened wildlife species in the Sundarbans. The Sundarbans of India and Bangladesh is the only largest mangrove forest in the world colonized by the Royal Bengal Tigers. Mangroves are dense and floristically diverse along the east coast of India and the Andaman and Nicobar Islands. They are largely distributed in the high energy tidal coast of two extreme conditions: (i) humid and wet in Sundarbans with rich biodiversity, and (ii) arid and dry in Gujarat with low biodiversity. Despite increasing pressures, the mangrove cover in India increases annually at the rate of 1.9%, as against the global mangrove cover that disappears at 0.66%. However, India has a large track of sparse mangrove stand. This article discusses the present status of mangrove forests, conservation and management strategies being followed successfully in India, and recommends the future directions for mangrove restoration, improvisation of sparse stands, participatory management, and quality publications on mangrove research.
+
+[Chunk 2] paper=doi__10.1038_s41598-019-43940-x type=abstract title=Trends in Vegetation fires in South and Southeast Asian Countries
+We assessed the fire trends from Moderate Resolution Imaging Spectroradiometer (MODIS) (2003-2016) and Visible Infrared Imaging Radiometer Suite (VIIRS) (2012-2016) in South/Southeast Asia (S/SEA) at a country level and vegetation types. We also quantified the fire frequencies, anomalies and climate drivers. MODIS data suggested India, Pakistan, Indonesia and Myanmar as having the most fires. Also, the VIIRS-detected fires were higher than MODIS (AQUA and TERRA) by a factor of 7 and 5 in S/SEA. Thirty percent of S/SEA had recurrent fires with the most in Laos, Cambodia, Thailand, and Myanmar. Statistically-significant increasing fire trends were found for India (p = 0.004), Cambodia (p = 0.001), and Vietnam (p = 0.050) whereas Timor Leste (p = 0.004) had a decreasing trend. An increasing trend in fire radiative power (FRP) were found for Cambodia (p = 0.005), India (0.039), and Pakistan (0.06) and declining trend in Afghanistan (0.041). Fire trends from VIIRS were not significant due to limited duration of data. In S/SEA, fires in croplands were equally frequent as in forests, with increasing fires in India, Pakistan, and Vietnam. Specific to climate drivers, precipitation could explain more variations in fires than the temperature with stronger correlations in Southeast Asia than South Asia. Our results on fire statistics including spatial geography, variations, frequencies, anomalies, trends, and climate drivers can be useful for fire management in S/SEA countries.
+
+[Chunk 3] paper=doi__10.1186_s40663-016-0069-4 type=abstract title=Geospatial analysis of forest fragmentation in Uttara Kannada District, India
+Landscapes consist of heterogeneous interacting dynamic elements with complex ecological, economic and cultural attributes. These complex interactions help in the sustenance of natural resources through bio-geochemical and hydrological cycling. The ecosystem functions are altered with changes in the landscape structure. Fragmentation of large contiguous forests to small and isolated forest patches either by natural phenomena or anthropogenic activities leads to drastic changes in forest patch sizes, shape, connectivity and internal heterogeneity, which restrict the movement leading to inbreeding among Meta populations with extirpation of species. Landscape dynamics are assessed through land use analysis by way of remote sensing data acquired at different time periods. Forest fragmentation is assessed at the pixel level through computation of two indicators, i.e., P f (the ratio of pixels that are forested to the total non-water pixels in the window) and P ff (the proportion of all adjacent (cardinal directions only) pixel pairs that include at least one forest pixel, for which both pixels are forested). Uttara Kannada District has the distinction of having the highest forest cover in Karnataka State, India. This region has been experiencing changes in its forest cover and consequent alterations in functional abilities of its ecosystem. Temporal land use analyses show the trend of deforestation, evident from the reduction of evergreen - semi evergreen forest cover from 57.31 % (1979) to 32.08 % (2013) Forest fragmentation at the landscape level shows a decline of interior forests 64.42 % (1979) to 25.62 % (2013) and transition of non-forest categories such as crop land, plantations and built-up areas, amounting now to 47.29 %. PCA prioritized geophysical and socio variables responsible for changes in the landscape structure at local levels. Terrestrial forest ecosystems in Uttara Kannada District of Central Western Ghats have been experiencing threats due to deforestation with land use changes and fragmentation of contiguous forests, as is evident from the decline of interior forests and consequent increases in patch, transitional, edge and perforated forests. Interior or intact forest cover in this ecologically fragile region is now 25.62 %. Considering the accelerating rates of forest fragmentation in recent times, the focus should be on reforestation and regeneration of natural vegetation to sustain food and water security and the livelihood of local pop
+
+[Chunk 4] paper=doi__10.18520_cs_v122_i7_772-789 type=abstract title=Causes and consequences of soil erosion in northeastern Himalaya, India
+The Northeastern Region of India, due to its geographical location in the eastern Himalaya, exhibits unique features of hilly terrain and abundant rainfall with wide spatial variability. Due to inappropriate and unsustainable land-use practices along the steep hill slopes, the region is prone to severe water erosion and soil loss. Only a few discrete, small-scale studies on measured soil loss in the region are available. Inadequate information at the regional level restricts devising site-specific soil and water conservation measures for the vulnerable areas of this region. To illustrate regional scenarios for future use, including projection studies, we have reviewed studies of soil loss in the region over the past three decades. The literature revealed significant variation in annual soil loss measured or estimated (range) across different land-use practices: traces to 229.5 t ha -1 yr -1 in shifting cultivation (jhum) and traces to 836.0 t ha -1 yr -1 in other non-jhum major land uses (agriculture, open forest and wasteland). The information generated will help prioritize research activities and in planning conservation measures for various stakeholders.
+
+[Chunk 5] paper=doi__10.1007_s42489-020-00060-1 type=abstract title=Estimation of Forest Canopy Cover and Forest Fragmentation Mapping Using Landsat Satellite Data of Silabati River Basin 
+Abstract Forest is an imperative part of environment but in the recent years, forest areas are being transformed due to population expansion, unscientific urbanization and a rising trend of industrialization in some countries. Dense forests habitats have been fragmented into patch forest region. This paper attempts to find out the forest canopy or crown density and forest fragmentation areas as well as to identify the spatiotemporal changing paradigms of forest within the Silabati river basin. Forest Canopy Density and fragmentation models are an important craftsmanship to examine the health of the forest or vegetation in a given area. Various indices such as Normalize Difference Vegetation Index, Advanced Vegetation Index, Shadow Index, Bareness Index and ultimately weightage overlay analysis methods have been adopted to determine forest health or anthropogenic stress on forest habitats. Higher weight has been assigned to dense forest areas and open forest area has been given lower weight. The result shows that forest canopy or crown cover as well as forest density are radically reduced in between the time period 1998 and 2009. It is also stated that the total 116.549 km 2 areas have been degraded during 11 years period (1998–2009) with a rate of 10.59 km 2 /year. Meanwhile, 180.02 km 2 forest areas have been regained in between 2019 and 2009 with a rate of 18 km 2 /year that is possible only due to implementation of forest policies exclusively execution of participatory or joint forest management techniques.
+
+[Chunk 6] paper=doi__10.37773_ees.v2i1.55 type=abstract title=Relocation from protected areas as a violent process in the recent history of biodiversity conservation in India
+In the last two decades conflicts due to biodiversity conservation projects have been rising all over the world. This is due to the interest at the global level towards environmental protection, which is often implemented at the expense of communities living within and around important biodiversity spots. The study analyses the violent process of relocation and displacement from the protected areas of India with the purpose of documenting the illegal relocation of indigenous communities and forest dwellers from the protected forest areas. It examines the specific laws and regulations that legalize their relocation from their ancestral land in contravention of legal recognition of the community’s forest rights under the Forest Rights Act (FRA). The article concludes how these conflicts are the results of no recognition of tenure rights, and mirrors the contradictions embedded in the environmental protection policies not only in India but at the global level as well.
+
+[Chunk 7] paper=doi__10.1080_03085140701254308 type=abstract title=Practices of assemblage and community forest management
+Abstract Governmental interventions that set out to improve the world are assembled from diverse elements – discourses, institutions, forms of expertise and social groups whose deficiencies need to be corrected, among others. In this article I advance an analytic that focuses on practices of assemblage – the on-going labour of bringing disparate elements together and forging connections between them. I identify six practices that are generic to any assemblage, whatever its specific contours: 1) forging alignments, 2) rendering technical, 3) authorizing knowledge, 4) managing failures, 5) anti-politics, and 6) reassembling. I demonstrate the power of this analytic through an extended study of community forest management. This is an assemblage that brings together an array of agents (villagers, labourers, entrepreneurs, officials, activists, aid donors, scientists) and objectives (profit, pay, livelihoods, control, property, efficiency, sustainability, conservation). Its very unwieldiness helps to sharpen analysis of how such an assemblage is, in fact, assembled, and how it has been sustained for more than thirty years, absorbing hundreds of millions of dollars in programmes from the west coast of Canada to the eastern islands of Indonesia. I do not attempt to adjudicate the rights and wrongs of this assemblage. Rather, I deploy an analytic of assemblage to explore the practices that fill the gap between the will to govern and the refractory processes that make government so difficult.
+
+[Chunk 8] paper=doi__10.53892_rhaa9312 type=abstract title=The Opportunity Framework 2020: Identifying Opportunities to Invest in Securing Collective Tenure Rights in the Forest A
+Indigenous Peoples, local communities, and Afro-Descendant Peoples (IP, LC &amp; ADP) — roughly 2.5 billion people — customarily manage over 50% of the global land mass, but governments currently recognize their legal ownership to just 10% (RRI, 2015). Fortunately, there has been progress in addressing this historic injustice in recent years as governments have begun to pass legislation and achieve court decisions to recognize the historic and customary use and ownership of these lands. A recent stock-taking finds that since 2002, at least 14 additional countries have passed legislation that require governments to recognize these rights. Similarly, there have been positive national and regional level court decisions in numerous countries supporting the formal recognition of the collective land and forest rights of Indigenous Peoples, local communities, and Afro-descendant Peoples. RRI research demonstrates that if only 7 countries implemented these new laws, policies, and court decisions, over 176 million hectares would be transferred from government to Indigenous, local community, and Afro-descendant ownership, benefitting over 200 million people (RRI, 2018). The focus of this report, and the Framework itself, is limited to formal recognition of land and forest rights (i.e. delimitation, mapping, registry, etc.). It does not assess the important and subsequent steps of strengthening community or territorial governance, the enforcement of these rights by governments, or the capacities necessary to enable Indigenous, local community, and Afro-descendant organizations to manage or exploit their resources or engage in enterprises or economic development activities – all of which are essential for sustained and self-determined conservation and development. This Framework focuses on the first step in this longer process.
+
+[Chunk 9] paper=doi__10.5751_es-03950-160153 type=abstract title=Understanding Human-Fire Interactions in Tropical Forest Regions: a Case for Interdisciplinary Research across the Natur
+Carmenta, R., L. Parry, A. Blackburn, S. Vermeylen, and J. Barlow. 2011. Understanding human-fire interactions in tropical forest regions: a case for interdisciplinary research across the natural and social sciences.. Ecology and Society 16(1): 53. https://doi.org/10.5751/ES-03950-160153
+
+[Chunk 10] paper=doi__10.1017_s0030605303000334 type=abstract title=Conserving forest biodiversity in times of violent conflict
+Forests are often frontiers, and like all frontiers, they are sites of dynamic social, ecological, political and economic changes. Such dynamism involves constantly changing advantages and disadvantages to different groups of people, which not surprisingly can lead to armed conflict, and all too frequently to war. Many governments have contributed to conflict, however inadvertently, by nationalizing their forests, so that traditional forest inhabitants have been disenfranchised while national governments sell the rights to trees in order to earn foreign exchange. Biodiversity-rich tropical forests in Papua New Guinea, Indonesia, Indochina, Myanmar, Sri Lanka, Central and West Africa, the Amazon, Colombia, Central America and New Caledonia have all been the sites of armed conflict in recent years, sometimes involving international forces. Forests have sometimes been part of the cause of conflict (as in Myanmar and Sierra Leone) but more often victims of it. Violent conflicts in temperate areas also typically involve forests as shelters for both civilians and combatants, as in the Balkans. While these conflicts have frequently, even invariably, caused negative impacts on biodiversity, peace can be even worse, as it enables forest exploitation to operate with impunity. Because many of the remaining forests are along international borders, international cooperation is required for their conservation. As one response, the concept of international “Peace Parks” is being promoted in many parts of the world as a way of linking biodiversity conservation with national security. The Convention on Biological Diversity, which entered into force at the end of 1993 and now has 187 State Parties, offers a useful framework for such cooperation.
+
+[Chunk 11] paper=doi__10.1007_s12210-023-01155-3 type=abstract title=An overview of land degradation, desertification and sustainable land management using GIS and remote sensing applicatio
+Abstract Land degradation (LD) poses a major threat to food security, livelihoods sustainability, ecosystem services and biodiversity conservation. The total area of arable land in the world is estimated at 7616 million acres or only 24% of the total area of the land surface, and currently about half of this area is cultivated. The productivity of arable land depends mainly on soil formation and management. Soil contains mineral components, organic matter and microorganism in a natural dynamic balance whose components have been formed in thousands and millions of years (geologic ages). Disruption of this balance due to human pressures and poor land use leads to soil degradation in few years. Scientists differed in setting a precise definition of the concept and dimensions of land degradation, but many agreed on the general concept of land degradation: ‘quantitative or qualitative change in the properties of soil that reduces the land's potential for production’ and the more comprehensive definition that land degradation is Change in the characteristics of the Earth. Leading to the creation of more desert or drier conditions, due to the decline or deterioration of the load of biological energy for a period of time does not have to be continuous, but temporary. Additionally, organic farming might be a substitute to prevent the deterioration of our soil. The emphasis of the current review is on how land degradation affects agriculture and the environment, as well as how we can manage our lands to prevent further degradation. Therefore, this review will focus in explain the land degradation definition and concept, and presenting two case studies from Egypt and India.
+
+[Chunk 12] paper=doi__10.1007_s12210-023-01155-3 type=body title=An overview of land degradation, desertification and sustainable land management using GIS and remote sensing applicatio
+of the area is available for development. Thus, 97 percent of land remains rainfed agriculture, where Land degradation can simply be defined as a degradation water scarcity and land degradation caused by depletion of and impoverishment of the ecosystem that reduces its abil- soil nutrients are major challenges for smallholder farmers, ity to perform its natural role in life. Land degradation can particularly in drylands. be simple, in its first phase, so that it can be controlled in Globally, more than 24 billion tons of fertile soils are easy, low-cost, short-term or severe conditions that are dif- lost in crop-prone land each year (mostly in Africa). Global ficult to treat, requiring more effort, time and money. Human data show that 33 per cent of the soil is degraded by various practices, such as camping or grazing for a limited period disturbances, while 20 percent of irrigated land is subject to of time, cause the temporary disappearance of vegetation, and a limited breakage of the soil surface. This is a simple 1 3 7 70 Rendiconti Lincei. Scienze Fisiche e Naturali (2023) 34:767–808 deterioration for a short time which could be disappeared agriculture and other uses to achieve intergenerational equity over time. But if the same area is exposed to multiple (UNEP 1991; Eswaran 1992; Aboelsoud et al. 2022). Land human activities at the same time and for long periods of degradation implies reduction of resource potential by one time, this causes total disappearance of vegetation and clear or a combination of processes acting on the land. These pro- soil destruction. This is a severe deterioration that requires cesses include water erosion, wind erosion and sedimenta- some measures to rehabilitate the environment, such as flip- tion by those agents, long-term reduction in the amount or ping, plowing and planting some plant varieties (Misak et al. diversity of natural vegetation, where relevant, and saliniza- 1988). tion and sodification’ (UNEP 1992). Land degradation is one Land degradation is a complex process in which several of the consequences of mismanagement of land and result features can be recognized as contributing to the loss of pro- frequently from mismatch between land qualities and land duction capacity (Várallya 1987). Land degradation is the use (Beinroth et al. 1994). process which lowers the current and/or the potential capa- Soil degradation is a process that describes human bility of soil to produce goods or services. Land degradation 
+
+Semantic aliases (appended at embed time, not in card JSON):
+Related themes: forest land encroached. farming into forest. forest converted to farmland. tribal encroachment forest. forest boundary violation. land use change forest. forest rights conflict. Forest Rights Act tenure. FRA land claim. deforestation agricultural expansion. forest fringe farming pressure. ecological boundary stress. social ecological encroachment. land tenure forest conflict. fores...
+
+JSON schema summary (required top-level keys):
+["card_id", "production_system", "observed_stress", "causal_pathway", "context", "diagnostic_signals", "confounders", "sources"]

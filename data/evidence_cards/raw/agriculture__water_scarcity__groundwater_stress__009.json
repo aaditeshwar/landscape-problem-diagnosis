@@ -1,0 +1,253 @@
+{
+  "card_id": "agriculture__water_scarcity__groundwater_stress__009",
+  "production_system": "Agriculture",
+  "observed_stress": "water_scarcity",
+  "causal_pathway": "groundwater_stress",
+  "context": {
+    "agro_climatic_zones": [
+      "sub-humid",
+      "humid"
+    ],
+    "aquifer_types": [
+      "alluvium"
+    ],
+    "terrain_types": [
+      "plains"
+    ],
+    "rainfall_regime": "humid",
+    "geographic_examples": [
+      "eastern Uttar Pradesh",
+      "northern Bihar"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "soge_dev_percent",
+        "soge_class_name"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "soge_dev_percent > 70 or soge_class_name in ['Semi-critical', 'Critical', 'Over-exploited']",
+        "threshold_confidence": "high",
+        "context_sensitivity": "global"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "CGWB defines groundwater stress classes based on extraction as a percentage of net annual recharge. In alluvial aquifers of the Indo-Gangetic Plain, abstraction far exceeds natural recharge, resulting in gradual long-term decline. Unlike hard-rock aquifers where stress manifests as seasonal emptying, alluvial aquifer depletion is cumulative and progressive, making SOGE values above 70% a reliable indicator of chronic over-extraction at the block level."
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "trend_annual_delta_g_mm",
+        "annual_delta_g_mm"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "trend_annual_delta_g_mm < 0 and mean_annual_delta_g_mm < 0",
+        "qualitative_description": "The linear trend in annual groundwater recharge (P - ET - Runoff) is negative and the multi-year mean is also negative, indicating chronic depletion where extraction and losses persistently exceed recharge.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "A sustained negative trend in delta_g combined with a negative multi-year mean confirms that groundwater outflows (ET + runoff + extraction) persistently exceed precipitation-driven recharge. In the humid alluvial plains of eastern UP and northern Bihar, high monsoon rainfall should theoretically support recharge, so a negative delta_g trend signals that extraction pressure is outpacing even the relatively generous recharge potential of alluvial systems.",
+      "interaction_with": [
+        "sig_01",
+        "sig_03"
+      ]
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "aquifer_class",
+        "aquifer_lithology_percent"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "aquifer_class == 'alluvium' and aquifer_lithology_percent.get('alluvium', 0) > 60",
+        "qualitative_description": "Dominant alluvial aquifer with more than 60% alluvial lithology confirms high recharge potential, meaning observed depletion is driven by extraction pressure rather than geological limitation.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "Alluvial aquifers in the Indo-Gangetic Plain have high storativity and recharge potential compared to hard-rock systems. When depletion is observed despite predominantly alluvial lithology, it confirms that extraction rates are the primary driver rather than poor aquifer characteristics. This distinguishes the eastern UP/Bihar context from hard-rock peninsular India where geological limitations constrain recharge independently of extraction.",
+      "interaction_with": [
+        "sig_01",
+        "sig_02"
+      ]
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "nrega_swc_count"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "nrega_swc_count < 10",
+        "qualitative_description": "Fewer than 10 cumulative SWC works in the micro-watershed over the MGNREGA record, indicating low investment in recharge infrastructure relative to extraction pressure.",
+        "threshold_confidence": "low",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Low MGNREGA-funded SWC investment means that natural recharge opportunities — check dams, percolation ponds, trench structures on drainage lines — have not been exploited. In alluvial plains with high recharge potential, this represents a missed opportunity to offset extraction. India's ambitious managed aquifer recharge programme envisions millions of such structures, and their absence amplifies depletion caused by over-extraction. A threshold of 10 is applied here (higher than for hard-rock contexts) because alluvial plains with larger catchment areas and higher runoff volumes require more distributed recharge infrastructure.",
+      "interaction_with": [
+        "sig_02"
+      ]
+    },
+    {
+      "signal_id": "sig_05",
+      "variables": [
+        "annual_well_depth_m"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Farmers report that they have had to deepen borewells or tubewells over recent years, or that shallow dug wells that previously held water year-round now run dry in the rabi or zaid season. Any reported increase in well depth or pumping duration to obtain the same volume of water is a field-level confirmation of declining water table.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Well depth data from CoRE or similar monitoring networks is not available for this context. However, farmer-reported well deepening is a reliable proxy for declining groundwater table. In alluvial aquifers, unlike hard-rock systems, the water table decline is gradual and cumulative rather than seasonal, so progressive well deepening over multiple years is a strong field indicator of chronic over-extraction exceeding recharge."
+    }
+  ],
+  "overall_reasoning_note": "Groundwater stress in alluvial aquifers of the eastern Indo-Gangetic Plain differs fundamentally from hard-rock peninsular contexts: depletion is gradual and cumulative rather than seasonal, and the high recharge potential of alluvium means that observed depletion is almost always driven by extraction pressure rather than geological limitation. Diagnosis should be confirmed by at least two of the three primary signals: elevated SOGE (sig_01), negative delta_g trend (sig_02), or farmer-reported well deepening (sig_05). The alluvial aquifer confirmation (sig_03) contextualises the depletion as extraction-driven. Low SWC investment (sig_04) amplifies risk and signals intervention opportunity. Management approaches proven in peninsular hard-rock systems (participatory groundwater management under Atal Bhujal Yojana) may not be directly transferable to alluvial settings, which require different institutional and technical approaches accounting for the distinct hydrogeological characteristics of deep alluvial systems.",
+  "confounders": [
+    {
+      "confounder": "Meteorological drought reducing recharge rather than over-extraction causing apparent groundwater stress",
+      "how_to_distinguish": "Compare mean_annual_precipitation_mm and trend_annual_precipitation_mm against historical baseline. If precipitation has declined significantly (trend_annual_precipitation_mm < -10 mm/year) in the same period as delta_g decline, drought-reduced recharge may be the primary driver. Check soge_dev_percent: if it remains below 70% but delta_g is still negative during drought years, meteorological drought rather than extraction is likely primary. In humid eastern UP/Bihar with 1400-1800mm annual rainfall, sustained drought-driven depletion is less likely than in semi-arid zones."
+    },
+    {
+      "confounder": "Seasonal waterlogging or high water table masking underlying depletion trend in alluvial plains",
+      "how_to_distinguish": "In low-lying alluvial plains, post-monsoon water table recovery may give a false impression of adequate groundwater availability. Confirm stress by examining pre-monsoon (April-May) water levels specifically, and by checking whether rabi and zaid season irrigation demand is being met. If swb_rabi_kharif_ratio is declining (trend_swb_rabi_kharif_ratio < 0), it may indicate reduced surface water availability pushing greater groundwater demand in rabi, compounding depletion."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "annual_well_depth_m",
+      "question_to_user": "Have farmers in this area had to deepen their borewells or tubewells in the last 5-10 years? Approximately how many metres deeper are they now compared to when they were first installed? Do shallow dug wells that previously held water through the rabi season now run dry?",
+      "how_answer_updates_diagnosis": "Reported well deepening of more than 2-3 metres over 5-10 years in an alluvial setting strongly confirms chronic groundwater table decline driven by over-extraction. If wells are running dry specifically in rabi and zaid seasons, this confirms that extraction for irrigated crops is the primary driver, consistent with the groundwater_stress pathway."
+    },
+    {
+      "missing_variable": "borewell_density",
+      "question_to_user": "Roughly how many borewells or tubewells are there per village in this area? Has the number of borewells increased significantly in the last 10-15 years, particularly for irrigation of wheat, potato, or sugarcane in the rabi season?",
+      "how_answer_updates_diagnosis": "High and rapidly increasing borewell density in alluvial plains confirms extraction pressure exceeding recharge. In the Indo-Gangetic Plain, rapid proliferation of private tubewells for rabi irrigation is a well-documented driver of depletion. A reported large increase in borewell numbers would strongly confirm the groundwater_stress pathway and support recommendations for collective groundwater governance."
+    },
+    {
+      "missing_variable": "groundwater_salinity",
+      "question_to_user": "Have farmers noticed that borewell or tubewell water has become saltier, leaves white or yellowish deposits on fields or pipes, or causes crop damage that was not observed previously? Is there any area where groundwater is known to be brackish or unusable?",
+      "how_answer_updates_diagnosis": "Salinity in alluvial aquifers of eastern UP and Bihar can indicate either lateral intrusion of saline water as fresh water is depleted, or upward migration of deeper saline layers due to over-pumping. If salinity is reported, it changes solution recommendations away from simple recharge augmentation toward managed aquifer recharge with quality monitoring, and may indicate a more severe depletion stage than SOGE alone suggests."
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Chinnasamy2022",
+      "title": "Addressing Depletion in Alluvial Aquifers",
+      "authors": [
+        "Chinnasamy, Pennan"
+      ],
+      "year": 2022,
+      "doi": "10.37773/ees.v8i1.1122",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Directly addresses the distinction between alluvial and hard-rock aquifer depletion dynamics in India, arguing that management approaches for peninsular hard-rock systems are not suitable for Indo-Gangetic alluvial aquifers. Documents that abstraction far exceeds natural recharge in alluvial aquifers, resulting in gradual cumulative decline."
+    },
+    {
+      "source_id": "CGWB2023",
+      "title": "National Compilation of Dynamic Ground Water Resources of India 2022",
+      "authors": [
+        "Central Ground Water Board"
+      ],
+      "year": 2023,
+      "url": "https://cgwb.gov.in",
+      "source_type": "government_report",
+      "relevance_note": "Defines SOGE class thresholds (Safe <70%, Semi-critical 70-90%, Critical 90-100%, Over-exploited >100%) used in sig_01, and provides block-level groundwater development classifications for eastern Uttar Pradesh and northern Bihar."
+    },
+    {
+      "source_id": "Gleeson2018",
+      "title": "A Snapshot of the World's Groundwater Challenges",
+      "authors": [
+        "Gleeson, Tom",
+        "Cuthbert, Mark",
+        "Ferguson, Grant",
+        "Perrone, Debra"
+      ],
+      "year": 2018,
+      "doi": "10.1146/annurev-environ-102017-025800",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents that rapid groundwater level declines are widespread in regions with extensive croplands, and that a changing climate amplifies groundwater use pressure. Highlights the paucity of monitoring data for trend analyses, supporting the use of proxy indicators such as delta_g trends and SOGE classifications."
+    },
+    {
+      "source_id": "Jasechko2024",
+      "title": "Rapid groundwater decline and some cases of recovery in aquifers globally",
+      "authors": [
+        "Jasechko, Scott",
+        "Seybold, Hansjorg",
+        "Perrone, Debra",
+        "Fan, Ying",
+        "Shamsudduha, Mohammad",
+        "Taylor, Richard G.",
+        "Fallatah, Othman",
+        "Kirchner, James W."
+      ],
+      "year": 2024,
+      "doi": "10.1038/s41586-023-06879-8",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Global analysis of 170,000 monitoring wells showing rapid groundwater level declines (>0.5 m/year) are widespread in cropland regions, and that declines have accelerated in 30% of regional aquifers. Also documents cases of recovery following policy changes and managed aquifer recharge, supporting the recommended solutions for this pathway."
+    },
+    {
+      "source_id": "Dillon2019",
+      "title": "Sixty years of global progress in managed aquifer recharge",
+      "authors": [
+        "Dillon, Peter",
+        "Stuyfzand, Pieter",
+        "Grischek, Thomas",
+        "Lluria, Manuel",
+        "Pyne, R.D.G.",
+        "Jain, R.C.",
+        "Bear, Jacob",
+        "Schwarz, Jorg",
+        "Wang, Wei",
+        "Fernandez, Enrique",
+        "Stefan, Catalin",
+        "Pettenati, Marie",
+        "van der Gun, Jac",
+        "Sprenger, Carsten",
+        "Massmann, Gudrun",
+        "Scanlon, Bridget R.",
+        "Xanke, Julian",
+        "Jokela, Pekka",
+        "Zheng, Yan",
+        "Rossetto, Rudy",
+        "Shamrukh, Mohammad",
+        "Pavelic, Paul",
+        "Murray, Eileen",
+        "Ross, Andrew",
+        "Bonilla Valverde, Juan Pablo",
+        "Palma Nava, Adriana",
+        "Ansems, Nienke",
+        "Posavec, Kristijan",
+        "Ha, Kyoochul",
+        "Martin, Rolf",
+        "Sapiano, Marija"
+      ],
+      "year": 2019,
+      "doi": "10.1007/s10040-018-1841-z",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents India's extensive history of managed aquifer recharge through tanks, ponds, and percolation structures, and the government's ambitious programme for artificial recharge. Supports recommended solutions including trench and check-dam construction, community pond repair, and MGNREGA-funded SWC works as recharge infrastructure."
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-01-24",
+    "last_updated": "2025-01-24",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 24,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  }
+}

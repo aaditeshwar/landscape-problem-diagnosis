@@ -61,15 +61,76 @@ Recommended solutions for this pathway:
   "Livelihood alternatives for encroacher households to reduce pressure"
 ]
 
+Variable types for this pathway (from data_dictionary.json):
+  cd_forest_to_farm_ha (unknown, availability=available): Forest-to-farm transition directly measures encroachment
+  cd_total_urbanization_ha (unknown, availability=available): Settlement expansion into forest areas can indicate encroachment
+  village_st_percent (static, availability=available): High ST population with declining NTFP access may indicate forest rights disputes or displacement
+
+Signal expression rules (CRITICAL — downstream diagnosis evaluates these step-by-step as Python booleans):
+- Every diagnostic_signals[].condition MUST include a non-empty "expression" for types quantitative, trend, and composite.
+- type=qualitative WITHOUT expression is allowed ONLY for variables with availability=not_available in the framework list above.
+  All pathway variables are available — every signal must have a Python expression.
+- The expression is shown to a reasoning model as the evaluable condition. It MUST be a single valid Python boolean expression using variable names exactly as in data_dictionary.json.
+- Put interpretive prose ONLY in "explanation" and optional supporting "qualitative_description". NEVER put prose paragraphs in "expression".
+- Time-series variables (e.g. lulc_*_ha, cropping_intensity, annual_runoff_mm, drought_weeks_severe) are dicts keyed by year strings "2017".."2024". Use [-1] for latest year, [0] for earliest: cropping_intensity[-1] <= 1.15
+- Scalar NREGA totals (nrega_swc_count, nrega_irrigation_count, nrega_community_assets_count) are numeric aggregates — compare directly: nrega_irrigation_count < 3 (NOT .values() or dict indexing).
+- Null/absent categorical values: use `canal_name is None`, never SQL syntax like `IS NULL`.
+- List variables: organization_domains is a Python list — use `'fisheries' not in organization_domains`.
+- terrain_cluster_id is an integer: 1 = Mostly Plains, 3 = Broad Plains and Slopes. Use explicit comparisons, e.g. terrain_cluster_id == 3 for sloping terrain; do NOT describe terrain in prose without a numeric test.
+- String equality: aquifer_class == 'crystalline_basement' (single quotes inside the JSON string).
+- Ratios and compound conditions: parenthesize explicitly — (lulc_single_kharif_ha[-1] / (lulc_single_kharif_ha[-1] + lulc_double_crop_ha[-1] + 1e-9)) > 0.75
+- Derived mean/trend scalars are computed at diagnosis time from the raw time series and injected alongside present_variables. Prefer them for multi-year patterns instead of prose:
+  trend_annual_delta_g_mm < 0, mean_cropping_intensity <= 1.15, trend_swb_total_area_ha < -5
+
+Derived/computed variables (scalars — use directly in expressions):
+  mean_annual_precipitation_mm: mean of annual_precipitation_mm time series
+  trend_annual_precipitation_mm: linear slope of annual_precipitation_mm (mm/year)
+  mean_annual_et_mm: mean of annual_et_mm time series
+  trend_annual_et_mm: linear slope of annual_et_mm (mm/year)
+  mean_annual_runoff_mm: mean of annual_runoff_mm time series
+  trend_annual_runoff_mm: linear slope of annual_runoff_mm (mm/year)
+  mean_annual_delta_g_mm: mean of P−ET−Runoff groundwater balance
+  trend_annual_delta_g_mm: linear slope of annual_delta_g_mm (mm/year)
+  mean_cropping_intensity: mean of cropping_intensity time series
+  trend_cropping_intensity: linear slope of cropping_intensity (ratio/year)
+  mean_kharif_cropped_area_ha: mean of lulc_single_kharif_ha time series
+  trend_kharif_cropped_area_ha: linear slope of lulc_single_kharif_ha (ha/year)
+  mean_double_crop_area_ha: mean of lulc_double_crop_ha time series
+  trend_double_crop_area_ha: linear slope of lulc_double_crop_ha (ha/year)
+  drought_moderate_return_period: average years between moderate drought kharif seasons
+  drought_severe_return_period: average years between severe drought kharif seasons
+  mean_swb_total_area_ha: mean of swb_total_area_ha time series
+  trend_swb_total_area_ha: linear slope of swb_total_area_ha (ha/year)
+  mean_swb_rabi_kharif_ratio: mean of swb_rabi_area_ha / swb_kharif_area_ha ratio
+  trend_swb_rabi_kharif_ratio: linear slope of SWB rabi/kharif ratio
+
+BAD example (current corpus bug — do NOT reproduce):
+  "type": "qualitative",
+  "qualitative_description": "Terrain cluster indicates sloping plateau or hilly terrain..."
+  (no expression — model cannot evaluate TRUE/FALSE; also contradicts terrain_cluster_id == 1 = Mostly Plains)
+
+GOOD example for terrain_cluster_id on rainfed_risk:
+  "type": "quantitative",
+  "expression": "terrain_cluster_id == 3 and annual_runoff_mm[-1] > 80",
+  "qualitative_description": "Broad plains and slopes (cluster 3) with high runoff reduce in-field moisture retention.",
+  "threshold_confidence": "medium",
+  "context_sensitivity": "regional"
+
+The example card below may contain legacy qualitative-only conditions — ignore those patterns; your output must follow these expression rules.
+
 Rules:
 - Include 3-5 diagnostic_signals using available variables where possible.
 - For variables marked availability not_available, add missing_variable_questions.
 - Include 1-2 confounders distinguishing this pathway from alternatives.
 - Ground claims in the paper excerpts below; cite sources with realistic source_id citekeys.
 - Each source source_type must be exactly one of: peer_reviewed_journal, government_report, ngo_report, grey_literature, expert_guideline, book_chapter (use grey_literature for theses/working papers).
+- Each diagnostic_signals[].condition.type must be exactly one of: quantitative, qualitative, trend, composite (use composite for multi-part conditions, not "compound").
 - Set metadata.created_by to "llm_extraction_v1", reviewed_by_expert to false,
   extraction_model to "claude-sonnet-4-6", confidence_overall to medium/high/low as appropriate,
   created_at and last_updated to today's date.
+- At embedding time, semantic aliases from metadata/semantic_aliases.json are appended
+  automatically for pathway "encroachment" — do not duplicate alias
+  phrases in overall_reasoning_note.
 
 Example card (structure reference):
 {
@@ -278,6 +339,9 @@ Abstract Land degradation (LD) poses a major threat to food security, livelihood
 
 [Chunk 12] paper=doi__10.1007_s12210-023-01155-3 type=body title=An overview of land degradation, desertification and sustainable land management using GIS and remote sensing applicatio
 of the area is available for development. Thus, 97 percent of land remains rainfed agriculture, where Land degradation can simply be defined as a degradation water scarcity and land degradation caused by depletion of and impoverishment of the ecosystem that reduces its abil- soil nutrients are major challenges for smallholder farmers, ity to perform its natural role in life. Land degradation can particularly in drylands. be simple, in its first phase, so that it can be controlled in Globally, more than 24 billion tons of fertile soils are easy, low-cost, short-term or severe conditions that are dif- lost in crop-prone land each year (mostly in Africa). Global ficult to treat, requiring more effort, time and money. Human data show that 33 per cent of the soil is degraded by various practices, such as camping or grazing for a limited period disturbances, while 20 percent of irrigated land is subject to of time, cause the temporary disappearance of vegetation, and a limited breakage of the soil surface. This is a simple 1 3 7 70 Rendiconti Lincei. Scienze Fisiche e Naturali (2023) 34:767–808 deterioration for a short time which could be disappeared agriculture and other uses to achieve intergenerational equity over time. But if the same area is exposed to multiple (UNEP 1991; Eswaran 1992; Aboelsoud et al. 2022). Land human activities at the same time and for long periods of degradation implies reduction of resource potential by one time, this causes total disappearance of vegetation and clear or a combination of processes acting on the land. These pro- soil destruction. This is a severe deterioration that requires cesses include water erosion, wind erosion and sedimenta- some measures to rehabilitate the environment, such as flip- tion by those agents, long-term reduction in the amount or ping, plowing and planting some plant varieties (Misak et al. diversity of natural vegetation, where relevant, and saliniza- 1988). tion and sodification’ (UNEP 1992). Land degradation is one Land degradation is a complex process in which several of the consequences of mismanagement of land and result features can be recognized as contributing to the loss of pro- frequently from mismatch between land qualities and land duction capacity (Várallya 1987). Land degradation is the use (Beinroth et al. 1994). process which lowers the current and/or the potential capa- Soil degradation is a process that describes human bility of soil to produce goods or services. Land degradation 
+
+Semantic aliases (appended at embed time, not in card JSON):
+Related themes: forest land encroached. farming into forest. forest converted to farmland. tribal encroachment forest. forest boundary violation. land use change forest. forest rights conflict. Forest Rights Act tenure. FRA land claim. deforestation agricultural expansion. forest fringe farming pressure. ecological boundary stress. social ecological encroachment. land tenure forest conflict. fores...
 
 JSON schema summary (required top-level keys):
 ["card_id", "production_system", "observed_stress", "causal_pathway", "context", "diagnostic_signals", "confounders", "sources"]

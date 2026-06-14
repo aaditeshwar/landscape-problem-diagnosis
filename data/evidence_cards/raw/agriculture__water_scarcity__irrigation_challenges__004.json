@@ -27,18 +27,18 @@
       "signal_id": "sig_01",
       "variables": [
         "swb_total_area_ha",
-        "swb_kharif_area_ha"
+        "swb_count"
       ],
       "condition": {
         "type": "trend",
-        "expression": "(swb_total_area_ha[-1] / swb_total_area_ha[0]) < 0.85 OR (swb_kharif_area_ha / swb_total_area_ha) < 0.5",
-        "qualitative_description": "Total surface water body area has declined by more than 15% over the available record, or kharif SWB area is less than half of total SWB area, indicating rapid seasonal drying and loss of storage capacity.",
+        "expression": "trend_swb_total_area_ha < -5 and swb_count < 3",
+        "qualitative_description": "Surface water body total area is declining at more than 5 ha/year and fewer than 3 distinct water bodies exist in the MWS, indicating both contraction of existing storage and an absolute infrastructure gap.",
         "threshold_confidence": "medium",
         "context_sensitivity": "regional"
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "In arid and semi-arid alluvial plains, surface water bodies are the primary irrigation source for rabi and zaid seasons. A declining trend in total SWB area indicates siltation, structural deterioration, or reduced inflows. Rapid drying between kharif and rabi (low kharif-to-total ratio) confirms that storage infrastructure cannot retain water beyond the monsoon, directly causing seasonal irrigation failure. Dashora et al. (2019) documented that a 5-year-old check dam in Gujarat had filled completely with silt at a rate of 40 cm/year, eliminating storage capacity entirely.",
+      "explanation": "In arid and semi-arid alluvial plains of Rajasthan and Kachchh, surface water bodies (tanks, ponds, check dams) are the primary irrigation buffer between monsoon seasons. A declining trend in total SWB area combined with a low count of structures signals that storage infrastructure is either silting up, falling into disrepair, or was never adequately built. Dashora et al. (2019) documented that a 5-year-old check dam in Gujarat had filled completely with silt at 40 cm/year, eliminating storage capacity entirely, and that siltation reduces both storage volume and infiltration rates — directly impairing the irrigation water supply that farmers depend on for rabi and zaid seasons.",
       "interaction_with": [
         "sig_02",
         "sig_03"
@@ -47,18 +47,18 @@
     {
       "signal_id": "sig_02",
       "variables": [
-        "swb_count"
+        "swb_kharif_area_ha"
       ],
       "condition": {
-        "type": "quantitative",
-        "expression": "swb_count < 2 per 1000 ha of MWS area",
-        "qualitative_description": "Fewer than 2 surface water bodies per 1000 ha of micro-watershed area, indicating a structural gap in irrigation infrastructure relative to the command area.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "type": "trend",
+        "expression": "mean_swb_rabi_kharif_ratio < 0.25",
+        "qualitative_description": "The mean ratio of SWB rabi area to kharif area is below 0.25, indicating that surface water bodies dry out rapidly after the monsoon and cannot sustain irrigation into the rabi season.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
       },
-      "severity": "moderate",
+      "severity": "high",
       "direction": "confirms",
-      "explanation": "In arid alluvial plains with rainfall below 400 mm (AER-2) or 400–740 mm (AER-4), surface water storage density is a direct proxy for irrigation infrastructure adequacy. A low SWB count relative to cultivated area means that even in good monsoon years, water cannot be distributed to all fields, and rabi and zaid crops are structurally under-served. This signal is particularly relevant in Rajasthan and Kachchh where tank and check dam networks are historically sparse.",
+      "explanation": "A low rabi-to-kharif SWB area ratio reveals that water bodies lose most of their storage within the kharif season and cannot carry water into rabi. This is a direct indicator of seasonal irrigation failure — the core stress described by farmers in arid zones. Dashora et al. (2019) showed that check dam spill accounted for 57–87% of inflow in wetter years, meaning poorly maintained or under-capacity structures lose water rapidly rather than retaining it for dry-season use. In arid alluvial plains where mean annual precipitation is below 400 mm (AER-2), this rapid drying is especially damaging to rabi crop water availability.",
       "interaction_with": [
         "sig_01"
       ]
@@ -66,18 +66,18 @@
     {
       "signal_id": "sig_03",
       "variables": [
-        "annual_well_depth_m"
+        "nrega_swc_count"
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "annual_well_depth_m > 30",
-        "qualitative_description": "Current well depth exceeds 30 metres, indicating that groundwater lift costs are prohibitively high for marginal farmers relying on surface irrigation alternatives.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "expression": "nrega_swc_count < 5",
+        "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA for the MWS, indicating historically low investment in water harvesting infrastructure.",
+        "threshold_confidence": "low",
+        "context_sensitivity": "local"
       },
       "severity": "moderate",
       "direction": "amplifies",
-      "explanation": "In alluvial aquifers of arid Rajasthan and Kachchh, deep wells imply high energy costs for lifting water, making groundwater a costly fallback when surface irrigation infrastructure fails. When surface water bodies are silted or dry, farmers must rely on deep wells; the cost of pumping from 30+ metres is often unaffordable for small and marginal farmers, amplifying the effective water scarcity even when groundwater is physically present. Dashora et al. (2019) showed that check dam recharge in Rajasthan raised water tables and reduced effective lift depth, with a benefit-cost ratio of 4.1, confirming that infrastructure investment directly reduces pumping costs.",
+      "explanation": "Low MGNREGA SWC investment means that opportunities to build or rehabilitate check dams, farm ponds, and percolation structures have not been taken up. Dashora et al. (2019) demonstrated a benefit-to-cost ratio of 4.1 for check dams in Rajasthan, confirming that such structures are economically attractive — their absence therefore represents a missed intervention rather than an inherent resource constraint. In the arid belt of Rajasthan and Kachchh, where natural recharge is limited to brief monsoon pulses, the absence of engineered storage amplifies seasonal water scarcity for rabi and zaid crops.",
       "interaction_with": [
         "sig_01",
         "sig_04"
@@ -86,45 +86,54 @@
     {
       "signal_id": "sig_04",
       "variables": [
-        "nrega_swc_count"
+        "dist_cooperative_km",
+        "river_name"
       ],
       "condition": {
-        "type": "quantitative",
-        "expression": "sum(nrega_swc_count.values()) < 10",
-        "qualitative_description": "Fewer than 10 cumulative soil and water conservation or irrigation works completed under MGNREGA in the micro-watershed, indicating low historical investment in water harvesting and storage infrastructure.",
+        "type": "composite",
+        "expression": "dist_cooperative_km > 15 and river_name is None",
+        "qualitative_description": "The nearest agricultural cooperative is more than 15 km away and no named river passes through or adjacent to the MWS, indicating both limited access to institutional credit for irrigation investment and absence of surface flow for diversion or lift irrigation.",
         "threshold_confidence": "low",
         "context_sensitivity": "local"
       },
       "severity": "moderate",
       "direction": "amplifies",
-      "explanation": "Low MGNREGA SWC investment in arid zones signals that neither government programmes nor community efforts have adequately addressed the structural irrigation gap. Dashora et al. (2019) documented that in Rajasthan's Dharta catchment, the watershed department prioritised building new check dams over maintaining existing ones, and that manual desilting through labour-intensive methods increased recharge by 84%, suggesting that MGNREGA-funded desilting and repair is a high-return intervention that has been under-utilised in many micro-watersheds.",
+      "explanation": "Access to institutional credit through cooperatives (PACS) enables farmers to invest in micro-irrigation equipment, solar pumps, and tank repair. Remote MWSs with no cooperative access face higher barriers to adopting efficiency-improving technologies. The absence of a named river further eliminates the option of canal diversion or lift irrigation from perennial surface flows, leaving farmers entirely dependent on degraded local storage infrastructure. Together these structural factors compound the irrigation challenge in arid alluvial plains.",
       "interaction_with": [
-        "sig_01",
-        "sig_02"
+        "sig_03"
       ]
-    }
-  ],
-  "overall_reasoning_note": "Irrigation infrastructure failure in arid and semi-arid alluvial plains should be confirmed by at least two signals: declining or low SWB area/count (sig_01, sig_02) combined with either deep wells (sig_03) or low MGNREGA investment (sig_04). The primary distinction from groundwater stress pathway is that here the aquifer may have water but surface delivery infrastructure is absent, silted, or seasonally fails — farmers cannot access water affordably rather than water being physically depleted. Confirm by asking whether wells are available but costly versus wells being dry. In Rajasthan and Kachchh (AER-2, rainfall <400 mm), even functional check dams may dry completely before rabi sowing; the rabi irrigation gap is structural and not resolvable by groundwater alone without recharge augmentation. Always verify whether the river_name variable indicates a perennial or ephemeral stream — perennial rivers enable lift irrigation as an alternative, while ephemeral streams make surface storage the only viable option.",
-  "confounders": [
-    {
-      "confounder": "Meteorological drought causing apparent irrigation infrastructure failure through reduced inflows rather than structural deficiency",
-      "how_to_distinguish": "Compare swb_total_area_ha and swb_kharif_area_ha against multi-year records alongside rainfall data. If SWB decline co-occurs only with drought years and recovers in normal rainfall years, drought is the primary driver and infrastructure is adequate. If SWBs dry rapidly even in average rainfall years, siltation or poor design is the structural cause. Dashora et al. (2019) showed that check dam recharge in Rajasthan varied from 10% to 70% of inflow across dry, average, and wet years — a well-maintained structure still delivers in average years, so persistent failure in average years confirms infrastructure deficit."
     },
     {
-      "confounder": "Groundwater over-extraction (separate pathway) causing water table decline that mimics irrigation infrastructure failure symptoms",
-      "how_to_distinguish": "If annual_well_depth_m shows a multi-year deepening trend independent of surface water body status, and swb_count and swb_total_area_ha are adequate, the primary pathway is groundwater stress rather than surface irrigation infrastructure failure. In the irrigation_challenges pathway, surface storage is the bottleneck: SWBs are few, silted, or seasonally empty, and wells are deep due to arid conditions rather than extraction-driven depletion. Ask whether wells were always deep (structural) or have deepened over time (extraction-driven)."
+      "signal_id": "sig_05",
+      "variables": [
+        "annual_well_depth_m"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Farmers report that well or borewell depth has increased noticeably over recent years, or that pumping costs have risen substantially, suggesting declining groundwater levels that increase the cost and difficulty of lift irrigation — particularly for marginal farmers.",
+        "threshold_confidence": "low",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "In alluvial aquifers of arid Rajasthan and Haryana, groundwater is often the fallback when surface storage fails. However, if water tables are declining — as indicated by increasing well depth — the cost of lifting groundwater rises, disadvantaging marginal and small farmers who cannot afford deeper borewells or higher energy costs. Dashora et al. (2019) noted that check dam recharge directly raised groundwater levels in proximal wells, confirming the link between surface storage infrastructure and groundwater availability for lift irrigation. Where surface infrastructure is degraded and groundwater is deepening, both irrigation pathways are simultaneously compromised."
+    }
+  ],
+  "confounders": [
+    {
+      "confounder": "Meteorological drought reducing water availability independent of infrastructure condition",
+      "how_to_distinguish": "Compare mean_annual_precipitation_mm against the AER baseline (<400 mm for AER-2, 400–740 mm for AER-4). If drought_severe_return_period is less than 4 years and trend_annual_precipitation_mm is strongly negative, drought is the primary driver rather than infrastructure failure. Infrastructure failure is more likely when SWB area is declining even in years with near-normal rainfall — check whether trend_swb_total_area_ha is negative in years when annual_precipitation_mm is at or above the long-term mean."
+    },
+    {
+      "confounder": "Groundwater over-extraction (not infrastructure failure) as the primary cause of irrigation water scarcity",
+      "how_to_distinguish": "If trend_annual_delta_g_mm is strongly negative and swb_count and swb_total_area_ha are stable or increasing, the stress pathway is groundwater depletion rather than surface irrigation infrastructure failure. The irrigation_challenges pathway is confirmed when SWB metrics are declining or low and NREGA investment is absent, pointing to structural under-investment rather than aquifer exhaustion."
     }
   ],
   "missing_variable_questions": [
     {
-      "missing_variable": "tank_siltation_status",
-      "question_to_user": "Have the local tanks, ponds, or check dams been desilted in the last 5 years? Would you say they are heavily silted (water storage has visibly reduced), moderately silted, or recently cleaned?",
-      "how_answer_updates_diagnosis": "Heavy siltation with no recent desilting strongly confirms the irrigation infrastructure failure pathway. Dashora et al. (2019) showed that a manually desilted check dam in Rajasthan increased recharge by 84%, meaning siltation is a quantitatively significant and reversible cause of irrigation water shortage. This answer would prioritise tank desilting through MGNREGA as the primary recommendation."
-    },
-    {
-      "missing_variable": "canal_command_coverage",
-      "question_to_user": "Is your village within the command area of a government canal or irrigation scheme? If yes, does water actually reach your fields during rabi and zaid seasons, or does it fail to arrive or arrive too late?",
-      "how_answer_updates_diagnosis": "If canal infrastructure exists but water delivery fails seasonally, the pathway is confirmed as irrigation infrastructure present but seasonally insufficient. If no canal exists, the diagnosis shifts toward infrastructure absence rather than failure, changing recommendations toward new storage construction rather than repair and operation improvement."
+      "missing_variable": "annual_well_depth_m",
+      "question_to_user": "Have farmers in this area noticed that they need to dig or drill deeper to find water compared to 5–10 years ago? Has the cost of pumping water for irrigation increased significantly? If possible, can you share approximate well depths (in metres) for recent years?",
+      "how_answer_updates_diagnosis": "If well depth has increased by more than 3–5 metres over the past decade, this confirms that surface irrigation infrastructure failure is pushing farmers toward groundwater, which is itself becoming more costly and difficult to access. This strengthens the irrigation_challenges diagnosis and elevates the recommendation priority for solar pump subsidies and tank rehabilitation to reduce dependence on deepening groundwater."
     }
   ],
   "sources": [
@@ -145,34 +154,30 @@
       "year": 2019,
       "doi": "10.1007/s10040-019-01951-y",
       "source_type": "peer_reviewed_journal",
-      "relevance_note": "Documents check dam performance, siltation rates (40 cm/year in Gujarat), benefit-cost ratio of 4.1 for irrigation water supply in Rajasthan hard-rock and alluvial terrain, and the 84% recharge increase from manual desilting — directly supporting signals on SWB area decline, MGNREGA investment, and well depth reduction through recharge augmentation."
+      "relevance_note": "Provides quantitative evidence on check dam siltation rates (40 cm/year in Gujarat), benefit-cost ratios (4.1) for check dams in Rajasthan, the effect of desilting on recharge rates (84% increase after manual desilting), and the direct link between surface storage infrastructure condition and groundwater recharge for irrigation in arid alluvial settings."
     },
     {
-      "source_id": "Hoekstra2012",
+      "source_id": "Mekonnen2016",
       "title": "Global Monthly Water Scarcity: Blue Water Footprints versus Blue Water Availability",
       "authors": [
-        "Hoekstra, A.Y.",
         "Mekonnen, M.M.",
-        "Chapagain, A.K.",
-        "Mathews, R.E.",
-        "Richter, B.D."
+        "Hoekstra, A.Y."
       ],
-      "year": 2012,
+      "year": 2016,
       "doi": "10.1371/journal.pone.0032688",
       "source_type": "peer_reviewed_journal",
-      "relevance_note": "Establishes that water scarcity in river basins including the Indus system is severe during at least one month per year for billions of inhabitants, contextualising the seasonal irrigation failure documented in arid northwest India."
+      "relevance_note": "Establishes the global context of seasonal water scarcity, noting that 2.67 billion people face severe water scarcity for at least one month per year, with arid river basins in India among the most affected — supporting the seasonal irrigation failure framing for rabi and zaid seasons."
     },
     {
-      "source_id": "Pinstrup-Andersen2002",
-      "title": "Global Food Security: Challenges and Policies",
+      "source_id": "IPCC2014SYR",
+      "title": "Climate Change 2014 - Synthesis Report",
       "authors": [
-        "Pinstrup-Andersen, P.",
-        "Pandya-Lorch, R."
+        "IPCC"
       ],
-      "year": 2002,
-      "doi": "10.1126/science.1092958",
-      "source_type": "peer_reviewed_journal",
-      "relevance_note": "Notes that declining investment in irrigation infrastructure is a key driver of falling crop yields in water-scarce regions, supporting the diagnosis that infrastructure gaps rather than absolute water absence are the proximate cause of irrigation failure in arid India."
+      "year": 2014,
+      "doi": "10.59327/ipcc_ar5-9789291691432",
+      "source_type": "government_report",
+      "relevance_note": "Documents increasing climate variability and water stress in South Asian arid and semi-arid regions, providing the broader context for why irrigation infrastructure resilience is critical in Rajasthan and Kachchh where rainfall is already marginal and increasingly erratic."
     }
   ],
   "metadata": {
@@ -181,6 +186,9 @@
     "created_at": "2025-07-14",
     "last_updated": "2025-07-14",
     "extraction_model": "claude-sonnet-4-6",
-    "confidence_overall": "medium"
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 20,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
   }
 }

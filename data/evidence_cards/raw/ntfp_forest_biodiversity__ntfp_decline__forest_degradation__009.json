@@ -1,0 +1,209 @@
+{
+  "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__009",
+  "production_system": "NTFP_Forest_Biodiversity",
+  "observed_stress": "ntfp_decline",
+  "causal_pathway": "forest_degradation",
+  "context": {
+    "agro_climatic_zones": [
+      "sub-humid",
+      "humid"
+    ],
+    "aquifer_types": [
+      "alluvium"
+    ],
+    "terrain_types": [
+      "plains"
+    ],
+    "rainfall_regime": "humid",
+    "geographic_examples": [
+      "eastern Uttar Pradesh",
+      "northern Bihar"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "lulc_tree_forest_ha"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "lulc_tree_forest_ha[-1] < lulc_tree_forest_ha[0]",
+        "qualitative_description": "Total forest/tree cover area in the micro-watershed has declined from 2017 to the latest available year, indicating net forest loss over the monitoring period.",
+        "threshold_confidence": "high",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "A net reduction in lulc_tree_forest_ha over the 2017–2024 period directly measures forest cover loss. In the sub-humid to humid plains of eastern UP and northern Bihar (AER-13), even modest forest patches on alluvial terrain support dense understory NTFP species. Declining forest area reduces the habitat base for NTFP-bearing trees and shrubs, directly suppressing collection yields for dependent communities. Over 50 million people in India depend on NTFPs for subsistence, making forest cover trends a primary diagnostic indicator.",
+      "interaction_with": [
+        "sig_02",
+        "sig_03"
+      ]
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "cd_total_deforestation_ha",
+        "cd_total_afforestation_ha"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "(cd_total_deforestation_ha > 50) and (cd_total_deforestation_ha > cd_total_afforestation_ha * 2)",
+        "qualitative_description": "Cumulative deforestation exceeds 50 ha and is more than double the cumulative afforestation, indicating a strongly negative forest balance with inadequate compensatory recovery.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "When deforestation substantially outpaces afforestation, the net forest balance is negative and recovery is structurally insufficient. In alluvial plains contexts, compensatory afforestation programmes have been critiqued for relying on industrial monoculture plantations that do not restore the multi-species understory required for NTFP production. A deforestation-to-afforestation ratio greater than 2:1 signals that even nominal restoration efforts are failing to offset habitat loss for NTFP-dependent communities.",
+      "interaction_with": [
+        "sig_01"
+      ]
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "cd_total_afforestation_ha"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "cd_total_afforestation_ha < 10",
+        "qualitative_description": "Cumulative afforestation area is below 10 ha, indicating very weak forest protection and recovery investment in the micro-watershed.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Very low afforestation investment signals the absence of active forest restoration or protection programmes. In the context of AER-13 plains, where natural regeneration potential is moderate given 1400–1800 mm rainfall, the failure to invest in afforestation suggests institutional neglect of forest governance. This amplifies the NTFP decline signal because without assisted regeneration or community plantation of indigenous NTFP-bearing species, degraded patches will not recover the species composition needed for sustainable NTFP harvesting.",
+      "interaction_with": [
+        "sig_01",
+        "sig_02"
+      ]
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "organization_domains"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "'Agroforestry' not in organization_domains and 'Forest' not in organization_domains and 'NTFP' not in organization_domains",
+        "qualitative_description": "No NGO or organisation active in the micro-watershed works in agroforestry, forest management, or NTFP domains, indicating an absence of institutional support for NTFP-dependent communities.",
+        "threshold_confidence": "low",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "The presence of organisations working in NTFP, agroforestry, or forest management domains is associated with better forest governance outcomes, including community forest protection bylaws, Joint Forest Management (JFM) committees, and Forest Rights Act (FRA) claim facilitation. Their absence means that even where forest degradation is occurring, there is no institutional actor to mobilise community forest watch patrols, support CFR rights recognition, or facilitate assisted natural regeneration. This amplifies vulnerability of NTFP-dependent households.",
+      "interaction_with": [
+        "sig_01"
+      ]
+    },
+    {
+      "signal_id": "sig_05",
+      "variables": [
+        "ntfp_species_presence"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Field surveys or community reports indicate reduced abundance or local disappearance of key NTFP species such as Madhuca indica (mahua), Diospyros melanoxylon (tendu), Terminalia chebula (harra), Emblica officinalis (aonla), or Buchanania lanzan (achar). Reduced fruiting seasons, smaller collection quantities per household, or longer travel distances to collection sites are diagnostic indicators.",
+        "threshold_confidence": "high",
+        "context_sensitivity": "local"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Direct evidence of NTFP species decline is the most diagnostic indicator of forest degradation impact on NTFP availability. Studies in India document that collection methods for most NTFP species are destructive and wild populations are declining. In tribal and forest-fringe communities of eastern UP and northern Bihar, NTFPs including mahua flower, oilseeds, fruits, and medicinal plants contribute significantly to household income. Community-reported declines in collection quantity or quality, or increased effort required to access collection sites, directly confirm the forest degradation pathway."
+    }
+  ],
+  "overall_reasoning_note": "Diagnosis of NTFP decline via forest degradation in AER-13 alluvial plains should be confirmed by at least two of the three primary remote-sensing signals (sig_01, sig_02, sig_03) showing net forest loss and weak recovery. The absence of institutional support (sig_04) amplifies but does not independently confirm the pathway. If forest cover is stable but NTFP decline is reported, consider alternative pathways such as over-harvesting, market access failure, or tenure insecurity rather than forest degradation. The FRA/CFR rights pathway (sig_05 qualitative) is critical for ground-truthing: communities with recognised CFR rights and active JFM committees tend to show better forest condition even in degraded landscapes. Always verify whether reported NTFP decline reflects reduced forest area, reduced species density within existing forest, or reduced access due to tenure or governance changes.",
+  "confounders": [
+    {
+      "confounder": "Over-harvesting of NTFPs causing species decline without net forest cover loss",
+      "how_to_distinguish": "If lulc_tree_forest_ha is stable or increasing but NTFP species presence is declining, over-harvesting rather than forest degradation is the primary driver. Check whether collection is concentrated on a few high-value species (e.g. tendu, mahua) and whether destructive harvesting methods are reported. Forest cover metrics will not flag this pathway; community surveys on harvesting intensity are essential."
+    },
+    {
+      "confounder": "Compensatory afforestation with monoculture plantations masking true NTFP habitat loss",
+      "how_to_distinguish": "If cd_total_afforestation_ha is high but organization_domains lacks NTFP or agroforestry actors, the afforestation may consist of industrial monocultures (e.g. eucalyptus, teak) that do not support NTFP species. In this case, lulc_tree_forest_ha may appear stable while NTFP-bearing species diversity collapses. Distinguish by asking community members whether newly planted areas yield any NTFP species, and whether afforestation was conducted under community or state control."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "ntfp_species_presence",
+      "question_to_user": "Have community members noticed a reduction in the availability of key forest products such as mahua flowers, tendu leaves, aonla fruit, harra, or honey over the past 5–10 years? Are people travelling farther to collect these products, or collecting smaller quantities per trip than before?",
+      "how_answer_updates_diagnosis": "Confirmed decline in NTFP species abundance or increased collection effort strongly confirms the forest degradation pathway. If decline is reported only for one or two species while others remain abundant, over-harvesting of specific species may be a co-driver alongside forest degradation, and species-specific management interventions should be recommended alongside forest protection measures."
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Yadav2013",
+      "title": "Non-timber forest products certification in India: opportunities and challenges",
+      "authors": [
+        "Yadav, M.",
+        "Dugaya, D."
+      ],
+      "year": 2013,
+      "doi": "10.1007/s10668-012-9393-1",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents declining wild NTFP populations in India due to destructive collection methods, the socio-economic importance of NTFPs for forest-dwelling communities, and key NTFP species (tendu, harra, achar, aonla, mahua) relevant to central and eastern India."
+    },
+    {
+      "source_id": "Shahabuddin2004",
+      "title": "Livelihood gains and ecological costs of non-timber forest product dependence: assessing the roles of dependence, ecological knowledge and market organisation",
+      "authors": [
+        "Shahabuddin, G.",
+        "Prasad, S."
+      ],
+      "year": 2004,
+      "doi": "10.1017/s0376892904001596",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Establishes that over 50 million people in India depend directly on NTFPs for subsistence, and that win-lose dynamics between livelihood gains and ecological costs can lead to severe erosion of biological resources and loss of livelihoods if forest degradation is not addressed."
+    },
+    {
+      "source_id": "Sinha2017",
+      "title": "The Role of Non-Timber Forest Products (NTFPs) in Tribal Economy of Jharkhand, India",
+      "authors": [
+        "Sinha, B. K."
+      ],
+      "year": 2017,
+      "doi": "10.20546/ijcmas.2017.610.259",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Quantifies NTFP income contribution to tribal households in eastern India (Jharkhand), documenting species diversity including mahua, oilseeds, fruits, and medicinal plants, and the seasonal concentration of NTFP exploitation relevant to forest-fringe communities in AER-13 adjacent zones."
+    },
+    {
+      "source_id": "Springate-Baginski2010",
+      "title": "Potential for Recognition of Community Forest Resource Rights Under India's Forest Rights Act",
+      "authors": [
+        "Springate-Baginski, O."
+      ],
+      "year": 2010,
+      "doi": "10.53892/ugvt5889",
+      "source_type": "grey_literature",
+      "relevance_note": "Documents the Forest Rights Act 2006 as a mechanism for recognising CFR rights over at least 40 million hectares of forest land in India, supporting the recommendation for JFM and CFR rights as solutions to forest degradation-driven NTFP decline."
+    },
+    {
+      "source_id": "Pettenella2019",
+      "title": "Sustainable Forest Management Beyond the Timber-Oriented Status Quo: Transitioning to Co-production of Timber and Non-woody Forest Products",
+      "authors": [
+        "Pettenella, D.",
+        "Kloehn, S.",
+        "Boecher, M."
+      ],
+      "year": 2019,
+      "doi": "10.1007/s40725-019-00107-1",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Reviews how policy and property rights affect NTFP availability and sustainability, and argues that transitioning to ecosystem-based forest management integrating NTFPs is essential for long-term forest security and community livelihoods."
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-07-14",
+    "last_updated": "2025-07-14",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 25,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  }
+}

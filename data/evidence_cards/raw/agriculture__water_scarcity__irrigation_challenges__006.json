@@ -3,8 +3,6 @@
   "production_system": "Agriculture",
   "observed_stress": "water_scarcity",
   "causal_pathway": "irrigation_challenges",
-  "pathway_description": "Irrigation infrastructure is present but insufficient, costly, or seasonally fails.",
-  "stress_description": "Farmers report insufficient water for crop production, particularly for rabi and zaid seasons or during dry spells in kharif.",
   "context": {
     "agro_climatic_zones": [
       "sub-humid",
@@ -24,120 +22,114 @@
       "Odisha coast"
     ]
   },
-  "aer_reference": "AER-18: Hot sub-humid to semi-arid ecoregion with coastal alluvium-derived soils | states=['Tamil Nadu (coastal)', 'Andhra Pradesh (coastal)', 'Odisha (coastal)', 'Karnataka (coastal)'] | rainfall=900-1400mm | aquifer=alluvium",
   "diagnostic_signals": [
     {
       "signal_id": "sig_01",
       "variables": [
         "swb_total_area_ha",
-        "swb_kharif_area_ha"
+        "swb_count"
       ],
       "condition": {
         "type": "trend",
-        "expression": "swb_total_area_ha[-1] < swb_total_area_ha[0] OR (swb_kharif_area_ha / swb_total_area_ha) < 0.5 in rabi/zaid seasons",
-        "qualitative_description": "Total surface water body area has declined over the available record, or SWB area in rabi/zaid is less than half of kharif area, indicating rapid seasonal drying and poor storage persistence.",
+        "expression": "trend_swb_total_area_ha < -5 and swb_count < 3",
+        "qualitative_description": "Total surface water body area is declining at more than 5 ha/year and fewer than 3 distinct water bodies exist in the MWS, indicating shrinking storage infrastructure.",
         "threshold_confidence": "medium",
         "context_sensitivity": "regional"
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "In coastal alluvial plains of Tamil Nadu, Andhra Pradesh, and Odisha, irrigation tanks and surface water bodies are the primary source of rabi and zaid season water. A declining trend in total SWB area indicates siltation, embankment failure, or encroachment reducing storage capacity. Rapid seasonal drying (low rabi/zaid SWB area relative to kharif) confirms that tanks are not retaining water beyond the monsoon, leaving rabi crops without surface irrigation. Siltation is a well-documented cause of reduced tank storage capacity and infiltration performance in Indian surface water structures; manual desilting has been shown to increase recharge rates by up to 84% in comparable structures.",
-      "sources_cited": [
-        "Dashora2019"
-      ]
+      "explanation": "In coastal alluvial plains of Tamil Nadu, Andhra Pradesh and Odisha, irrigation tanks and ponds are the primary surface water storage mechanism. A declining trend in total SWB area combined with a low count of water bodies signals that existing structures are silting up, breaching, or drying faster than they are being maintained or replaced. Siltation is a well-documented cause of reduced storage capacity and infiltration in surface water structures; Dashora et al. (2019) showed that a 5-year-old check dam in Gujarat had filled completely with silt at 40 cm/year, and that manual desilting increased recharge by 84%. The same dynamic applies to coastal tanks where siltation reduces both storage and rabi-season water availability."
     },
     {
       "signal_id": "sig_02",
       "variables": [
-        "swb_count"
+        "swb_kharif_area_ha"
       ],
       "condition": {
-        "type": "quantitative",
-        "expression": "swb_count < expected_density_for_mws_area",
-        "qualitative_description": "Number of surface water bodies is low relative to the micro-watershed area, indicating a structural gap in irrigation infrastructure coverage.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "type": "trend",
+        "expression": "mean_swb_rabi_kharif_ratio < 0.35",
+        "qualitative_description": "The mean ratio of SWB rabi area to kharif area is below 0.35, indicating that water bodies dry out rapidly after the monsoon and cannot sustain rabi or zaid season irrigation.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
       },
-      "severity": "moderate",
+      "severity": "high",
       "direction": "confirms",
-      "explanation": "Coastal alluvial plains in AER-18 historically supported dense tank irrigation networks. A low SWB count relative to the MWS area suggests that tanks have been abandoned, encroached, or never constructed, leaving large command areas without surface water access. This structural gap forces farmers to rely on groundwater lift irrigation, increasing costs and energy dependence, particularly for marginal farmers during rabi and zaid seasons.",
-      "sources_cited": [
-        "Dashora2019"
-      ]
+      "explanation": "A low rabi-to-kharif SWB area ratio reveals that surface water bodies lose most of their storage between the kharif and rabi seasons. In coastal alluvial plains receiving 900–1400 mm of rainfall (AER-18), tanks should retain sufficient water into the rabi season if properly maintained. Rapid post-monsoon drying is a diagnostic indicator of siltation reducing storage capacity, poor bund integrity, or excessive seepage — all manifestations of irrigation infrastructure failure. This directly constrains rabi and zaid cropping, which are the seasons most frequently cited by farmers as water-deficient."
     },
     {
       "signal_id": "sig_03",
-      "variables": [
-        "annual_well_depth_m"
-      ],
-      "condition": {
-        "type": "quantitative",
-        "expression": "annual_well_depth_m > 15",
-        "qualitative_description": "Wells are deep (>15m), indicating that groundwater lift costs are high, disadvantaging small and marginal farmers who cannot afford pump installation or electricity costs.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
-      },
-      "severity": "moderate",
-      "direction": "amplifies",
-      "explanation": "In coastal alluvial plains, shallow water tables are typical, but where surface irrigation infrastructure has failed, farmers shift to groundwater. Deep wells imply either localised depletion from over-extraction or saline intrusion forcing deeper drilling. High lifting costs from deep wells create an economic barrier to irrigation access for marginal farmers, amplifying the effective water scarcity even when groundwater is physically present. This is particularly acute for rabi and zaid crops where surface water is unavailable.",
-      "sources_cited": [
-        "Fishman2011"
-      ]
-    },
-    {
-      "signal_id": "sig_04",
       "variables": [
         "nrega_swc_count"
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "sum(nrega_swc_count.values()) < 10",
-        "qualitative_description": "Fewer than 10 cumulative SWC and irrigation works completed under MGNREGA in the MWS, indicating low historical investment in water harvesting and tank maintenance.",
+        "expression": "nrega_swc_count < 5",
+        "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA, indicating historically low investment in water harvesting maintenance.",
         "threshold_confidence": "low",
         "context_sensitivity": "local"
       },
       "severity": "moderate",
       "direction": "amplifies",
-      "explanation": "Low MGNREGA investment in SWC and irrigation works signals that existing tanks and surface water structures have not been desilted, repaired, or expanded. Tank desilting through MGNREGA is a proven, cost-effective intervention: manual desilting of check dams in India has been shown to increase dry-weather infiltration rates by 84%, with benefit-cost ratios averaging 4.1 for irrigation water supply. Absence of such investment means infrastructure degradation compounds seasonal water scarcity.",
-      "sources_cited": [
-        "Dashora2019"
-      ],
+      "explanation": "MGNREGA is the primary public mechanism for tank desilting, bund repair, and construction of new water harvesting structures in coastal India. A low cumulative count of SWC works signals that existing tanks and ponds have not received systematic maintenance, amplifying the risk of siltation-driven storage loss. Dashora et al. (2019) documented that maintenance costs averaging 2.9% of capital costs per year are essential for check dams to sustain recharge performance, and that neglecting desilting leads to progressive capacity loss. Low NREGA investment in a sub-humid coastal zone where rainfall is adequate (900–1400 mm) points to infrastructure neglect rather than climatic water deficit as the primary driver.",
       "interaction_with": [
-        "sig_01"
+        "sig_01",
+        "sig_02"
+      ]
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "dist_cooperative_km",
+        "river_name"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "dist_cooperative_km > 10 and river_name is None",
+        "qualitative_description": "The nearest agricultural cooperative is more than 10 km away and no named river passes through or adjacent to the MWS, indicating limited access to institutional credit for irrigation investment and absence of surface diversion potential.",
+        "threshold_confidence": "low",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Access to institutional credit through cooperatives (PACS) enables farmers to invest in micro-irrigation equipment, pump sets, and pipeline infrastructure. Where cooperatives are distant, marginal farmers cannot finance irrigation improvements even when water is physically available. The absence of a named river further limits options for low-cost gravity diversion or lift irrigation from perennial surface flows, making farmers entirely dependent on degraded tank infrastructure. Together these conditions amplify the impact of infrastructure insufficiency by removing both the financial and hydrological fallback options.",
+      "interaction_with": [
+        "sig_01",
+        "sig_03"
       ]
     },
     {
       "signal_id": "sig_05",
       "variables": [
-        "dist_cooperative_km"
+        "annual_well_depth_m"
       ],
       "condition": {
-        "type": "quantitative",
-        "expression": "dist_cooperative_km > 10",
-        "qualitative_description": "Distance to nearest cooperative or credit society exceeds 10 km, indicating poor access to institutional credit for irrigation investment such as pump purchase or micro-irrigation adoption.",
+        "type": "qualitative",
+        "qualitative_description": "Farmers report that open wells or shallow borewells have become unreliable or dry during rabi and zaid seasons, or that pumping costs have increased due to falling water tables — suggesting that groundwater fallback for irrigation is also constrained.",
         "threshold_confidence": "low",
         "context_sensitivity": "local"
       },
-      "severity": "low",
+      "severity": "moderate",
       "direction": "amplifies",
-      "explanation": "Farmers in remote locations far from cooperatives face barriers to accessing credit for irrigation investments such as drip/sprinkler systems or solar pumps. This financial exclusion means that even where infrastructure gaps are recognised, farmers cannot self-finance solutions, perpetuating reliance on degraded or insufficient surface irrigation. Distance to cooperatives is a proxy for institutional support access in coastal plains where cooperative credit has historically financed tank irrigation maintenance.",
-      "sources_cited": [
-        "Hoekstra2012"
-      ]
+      "explanation": "In coastal alluvial plains, shallow groundwater is often the fallback when tank irrigation fails. If well depth data were available, increasing depth over years would confirm that the groundwater buffer is also under stress. Without this data, user-reported well unreliability or increased lifting costs during dry seasons is a key qualitative indicator that the irrigation challenge is compounded — surface storage is degraded and groundwater backup is also insufficient or costly. This is particularly relevant for marginal farmers who cannot afford deep borewells or solar pumps."
     }
   ],
-  "overall_reasoning_note": "Irrigation infrastructure challenges in coastal alluvial plains of AER-18 are best confirmed by the combination of declining or seasonally ephemeral SWB area (sig_01) and low MGNREGA investment in water infrastructure (sig_04). These two signals together indicate both the symptom (failing storage) and the governance/investment failure driving it. Deep well depth (sig_03) amplifies the diagnosis by showing that groundwater substitution is costly. Low SWB count (sig_02) confirms structural infrastructure gaps. Always verify whether the SWB decline is due to siltation (addressable through desilting) versus encroachment or conversion (requiring different interventions). Ask the user about the condition of existing tanks and whether they hold water into January-February before finalising the diagnosis.",
   "confounders": [
     {
-      "confounder": "Meteorological drought causing apparent irrigation infrastructure failure through reduced inflows rather than structural degradation",
-      "how_to_distinguish": "Compare annual rainfall against the 900-1400mm AER-18 baseline. If rainfall has been consistently below 900mm in recent years, reduced SWB area may reflect drought-driven low inflows rather than siltation or infrastructure failure. Check whether SWB area recovers in high-rainfall years: recovery confirms drought as primary driver; persistent low SWB area even in normal rainfall years confirms infrastructure degradation. NREGA SWC count can help distinguish: low investment + low SWB area in normal rainfall years strongly confirms infrastructure failure pathway."
+      "confounder": "Meteorological drought reducing tank inflows rather than infrastructure failure causing storage loss",
+      "how_to_distinguish": "Compare mean_annual_precipitation_mm against the AER-18 baseline of 900–1400 mm. If precipitation is within the normal range but SWB area is still declining (trend_swb_total_area_ha < -5), infrastructure degradation (siltation, bund failure) is the more likely cause. If drought_severe_return_period < 4 years and precipitation is consistently below 800 mm, meteorological drought is the primary driver and tank desilting alone will not resolve the stress. Check whether the rabi-kharif SWB ratio decline co-occurs with below-normal rainfall years or persists even in normal rainfall years."
     },
     {
-      "confounder": "Groundwater stress (over-extraction from alluvial aquifer) being misidentified as surface irrigation infrastructure failure",
-      "how_to_distinguish": "If SWB count and area are adequate but farmers still report water scarcity, the pathway may be groundwater stress rather than surface infrastructure failure. Check annual_well_depth_m trend: if wells are deepening rapidly even in years with adequate rainfall and functional tanks, groundwater over-extraction is the primary pathway. Surface irrigation infrastructure failure is confirmed when SWB area and count are low and NREGA investment is absent, independent of well depth trends."
+      "confounder": "Groundwater over-extraction (not surface infrastructure failure) as the primary cause of water scarcity",
+      "how_to_distinguish": "If swb_count and swb_total_area_ha are stable or increasing but farmers still report water scarcity, the pathway is more likely groundwater stress than irrigation infrastructure failure. In coastal alluvial aquifers, saline intrusion from over-extraction can also render available groundwater unusable. Ask users whether well water quality has deteriorated (salinity, taste) and whether the scarcity is specifically linked to tank/canal unavailability versus well failure — the latter points to the groundwater_stress pathway."
     }
   ],
-  "missing_variable_questions": [],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "annual_well_depth_m",
+      "question_to_user": "Have farmers in this area noticed that their open wells or borewells are running dry earlier in the season compared to 5–10 years ago, or that they have had to deepen their wells? If so, roughly how much deeper are wells now compared to before?",
+      "how_answer_updates_diagnosis": "If wells are deepening or running dry during rabi/zaid seasons despite adequate monsoon rainfall, this confirms that groundwater fallback for irrigation is also failing, amplifying the irrigation infrastructure stress signal. A reported increase of more than 3 metres over 5–8 years would be treated as equivalent to a high-severity trend signal and would also trigger consideration of the groundwater_stress pathway as a co-occurring driver."
+    }
+  ],
   "sources": [
     {
       "source_id": "Dashora2019",
@@ -156,20 +148,7 @@
       "year": 2019,
       "doi": "10.1007/s10040-019-01951-y",
       "source_type": "peer_reviewed_journal",
-      "relevance_note": "Documents that manual desilting of surface water storage structures increases recharge by 84% and that benefit-cost ratios average 4.1 for irrigation water supply; siltation reduces both storage capacity and infiltration rates over time, directly relevant to declining SWB area as a diagnostic signal for irrigation infrastructure failure."
-    },
-    {
-      "source_id": "Fishman2011",
-      "title": "Can the groundwater crisis in rural India be attributed to well deepening?",
-      "authors": [
-        "Fishman, R.",
-        "Devineni, N.",
-        "Raman, S."
-      ],
-      "year": 2011,
-      "doi": "10.1029/2011WR010477",
-      "source_type": "peer_reviewed_journal",
-      "relevance_note": "Documents well deepening as a proxy for groundwater table decline and increased lifting costs in Indian alluvial and hard rock settings, relevant to sig_03 on deep wells disadvantaging marginal farmers."
+      "relevance_note": "Documents siltation as a primary cause of reduced storage and recharge capacity in surface water structures; shows manual desilting increases recharge by 84% and that maintenance costs of ~2.9% of capital per year are essential; benefit-cost ratio of 4.1 supports tank desilting as an economically viable intervention for securing irrigation water."
     },
     {
       "source_id": "Hoekstra2012",
@@ -184,32 +163,33 @@
       "year": 2012,
       "doi": "10.1371/journal.pone.0032688",
       "source_type": "peer_reviewed_journal",
-      "relevance_note": "Documents seasonal water scarcity dynamics and the economic consequences of water access failure for agricultural production, relevant to contextualising rabi/zaid season water scarcity in coastal plains."
+      "relevance_note": "Establishes that water scarcity is often seasonal and month-specific even in sub-humid regions, supporting the diagnostic focus on rabi and zaid season water deficits in coastal India where annual rainfall is adequate but dry-season storage is insufficient."
     },
     {
-      "source_id": "IPCC2014",
-      "title": "Climate Change 2014 - Synthesis Report",
+      "source_id": "Penny2015",
+      "title": "Why is the Arkavathy River drying? A multiple-hypothesis approach in a data-scarce region",
       "authors": [
-        "IPCC"
+        "Penny, G.",
+        "Srinivasan, V.",
+        "Dronova, I.",
+        "Lele, S.",
+        "Thompson, S."
       ],
-      "year": 2014,
-      "doi": "10.59327/ipcc_ar5-9789291691432",
-      "source_type": "government_report",
-      "relevance_note": "Provides context for climate-driven changes in water availability and the need to distinguish meteorological drought from infrastructure-driven water scarcity in sub-humid coastal regions."
+      "year": 2015,
+      "doi": "10.5194/hess-19-1905-2015",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Demonstrates that surface water body drying in southern India can result from multiple interacting anthropogenic drivers including groundwater extraction and channel fragmentation rather than climate alone — supporting the need to distinguish irrigation infrastructure failure from meteorological drought as causal pathways."
     }
-  ],
-  "recommended_solutions": [
-    "Tank desilting and repair through MGNREGA",
-    "Micro-irrigation promotion (drip/sprinkler) to improve water use efficiency",
-    "Community-managed surface water storage structures",
-    "Solar pump installation for groundwater lift irrigation"
   ],
   "metadata": {
     "created_by": "llm_extraction_v1",
     "reviewed_by_expert": false,
-    "created_at": "2025-07-15",
-    "last_updated": "2025-07-15",
+    "created_at": "2025-01-30",
+    "last_updated": "2025-01-30",
     "extraction_model": "claude-sonnet-4-6",
-    "confidence_overall": "medium"
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 20,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
   }
 }

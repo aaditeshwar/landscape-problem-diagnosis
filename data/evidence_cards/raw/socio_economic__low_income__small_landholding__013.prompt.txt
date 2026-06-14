@@ -1,0 +1,389 @@
+You are extracting one evidence card for an agro-ecological diagnosis system in India.
+
+Return ONLY a single JSON object (no markdown fences) matching the EvidenceCard schema.
+
+Required card_id: socio_economic__low_income__small_landholding__013
+Production system: Socio_Economic
+Observed stress: low_income
+Causal pathway: small_landholding
+
+Pathway description: Fragmented, small landholdings limit surplus production, mechanisation, and creditworthiness.
+Stress description: Household incomes are insufficient for basic needs; dependence on single livelihood source with no diversification.
+
+Target context (use exactly these context field values):
+{
+  "agro_climatic_zones": [
+    "perhumid"
+  ],
+  "aquifer_types": [
+    "semi-consolidated"
+  ],
+  "terrain_types": [
+    "hilly"
+  ],
+  "rainfall_regime": "humid",
+  "geographic_examples": [
+    "Meghalaya",
+    "Nagaland",
+    "Mizoram",
+    "Assam hills"
+  ]
+}
+
+AER reference for this context:
+AER-17: North-Eastern Hills (Purvanchal), warm perhumid ecoregion | states=['Meghalaya', 'Nagaland', 'Manipur', 'Mizoram', 'Tripura', 'Assam (hills)'] | rainfall=2000-12000mm | aquifer=sedimentary_soft_rock
+
+Diagnostic variables from the framework (use these variable names in signals):
+[
+  {
+    "variable": "landholding_size_distribution",
+    "rationale": "Direct measure of landholding fragmentation; proportion of marginal (<1ha) and small (1\u20132ha) holders",
+    "availability": "not_available"
+  },
+  {
+    "variable": "village_total_population",
+    "rationale": "Combined with MWS cropland area, gives a proxy for average farm size per household",
+    "availability": "available"
+  },
+  {
+    "variable": "lulc_cropland_ha",
+    "rationale": "Total cropland divided by village population gives approximate per-capita land availability",
+    "availability": "available"
+  },
+  {
+    "variable": "cropping_intensity",
+    "rationale": "Higher cropping intensity increases effective production from small holdings; low intensity compounds income constraint",
+    "availability": "available"
+  },
+  {
+    "variable": "dist_apmc_km",
+    "rationale": "Small holders near APMCs have better price discovery; remote smallholders are exploited by intermediaries",
+    "availability": "available"
+  },
+  {
+    "variable": "dist_dairy_km",
+    "rationale": "Proximity to dairy infrastructure enables livestock income diversification for small holders",
+    "availability": "available"
+  },
+  {
+    "variable": "organization_domains",
+    "rationale": "NGO presence in livelihoods, fisheries, or extension services indicates diversification support available",
+    "availability": "available"
+  },
+  {
+    "variable": "nrega_community_assets_count",
+    "rationale": "MGNREGA off-farm livelihood asset works provide supplementary income; cumulative count reflects safety net strength",
+    "availability": "available"
+  },
+  {
+    "variable": "household_income_inr",
+    "rationale": "Direct income measurement by source (farm / livestock / NTFP / wage / other) to diagnose livelihood mix",
+    "availability": "not_available"
+  },
+  {
+    "variable": "market_price_crop",
+    "rationale": "Price realisation gap vs MSP is a direct indicator of income loss from market failure",
+    "availability": "not_available"
+  }
+]
+
+Recommended solutions for this pathway:
+[
+  "FPO formation for collective input procurement and output marketing",
+  "Lease-land farming models and cooperative farming on common land",
+  "Diversification into livestock, fishery, NTFP to supplement farm income",
+  "Skill development and non-farm livelihood promotion",
+  "Access to Kisan Credit Card and institutional credit for investment"
+]
+
+Variable types for this pathway (from data_dictionary.json):
+  landholding_size_distribution (unknown, availability=not_available): Direct measure of landholding fragmentation; proportion of marginal (<1ha) and small (1–2ha) holders
+  village_total_population (unknown, availability=available): Combined with MWS cropland area, gives a proxy for average farm size per household
+  lulc_cropland_ha (unknown, availability=available): Total cropland divided by village population gives approximate per-capita land availability
+  cropping_intensity (time_series, availability=available): Cropping intensity (total harvested area / net sown area) per agricultural_year.
+  dist_apmc_km (unknown, availability=available): Small holders near APMCs have better price discovery; remote smallholders are exploited by intermediaries
+  dist_dairy_km (unknown, availability=available): Proximity to dairy infrastructure enables livestock income diversification for small holders
+  organization_domains (static, availability=available): Domains of work of NGOs/organisations present in MWS (e.g. Agroforestry, Fisheries, Watershed management, Seed management). Coverage is partial.
+  nrega_community_assets_count (unknown, availability=available): MGNREGA off-farm livelihood asset works provide supplementary income; cumulative count reflects safety net strength
+  household_income_inr (static, availability=not_available): Mean annual household income by source
+  market_price_crop (time_series, availability=not_available): Local market price realised for key crops vs MSP
+
+Signal expression rules (CRITICAL — downstream diagnosis evaluates these step-by-step as Python booleans):
+- Every diagnostic_signals[].condition MUST include a non-empty "expression" for types quantitative, trend, and composite.
+- type=qualitative WITHOUT expression is allowed ONLY for variables with availability=not_available in the framework list above.
+  Variables marked not_available (landholding_size_distribution, household_income_inr, market_price_crop) may use type=qualitative with qualitative_description only and expression omitted.
+- The expression is shown to a reasoning model as the evaluable condition. It MUST be a single valid Python boolean expression using variable names exactly as in data_dictionary.json.
+- Put interpretive prose ONLY in "explanation" and optional supporting "qualitative_description". NEVER put prose paragraphs in "expression".
+- Time-series variables (e.g. lulc_*_ha, cropping_intensity, annual_runoff_mm, drought_weeks_severe) are dicts keyed by year strings "2017".."2024". Use [-1] for latest year, [0] for earliest: cropping_intensity[-1] <= 1.15
+- Scalar NREGA totals (nrega_swc_count, nrega_irrigation_count, nrega_community_assets_count) are numeric aggregates — compare directly: nrega_irrigation_count < 3 (NOT .values() or dict indexing).
+- Null/absent categorical values: use `canal_name is None`, never SQL syntax like `IS NULL`.
+- List variables: organization_domains is a Python list — use `'fisheries' not in organization_domains`.
+- terrain_cluster_id is an integer: 1 = Mostly Plains, 3 = Broad Plains and Slopes. Use explicit comparisons, e.g. terrain_cluster_id == 3 for sloping terrain; do NOT describe terrain in prose without a numeric test.
+- String equality: aquifer_class == 'crystalline_basement' (single quotes inside the JSON string).
+- Ratios and compound conditions: parenthesize explicitly — (lulc_single_kharif_ha[-1] / (lulc_single_kharif_ha[-1] + lulc_double_crop_ha[-1] + 1e-9)) > 0.75
+- Derived mean/trend scalars are computed at diagnosis time from the raw time series and injected alongside present_variables. Prefer them for multi-year patterns instead of prose:
+  trend_annual_delta_g_mm < 0, mean_cropping_intensity <= 1.15, trend_swb_total_area_ha < -5
+
+Derived/computed variables (scalars — use directly in expressions):
+  mean_annual_precipitation_mm: mean of annual_precipitation_mm time series
+  trend_annual_precipitation_mm: linear slope of annual_precipitation_mm (mm/year)
+  mean_annual_et_mm: mean of annual_et_mm time series
+  trend_annual_et_mm: linear slope of annual_et_mm (mm/year)
+  mean_annual_runoff_mm: mean of annual_runoff_mm time series
+  trend_annual_runoff_mm: linear slope of annual_runoff_mm (mm/year)
+  mean_annual_delta_g_mm: mean of P−ET−Runoff groundwater balance
+  trend_annual_delta_g_mm: linear slope of annual_delta_g_mm (mm/year)
+  mean_cropping_intensity: mean of cropping_intensity time series
+  trend_cropping_intensity: linear slope of cropping_intensity (ratio/year)
+  mean_kharif_cropped_area_ha: mean of lulc_single_kharif_ha time series
+  trend_kharif_cropped_area_ha: linear slope of lulc_single_kharif_ha (ha/year)
+  mean_double_crop_area_ha: mean of lulc_double_crop_ha time series
+  trend_double_crop_area_ha: linear slope of lulc_double_crop_ha (ha/year)
+  drought_moderate_return_period: average years between moderate drought kharif seasons
+  drought_severe_return_period: average years between severe drought kharif seasons
+  mean_swb_total_area_ha: mean of swb_total_area_ha time series
+  trend_swb_total_area_ha: linear slope of swb_total_area_ha (ha/year)
+  mean_swb_rabi_kharif_ratio: mean of swb_rabi_area_ha / swb_kharif_area_ha ratio
+  trend_swb_rabi_kharif_ratio: linear slope of SWB rabi/kharif ratio
+
+BAD example (current corpus bug — do NOT reproduce):
+  "type": "qualitative",
+  "qualitative_description": "Terrain cluster indicates sloping plateau or hilly terrain..."
+  (no expression — model cannot evaluate TRUE/FALSE; also contradicts terrain_cluster_id == 1 = Mostly Plains)
+
+GOOD example for terrain_cluster_id on rainfed_risk:
+  "type": "quantitative",
+  "expression": "terrain_cluster_id == 3 and annual_runoff_mm[-1] > 80",
+  "qualitative_description": "Broad plains and slopes (cluster 3) with high runoff reduce in-field moisture retention.",
+  "threshold_confidence": "medium",
+  "context_sensitivity": "regional"
+
+The example card below may contain legacy qualitative-only conditions — ignore those patterns; your output must follow these expression rules.
+
+Rules:
+- Include 3-5 diagnostic_signals using available variables where possible.
+- For variables marked availability not_available, add missing_variable_questions.
+- Include 1-2 confounders distinguishing this pathway from alternatives.
+- Ground claims in the paper excerpts below; cite sources with realistic source_id citekeys.
+- Each source source_type must be exactly one of: peer_reviewed_journal, government_report, ngo_report, grey_literature, expert_guideline, book_chapter (use grey_literature for theses/working papers).
+- Each diagnostic_signals[].condition.type must be exactly one of: quantitative, qualitative, trend, composite (use composite for multi-part conditions, not "compound").
+- Set metadata.created_by to "llm_extraction_v1", reviewed_by_expert to false,
+  extraction_model to "claude-sonnet-4-6", confidence_overall to medium/high/low as appropriate,
+  created_at and last_updated to today's date.
+- At embedding time, semantic aliases from metadata/semantic_aliases.json are appended
+  automatically for pathway "small_landholding" — do not duplicate alias
+  phrases in overall_reasoning_note.
+
+Example card (structure reference):
+{
+  "card_id": "agriculture__water_scarcity__groundwater_stress__001",
+  "production_system": "Agriculture",
+  "observed_stress": "water_scarcity",
+  "causal_pathway": "groundwater_stress",
+  "context": {
+    "agro_climatic_zones": [
+      "semi-arid",
+      "sub-humid"
+    ],
+    "aquifer_types": [
+      "hard_rock"
+    ],
+    "terrain_types": [
+      "plateau",
+      "plains"
+    ],
+    "rainfall_regime": "semi-arid",
+    "crop_systems": [
+      "kharif rainfed",
+      "cotton",
+      "soybean"
+    ],
+    "geographic_examples": [
+      "Vidarbha Maharashtra",
+      "Telangana",
+      "Karnataka Deccan Plateau"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "soge_dev_percent",
+        "soge_class_name"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "soge_dev_percent > 70 or soge_class_name in ['Semi-critical', 'Critical', 'Over-exploited']",
+        "threshold_confidence": "high",
+        "context_sensitivity": "global"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "CGWB defines groundwater stress classes based on extraction as a percentage of net annual recharge. In hard rock aquifers, even 'Safe' SOGE values above 60% can indicate localised stress because storativity is low and recharge is spatially heterogeneous \u2014 a block-level Safe classification may mask critical depletion at the micro-watershed scale."
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "annual_well_depth_m"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "annual_well_depth_m[-1] - annual_well_depth_m[0] > 3",
+        "qualitative_description": "Well depth has increased by more than 3 metres over the available multi-year record (2017\u20132025), indicating declining static water level.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Deepening well depth is a direct proxy for declining groundwater table. A 3m decline over 8 years (~0.4m/year) is considered significant in hard rock aquifers where storage is limited to weathered and fractured zones typically 10\u201330m deep. Faster rates indicate imminent failure of shallow dug wells.",
+      "interaction_with": [
+        "sig_01",
+        "sig_03"
+      ]
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "annual_delta_g_mm"
+      ],
+      "condition": {
+        "type": "trend",
+        "qualitative_description": "Annual delta_g (P - ET - Runoff) is negative in more than 4 of the last 8 years, indicating chronic excess extraction over recharge.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "A consistently negative delta_g across multiple years means outflows (ET + runoff) persistently exceed precipitation, leaving no surplus for groundwater recharge. In semi-arid hard rock settings, even small negative balances accumulate quickly due to low aquifer storage."
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "nrega_swc_count"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "sum(nrega_swc_count.values()) < 5",
+        "qualitative_description": "Fewer than 5 cumulative SWC works in the MWS over the MGNREGA record, indicating low investment in recharge infrastructure.",
+        "threshold_confidence": "low",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Low historical SWC investment means natural recharge opportunities (check dams, percolation ponds, farm bunds) have not been exploited, amplifying the depletion caused by extraction. It also signals an opportunity for intervention rather than a terminal condition.",
+      "interaction_with": [
+        "sig_03"
+      ]
+    }
+  ],
+  "overall_reasoning_note": "Groundwater stress in hard rock aquifers should be confirmed by at least two of the three primary signals: elevated SOGE, deepening well trend, or chronic negative delta_g. A single signal may reflect data noise or spatial mismatch (SOGE is block-level). The absence of SWC investment (sig_04) amplifies the other signals but does not confirm stress on its own. If SOGE is Safe but well depth is increasing rapidly, prioritise the well depth trend \u2014 block-level SOGE masks micro-watershed heterogeneity in hard rock terrain. Always ask the user about borewell density and crop water demand (irrigated vs rainfed) before finalising diagnosis.",
+  "confounders": [
+    {
+      "confounder": "drought (meteorological) causing apparent groundwater stress through reduced recharge rather than over-extraction",
+      "how_to_distinguish": "Compare drought_weeks_severe and annual_precipitation_mm against historical baseline. If drought years co-occur with the delta_g decline, drought is the primary driver and groundwater stress is secondary. Check soge_dev_percent \u2014 if it is low (<50%) but delta_g is still negative, drought rather than extraction is likely primary."
+    },
+    {
+      "confounder": "Seasonal variation in well depth misread as multi-year trend",
+      "how_to_distinguish": "Ensure well depth comparisons are made for the same season (preferably pre-monsoon) across years, not across seasons."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "borewell_density",
+      "question_to_user": "Roughly how many borewells or tubewells are there in your village or nearby villages? Would you say there are very few (less than 10), a moderate number (10\u201350), or a large number (more than 50)?",
+      "how_answer_updates_diagnosis": "High borewell density in a hard rock aquifer with low SOGE confirms localised over-extraction not captured by the block-level SOGE figure, strongly confirming the groundwater stress pathway."
+    },
+    {
+      "missing_variable": "groundwater_salinity",
+      "question_to_user": "Have farmers noticed that borewell or well water has become saltier, leaves white deposits, or is no longer suitable for certain crops?",
+      "how_answer_updates_diagnosis": "Salinity in hard rock aquifers can indicate deep borewell penetration into saline zones, a secondary consequence of over-extraction, or a different causal pathway (saline intrusion) that changes solution recommendations."
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Shah2009",
+      "title": "Taming the anarchy: Groundwater governance in South Asia",
+      "authors": [
+        "Shah, Tushaar"
+      ],
+      "year": 2009,
+      "source_type": "book_chapter",
+      "relevance_note": "Documents hard rock aquifer depletion dynamics and the inadequacy of block-level SOGE to capture local depletion in peninsular India"
+    },
+    {
+      "source_id": "CGWB2023",
+      "title": "National Compilation of Dynamic Ground Water Resources of India 2022",
+      "authors": [
+        "Central Ground Water Board"
+      ],
+      "year": 2023,
+      "url": "https://cgwb.gov.in",
+      "source_type": "government_report",
+      "relevance_note": "Defines SOGE class thresholds (Safe <70%, Semi-critical 70\u201390%, Critical 90\u2013100%, Over-exploited >100%) used in sig_01"
+    },
+    {
+      "source_id": "Fishman2011",
+      "title": "Can the groundwater crisis in rural India be attributed to well deepening?",
+      "authors": [
+        "Fishman, R.",
+        "Devineni, N.",
+        "Raman, S."
+      ],
+      "year": 2011,
+      "doi": "10.1029/2011WR010477",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents well deepening as a reliable proxy for groundwater table decline in Indian hard rock and alluvial settings"
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2026-06-07",
+    "last_updated": "2026-06-07",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium"
+  }
+}
+
+Paper excerpts:
+[Chunk 1] paper=doi__10.56093_ijas.v88i8.82441 type=abstract title=Enhancing farmers income through farmers' producers companies in India: Status and roadmap
+There is a growing optimism that the farmers' organizations can act as a potential driving force for enhancing farmers' income. India has witnessed a positive growth of producer organizations in terms of types of organization, numbers and members. The Producer Company is a special case of producer organization that is registered under Section IXA of the Companies Act, 1956. A need was felt at that time to have an independent farmersâ€™ organization which enables incorporation of producers into such an institution like the companies which will be controlled by them, having welfare and business outlook at a time while not compromising the sustainability issues. That creates the milieu for the genesis of Farmersâ€™ Producer Company (FPC) in India. The FPCs are fundamentally farmer-owned and farmer-governed micro-enterprises which can be considered as hybrids between cooperative societies and private companies. The way of participation, membership and organization is similar to that of a cooperative, while the incorporation into corporate law allows greater flexibility and professionalism in their business actions. Till date 1048 FPCs are registered in India. In this article attempt has been made to review the issues of FPC, current status and future prospects. Forecasting the growth of FPC has been done up to the year 2020 utilizing Grey Model. Emphasis has been given to critically analyse the status, prospects and potentials with future outlook of 2020 concluding with strategies and policy needs.
+
+[Chunk 2] paper=doi__10.1017_s0021859610000687 type=abstract title=Perception of and adaptation to climate change by farmers in the Nile basin of Ethiopia
+SUMMARY The present study employed the Heckman sample selection model to analyse the two- step process of adaptation to climate change, which initially requires farmers' perception that climate is changing prior to responding to changes through adaptation. Farmers' perception of climate change was significantly related to the age of the head of the household, wealth, knowledge of climate change, social capital and agro-ecological settings. Factors significantly affecting adaptation to climate change were: education of the head of the household, household size, whether the head of the household was male, whether livestock were owned, the use of extension services on crop and livestock production, the availability of credit and the environmental temperature.
+
+[Chunk 3] paper=doi__10.1186_s40066-015-0036-2 type=abstract title=The interplay between household food security and wellbeing among small-scale farmers in the context of rapid agrarian c
+Small-scale agriculture, government entitlements, and livelihood opportunities offered by rapid economic growth shape the food security and wellbeing of people in rural India. This paper analyses this ongoing process of agrarian development from the perspective of three major approaches: the food availability approach, the entitlement and livelihood approach, and food sovereignty. We draw on quantitative and qualitative data collected from 68 households in rural Tamil Nadu on landholding and management, farm diversity, agricultural production, food availability, off-farm employment, rural out-migration, objective and subjective wellbeing, and socioeconomic and demographic profile of respondents. Rural households were classified in four categories, based on their engagement in agriculture and off-farm employment, to understand the interplay between food sufficiency and wellbeing. The households solely based on small-scale agriculture were found to have higher food sufficiency, landholding, and crop diversity, but lower monthly income and wellbeing. The households that were engaged in off-farm employment in addition to agriculture were found to have lower food sufficiency, landholding, and crop diversity, yet they exhibited better wellbeing and higher income. The landless households, which were primarily engaged in off-farm labour, work in distant markets had higher income than households solely engaged in farming. However, they had the lowest wellbeing index among all household types. The findings indicated that the impacts of women’s participation in local or distant employment schemes on household food security and wellbeing were complex and shaped by the household’s engagement in agriculture and their aspirations for a better quality of life. None of the three food security approaches provides a fully satisfactory basis for interventions aimed at enhancing the capacity of small and marginal farmers to achieve food security and meet their aspirations for wellbeing in the research area, although the entitlements and livelihoods approach has had a significant impact on local possibilities for livelihoods diversification. The study demonstrates that the interaction between food security and the subjective wellbeing of farmers is complex and shaped by the productivity of small-scale agriculture and livelihood aspirations of farm households.
+
+[Chunk 4] paper=doi__10.1007_978-981-15-9335-2 type=abstract title=Revitalizing Indian Agriculture and Boosting Farmer Incomes
+The Indian economy is considered to be one of the fastest growing economies of the world with India amongst the most important G-20 economies. Ever since the Indian economy made its presence felt on the global platform, the research community is now even more interested in studying and analyzing what India has to offer. This series aims to bring forth the latest studies and research about India from the areas of economics, business, and management science. The titles featured in this series will present rigorous empirical research, often accompanied by policy recommendations, evoke and evaluate various aspects of the economy and the business and management landscape in India, with a special focus on India's relationship with the world in terms of business and trade.
+
+[Chunk 5] paper=doi__10.1007_s12571-020-01064-5 type=abstract title=Food system disruption: initial livelihood and dietary effects of COVID-19 on vegetable producers in India
+Disruption to food systems and impacts on livelihoods and diets have been brought into sharp focus by the COVID-19 pandemic. We aimed to investigate effects of this multi-layered shock on production, sales, prices, incomes and diets for vegetable farmers in India as both producers and consumers of nutrient-dense foods. We undertook a rapid telephone survey with 448 farmers in 4 states, in one of the first studies to document the early impacts of the pandemic and policy responses on farming households. We find that a majority of farmers report negative impacts on production, sales, prices and incomes. Over 80% of farms reported some decline in sales, and over 20% of farms reported devastating declines (sold almost nothing). Price reductions were reported by over 80% of farmers, and reductions by more than half for 50% of farmers. Similarly, farm income reportedly dropped for 90% of farms, and by more than half for 60%. Of surveyed households, 62% reported disruptions to their diets. A majority of farm households reported reduced ability to access the most nutrient-dense foods. Around 80% of households reported ability to protect their staple food consumption, and the largest falls in consumption were in fruit and animal source foods other than dairy, in around half of households. Reported vegetable consumption fell in almost 30% of households, but vegetables were also the only food group where consumption increased for some, in around 15% of households. Our data suggest higher vulnerability of female farmers in terms of both livelihoods and diet, and differential effects on smaller and larger farms, meaning different farms may require different types of support in order to continue to function. Farms reported diverse coping strategies to maintain sales, though often with negative implications for reported incomes. The ability to consume one's own produce may be somewhat protective of diets when other routes to food access fail. The impacts of COVID-19 and subsequent policy responses on both livelihoods and diets in horticultural households risk rolling back the impressive economic and nutrition gains India has seen over the past decade. Food systems, and particularly those making available the most nutrient-dense foods, must be considered in ongoing and future government responses.
+
+[Chunk 6] paper=doi__10.56093_ijas.v89i9.93451 type=abstract title=Farmer producer organisations: Innovative institutions for upliftment of small farmers
+Need of Farmer Producer Organizations (FPO) was felt to overcome the problems of unorganized small farmers who lack access to resources and services. FPOs emerged as an interface between small farmers and the external world by providing forward and backward linkages, giving them required voice, market access, bargaining power, economy of scale and better prices. Among different tangible and intangible benefits, marketing related benefits like access to different market channels, decrease in risk, decrease in transaction cost, economy of scale etc. were reported prominently by different studies. Some studies recommended formation of women FPO, as male dominance in mixed type of FPO reduces womenâ€™s chance of equal participation. Structure and organization of FPO vary from country to country depending upon the legal and policy framework of the country. Ability of FPO to create and maintain linkages outside is linked to success of the FPO in long run. Articulation of demand, service provision, capacity building and financing are the important Extension and Advisory functions performed by FPOs. Weakness related to organization and group dynamics featured prominently in many studies, which can be overcome by enabling policy, ethics, professionalism and linkages creation for success and sustenance of FPO.
+
+[Chunk 7] paper=doi__10.22004_ag.econ.56969 type=abstract title=Determinants of African farmers’ strategies for adapting to climate change: Multinomial choice analysis
+This study analyzed determinants of farm-level climate adaptation measures in Africa using a multinomial choice model fitted to data from a cross-sectional survey of over 8000 farms from 11 African countries. The results indicate that specialized crop cultivation (mono-cropping) is the agricultural practice most vulnerable to climate change in Africa. Warming, especially in summer, poses the highest risk. It encourages irrigation, multiple cropping and integration of livestock. Increased precipitation reduces the probability of irrigation and will benefit most African farms, especially in drier areas. Better access to markets, extension and credit services, technology and farm assets (labor, land and capital) are critical for helping African farmers adapt to climate change. Government policies and investment strategies must support education, markets, credit and information about adaptation to climate change, including technological and institutional methods, particularly for poor farmers in the dry areas of Africa.
+
+[Chunk 8] paper=doi__10.1007_s13593-011-0065-6 type=abstract title=Agroecologically efficient agricultural systems for smallholder farmers: contributions to food sovereignty
+The realization of the contribution of peasant agriculture to food security in the midst of scenarios of climate change, economic and energy crisis, led to the concepts of food sovereignty and agroecologically based production systems to gain much attention in the developing world in the last two decades. New approaches and technologies involving application of blended modern agricultural science and indigenous knowledge systems and spearheaded by thousands of farmers, NGOs, and some government and academic institutions are proving to enhance food security while conserving agrobiodiversity soil and water resources conservation throughout hundreds of rural communities in the developing world. Case studies from Cuba, Brazil, Philippines, and Africa are presented to demonstrate how the agroecological development paradigm based on the revitalization of small farms which emphasizes diversity, synergy, recycling and integration, and social processes that value community participation and empowerment, proves to be perhaps one of the only viable options to meet present and future food needs. Given the present and predicted near future climate, energy and economic scenarios, agroecology has emerged as one of the most robust pathways towards designing biodiverse, productive, and resilient agroecosystems available today.
+
+[Chunk 9] paper=doi__10.1007_978-3-030-42148-9_2 type=abstract title=The Role of Smallholder Farms in a Changing World
+Abstract Despite progress, multiple burdens of malnutrition persist worldwide: 795 million people are hungry more than 2 billion people suffer from micronutrient deficiencies and over 2 billion are overweight or obese. At the same time, various challenges continue to threaten global food security and nutrition. Smallholder farmers are a key to ending hunger and undernutrition worldwide, but they are increasingly facing barriers to profitability. Yet smallholders should not all receive the same kind of support; they are not a homogenous group. While some smallholders should be supported to move up to commercially oriented and profitable farming systems, some should be supported to move out to seek non-farm employment opportunities. Strategies to promote smallholder agriculture as a business can help to overcome these obstacles and move smallholders with profit potential towards greater prosperity, while also contributing to the achievement of multiple Sustainable Development Goals (SDGs).
+
+[Chunk 10] paper=doi__10.1007_978-3-030-42148-9_2 type=body title=The Role of Smallholder Farms in a Changing World
+rural-urban migration, theriseofamodernindustrialandserviceeconomy,andademographictransition to lower birth and death rates (Timmer 1988). In this typology, agriculture-based 18 S.FanandC.Rue Table1 Moveupormoveout.Source adaptedfromFanetal.(2014)andFanetal.(2015) Whether a small Farmer should be targeted to ‘move up’ or ‘move out’ of WHICH PATH? agricultura depends on whether they fase the hard constraints that inhibit profit poten(cid:415)al: SOFT CONSTRAINTS MOVE UP MOVE OUT Limited access to markets and informa(cid:415)on ● ● Limited financial capital ● ● Limited access to infrastructure ● ● Limited access to smallholder-friendly technologies ● ● HARD CONSTRAINTS High popula(cid:415)on density ● Low quality soil ● Low rainfall and high temperaturas ● Remote loca(cid:415)on ● The best suppor(cid:415)ve strategies to aid farmers in either moving up or WHICH STRATEGY? moving out depend on the type of economy: AGRICULTURE-BASED ECONOMY MOVE UP MOVE OUT Produc(cid:415)ve cross-sector social safety nets that combine long-term ● tools with short-term support Investment in infrastructure, agricultural research and extensión, ● and smallholder-friendly and climate-smar(cid:425)echnologies Access to innova(cid:415)ve financial services ● Social safety nets ● Nutri(cid:415)on-focused crop produc(cid:415)on for own consump(cid:415)on ● Educa(cid:415)on and training for nonfarm employment ● Migra(cid:415)on to urban centers and other agricultura areas with ● greater profit poten(cid:415)al TRANSFORMING ECONOMY Flexible arrengements for land transfer ● ● Risk reduc(cid:415)on and management tools ● Access to market informa(cid:415)on ● Pro-smaller, nutri(cid:415)on-sensi(cid:415)ve value chains ● Social safety nets ● ● Improved access to housing, educa(cid:415)on, and health services for ● ● rural migrants Ver(cid:415)cal and horizontal coordina(cid:415)on to meet safety, quality, and ● quan(cid:415)ty standards Enhanced role of farmers’ organiza(cid:415)ons, par(cid:415)cularly for women ● farmers Educa(cid:415)on and training for nonfarm employment ● TRANSFORMED ECONOMY Provide incen(cid:415)ves for high-value produc(cid:415)on ● Reduced trade restric(cid:415)ons and subsidies ● Flexible arrengements for land transfer ● ● Efficiency and quality-enhanced produc(cid:415)on systems ● Ver(cid:415)cal and horizontal market coordina(cid:415)on ● Social safety nets ● Improved access to housing, educa(cid:415)on, and health services for ● rural migrants Educa(cid:415)on a
+
+[Chunk 11] paper=doi__10.1007_978-981-15-9335-2 type=body title=Revitalizing Indian Agriculture and Boosting Farmer Incomes
+India Studies in Business and Economics Ashok Gulati Ranjana Roy Shweta Saini Editors Revitalizing Indian Agriculture and Boosting Farmer Incomes India Studies in Business and Economics TheIndianeconomyisconsideredtobeoneofthefastestgrowingeconomiesofthe world with India amongst the most important G-20 economies. Ever since the Indian economy made its presence felt on the global platform, the research communityisnowevenmoreinterestedinstudyingandanalyzingwhatIndiahasto offer.ThisseriesaimstobringforththelateststudiesandresearchaboutIndiafrom the areas of economics, business, and management science. The titles featured in this series will present rigorous empirical research, often accompanied by policy recommendations, evoke and evaluate various aspects of the economy and the business and management landscape in India, with a special focus on India’s relationship with the world in terms of business and trade. More information about this series at http://www.springer.com/series/11234 Ashok Gulati Ranjana Roy Shweta Saini . . Editors Revitalizing Indian Agriculture and Boosting Farmer Incomes 123 Editors Ashok Gulati Ranjana Roy Indian Council for Research Indian Council for Research onInternational EconomicRelations onInternational EconomicRelations NewDelhi, India NewDelhi, India Shweta Saini Indian Council for Research onInternational EconomicRelations NewDelhi, India ISSN 2198-0012 ISSN 2198-0020 (electronic) India Studies inBusiness andEconomics ISBN978-981-15-9334-5 ISBN978-981-15-9335-2 (eBook) https://doi.org/10.1007/978-981-15-9335-2 ©TheEditor(s)(ifapplicable)andTheAuthor(s)2021.Thisbookisanopenaccesspublication. Open Access This book is licensed under the terms of the Creative Commons Attribution 4.0 International License (http://creativecommons.org/licenses/by/4.0/), which permits use, sharing, adap- tation,distributionandreproductioninanymediumorformat,aslongasyougiveappropriatecreditto the originalauthor(s)and the source, providealink tothe CreativeCommonslicense andindicate if changesweremade. The images or other third party material in this book are included in the book’s Creative Commons license,unlessindicatedotherwiseinacreditlinetothematerial.Ifmaterialisnotincludedinthebook’s CreativeCommonslicenseandyourintendeduseisnotpermittedbystatutoryregulationorexceedsthe permitteduse,youwillneedtoobtainpermissiondirectlyfromthecopyrightholder. Theuse ofgeneraldescriptivenames,registerednames,trademarks,servicemarks,etc. inthis publi- cationdoesnot
+
+[Chunk 12] paper=doi__10.1007_978-981-15-9335-2 type=body title=Revitalizing Indian Agriculture and Boosting Farmer Incomes
+a healthy life. Moreover, India is home to 1.3 billion people and will soon cross China’s population (United Nations Population Projection,2017revision).Producingfoodforsuchahugepopulationisapressing issuefortheIndiangovernmentgiventheshrinkingaveragelandholdingsize.Thus, increasingfooddemandshavetobemetbyimplementinginterventionstoaugment farmers’ income in an efficient, inclusive, scalable and sustainable manner. It has been found in many studies worldwide that one per cent growth in agri- culture is at least two to three times more powerful in reducing poverty than the same growth in non-agricultural sectors (World Development Report, 2008). Astrongagriculture–poverty–nutritionlinkageisexpectedinadevelopingcountry likeIndiawithseriousmalnourishmentamongruralpopulationthatdependslargely on agriculture for sustenance. It has also been observed that agricultural growth ratesinIndiafluctuatemorethantheoverallGDPgrowthratesbecausealmost52% of the country’s gross cropped area still relies on the monsoon. Growth rate in farmers’ income has remained unsatisfactory. It is against this backdrop that this book deals with the magnitude, sources and driversofagriculturegrowthinthecountryandselectedstatesusingqualitativeand quantitative methods. The target states include Bihar, Odisha and Uttar Pradesh, whichhavealargesectionofthepoorandthemalnourished,andGujarat,Madhya Pradesh and Punjab that are seen as models in terms of agricultural performance. Thestudyestablishesalinkbetweenagriculturalgrowth,povertyandmalnutrition. It also draws lessons from well-performing states that can be used to revamp the agricultural growth of moderate performing states and reduce poverty. Based on v vi Foreword econometricanalysesandareviewofexistingpolicies,thebookrecommendsaset of policies that can help the states in achieving higher agricultural growth and higher incomes for their farmers. New Delhi, India Rajat Kathuria Director and Chief Executive ICRIER Acknowledgements Indoingthisbook,wehavereceivedsupportfromseveralquartersandindividuals. Wewouldliketoexpressoursinceregratitudeforthefinancialsupportprovidedby the Bill and Melinda Gates Foundation (BMGF) for this project. In particular, we would like tothank Dr. Hari Menon, Mr. Brantley Browning and Dr. Purvi Mehta from BMGF for their inputs from the very beginning of the project and their sug- gestions as the work proceeded. We would also like to express our gratitude to Mr. Ramesh Inder Singh (Former Chief Secretary, Governmen
+
+Semantic aliases (appended at embed time, not in card JSON):
+Related themes: marginal farmer. small farmer income. tiny land holding. fragmented land. uneconomic farm size. subsistence farmer stress. smallholder income problem. low marketable surplus. credit access poor small farmer. FPO farmer producer needed. cooperative farming needed. land consolidation. social ecological small farm. livelihood small farmer. family farm income insufficient. agricultural...
+
+JSON schema summary (required top-level keys):
+["card_id", "production_system", "observed_stress", "causal_pathway", "context", "diagnostic_signals", "confounders", "sources"]
