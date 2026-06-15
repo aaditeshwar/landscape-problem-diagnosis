@@ -120,6 +120,36 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "Direct landholding size distribution data is the most reliable confirmation of this pathway. The variable is not available in the MWS data system but can be sourced from the Agricultural Census of India (block or district level) or from rapid household surveys. Fragmented, small landholdings limit surplus production, mechanisation access, and formal credit eligibility — all of which are documented drivers of persistent low income among Indian smallholders (Gulati et al., 2021; Fan & Rue, 2021)."
+    },
+    {
+      "variables": [
+        "household_income_inr"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Mean household or farm income below approximately Rs 50,000/year confirms severe income insufficiency on small holdings; Rs 50,000–1,00,000 partial; above weakens landholding as the primary driver.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Direct income evidence distinguishes volume-poverty (small area) from market or price failure (see market_price_crop amplifier).",
+      "signal_id": "sig_06"
+    },
+    {
+      "variables": [
+        "market_price_crop"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Farm-gate price consistently well below MSP (roughly 20–40% gap) for the main crop, amplifying income loss from small land area.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Market price failure amplifies small_landholding stress; near-MSP prices suggest low volume rather than exploitation is the dominant constraint.",
+      "signal_id": "sig_07"
     }
   ],
   "confounders": [

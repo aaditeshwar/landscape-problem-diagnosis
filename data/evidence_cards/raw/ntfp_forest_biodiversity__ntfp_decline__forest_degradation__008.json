@@ -121,6 +121,21 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "Direct evidence of NTFP species decline is the most diagnostic indicator of forest degradation impact on NTFP availability. In the eastern plateau zone, collection methods for many NTFP species are reported to be destructive, and wild populations are declining as a result of both over-harvesting and habitat loss. Community recall of species abundance trends is a validated proxy where formal survey data are unavailable."
+    },
+    {
+      "variables": [
+        "community_forest_governance_status"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Absence of active VSS/JFM/CFR governance and forest patrols amplifies degradation risk; recognised CFR rights with enforcement weaken ongoing active degradation.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Institutional gap amplifies degradation severity; active community forest governance suggests legacy rather than ongoing degradation.",
+      "signal_id": "sig_06"
     }
   ],
   "confounders": [
@@ -140,7 +155,7 @@
       "how_answer_updates_diagnosis": "Confirmed decline in specific NTFP species strongly confirms the forest degradation pathway. If decline is species-specific (e.g., only over-harvested species like tendu), it may point to over-harvesting as a co-driver. If decline is broad across multiple species and forest types, it confirms structural forest degradation as the primary cause."
     },
     {
-      "missing_variable": "community_forest_protection_status",
+      "missing_variable": "community_forest_governance_status",
       "question_to_user": "Does the village have a functioning Van Suraksha Samiti (forest protection committee), Joint Forest Management committee, or Community Forest Resource rights recognised under the Forest Rights Act? Are there active patrols or bylaws against illegal felling and fire?",
       "how_answer_updates_diagnosis": "Absence of community forest governance institutions amplifies the degradation pathway and reduces the likelihood of natural recovery. Presence of active CFR rights under FRA would indicate institutional capacity for intervention and should shift recommendations toward strengthening existing governance rather than establishing new structures."
     }

@@ -115,6 +115,21 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "Direct evidence of NTFP species decline is the most diagnostic signal for this pathway. Yadav and Dugaya (2013) identify these species as the core of Central India NTFP systems. Shankar et al. (2004) demonstrate that NTFP collection volumes and species diversity are tightly coupled to forest condition, and that destructive harvesting combined with habitat loss drives population decline. This variable is not available in the remote-sensing data stack and must be elicited through community interviews or field surveys."
+    },
+    {
+      "variables": [
+        "forest_fire_frequency"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Frequent or intensifying forest fires (annual or every few years, worsening trend) damaging NTFP species and suppressing regeneration.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Fire-driven degradation is a major NTFP loss mechanism in dry deciduous and plateau forests.",
+      "signal_id": "sig_06"
     }
   ],
   "confounders": [
@@ -134,7 +149,7 @@
       "how_answer_updates_diagnosis": "Confirmed decline in named NTFP species strongly confirms the forest_degradation pathway and helps prioritise which species to target in community plantation and assisted natural regeneration interventions. If decline is species-specific rather than broad, it may point to targeted over-harvesting of those species rather than general forest degradation, shifting the diagnosis toward an over-harvesting pathway."
     },
     {
-      "missing_variable": "fire_frequency",
+      "missing_variable": "forest_fire_frequency",
       "question_to_user": "How often do forest fires occur in or near the village forests? Have fires become more frequent or more severe in recent years? Are fires typically accidental, set for grazing access, or for other reasons?",
       "how_answer_updates_diagnosis": "Frequent or intensifying fires are a major driver of forest degradation in semi-arid Malwa and Gujarat forests, killing NTFP-bearing trees and suppressing regeneration. High fire frequency confirms the forest_degradation pathway and makes fire-line creation and community forest watch patrols the priority intervention. Low fire frequency shifts attention to other degradation drivers such as encroachment or fuelwood extraction."
     }

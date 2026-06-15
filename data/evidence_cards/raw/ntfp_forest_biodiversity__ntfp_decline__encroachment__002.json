@@ -103,6 +103,36 @@
         "sig_01",
         "sig_02"
       ]
+    },
+    {
+      "variables": [
+        "fra_claims_filed_count"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Many pending or rejected FRA claims with reported NTFP decline and forest conversion indicate tenure insecurity confirming encroachment vulnerability; high recognition weakens encroachment as primary driver.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Unresolved forest rights alongside measurable conversion corroborates encroachment as a tenure and access driver of NTFP decline.",
+      "signal_id": "sig_05"
+    },
+    {
+      "variables": [
+        "ntfp_collection_trend_qualitative"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Collectors report NTFP decline attributed to shrinking forest area or blocked/restricted access (not merely lower density inside intact forest). Decline greater than 25–50% increases severity.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Access- or area-attributed NTFP decline distinguishes encroachment from degradation or over-harvesting within intact forest.",
+      "signal_id": "sig_06"
     }
   ],
   "overall_reasoning_note": "Diagnosis of encroachment as the primary driver of NTFP decline should be confirmed by at least two signals: a positive trend in cd_forest_to_farm_ha (sig_01) is the strongest single indicator and should be present. Settlement expansion (sig_02) amplifies the diagnosis when co-occurring. High ST population share with concurrent forest conversion (sig_03) elevates severity and points to Forest Rights Act implementation gaps as a priority intervention. Sig_04 provides a magnitude threshold for landscape-level significance. If cd_forest_to_farm_ha shows no trend but NTFP decline is reported, consider alternative pathways such as over-harvesting, fire, or drought-driven forest degradation. In semi-arid hard rock plateau contexts, encroachment pressure is often driven by agricultural expansion during drought years when crop failures push households to clear forest margins for subsistence cultivation — check drought_severe_return_period to assess whether encroachment pulses coincide with drought cycles.",
@@ -123,7 +153,7 @@
       "how_answer_updates_diagnosis": "Low FRA claim filing in a high-ST village with documented forest-to-farm conversion suggests that tenure insecurity is driving encroachment — households without recognized rights may be clearing forest to establish de facto land claims. High rejection rates indicate institutional barriers to rights recognition that amplify encroachment pressure and reduce community incentive to protect forest boundaries."
     },
     {
-      "missing_variable": "ntfp_collection_volume_kg",
+      "missing_variable": "ntfp_collection_trend_qualitative",
       "question_to_user": "Can you estimate how much of key NTFPs (e.g., tendu leaf, mahua, amla, bamboo) the community collected this year compared to five years ago? Has the collection area shrunk, or are yields lower even in the same areas?",
       "how_answer_updates_diagnosis": "If collection area has physically shrunk (consistent with encroachment) rather than yields declining within the same area (consistent with over-harvesting or degradation), this strongly confirms the encroachment pathway. Quantitative decline in collection volume alongside reduced accessible forest area confirms both the stress and its cause."
     }

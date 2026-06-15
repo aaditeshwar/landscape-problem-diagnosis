@@ -316,6 +316,48 @@ def infer_user_signal_result(
     if threshold_result is not None:
         return threshold_result
 
+    variable = str(normalized.get("variable") or "")
+    raw = str(normalized.get("raw") or "").lower()
+    if variable.startswith("ntfp_collection") and direction == "confirms":
+        area_access = any(
+            phrase in raw
+            for phrase in (
+                "less forest",
+                "shrunk",
+                "shrink",
+                "blocked",
+                "restricted access",
+                "no access",
+                "encroach",
+                "converted",
+                "farm",
+                "field",
+                "settlement",
+            )
+        )
+        density_only = any(
+            phrase in raw
+            for phrase in (
+                "same forest",
+                "same area",
+                "intact forest",
+                "less dense",
+                "fewer trees",
+                "over-harvest",
+                "overharvest",
+            )
+        )
+        if area_access and not density_only:
+            return True
+        if density_only and not area_access:
+            return False
+
+    if variable == "borewell_density" and direction == "confirms":
+        if any(phrase in raw for phrase in ("not successful", "unsuccessful", "failed", "dry borewell")):
+            return False
+        if any(phrase in raw for phrase in ("moderate", "10-50", "10–50", "more than 50", "many borewell")):
+            return True
+
     return None
 
 
@@ -793,6 +835,112 @@ def _confidence_change_reasoning(
     return ""
 
 
+def _min_confirms_required_from_note(note: str) -> int:
+    """Minimum confirms+TRUE count implied by a card overall_reasoning_note."""
+    note_l = str(note or "").lower()
+    if "no single signal is sufficient" in note_l:
+        return 2
+    if "at least three" in note_l or "at least 3" in note_l:
+        return 3
+    if "at least two" in note_l or "at least 2" in note_l:
+        return 2
+    if "plus one of" in note_l or "and one of" in note_l:
+        return 2
+    return 2
+
+
+def _format_signal_result_line(signal: dict[str, Any]) -> str:
+    signal_id = str(signal.get("signal_id") or "?")
+    direction = str(signal.get("direction") or "confirms")
+    result = signal.get("result")
+    if result is True:
+        label = "TRUE"
+    elif result is False:
+        label = "FALSE"
+    else:
+        label = "unknown"
+    role = ""
+    if direction == "amplifies":
+        role = " amplifier"
+    elif direction == "rules_out":
+        role = " rules-out"
+    if signal.get("status") == "user_provided" and signal.get("user_answer"):
+        return f"{signal_id}{role}={label} (your answer)"
+    return f"{signal_id}{role}={label}"
+
+
+def _server_pathway_interpretation(
+    pathway_id: str,
+    *,
+    status: str,
+    signal_evaluation: dict[str, dict[str, Any]] | None,
+    follow_up_updates: list[dict[str, Any]] | None,
+    answered_variable: str | None,
+    prior_status: str | None = None,
+    prior_confidence: str | None = None,
+    next_confidence: str | None = None,
+) -> str:
+    """Authoritative follow-up interpretation aligned with server signal evaluation."""
+    label = _humanize_pathway(pathway_id).title()
+    pathway = (signal_evaluation or {}).get(pathway_id) or {}
+    summary = pathway.get("summary") or {}
+    confirms_true = int(summary.get("confirms_true") or 0)
+    min_required = _min_confirms_required_from_note(str(pathway.get("evidence_note") or ""))
+
+    parts: list[str] = []
+    if status == "confirmed":
+        parts.append(f"{label} is confirmed after this follow-up.")
+    elif status == "ruled_out":
+        parts.append(f"{label} was ruled out after this follow-up.")
+    else:
+        parts.append(f"{label} remains uncertain after this follow-up.")
+
+    signal_lines = [
+        _format_signal_result_line(sig)
+        for sig in pathway.get("signals") or []
+        if isinstance(sig, dict)
+    ]
+    if signal_lines:
+        parts.append("Server signals: " + "; ".join(signal_lines) + ".")
+
+    if status != "confirmed" and min_required > 1:
+        parts.append(
+            f"Confirming count: {confirms_true} of {min_required} required primary confirms per the evidence card."
+        )
+        if confirms_true < min_required:
+            parts.append("Amplifier-only support does not meet the confirmation threshold.")
+
+    turn_update = _signal_update_reasoning(
+        pathway_id,
+        follow_up_updates,
+        answered_variable=answered_variable,
+    )
+    if turn_update:
+        parts.append(turn_update)
+    elif answered_variable:
+        wired = any(
+            item.get("pathway_id") == pathway_id and item.get("variable") == answered_variable
+            for item in follow_up_updates or []
+        )
+        if not wired:
+            parts.append(
+                f"Your answer on {answered_variable} was recorded in the evidence bundle, "
+                "but no diagnostic signal on this pathway consumed it for scoring."
+            )
+
+    if prior_status and prior_status != status:
+        parts.append(f"Status changed from {prior_status} to {status}.")
+    elif (
+        status in {"confirmed", "uncertain"}
+        and prior_confidence
+        and next_confidence
+        and prior_confidence != next_confidence
+    ):
+        parts.append(f"Confidence adjusted from {prior_confidence} to {next_confidence}.")
+
+    return " ".join(parts)
+
+
 def _rule_out_interpretation(
     pathway_id: str,
     answered_variable: str,
@@ -855,10 +1003,13 @@ def collect_pathway_interpretations(
                     {
                         "pathway_id": pathway_id,
                         "status": "ruled_out",
-                        "reasoning": _rule_out_interpretation(
+                        "reasoning": _server_pathway_interpretation(
                             pathway_id,
-                            answered_variable,
-                            signal_evaluation,
+                            status="ruled_out",
+                            signal_evaluation=signal_evaluation,
+                            follow_up_updates=follow_up_updates,
+                            answered_variable=answered_variable,
+                            prior_status=before,
                         ),
                     }
                 )
@@ -868,35 +1019,38 @@ def collect_pathway_interpretations(
             prev_confidence = str(prior_conf.get(pathway_id, {}).get("confidence") or "")
             next_confidence = str(curr_conf.get(pathway_id, {}).get("confidence") or "")
             if prev_confidence and next_confidence and prev_confidence != next_confidence:
-                reasoning = _confidence_change_reasoning(
-                    pathway_id,
-                    prior_confidence=prev_confidence,
-                    next_confidence=next_confidence,
-                    answered_variable=answered_variable,
-                    pathway=curr_conf[pathway_id],
-                    follow_up_updates=follow_up_updates,
+                items.append(
+                    {
+                        "pathway_id": pathway_id,
+                        "status": "confirmed",
+                        "reasoning": _server_pathway_interpretation(
+                            pathway_id,
+                            status="confirmed",
+                            signal_evaluation=signal_evaluation,
+                            follow_up_updates=follow_up_updates,
+                            answered_variable=answered_variable,
+                            prior_status=before,
+                            prior_confidence=prev_confidence,
+                            next_confidence=next_confidence,
+                        ),
+                    }
                 )
-                if reasoning:
-                    items.append(
-                        {
-                            "pathway_id": pathway_id,
-                            "status": "confirmed",
-                            "reasoning": reasoning,
-                        }
-                    )
             continue
 
         if before == after == "uncertain":
             pathway = curr_unc.get(pathway_id)
             if not pathway:
                 continue
-            reasoning = str(pathway.get("reasoning") or "").strip()
-            if not reasoning:
-                reasoning = _signal_update_reasoning(
-                    pathway_id,
-                    follow_up_updates,
-                    answered_variable=answered_variable,
-                )
+            reasoning = _server_pathway_interpretation(
+                pathway_id,
+                status="uncertain",
+                signal_evaluation=signal_evaluation,
+                follow_up_updates=follow_up_updates,
+                answered_variable=answered_variable,
+                prior_status=before,
+                prior_confidence=str(prior_unc.get(pathway_id, {}).get("confidence") or "") or None,
+                next_confidence=str(pathway.get("confidence") or "") or None,
+            )
             if reasoning:
                 items.append(
                     {
@@ -910,16 +1064,22 @@ def collect_pathway_interpretations(
         pathway = curr_conf.get(pathway_id) or curr_unc.get(pathway_id)
         if not pathway:
             continue
-        reasoning = str(pathway.get("reasoning") or "").strip()
-        if not reasoning:
-            reasoning = _signal_update_reasoning(
-                pathway_id,
-                follow_up_updates,
-                answered_variable=answered_variable,
+        status = "confirmed" if pathway_id in curr_conf else "uncertain"
+        reasoning = _server_pathway_interpretation(
+            pathway_id,
+            status=status,
+            signal_evaluation=signal_evaluation,
+            follow_up_updates=follow_up_updates,
+            answered_variable=answered_variable,
+            prior_status=before,
+            prior_confidence=str(
+                (prior_conf.get(pathway_id) or prior_unc.get(pathway_id) or {}).get("confidence") or ""
             )
+            or None,
+            next_confidence=str(pathway.get("confidence") or "") or None,
+        )
         if not reasoning:
             continue
-        status = "confirmed" if pathway_id in curr_conf else "uncertain"
         items.append(
             {
                 "pathway_id": pathway_id,

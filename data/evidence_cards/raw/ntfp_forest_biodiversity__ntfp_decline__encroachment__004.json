@@ -110,6 +110,36 @@
         "sig_02",
         "sig_03"
       ]
+    },
+    {
+      "variables": [
+        "fra_claims_filed_count"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Many pending or rejected FRA claims with reported NTFP decline and forest conversion indicate tenure insecurity confirming encroachment vulnerability; high recognition weakens encroachment as primary driver.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Unresolved forest rights alongside measurable conversion corroborates encroachment as a tenure and access driver of NTFP decline.",
+      "signal_id": "sig_05"
+    },
+    {
+      "variables": [
+        "ntfp_collection_trend_qualitative"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Collectors report NTFP decline attributed to shrinking forest area or blocked/restricted access (not merely lower density inside intact forest). Decline greater than 25–50% increases severity.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Access- or area-attributed NTFP decline distinguishes encroachment from degradation or over-harvesting within intact forest.",
+      "signal_id": "sig_06"
     }
   ],
   "overall_reasoning_note": "Diagnosis of encroachment-driven NTFP decline in arid and semi-arid zones should be anchored by sig_01 (forest-to-farm conversion trend) as the primary confirmatory signal. Sig_02 (urbanization expansion) and sig_04 (composite dual pressure) provide corroborating evidence of multi-vector land use change. Sig_03 (high ST population) does not confirm encroachment independently but amplifies the livelihood severity of any confirmed forest loss. A strong sig_01 alone is sufficient to flag this pathway for further investigation; convergence of sig_01, sig_02, and sig_03 warrants high-confidence diagnosis. In arid zones, even small absolute losses of forest area (50 ha) can be ecologically significant given the low baseline forest cover. Always verify whether observed land use change reflects illegal encroachment versus formally sanctioned land allocation, as the intervention pathway differs substantially between these cases.",
@@ -130,7 +160,7 @@
       "how_answer_updates_diagnosis": "A high number of pending or rejected FRA claims alongside active encroachment signals a tenure rights conflict rather than simple illegal encroachment, shifting the recommended intervention toward FRA claim support and legal advocacy. Recognized FRA rights with continued NTFP decline would instead point toward enforcement failure or boundary disputes."
     },
     {
-      "missing_variable": "ntfp_collection_volume_kg",
+      "missing_variable": "ntfp_collection_trend_qualitative",
       "question_to_user": "Have community members noticed a reduction in the quantity of forest produce (such as tendu leaves, gum, honey, medicinal plants, or fuelwood) collected per household over the past 5 years? Would you estimate the decline as less than 25%, 25-50%, or more than 50%?",
       "how_answer_updates_diagnosis": "A reported decline of more than 25% in NTFP collection volume, when combined with confirmed forest-to-farm conversion, strongly confirms the encroachment pathway. A decline exceeding 50% indicates severe livelihood impact and elevates the priority for immediate boundary demarcation and livelihood alternative interventions."
     }

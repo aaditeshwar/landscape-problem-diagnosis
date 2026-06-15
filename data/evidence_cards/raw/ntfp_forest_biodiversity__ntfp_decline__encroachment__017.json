@@ -98,6 +98,36 @@
         "sig_01",
         "sig_02"
       ]
+    },
+    {
+      "variables": [
+        "fra_claims_filed_count"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Many pending or rejected FRA claims with reported NTFP decline and forest conversion indicate tenure insecurity confirming encroachment vulnerability; high recognition weakens encroachment as primary driver.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Unresolved forest rights alongside measurable conversion corroborates encroachment as a tenure and access driver of NTFP decline.",
+      "signal_id": "sig_05"
+    },
+    {
+      "variables": [
+        "ntfp_collection_trend_qualitative"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Collectors report NTFP decline attributed to shrinking forest area or blocked/restricted access (not merely lower density inside intact forest). Decline greater than 25–50% increases severity.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Access- or area-attributed NTFP decline distinguishes encroachment from degradation or over-harvesting within intact forest.",
+      "signal_id": "sig_06"
     }
   ],
   "confounders": [
@@ -117,7 +147,7 @@
       "how_answer_updates_diagnosis": "Low FRA claim filing or high rejection rates in a village with high ST population and active forest conversion strongly confirms the encroachment pathway, as it indicates that forest rights are unresolved and communities lack legal protection against encroachment. High recognition rates would suggest the pathway is being addressed through policy."
     },
     {
-      "missing_variable": "ntfp_collection_volume_kg",
+      "missing_variable": "ntfp_collection_trend_qualitative",
       "question_to_user": "Has the quantity of forest produce (such as honey, medicinal plants, fruits, or timber substitutes) collected by households declined over the past 5 years? If yes, by roughly what proportion — less than 25%, 25–50%, or more than 50%?",
       "how_answer_updates_diagnosis": "A reported decline of more than 25% in NTFP collection volume, coinciding with forest-to-farm conversion trends, directly confirms the stress observation and strengthens the encroachment diagnosis. A decline of more than 50% indicates severe impact requiring urgent intervention."
     }

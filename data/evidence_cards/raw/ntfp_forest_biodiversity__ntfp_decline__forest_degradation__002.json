@@ -121,6 +121,21 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "Direct evidence of declining NTFP species abundance is the most diagnostic indicator of forest degradation impact on NTFP availability. This variable is not available in the remote sensing data stack and must be gathered through community interviews or field surveys. In semi-arid Deccan and Eastern Ghats forests, the species listed are the primary sources of NTFP income for tribal and forest-fringe households. Their decline directly confirms the forest degradation pathway rather than alternative explanations such as market failure or over-harvesting without habitat loss."
+    },
+    {
+      "variables": [
+        "forest_fire_frequency"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Frequent or intensifying forest fires (annual or every few years, worsening trend) damaging NTFP species and suppressing regeneration.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "regional"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Fire-driven degradation is a major NTFP loss mechanism in dry deciduous and plateau forests.",
+      "signal_id": "sig_06"
     }
   ],
   "confounders": [
@@ -140,7 +155,7 @@
       "how_answer_updates_diagnosis": "Confirmed decline in named NTFP species strongly confirms the forest degradation pathway. If communities report species loss in areas that satellite data shows as still forested, this may indicate degradation of forest quality (canopy thinning, understory loss) not captured by area-based metrics, and would increase confidence in the diagnosis. If species are still present but access is restricted, the pathway may shift toward governance or tenure issues rather than ecological degradation."
     },
     {
-      "missing_variable": "fire_frequency",
+      "missing_variable": "forest_fire_frequency",
       "question_to_user": "How often do forest fires occur in or near the forests used by your community? Have fires become more frequent or more severe in recent years? Do fires typically affect the same areas repeatedly?",
       "how_answer_updates_diagnosis": "Frequent or intensifying forest fires in semi-arid plateau terrain are a major driver of forest degradation that is not directly captured by the available variables. High fire frequency would strongly confirm the forest degradation pathway and would prioritise fire line creation and community forest watch patrols as immediate interventions. Repeated burning of the same patches indicates chronic degradation that prevents regeneration of NTFP-bearing species."
     }

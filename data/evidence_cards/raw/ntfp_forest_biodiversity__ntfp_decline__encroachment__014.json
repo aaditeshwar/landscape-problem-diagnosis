@@ -101,6 +101,36 @@
       "interaction_with": [
         "sig_03"
       ]
+    },
+    {
+      "variables": [
+        "fra_claims_filed_count"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Many pending or rejected FRA claims with reported NTFP decline and forest conversion indicate tenure insecurity confirming encroachment vulnerability; high recognition weakens encroachment as primary driver.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Unresolved forest rights alongside measurable conversion corroborates encroachment as a tenure and access driver of NTFP decline.",
+      "signal_id": "sig_05"
+    },
+    {
+      "variables": [
+        "ntfp_collection_trend_qualitative"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Collectors report NTFP decline attributed to shrinking forest area or blocked/restricted access (not merely lower density inside intact forest). Decline greater than 25–50% increases severity.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Access- or area-attributed NTFP decline distinguishes encroachment from degradation or over-harvesting within intact forest.",
+      "signal_id": "sig_06"
     }
   ],
   "confounders": [
@@ -120,7 +150,7 @@
       "how_answer_updates_diagnosis": "A high number of pending or rejected FRA claims alongside active forest conversion strongly confirms the encroachment pathway driven by tenure insecurity. Recognized claims with conversion would instead suggest legal land use change. Absence of any FRA filing in a high-ST village indicates institutional failure that amplifies encroachment risk."
     },
     {
-      "missing_variable": "ntfp_collection_volume_trend",
+      "missing_variable": "ntfp_collection_trend_qualitative",
       "question_to_user": "Have community members noticed a decline in the quantity or variety of forest produce (e.g., tendu leaves, mahua, amla, gum) collected over the past 5-10 years? If yes, do they attribute this to reduced forest area, restricted access, or reduced forest productivity?",
       "how_answer_updates_diagnosis": "If community members attribute NTFP decline specifically to reduced access or shrinking forest area (rather than drought or over-harvesting), this directly confirms the encroachment pathway. Attribution to restricted access points to boundary disputes or displacement, while attribution to reduced productivity may indicate degradation pathways unrelated to encroachment."
     }

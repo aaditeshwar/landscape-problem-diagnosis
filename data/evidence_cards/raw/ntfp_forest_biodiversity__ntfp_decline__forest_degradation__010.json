@@ -116,6 +116,21 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "Direct observation of NTFP species abundance is the most diagnostic indicator of forest degradation impact on NTFP availability. Declining populations of key species such as sal, mahua, or medicinal plants directly confirm that forest degradation is translating into reduced NTFP supply. In India, over 50 million people depend directly on NTFPs for subsistence, and declining species presence signals a shift from a sustainable 'win-win' to a 'lose-lose' trajectory where both livelihoods and ecological resources erode simultaneously. This variable is not available in the remote sensing data stack and must be assessed through community surveys or field verification."
+    },
+    {
+      "variables": [
+        "community_forest_governance_status"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Absence of active VSS/JFM/CFR governance and forest patrols amplifies degradation risk; recognised CFR rights with enforcement weaken ongoing active degradation.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Institutional gap amplifies degradation severity; active community forest governance suggests legacy rather than ongoing degradation.",
+      "signal_id": "sig_06"
     }
   ],
   "overall_reasoning_note": "Diagnosis of forest degradation as the driver of NTFP decline in the humid plains of West Bengal, Assam and eastern Bihar should be confirmed by at least two of the three primary remote-sensing signals: declining forest area trend (sig_01), net negative deforestation-afforestation balance (sig_02), and greater than 10% forest cover loss (sig_03). These signals are mutually reinforcing and should be interpreted together. The absence of NTFP-focused organisations (sig_04) amplifies vulnerability but does not independently confirm the pathway. The most diagnostic confirmation would come from field-based NTFP species surveys (sig_05), which should be prioritised as a missing variable. In alluvial plains, forest patches are often small and fragmented, meaning LULC data may undercount degradation if canopy thinning occurs without complete clearing — community testimony on collection trends is therefore essential. Where forest area is stable but NTFP yields are declining, consider alternative pathways such as over-harvesting pressure or market-driven collection intensity rather than physical forest loss.",
@@ -136,7 +151,7 @@
       "how_answer_updates_diagnosis": "Confirmed decline in specific NTFP species abundance strongly confirms the forest degradation pathway and helps identify which species and forest strata are most affected, guiding targeted restoration interventions such as community plantation of indigenous NTFP-bearing species or assisted natural regeneration in degraded patches."
     },
     {
-      "missing_variable": "jfm_cfr_status",
+      "missing_variable": "community_forest_governance_status",
       "question_to_user": "Does the village have a functioning Joint Forest Management (JFM) committee or has it filed for Community Forest Resource (CFR) rights under the Forest Rights Act? If CFR rights have been granted, are community forest protection patrols or bylaws in place?",
       "how_answer_updates_diagnosis": "The presence of active JFM or CFR rights with enforcement mechanisms significantly reduces the likelihood of ongoing forest degradation and shifts the diagnosis toward historical legacy degradation or over-harvesting rather than active deforestation. Absence of these governance structures confirms institutional vulnerability and supports recommendations for FRA claim facilitation and community forest watch establishment."
     }

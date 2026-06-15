@@ -113,6 +113,21 @@
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Distance to cooperative credit institutions constrains farmers' ability to invest in irrigation infrastructure — drip systems, solar pumps, or pipeline networks — even when water is physically available. In Vidarbha and Marathwada, marginal farmers already face high lifting costs from deep wells; without accessible credit, they cannot adopt efficiency-improving technologies. This signal amplifies irrigation challenges but does not confirm water scarcity on its own."
+    },
+    {
+      "variables": [
+        "annual_well_depth_m"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Farmers report well or borewell deepening over 5–10 years, or seasonal failure of shallow wells, indicating co-occurring groundwater depletion alongside surface irrigation failure.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "Well deepening co-confirms groundwater_stress alongside irrigation_challenges when surface storage is inadequate; informs lift-cost assumptions for solar pump solutions.",
+      "signal_id": "sig_06"
     }
   ],
   "overall_reasoning_note": "Irrigation infrastructure failure in semi-arid Deccan Plateau MWSs should be confirmed by at least two of the three primary signals: declining SWB area trend with low SWB count (sig_01), rapid post-monsoon drying of surface water bodies (sig_02), or very low MGNREGA SWC investment (sig_03). The absence of a river (sig_04) and poor cooperative access (sig_05) are amplifying signals. Siltation of tanks and check dams is a key mechanism linking sig_01 and sig_02 — manual desilting has been shown to increase check dam recharge by 84% (Dashora et al. 2019), making tank desilting through MGNREGA the highest-priority intervention when both signals are present. If SWB area is stable but rabi/kharif ratio is low, prioritise storage design and siltation management over new construction.",

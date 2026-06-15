@@ -103,6 +103,36 @@
         "sig_01",
         "sig_02"
       ]
+    },
+    {
+      "variables": [
+        "fra_claims_filed_count"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Many pending or rejected FRA claims with reported NTFP decline and forest conversion indicate tenure insecurity confirming encroachment vulnerability; high recognition weakens encroachment as primary driver.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Unresolved forest rights alongside measurable conversion corroborates encroachment as a tenure and access driver of NTFP decline.",
+      "signal_id": "sig_05"
+    },
+    {
+      "variables": [
+        "ntfp_collection_trend_qualitative"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Collectors report NTFP decline attributed to shrinking forest area or blocked/restricted access (not merely lower density inside intact forest). Decline greater than 25–50% increases severity.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Access- or area-attributed NTFP decline distinguishes encroachment from degradation or over-harvesting within intact forest.",
+      "signal_id": "sig_06"
     }
   ],
   "overall_reasoning_note": "Diagnosis of encroachment-driven NTFP decline should be confirmed by at least two signals: a measurable forest-to-farm conversion trend (sig_01) is the primary indicator; settlement expansion (sig_02) and high ST population with concurrent conversion (sig_03) are corroborating signals. The composite area-growth signal (sig_04) provides a cross-check. A single signal in isolation may reflect data noise or legitimate land-use transitions under FRA community forest rights. Always verify whether observed forest-to-farm conversion reflects illegal encroachment versus FRA-recognised individual or community forest rights claims — the latter is not encroachment and requires different interventions. In hilly terrain (terrain_cluster_id != 1), forest fragmentation effects on NTFP access are amplified because communities depend on contiguous forest patches for seasonal collection routes.",
@@ -123,7 +153,7 @@
       "how_answer_updates_diagnosis": "Low FRA claim filing in a high-ST village with forest conversion confirms that encroachment is occurring without legal tenure recognition, strengthening the encroachment diagnosis and pointing to FRA claim support as the primary intervention. High filing with low recognition suggests administrative bottlenecks rather than active encroachment."
     },
     {
-      "missing_variable": "ntfp_collection_trend_reported",
+      "missing_variable": "ntfp_collection_trend_qualitative",
       "question_to_user": "Have NTFP collectors in the village reported a decline in the quantity or quality of forest produce (e.g. tendu leaves, mahua, amla, honey) over the past 5 years? Do they attribute this to reduced forest area, restricted access, or reduced forest density?",
       "how_answer_updates_diagnosis": "If collectors specifically attribute decline to reduced forest area or blocked access routes (rather than drought or over-harvesting), this directly confirms encroachment as the causal pathway. Attribution to reduced density without area loss would shift diagnosis toward degradation or fire pathways."
     }

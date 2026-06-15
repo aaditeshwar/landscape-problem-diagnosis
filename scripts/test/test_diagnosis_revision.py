@@ -247,6 +247,74 @@ def test_scoped_follow_up_freezes_unrelated_pathways():
     assert "migrant_household_percent" in ms_change["reason"]
 
 
+def test_server_pathway_interpretation_stays_uncertain_with_one_confirm():
+    signal_evaluation = {
+        "groundwater_stress": {
+            "summary": {"confirms_true": 1, "amplifies_true": 1},
+            "evidence_note": (
+                "Groundwater stress should be confirmed by at least two of the three primary signals."
+            ),
+            "signals": [
+                {"signal_id": "sig_01", "direction": "confirms", "result": False, "status": "ok"},
+                {
+                    "signal_id": "sig_05",
+                    "direction": "confirms",
+                    "result": True,
+                    "status": "user_provided",
+                    "user_answer": "Yes, wells have been deepened",
+                },
+                {"signal_id": "sig_03", "direction": "amplifies", "result": True, "status": "ok"},
+            ],
+        }
+    }
+    prior = {
+        "confirmed_pathways": [],
+        "uncertain_pathways": [{"pathway_id": "groundwater_stress", "confidence": "low"}],
+    }
+    current = {
+        "confirmed_pathways": [],
+        "uncertain_pathways": [{"pathway_id": "groundwater_stress", "confidence": "medium"}],
+    }
+    items = collect_pathway_interpretations(
+        current,
+        "annual_well_depth_m",
+        prior=prior,
+        signal_evaluation=signal_evaluation,
+        follow_up_updates=[
+            {
+                "pathway_id": "groundwater_stress",
+                "signal_id": "sig_05",
+                "variable": "annual_well_depth_m",
+                "direction": "confirms",
+                "result": True,
+                "update_interpretation": "Well deepening strongly confirms groundwater stress.",
+            }
+        ],
+    )
+    assert len(items) == 1
+    assert items[0]["status"] == "uncertain"
+    reasoning = items[0]["reasoning"]
+    assert "remains uncertain" in reasoning
+    assert "1 of 2" in reasoning
+    assert "high confidence" not in reasoning.lower()
+
+
+def test_borewell_not_successful_infers_false():
+    from services.diagnosis_revision import infer_user_signal_result
+
+    normalized = normalize_qualitative_answer(
+        "borewell_density",
+        "Borewells are not successful in this area",
+    )
+    result = infer_user_signal_result(
+        direction="confirms",
+        normalized=normalized,
+        update_excerpt="High borewell density strongly confirms groundwater stress.",
+        update_rule="High borewell density strongly confirms groundwater stress.",
+    )
+    assert result is False
+
+
 def main() -> int:
     tests = [
         test_normalize_yes_worsening,
@@ -259,6 +327,8 @@ def main() -> int:
         test_pick_next_follow_up_replaces_stale_llm_question,
         test_signal_confidence_guard_demotes_single_confirm_pathways,
         test_scoped_follow_up_freezes_unrelated_pathways,
+        test_server_pathway_interpretation_stays_uncertain_with_one_confirm,
+        test_borewell_not_successful_infers_false,
     ]
     for fn in tests:
         fn()

@@ -121,6 +121,36 @@
         "sig_03",
         "sig_04"
       ]
+    },
+    {
+      "variables": [
+        "fra_claims_filed_count"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Many pending or rejected FRA claims with reported NTFP decline and forest conversion indicate tenure insecurity confirming encroachment vulnerability; high recognition weakens encroachment as primary driver.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Unresolved forest rights alongside measurable conversion corroborates encroachment as a tenure and access driver of NTFP decline.",
+      "signal_id": "sig_06"
+    },
+    {
+      "variables": [
+        "ntfp_collection_trend_qualitative"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Collectors report NTFP decline attributed to shrinking forest area or blocked/restricted access (not merely lower density inside intact forest). Decline greater than 25–50% increases severity.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Access- or area-attributed NTFP decline distinguishes encroachment from degradation or over-harvesting within intact forest.",
+      "signal_id": "sig_07"
     }
   ],
   "confounders": [
@@ -135,7 +165,7 @@
   ],
   "missing_variable_questions": [
     {
-      "missing_variable": "ntfp_collection_quantity_kg",
+      "missing_variable": "ntfp_collection_trend_qualitative",
       "question_to_user": "Have community members noticed a reduction in the quantity of forest produce (such as tendu leaves, mahua, amla, or medicinal plants) they are able to collect compared to five or ten years ago? If so, do they attribute this to reduced forest area, restricted access, or reduced density of the species within the forest?",
       "how_answer_updates_diagnosis": "If communities report reduced collection quantities and attribute it to shrinking forest area or blocked access routes, this directly confirms the encroachment pathway. If they attribute it to reduced species density within an unchanged forest area, over-harvesting or degradation pathways become more likely and the encroachment diagnosis should be weighted lower."
     },

@@ -104,6 +104,36 @@
         "sig_02",
         "sig_03"
       ]
+    },
+    {
+      "variables": [
+        "fra_claims_filed_count"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Many pending or rejected FRA claims with reported NTFP decline and forest conversion indicate tenure insecurity confirming encroachment vulnerability; high recognition weakens encroachment as primary driver.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Unresolved forest rights alongside measurable conversion corroborates encroachment as a tenure and access driver of NTFP decline.",
+      "signal_id": "sig_05"
+    },
+    {
+      "variables": [
+        "ntfp_collection_trend_qualitative"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Collectors report NTFP decline attributed to shrinking forest area or blocked/restricted access (not merely lower density inside intact forest). Decline greater than 25–50% increases severity.",
+        "threshold_confidence": "medium",
+        "context_sensitivity": "local"
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Access- or area-attributed NTFP decline distinguishes encroachment from degradation or over-harvesting within intact forest.",
+      "signal_id": "sig_06"
     }
   ],
   "confounders": [
@@ -123,7 +153,7 @@
       "how_answer_updates_diagnosis": "Low FRA claim filing or high rejection rates in a village with high ST population and forest conversion strongly confirms the encroachment-driven access denial pathway. High recognition rates suggest tenure is being secured and encroachment pressure may be from outsiders rather than community members."
     },
     {
-      "missing_variable": "ntfp_collection_trend_self_reported",
+      "missing_variable": "ntfp_collection_trend_qualitative",
       "question_to_user": "Have community members noticed a decline in the quantity or quality of forest produce (e.g., medicinal plants, bamboo, wild fruits, honey) collected over the past 5-10 years? Do they attribute this to reduced forest area, restricted access, or reduced forest density?",
       "how_answer_updates_diagnosis": "Self-reported decline attributed to reduced forest area or restricted access corroborates the encroachment pathway. If decline is attributed to reduced density within existing forest, degradation or overextraction pathways become more likely and should be investigated alongside encroachment."
     }
