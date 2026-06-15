@@ -45,11 +45,11 @@
     {
       "signal_id": "sig_02",
       "variables": [
-        "cd_total_urbanization_ha"
+        "cd_urbanization_ha"
       ],
       "condition": {
         "type": "trend",
-        "expression": "cd_total_urbanization_ha > 20",
+        "expression": "cd_urbanization_ha > 20",
         "qualitative_description": "Settlement footprint has expanded by more than 20 ha over the observation period, indicating forest land conversion for habitation in addition to agriculture.",
         "threshold_confidence": "medium",
         "context_sensitivity": "regional",
@@ -88,17 +88,18 @@
       "signal_id": "sig_04",
       "variables": [
         "cd_forest_to_farm_ha",
-        "cd_total_urbanization_ha"
+        "cd_urbanization_ha"
       ],
       "condition": {
         "type": "composite",
-        "expression": "cd_forest_to_farm_ha > 30 and cd_total_urbanization_ha > 10 and terrain_cluster_id != 1",
+        "expression": "cd_forest_to_farm_ha > 30 and cd_urbanization_ha > 10 and terrain_cluster_id != 1",
         "qualitative_description": "Both agricultural and settlement encroachment are increasing in non-plains terrain, indicating compound land-use pressure on hilly forest areas typical of AER-17.",
         "threshold_confidence": "medium",
         "context_sensitivity": "regional",
         "variables": [
           "cd_forest_to_farm_ha",
-          "cd_urbanization_ha"
+          "cd_urbanization_ha",
+          "terrain_cluster_id"
         ]
       },
       "severity": "high",

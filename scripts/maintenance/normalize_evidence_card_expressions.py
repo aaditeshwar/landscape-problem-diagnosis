@@ -13,7 +13,7 @@ from _bootstrap import ROOT, bootstrap  # noqa: E402
 
 bootstrap(runtime=True)
 
-from services.variable_registry import alias_to_canonical, normalize_expression  # noqa: E402
+from services.variable_registry import alias_to_canonical, card_variable_thresholds, normalize_expression  # noqa: E402
 
 RAW_DIR = ROOT / "data" / "evidence_cards" / "raw"
 
@@ -51,12 +51,13 @@ def _variables_from_expression(expression: str) -> list[str]:
 
 def patch_card(card: dict) -> tuple[dict, list[str]]:
     notes: list[str] = []
+    thresholds = card_variable_thresholds(card)
     for sig in card.get("diagnostic_signals", []):
         condition = sig.get("condition") or {}
         expression = condition.get("expression") or sig.get("expression")
         if not expression:
             continue
-        patched, expr_notes = normalize_expression(expression)
+        patched, expr_notes = normalize_expression(expression, card_thresholds=thresholds)
         if patched != expression:
             if "condition" in sig:
                 sig["condition"]["expression"] = patched
@@ -65,34 +66,37 @@ def patch_card(card: dict) -> tuple[dict, list[str]]:
             notes.append(f"{sig.get('signal_id', '?')}: {', '.join(expr_notes)}")
             inferred = _variables_from_expression(patched)
             if inferred:
-                if "condition" in sig:
+                sig["variables"] = inferred
+                if isinstance(sig.get("condition"), dict):
                     sig["condition"]["variables"] = inferred
-                else:
-                    sig["variables"] = inferred
                 notes.append(f"{sig.get('signal_id', '?')}: synced variables list from expression")
-        variables = condition.get("variables") or sig.get("variables")
-        if isinstance(variables, list):
-            updated = []
-            changed = False
-            for var in variables:
-                canonical = alias_to_canonical().get(var, var)
-                updated.append(canonical)
-                if canonical != var:
-                    changed = True
-            if changed:
-                if "condition" in sig:
-                    sig["condition"]["variables"] = updated
-                else:
-                    sig["variables"] = updated
-                notes.append(f"{sig.get('signal_id', '?')}: canonicalized variables list")
+
+        for var_list, target in (
+            (sig.get("variables"), "signal"),
+            ((sig.get("condition") or {}).get("variables"), "condition"),
+        ):
+            if not isinstance(var_list, list):
+                continue
+            updated = [alias_to_canonical().get(var, var) for var in var_list]
+            if updated == var_list:
+                continue
+            if target == "signal":
+                sig["variables"] = updated
+            else:
+                sig["condition"]["variables"] = updated
+            notes.append(f"{sig.get('signal_id', '?')}: canonicalized {target} variables list")
     return card, notes
 
 
-def normalize_cards(raw_dir: Path = RAW_DIR, *, dry_run: bool = False) -> dict:
+def normalize_cards(raw_dir: Path = RAW_DIR, *, dry_run: bool = False, prefix: str | None = None) -> dict:
     changed_cards: list[str] = []
     details: dict[str, list[str]] = {}
 
-    for path in sorted(raw_dir.glob("*.json")):
+    paths = sorted(raw_dir.glob("*.json"))
+    if prefix:
+        paths = [p for p in paths if p.stem.startswith(prefix)]
+
+    for path in paths:
         card = json.loads(path.read_text(encoding="utf-8"))
         patched, notes = patch_card(card)
         if not notes:
@@ -104,6 +108,7 @@ def normalize_cards(raw_dir: Path = RAW_DIR, *, dry_run: bool = False) -> dict:
 
     return {
         "raw_dir": str(raw_dir),
+        "prefix": prefix,
         "cards_changed": changed_cards,
         "change_count": len(changed_cards),
         "details": details,
@@ -114,9 +119,10 @@ def normalize_cards(raw_dir: Path = RAW_DIR, *, dry_run: bool = False) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--prefix", help="Only normalize cards whose card_id starts with this prefix")
     args = parser.parse_args()
 
-    report = normalize_cards(dry_run=args.dry_run)
+    report = normalize_cards(dry_run=args.dry_run, prefix=args.prefix)
     print("=== Evidence card expression normalization ===")
     print(f"  Cards changed: {report['change_count']}")
     for card_id in report["cards_changed"][:20]:

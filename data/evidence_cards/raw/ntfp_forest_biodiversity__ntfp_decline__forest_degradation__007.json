@@ -47,11 +47,11 @@
       "signal_id": "sig_02",
       "variables": [
         "cd_total_deforestation_ha",
-        "cd_total_afforestation_ha"
+        "cd_afforestation_ha"
       ],
       "condition": {
         "type": "composite",
-        "expression": "cd_total_deforestation_ha > 50 and (cd_total_afforestation_ha / (cd_total_deforestation_ha + 1e-9)) < 0.5",
+        "expression": "cd_total_deforestation_ha > 50 and (cd_afforestation_ha / (cd_total_deforestation_ha + 1e-9)) < 0.5",
         "qualitative_description": "Cumulative deforestation exceeds 50 ha and afforestation covers less than half the deforested area, indicating a net forest deficit with weak recovery.",
         "threshold_confidence": "medium",
         "context_sensitivity": "regional",

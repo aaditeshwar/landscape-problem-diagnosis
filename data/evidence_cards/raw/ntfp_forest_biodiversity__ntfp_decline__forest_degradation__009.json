@@ -45,11 +45,11 @@
       "signal_id": "sig_02",
       "variables": [
         "cd_total_deforestation_ha",
-        "cd_total_afforestation_ha"
+        "cd_afforestation_ha"
       ],
       "condition": {
         "type": "composite",
-        "expression": "(cd_total_deforestation_ha > 50) and (cd_total_deforestation_ha > cd_total_afforestation_ha * 2)",
+        "expression": "(cd_total_deforestation_ha > 50) and (cd_total_deforestation_ha > cd_afforestation_ha * 2)",
         "qualitative_description": "Cumulative deforestation exceeds 50 ha and is more than double the cumulative afforestation, indicating a strongly negative forest balance with inadequate compensatory recovery.",
         "threshold_confidence": "medium",
         "context_sensitivity": "regional",
@@ -68,11 +68,11 @@
     {
       "signal_id": "sig_03",
       "variables": [
-        "cd_total_afforestation_ha"
+        "cd_afforestation_ha"
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "cd_total_afforestation_ha < 10",
+        "expression": "cd_afforestation_ha < 10",
         "qualitative_description": "Cumulative afforestation area is below 10 ha, indicating very weak forest protection and recovery investment in the micro-watershed.",
         "threshold_confidence": "medium",
         "context_sensitivity": "local",

@@ -42,11 +42,11 @@
       "signal_id": "sig_02",
       "variables": [
         "cd_total_deforestation_ha",
-        "cd_total_afforestation_ha"
+        "cd_afforestation_ha"
       ],
       "condition": {
         "type": "composite",
-        "expression": "cd_total_deforestation_ha > 0 and (cd_total_afforestation_ha < cd_total_deforestation_ha)",
+        "expression": "cd_total_deforestation_ha > 0 and (cd_afforestation_ha < cd_total_deforestation_ha)",
         "qualitative_description": "Cumulative deforestation exceeds cumulative afforestation, indicating a net negative forest balance and weak recovery capacity in the watershed.",
         "threshold_confidence": "high",
         "context_sensitivity": "regional",

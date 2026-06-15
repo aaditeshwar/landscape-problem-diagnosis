@@ -13,8 +13,8 @@
         "mongo_field": "drought_causality",
         "legacy_aliases": ["drought_causality_json"],
         "nested_schema": {
-          "severe_moderate": ["spi_score", "mai_score", "vci_score", "cropping_area_sown_score", "drought_path1", "drought_path2", "drought_path3", "drought_path4", "drought_path5", "drought_path6"],
-          "mild": ["spi_score", "mai_score", "vci_score", "cropping_area_sown_score"]
+          "severe_moderate": ["spi_score", "mai_score", "vci_score", "cropping_area_sown_score", "drought_path1", "drought_path2", "drought_path3", "drought_path4", "drought_path5", "drought_path6", "drought_path12"],
+          "mild": ["spi_score", "mai_score", "vci_score", "cropping_area_sown_score", "dryspell_score"]
         },
         "source_key_map": {
           "mild_drought_spi_score": "spi_score",
@@ -34,7 +34,9 @@
           "moderate_drought_path3": "drought_path3",
           "moderate_drought_path4": "drought_path4",
           "moderate_drought_path5": "drought_path5",
-          "moderate_drought_path6": "drought_path6"
+          "moderate_drought_path6": "drought_path6",
+          "moderate_drought_path12": "drought_path12",
+          "mild_drought_dryspell_score": "dryspell_score"
         },
         "invented_expression_keys": [
           "spi_class", "mai_class", "vci_class",
@@ -108,6 +110,45 @@
         "type": "time_series",
         "mongo_path": "hydrological_annual.<year>.delta_g_mm",
         "legacy_aliases": ["annual_delta_g_mm"]
+      },
+      "landholding_distribution": {
+        "canonical_name": "landholding_distribution",
+        "type": "not_available",
+        "legacy_aliases": ["landholding_size_distribution"]
+      },
+      "ntfp_collection_trend_qualitative": {
+        "canonical_name": "ntfp_collection_trend_qualitative",
+        "type": "user_elicited"
+      },
+      "community_forest_governance_status": {
+        "canonical_name": "community_forest_governance_status",
+        "type": "user_elicited"
+      },
+      "forest_boundary_demarcation_status": {
+        "canonical_name": "forest_boundary_demarcation_status",
+        "type": "user_elicited"
+      },
+      "forest_fire_frequency": {
+        "canonical_name": "forest_fire_frequency",
+        "type": "user_elicited",
+        "legacy_aliases": ["fire_frequency"]
+      },
+      "forest_patch_connectivity": {
+        "canonical_name": "forest_patch_connectivity",
+        "type": "user_elicited"
+      },
+      "fra_claims_filed_count": {
+        "canonical_name": "fra_claims_filed_count",
+        "type": "user_elicited"
+      },
+      "well_depth_m": {
+        "canonical_name": "well_depth_m",
+        "type": "not_available",
+        "legacy_aliases": ["annual_well_depth_m"]
+      },
+      "canal_command_coverage": {
+        "canonical_name": "canal_command_coverage",
+        "type": "not_available"
       }
     },
     "derived_variables": {

@@ -44,10 +44,13 @@
       ],
       "condition": {
         "type": "trend",
-        "expression": "cd_forest_to_farm_ha > cd_forest_to_farm_ha",
+        "expression": "cd_forest_to_farm_ha > 50",
         "qualitative_description": "Forest-to-farm conversion area has increased over the observation period (2017–2024), indicating ongoing and accelerating encroachment pressure.",
         "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "cd_forest_to_farm_ha"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -60,11 +63,11 @@
     {
       "signal_id": "sig_03",
       "variables": [
-        "cd_total_urbanization_ha"
+        "cd_urbanization_ha"
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "cd_total_urbanization_ha > 20",
+        "expression": "cd_urbanization_ha > 20",
         "qualitative_description": "More than 20 ha of forest-adjacent land has been converted to settlement or built-up use, indicating settlement-driven encroachment into forest margins.",
         "threshold_confidence": "low",
         "context_sensitivity": "local",
@@ -86,10 +89,14 @@
       ],
       "condition": {
         "type": "composite",
-        "expression": "(village_st_percent > 25) and (cd_forest_to_farm_ha > cd_forest_to_farm_ha)",
+        "expression": "(village_st_percent > 25) and (cd_forest_to_farm_ha > 50)",
         "qualitative_description": "Village has a substantial Scheduled Tribe population (>25%) coinciding with ongoing forest-to-farm conversion, suggesting forest rights disputes or displacement of NTFP-dependent communities.",
         "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "context_sensitivity": "local",
+        "variables": [
+          "village_st_percent",
+          "cd_forest_to_farm_ha"
+        ]
       },
       "severity": "high",
       "direction": "confirms",

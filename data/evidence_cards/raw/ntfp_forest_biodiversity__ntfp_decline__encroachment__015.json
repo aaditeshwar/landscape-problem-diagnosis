@@ -62,11 +62,11 @@
     {
       "signal_id": "sig_03",
       "variables": [
-        "cd_total_urbanization_ha"
+        "cd_urbanization_ha"
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "cd_total_urbanization_ha > 30",
+        "expression": "cd_urbanization_ha > 30",
         "qualitative_description": "More than 30 ha of new settlement or built-up area has expanded into or adjacent to forest zones, indicating settlement-driven encroachment pressure.",
         "threshold_confidence": "medium",
         "context_sensitivity": "regional",
@@ -105,11 +105,11 @@
       "signal_id": "sig_05",
       "variables": [
         "cd_forest_to_farm_ha",
-        "cd_total_urbanization_ha"
+        "cd_urbanization_ha"
       ],
       "condition": {
         "type": "composite",
-        "expression": "(cd_forest_to_farm_ha + cd_total_urbanization_ha) > 100",
+        "expression": "(cd_forest_to_farm_ha + cd_urbanization_ha) > 100",
         "qualitative_description": "Combined forest-to-farm and urbanization conversion exceeds 100 ha, indicating that cumulative land use change has substantially reduced forest extent available for NTFP collection.",
         "threshold_confidence": "medium",
         "context_sensitivity": "regional",

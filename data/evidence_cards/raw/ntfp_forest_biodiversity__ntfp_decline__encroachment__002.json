@@ -29,10 +29,13 @@
       ],
       "condition": {
         "type": "trend",
-        "expression": "cd_forest_to_farm_ha > cd_forest_to_farm_ha",
+        "expression": "cd_forest_to_farm_ha > 100",
         "qualitative_description": "Forest-to-farm conversion area has increased over the observation period, indicating progressive encroachment of agricultural activity into forest land.",
         "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "cd_forest_to_farm_ha"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -41,11 +44,11 @@
     {
       "signal_id": "sig_02",
       "variables": [
-        "cd_total_urbanization_ha"
+        "cd_urbanization_ha"
       ],
       "condition": {
         "type": "trend",
-        "expression": "cd_total_urbanization_ha > 50",
+        "expression": "cd_urbanization_ha > 50",
         "qualitative_description": "Total urbanized area has expanded by more than 50 ha over the observation period, suggesting settlement encroachment into forest margins.",
         "threshold_confidence": "medium",
         "context_sensitivity": "regional",
@@ -67,10 +70,14 @@
       ],
       "condition": {
         "type": "composite",
-        "expression": "village_st_percent > 30 and cd_forest_to_farm_ha > cd_forest_to_farm_ha",
+        "expression": "village_st_percent > 30 and cd_forest_to_farm_ha > 100",
         "qualitative_description": "Village has a high Scheduled Tribe population (>30%) coinciding with measurable forest-to-farm conversion, indicating that forest rights disputes or displacement may be driving NTFP access decline for the most dependent communities.",
         "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "context_sensitivity": "local",
+        "variables": [
+          "village_st_percent",
+          "cd_forest_to_farm_ha"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -83,7 +90,7 @@
       "signal_id": "sig_04",
       "variables": [
         "cd_forest_to_farm_ha",
-        "cd_total_urbanization_ha"
+        "cd_urbanization_ha"
       ],
       "condition": {
         "type": "composite",

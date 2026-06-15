@@ -46,11 +46,11 @@
     {
       "signal_id": "sig_02",
       "variables": [
-        "cd_total_urbanization_ha"
+        "cd_urbanization_ha"
       ],
       "condition": {
         "type": "trend",
-        "expression": "cd_total_urbanization_ha > 20",
+        "expression": "cd_urbanization_ha > 20",
         "qualitative_description": "Total urbanized area has expanded by more than 20 ha over the record period, suggesting settlement encroachment that may be displacing forest cover or blocking community access routes.",
         "threshold_confidence": "medium",
         "context_sensitivity": "regional",
@@ -89,11 +89,11 @@
       "signal_id": "sig_04",
       "variables": [
         "cd_forest_to_farm_ha",
-        "cd_total_urbanization_ha"
+        "cd_urbanization_ha"
       ],
       "condition": {
         "type": "composite",
-        "expression": "cd_forest_to_farm_ha > 30 and cd_total_urbanization_ha > 10",
+        "expression": "cd_forest_to_farm_ha > 30 and cd_urbanization_ha > 10",
         "qualitative_description": "Both agricultural conversion and settlement expansion are simultaneously increasing, indicating compound encroachment pressure from multiple land use change vectors.",
         "threshold_confidence": "medium",
         "context_sensitivity": "regional",

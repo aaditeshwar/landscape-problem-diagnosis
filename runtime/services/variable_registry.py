@@ -120,6 +120,117 @@ def known_variable_names() -> set[str]:
     return names
 
 
+@lru_cache
+def framework_variable_availability() -> dict[str, str]:
+    path = METADATA_DIR / "diagnosis_framework.json"
+    with path.open(encoding="utf-8") as fh:
+        root = json.load(fh)["diagnosis_framework"]["production_systems"]
+    out: dict[str, str] = {}
+    for pdata in root.values():
+        for sdata in pdata.get("observed_stresses", {}).values():
+            for cfg in sdata.get("causal_pathways", {}).values():
+                for var_def in cfg.get("diagnostic_variables", []):
+                    name = var_def["variable"]
+                    out[name] = var_def.get("availability", "available")
+    return out
+
+
+_EXTRA_NOT_AVAILABLE = frozenset({"well_depth_m", "canal_command_coverage"})
+
+
+@lru_cache
+def not_available_variables() -> frozenset[str]:
+    """Variables with no landscape resolver unless user injects an answer."""
+    names: set[str] = set(_EXTRA_NOT_AVAILABLE)
+    for name, availability in framework_variable_availability().items():
+        if availability == "not_available":
+            names.add(name)
+    for canonical, meta in registry_variables().items():
+        if meta.get("type") in {"not_available", "user_elicited"}:
+            names.add(canonical)
+            names.update(meta.get("legacy_aliases", []))
+    return frozenset(names)
+
+
+_DEFAULT_STATIC_THRESHOLDS: dict[str, str] = {
+    "cd_forest_to_farm_ha": "30",
+    "cd_urbanization_ha": "20",
+    "cd_total_urbanization_ha": "20",
+    "cd_afforestation_ha": "10",
+    "cd_total_afforestation_ha": "10",
+}
+
+_TAUTOLOGY_RE = re.compile(r"\b([A-Za-z_][A-Za-z0-9_]*)\s*>\s*\1\b")
+_SUM_SELF_GROWTH_RE = re.compile(
+    r"\(\s*(?P<a>[A-Za-z_][A-Za-z0-9_]*)\s*\+\s*(?P<b>[A-Za-z_][A-Za-z0-9_]*)\s*\)\s*>\s*"
+    r"\(\s*(?P=a)\s*\+\s*(?P=b)\s*\)\s*\*\s*[\d.]+"
+)
+_THRESHOLD_FROM_EXPR_RE = re.compile(
+    r"\b([A-Za-z_][A-Za-z0-9_]*)\s*>\s*([\d.]+)\b"
+)
+
+
+def card_variable_thresholds(card: dict) -> dict[str, str]:
+    """Collect scalar thresholds already used for each variable on a card."""
+    thresholds: dict[str, str] = {}
+    alias_map = alias_to_canonical()
+    for sig in card.get("diagnostic_signals") or []:
+        condition = sig.get("condition") or {}
+        expression = condition.get("expression") or sig.get("expression") or ""
+        if not expression or _TAUTOLOGY_RE.search(expression):
+            continue
+        for var, value in _THRESHOLD_FROM_EXPR_RE.findall(expression):
+            if _TAUTOLOGY_RE.search(f"{var} > {value}"):
+                continue
+            canonical = alias_map.get(var, var)
+            thresholds[canonical] = value
+            thresholds[var] = value
+    return thresholds
+
+
+def rewrite_self_comparison_tautologies(expression: str, thresholds: dict[str, str] | None = None) -> str:
+    """Replace var > var patterns on static cd_* variables with scalar thresholds."""
+    thresholds = thresholds or {}
+    alias_map = alias_to_canonical()
+
+    def _threshold_for(var: str) -> str:
+        canonical = alias_map.get(var, var)
+        return (
+            thresholds.get(canonical)
+            or thresholds.get(var)
+            or _DEFAULT_STATIC_THRESHOLDS.get(canonical)
+            or _DEFAULT_STATIC_THRESHOLDS.get(var)
+            or "0"
+        )
+
+    expr = _SUM_SELF_GROWTH_RE.sub(
+        lambda m: f"({m.group('a')} + {m.group('b')}) > "
+        f"{float(_threshold_for(m.group('a'))) + float(_threshold_for(m.group('b')))}",
+        expression,
+    )
+
+    def _replace(match: re.Match[str]) -> str:
+        var = match.group(1)
+        return f"{var} > {_threshold_for(var)}"
+
+    return _TAUTOLOGY_RE.sub(_replace, expr)
+
+
+def apply_legacy_aliases_to_expression(expression: str) -> tuple[str, list[str]]:
+    notes: list[str] = []
+    expr = expression
+    alias_map = alias_to_canonical()
+    for alias in sorted(alias_map, key=len, reverse=True):
+        canonical = alias_map[alias]
+        if alias == canonical or alias not in expr:
+            continue
+        patched = re.sub(rf"\b{re.escape(alias)}\b", canonical, expr)
+        if patched != expr:
+            notes.append(f"renamed {alias} to {canonical}")
+            expr = patched
+    return expr, notes
+
+
 def normalize_drought_severity_block(block: dict | None) -> dict:
     if not isinstance(block, dict):
         return {}
@@ -223,6 +334,12 @@ def rewrite_static_cd_trend_expression(expression: str) -> str:
     """Rewrite cumulative static cd_* trend idioms to scalar threshold checks."""
     expr = strip_static_variable_indexing(expression)
     for var in sorted(STATIC_CD_VARIABLES, key=len, reverse=True):
+        expr = _TAUTOLOGY_RE.sub(
+            lambda m, v=var: f"{v} > {_DEFAULT_STATIC_THRESHOLDS.get(v, '0')}"
+            if m.group(1) == v
+            else m.group(0),
+            expr,
+        )
         trend_pattern = re.compile(
             rf"{re.escape(var)}\s*>\s*{re.escape(var)}\s*and\s*\(\s*{re.escape(var)}\s*-\s*{re.escape(var)}\s*\)\s*>\s*(?P<threshold>[\d.]+)",
             re.IGNORECASE,
@@ -321,20 +438,27 @@ def registry_excerpt_block() -> str:
     return "\n".join(lines)
 
 
-def normalize_expression(expression: str) -> tuple[str, list[str]]:
+def normalize_expression(expression: str, *, card_thresholds: dict[str, str] | None = None) -> tuple[str, list[str]]:
     """Apply deterministic expression rewrites; return patched expression and change notes."""
     notes: list[str] = []
     original = expression
     expr = expression.replace(" AND ", " and ").replace(" OR ", " or ")
     if expr != expression:
         notes.append("normalized boolean operators")
+    expr, alias_notes = apply_legacy_aliases_to_expression(expr)
+    notes.extend(alias_notes)
     if "drought_causality_json" in expr:
         expr = re.sub(r"\bdrought_causality_json\b", "drought_causality", expr)
-        notes.append("renamed drought_causality_json to drought_causality")
+        if "renamed drought_causality_json to drought_causality" not in notes:
+            notes.append("renamed drought_causality_json to drought_causality")
     drought_before = expr
     expr = rewrite_drought_causality_expression(expr)
     if expr != drought_before:
         notes.append("rewrote drought_causality flat .get() keys to derived latest-score scalars")
+    before_tautology = expr
+    expr = rewrite_self_comparison_tautologies(expr, card_thresholds)
+    if expr != before_tautology:
+        notes.append("rewrote self-comparison tautologies to scalar thresholds")
     expr = rewrite_static_cd_trend_expression(expr)
     if expr != original and not notes:
         notes.append("rewrote static cd_* indexing/threshold pattern")

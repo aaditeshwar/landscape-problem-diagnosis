@@ -101,14 +101,18 @@
       "signal_id": "sig_05",
       "variables": [
         "dist_cooperative_km",
-        "annual_well_depth_m"
+        "well_depth_m"
       ],
       "condition": {
         "type": "quantitative",
         "expression": "dist_cooperative_km > 15",
         "qualitative_description": "Nearest agricultural cooperative society is more than 15 km away, indicating poor access to institutional credit for irrigation investment such as pump purchase, pipeline, or micro-irrigation systems.",
         "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "context_sensitivity": "local",
+        "variables": [
+          "dist_cooperative_km",
+          "well_depth_m"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",

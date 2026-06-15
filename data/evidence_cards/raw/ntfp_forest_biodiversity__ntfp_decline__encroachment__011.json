@@ -46,11 +46,11 @@
     {
       "signal_id": "sig_02",
       "variables": [
-        "cd_total_urbanization_ha"
+        "cd_urbanization_ha"
       ],
       "condition": {
         "type": "trend",
-        "expression": "cd_total_urbanization_ha > 20",
+        "expression": "cd_urbanization_ha > 20",
         "qualitative_description": "Settlement footprint has expanded by more than 20 ha over the record period, indicating encroachment pressure from habitation expansion into forest fringes.",
         "threshold_confidence": "medium",
         "context_sensitivity": "regional",
@@ -72,10 +72,14 @@
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "village_st_percent > 25 and cd_forest_to_farm_ha > cd_forest_to_farm_ha",
+        "expression": "village_st_percent > 25 and cd_forest_to_farm_ha > 30",
         "qualitative_description": "Village has a significant Scheduled Tribe population (>25%) coinciding with measurable forest-to-farm conversion, suggesting forest rights disputes or displacement of traditional NTFP collectors.",
         "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "context_sensitivity": "local",
+        "variables": [
+          "village_st_percent",
+          "cd_forest_to_farm_ha"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -89,17 +93,18 @@
       "signal_id": "sig_04",
       "variables": [
         "cd_forest_to_farm_ha",
-        "cd_total_urbanization_ha"
+        "cd_urbanization_ha"
       ],
       "condition": {
         "type": "composite",
-        "expression": "cd_forest_to_farm_ha > 30 and cd_total_urbanization_ha > 10 and terrain_cluster_id != 1",
+        "expression": "cd_forest_to_farm_ha > 30 and cd_urbanization_ha > 10 and terrain_cluster_id != 1",
         "qualitative_description": "Both forest-to-farm conversion and settlement expansion are occurring simultaneously in non-plains terrain, indicating compound encroachment pressure on hilly forest landscapes.",
         "threshold_confidence": "medium",
         "context_sensitivity": "regional",
         "variables": [
           "cd_forest_to_farm_ha",
-          "cd_urbanization_ha"
+          "cd_urbanization_ha",
+          "terrain_cluster_id"
         ]
       },
       "severity": "high",

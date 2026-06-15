@@ -28,10 +28,13 @@
       ],
       "condition": {
         "type": "trend",
-        "expression": "cd_forest_to_farm_ha > cd_forest_to_farm_ha",
+        "expression": "cd_forest_to_farm_ha > 30",
         "qualitative_description": "Forest-to-farm conversion area has increased over the observation period, indicating active encroachment of forest land for agriculture.",
         "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "cd_forest_to_farm_ha"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -40,11 +43,11 @@
     {
       "signal_id": "sig_02",
       "variables": [
-        "cd_total_urbanization_ha"
+        "cd_urbanization_ha"
       ],
       "condition": {
         "type": "trend",
-        "expression": "cd_total_urbanization_ha > 50",
+        "expression": "cd_urbanization_ha > 50",
         "qualitative_description": "Total urbanized area has grown by more than 50 ha over the observation period, suggesting settlement expansion that may be encroaching on forest land.",
         "threshold_confidence": "medium",
         "context_sensitivity": "regional",
@@ -83,10 +86,15 @@
       ],
       "condition": {
         "type": "composite",
-        "expression": "(cd_forest_to_farm_ha > cd_forest_to_farm_ha) and (village_st_percent > 25) and (cd_total_urbanization_ha > cd_total_urbanization_ha)",
+        "expression": "(cd_forest_to_farm_ha > 30) and (village_st_percent > 25) and (cd_urbanization_ha > 50)",
         "qualitative_description": "Concurrent forest-to-farm conversion increase, high ST population share, and settlement expansion together constitute a strong composite signal of encroachment-driven NTFP decline.",
         "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "context_sensitivity": "regional",
+        "variables": [
+          "cd_forest_to_farm_ha",
+          "village_st_percent",
+          "cd_urbanization_ha"
+        ]
       },
       "severity": "high",
       "direction": "confirms",

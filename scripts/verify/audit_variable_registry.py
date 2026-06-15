@@ -350,6 +350,7 @@ def run_audit(*, use_mongo: bool = True) -> dict:
         "nested_issues": counts.get("NESTED", 0),
         "alias_usages": counts.get("ALIAS", 0),
         "exit_ok": counts.get("BLOCKER", 0) == 0 and counts.get("SHAPE", 0) == 0 and counts.get("NESTED", 0) == 0,
+        "aliases_clean": counts.get("ALIAS", 0) == 0,
     }
     return report
 
@@ -374,11 +375,18 @@ def print_report(report: dict) -> None:
         md = report["mongo_drought_keys"]
         if not md.get("skipped"):
             print(f"  Mongo drought raw keys (sample): {len(md.get('raw_excel_keys_still_present', []))}")
+    if summary.get("alias_usages", 0):
+        print(f"  WARNING: {summary['alias_usages']} legacy alias usages remain in card expressions")
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--no-mongo", action="store_true", help="Skip Mongo checks")
+    parser.add_argument(
+        "--strict-aliases",
+        action="store_true",
+        help="Exit non-zero when legacy alias names remain in card expressions",
+    )
     parser.add_argument("--write-report", type=Path, help="Write JSON report path")
     args = parser.parse_args()
 
@@ -393,7 +401,12 @@ def main() -> int:
     out_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
     print(f"\nReport written: {out_path}")
 
-    return 0 if report["summary"]["exit_ok"] else 1
+    summary = report["summary"]
+    if not summary["exit_ok"]:
+        return 1
+    if args.strict_aliases and not summary.get("aliases_clean", True):
+        return 1
+    return 0
 
 
 if __name__ == "__main__":
