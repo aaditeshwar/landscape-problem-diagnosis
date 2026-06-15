@@ -51,7 +51,7 @@ AER_RETRIEVAL_NEIGHBORS: dict[str, list[str]] = {
 }
 
 CANDIDATE_POOL = 20
-DEFAULT_LIMIT = 5
+DEFAULT_LIMIT = 6
 # Bonus added to similarity when selecting a card from a new production system or pathway.
 SYSTEM_DIVERSITY_WEIGHT = 0.08
 PATHWAY_DIVERSITY_WEIGHT = 0.08

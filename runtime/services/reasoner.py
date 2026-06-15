@@ -430,7 +430,7 @@ def apply_signal_confidence_guard(
     signal_eval: dict[str, dict[str, Any]] | None = None,
     bundle: dict[str, dict] | None = None,
 ) -> dict[str, Any]:
-    """Demote under-evidenced confirmed pathways and cap confidence from signal counts."""
+    """Cap confidence from signal counts; demote only when confirms_true is zero."""
     if not signal_eval:
         return response
 
@@ -455,12 +455,17 @@ def apply_signal_confidence_guard(
         confirms_true = int(summary.get("confirms_true") or 0)
         min_required = _min_confirms_required(pathway_id, bundle)
 
-        if confirms_true < min_required:
-            item["confidence"] = "medium" if confirms_true == 1 else "low"
+        if confirms_true == 0:
+            item["confidence"] = "low"
             demoted.append(item)
             continue
 
-        max_level = "high" if confirms_true >= 2 else "medium"
+        if confirms_true == 1:
+            item["confidence"] = _cap_confidence_level(item.get("confidence"), "medium")
+            kept_confirmed.append(item)
+            continue
+
+        max_level = "high" if confirms_true >= min_required else "medium"
         item["confidence"] = _cap_confidence_level(item.get("confidence"), max_level)
         kept_confirmed.append(item)
 
@@ -927,7 +932,7 @@ def _signal_interpretation_task(uid: str | None, *, is_revision: bool = False) -
 """
     return f"""[TASK]
 1. Use [SIGNAL EVALUATION RESULTS] for status=ok and evaluated user_provided — do NOT contradict TRUE/FALSE. For user_provided_unresolved, you MUST interpret the raw answer using update_rule and set pathway status accordingly.
-2. Apply each pathway's evidence note using the summary counts (e.g. ≥2 confirming TRUE → high confidence; exactly 1 → medium; none TRUE but plausible → low or uncertain).
+2. Apply each pathway's evidence note using the summary counts: ≥2 confirming TRUE → high confidence in confirmed_pathways; exactly 1 confirming TRUE → medium confidence in confirmed_pathways (do NOT demote single-confirm pathways to uncertain_pathways unless confirms_true=0); confirms_true=0 with missing data still needed → uncertain_pathways; confirms_true=0 with confirms-direction signals FALSE → do not confirm.
 3. For NEEDS_LLM signals only: use qualitative_hint and signal explanations; do not invent numeric values.
 REASONING WORDING (apply to every reasoning string in confirmed_pathways, uncertain_pathways, and follow-up revisions):
 - Do NOT write "farmer reports", "users report", "community reports", or similar unless that fact appears in [DATA ALREADY PROVIDED BY USER] or was explicitly stated in the problem description.

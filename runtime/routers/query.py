@@ -68,6 +68,129 @@ def _mws_trace_fields(mws_doc: dict) -> dict:
     }
 
 
+def _format_failure_error(failure_stage: str, exc: Exception) -> str:
+    msg = str(exc).strip() or exc.__class__.__name__
+    if failure_stage == "llm":
+        return _format_llm_error(exc)
+    if failure_stage == "retrieval":
+        return f"Embedding/retrieval failed — is Ollama reachable at {OLLAMA_URL}? ({msg})"
+    if failure_stage == "assembly":
+        return f"Variable assembly failed: {msg}"
+    if failure_stage == "load_mws":
+        return msg
+    if failure_stage == "session":
+        return msg
+    if failure_stage == "validation":
+        return msg
+    if isinstance(exc, HTTPException):
+        detail = exc.detail
+        if isinstance(detail, list):
+            return str(detail)
+        return str(detail)
+    return f"{failure_stage} failed: {msg}"
+
+
+def _empty_retrieval_metrics() -> dict[str, float]:
+    return {
+        "embed": 0.0,
+        "evidence_search": 0.0,
+        "citations": 0.0,
+        "retrieval_total": 0.0,
+    }
+
+
+def _trace_timings(
+    *,
+    request_started: float,
+    retrieval=None,
+    assemble_ms: float = 0.0,
+    llm_started: float | None = None,
+    extra: dict[str, float] | None = None,
+) -> dict[str, float]:
+    timings = dict(retrieval.metrics.as_dict()) if retrieval is not None else _empty_retrieval_metrics()
+    if assemble_ms:
+        timings["assemble_bundle"] = round(assemble_ms, 2)
+    if llm_started is not None:
+        timings["llm"] = round((time.perf_counter() - llm_started) * 1000, 2)
+    if extra:
+        timings.update(extra)
+    timings["total"] = round((time.perf_counter() - request_started) * 1000, 2)
+    return timings
+
+
+def _log_diagnosis_failure(
+    *,
+    event: str,
+    turn_type: str,
+    failure_stage: str,
+    exc: Exception,
+    request_started: float,
+    session_id: str | None = None,
+    mws_doc: dict | None = None,
+    mws_uid: str | None = None,
+    problem_description: str = "",
+    retrieval_query: str = "",
+    cards: list[dict] | None = None,
+    bundle: dict[str, dict] | None = None,
+    injected: dict | None = None,
+    retrieval=None,
+    assemble_ms: float = 0.0,
+    llm_started: float | None = None,
+    model: str = "",
+    follow_up_answer: str | None = None,
+    follow_up_variable: str | None = None,
+    llm_raw_response: str | None = None,
+    prompt: str | None = None,
+    prompt_profile: str | None = None,
+) -> None:
+    cards = cards or []
+    bundle = bundle or {}
+    injected = injected or {}
+    aer_tags = _aer_tags_for_retrieval(mws_doc) if mws_doc else []
+    mws_fields = _mws_trace_fields(mws_doc) if mws_doc else {"mws_uid": str(mws_uid or "")}
+
+    if bundle:
+        signal_eval = summarize_evaluation_for_log(
+            evaluate_bundle_signals(bundle, injected=injected or None)
+        )
+        pathway_evidence = summarize_pathway_evidence(
+            bundle,
+            mws_aer_code=(mws_doc or {}).get("nbss_lup_aer_code"),
+            retrieval_aer_tags=aer_tags,
+        )
+    else:
+        signal_eval = {}
+        pathway_evidence = []
+
+    trace = DiagnosisRequestTrace(
+        event=event,
+        session_id=session_id or "",
+        turn_type=turn_type,
+        model=model or model_for_turn(follow_up=turn_type == "follow_up"),
+        retrieval_query=retrieval_query or problem_description,
+        problem_description=problem_description or None,
+        retrieved_card_ids=_card_ids(cards),
+        pathway_evidence=pathway_evidence,
+        signal_evaluation=signal_eval,
+        timings_ms=_trace_timings(
+            request_started=request_started,
+            retrieval=retrieval,
+            assemble_ms=assemble_ms,
+            llm_started=llm_started,
+        ),
+        status="failed",
+        failure_stage=failure_stage,
+        error=_format_failure_error(failure_stage, exc),
+        llm_raw_response=llm_raw_response or getattr(exc, "raw", "") or "",
+        prompt=prompt or getattr(exc, "prompt", "") or "",
+        prompt_profile=prompt_profile or getattr(exc, "prompt_profile", "") or "",
+        follow_up_variable=follow_up_variable,
+        follow_up_answer=follow_up_answer,
+        **mws_fields,
+    )
+    _emit_diagnosis_log(trace)
+
+
 def _log_failed_diagnosis(
     *,
     event: str,
@@ -91,37 +214,29 @@ def _log_failed_diagnosis(
     prompt: str | None = None,
     prompt_profile: str | None = None,
 ) -> None:
-    signal_eval = evaluate_bundle_signals(bundle, injected=injected or None)
-    llm_ms = (time.perf_counter() - llm_started) * 1000
-    total_ms = (time.perf_counter() - request_started) * 1000
-    trace = DiagnosisRequestTrace(
+    _log_diagnosis_failure(
         event=event,
-        session_id=session_id,
         turn_type=turn_type,
-        model=model,
-        retrieval_query=retrieval_query,
+        failure_stage="llm",
+        exc=exc,
+        request_started=request_started,
+        session_id=session_id,
+        mws_doc=mws_doc,
         problem_description=problem_description,
-        retrieved_card_ids=_card_ids(cards),
-        pathway_evidence=summarize_pathway_evidence(
-            bundle, mws_aer_code=mws_doc.get("nbss_lup_aer_code"), retrieval_aer_tags=_aer_tags_for_retrieval(mws_doc)
-        ),
-        signal_evaluation=summarize_evaluation_for_log(signal_eval),
-        timings_ms={
-            **retrieval.metrics.as_dict(),
-            "assemble_bundle": round(assemble_ms, 2),
-            "llm": round(llm_ms, 2),
-            "total": round(total_ms, 2),
-        },
-        status="failed",
-        error=_format_llm_error(exc),
-        llm_raw_response=llm_raw_response or getattr(exc, "raw", "") or "",
-        prompt=prompt or getattr(exc, "prompt", "") or "",
-        prompt_profile=prompt_profile or getattr(exc, "prompt_profile", "") or "",
-        follow_up_variable=follow_up_variable,
+        retrieval_query=retrieval_query,
+        cards=cards,
+        bundle=bundle,
+        injected=injected,
+        retrieval=retrieval,
+        assemble_ms=assemble_ms,
+        llm_started=llm_started,
+        model=model,
         follow_up_answer=follow_up_answer,
-        **_mws_trace_fields(mws_doc),
+        follow_up_variable=follow_up_variable,
+        llm_raw_response=llm_raw_response,
+        prompt=prompt,
+        prompt_profile=prompt_profile,
     )
-    _emit_diagnosis_log(trace)
 
 
 class QueryRequest(BaseModel):
@@ -152,15 +267,45 @@ def _emit_diagnosis_log(trace: DiagnosisRequestTrace) -> None:
     log_diagnosis_event(trace.to_log_event())
 
 
-def _run_query(mws_doc: dict, problem_description: str, session_id: str | None) -> dict:
-    request_started = time.perf_counter()
+def _run_query(
+    mws_doc: dict,
+    problem_description: str,
+    session_id: str | None,
+    *,
+    request_started: float | None = None,
+) -> dict:
+    request_started = request_started or time.perf_counter()
     db = get_db()
     if session_id:
         session = get_session(db, session_id)
         if not session:
-            raise HTTPException(status_code=404, detail=f"Session not found: {session_id}")
+            exc = HTTPException(status_code=404, detail=f"Session not found: {session_id}")
+            _log_diagnosis_failure(
+                event="diagnosis_query",
+                turn_type="initial",
+                failure_stage="session",
+                exc=exc,
+                request_started=request_started,
+                session_id=session_id,
+                mws_doc=mws_doc,
+                problem_description=problem_description,
+                retrieval_query=problem_description,
+            )
+            raise exc
         if session.get("mws_uid") != mws_doc.get("uid"):
-            raise HTTPException(status_code=400, detail="Session MWS does not match request uid")
+            exc = HTTPException(status_code=400, detail="Session MWS does not match request uid")
+            _log_diagnosis_failure(
+                event="diagnosis_query",
+                turn_type="initial",
+                failure_stage="session",
+                exc=exc,
+                request_started=request_started,
+                session_id=session_id,
+                mws_doc=mws_doc,
+                problem_description=problem_description,
+                retrieval_query=problem_description,
+            )
+            raise exc
     else:
         session = create_session(db, mws_doc)
         session_id = session["_id"]
@@ -169,6 +314,18 @@ def _run_query(mws_doc: dict, problem_description: str, session_id: str | None) 
     try:
         retrieval = retrieve_evidence_cards(db, problem_description, mws_doc)
     except Exception as exc:
+        _log_diagnosis_failure(
+            event="diagnosis_query",
+            turn_type="initial",
+            failure_stage="retrieval",
+            exc=exc,
+            request_started=request_started,
+            session_id=session_id,
+            mws_doc=mws_doc,
+            problem_description=problem_description,
+            retrieval_query=problem_description,
+            injected=injected,
+        )
         raise HTTPException(
             status_code=502,
             detail=f"Embedding/retrieval failed — is Ollama reachable at {OLLAMA_URL}? ({exc})",
@@ -176,7 +333,26 @@ def _run_query(mws_doc: dict, problem_description: str, session_id: str | None) 
 
     cards = retrieval.cards
     t0 = time.perf_counter()
-    bundle = assemble_variable_bundle(mws_doc, cards, injected=injected or None)
+    try:
+        bundle = assemble_variable_bundle(mws_doc, cards, injected=injected or None)
+    except Exception as exc:
+        assemble_ms = (time.perf_counter() - t0) * 1000
+        _log_diagnosis_failure(
+            event="diagnosis_query",
+            turn_type="initial",
+            failure_stage="assembly",
+            exc=exc,
+            request_started=request_started,
+            session_id=session_id,
+            mws_doc=mws_doc,
+            problem_description=problem_description,
+            retrieval_query=problem_description,
+            cards=cards,
+            injected=injected,
+            retrieval=retrieval,
+            assemble_ms=assemble_ms,
+        )
+        raise HTTPException(status_code=500, detail=f"Variable assembly failed: {exc}") from exc
     assemble_ms = (time.perf_counter() - t0) * 1000
     ranks = pathway_retrieval_ranks(cards)
 
@@ -262,8 +438,28 @@ def _run_query(mws_doc: dict, problem_description: str, session_id: str | None) 
 
 @router.post("/query")
 def diagnosis_query(body: QueryRequest):
-    mws_doc = _load_mws(body.uid)
-    return _run_query(mws_doc, body.problem_description, body.session_id)
+    request_started = time.perf_counter()
+    try:
+        mws_doc = _load_mws(body.uid)
+    except HTTPException as exc:
+        _log_diagnosis_failure(
+            event="diagnosis_query",
+            turn_type="initial",
+            failure_stage="load_mws",
+            exc=exc,
+            request_started=request_started,
+            session_id=body.session_id,
+            mws_uid=body.uid,
+            problem_description=body.problem_description,
+            retrieval_query=body.problem_description,
+        )
+        raise
+    return _run_query(
+        mws_doc,
+        body.problem_description,
+        body.session_id,
+        request_started=request_started,
+    )
 
 
 @router.post("/answer")
@@ -272,9 +468,35 @@ def diagnosis_answer(body: AnswerRequest):
     db = get_db()
     session = get_session(db, body.session_id)
     if not session:
-        raise HTTPException(status_code=404, detail=f"Session not found: {body.session_id}")
+        exc = HTTPException(status_code=404, detail=f"Session not found: {body.session_id}")
+        _log_diagnosis_failure(
+            event="diagnosis_follow_up",
+            turn_type="follow_up",
+            failure_stage="session",
+            exc=exc,
+            request_started=request_started,
+            session_id=body.session_id,
+            follow_up_variable=body.variable,
+            follow_up_answer=body.answer,
+        )
+        raise exc
 
-    mws_doc = _load_mws(session["mws_uid"])
+    try:
+        mws_doc = _load_mws(session["mws_uid"])
+    except HTTPException as exc:
+        _log_diagnosis_failure(
+            event="diagnosis_follow_up",
+            turn_type="follow_up",
+            failure_stage="load_mws",
+            exc=exc,
+            request_started=request_started,
+            session_id=body.session_id,
+            mws_uid=session.get("mws_uid"),
+            follow_up_variable=body.variable,
+            follow_up_answer=body.answer,
+        )
+        raise
+
     injected = dict(session.get("injected_variables") or {})
     normalized_answer = normalize_qualitative_answer(body.variable, body.answer)
     injected[body.variable] = normalized_answer
@@ -283,15 +505,65 @@ def diagnosis_answer(body: AnswerRequest):
     problem_description = first_turn.get("user_input") or ""
     frozen_card_ids = first_turn.get("retrieved_cards") or []
     if not frozen_card_ids:
-        raise HTTPException(status_code=400, detail="Session has no retrieved evidence cards to revise against")
+        exc = HTTPException(status_code=400, detail="Session has no retrieved evidence cards to revise against")
+        _log_diagnosis_failure(
+            event="diagnosis_follow_up",
+            turn_type="follow_up",
+            failure_stage="validation",
+            exc=exc,
+            request_started=request_started,
+            session_id=body.session_id,
+            mws_doc=mws_doc,
+            problem_description=problem_description,
+            follow_up_variable=body.variable,
+            follow_up_answer=body.answer,
+            injected=injected,
+        )
+        raise exc
 
     cards = load_evidence_cards_by_ids(db, frozen_card_ids)
     if not cards:
-        raise HTTPException(status_code=502, detail="Failed to reload evidence cards for this session")
+        exc = HTTPException(status_code=502, detail="Failed to reload evidence cards for this session")
+        _log_diagnosis_failure(
+            event="diagnosis_follow_up",
+            turn_type="follow_up",
+            failure_stage="validation",
+            exc=exc,
+            request_started=request_started,
+            session_id=body.session_id,
+            mws_doc=mws_doc,
+            problem_description=problem_description,
+            follow_up_variable=body.variable,
+            follow_up_answer=body.answer,
+            injected=injected,
+        )
+        raise exc
+
     retrieval = frozen_retrieval_result(cards)
     retrieval_query = f"{problem_description} | follow-up: {body.variable}={normalized_answer.get('raw', body.answer)}"
     t0 = time.perf_counter()
-    bundle = assemble_variable_bundle(mws_doc, cards, injected=injected)
+    try:
+        bundle = assemble_variable_bundle(mws_doc, cards, injected=injected)
+    except Exception as exc:
+        assemble_ms = (time.perf_counter() - t0) * 1000
+        _log_diagnosis_failure(
+            event="diagnosis_follow_up",
+            turn_type="follow_up",
+            failure_stage="assembly",
+            exc=exc,
+            request_started=request_started,
+            session_id=body.session_id,
+            mws_doc=mws_doc,
+            problem_description=problem_description,
+            retrieval_query=retrieval_query,
+            cards=cards,
+            injected=injected,
+            retrieval=retrieval,
+            assemble_ms=assemble_ms,
+            follow_up_variable=body.variable,
+            follow_up_answer=body.answer,
+        )
+        raise HTTPException(status_code=500, detail=f"Variable assembly failed: {exc}") from exc
     assemble_ms = (time.perf_counter() - t0) * 1000
     ranks = pathway_retrieval_ranks(cards)
 

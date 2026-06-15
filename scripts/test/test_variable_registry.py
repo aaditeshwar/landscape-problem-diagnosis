@@ -94,3 +94,14 @@ def test_resolve_variable_accepts_canonical_name():
     }
     assert resolve_variable(mws, "cd_urbanization_ha") == 29.01
     assert resolve_variable(mws, "cd_total_urbanization_ha") == 29.01
+
+
+def test_monsoon_onset_date_keeps_string_values():
+    mws = {
+        "drought_kharif": {
+            "2017": {"monsoon_onset": "2017-6-11", "severe_weeks": 2},
+            "2018": {"monsoon_onset": "2018-6-12", "severe_weeks": 1},
+        }
+    }
+    result = resolve_variable(mws, "monsoon_onset_date")
+    assert result == {"2017": "2017-6-11", "2018": "2018-6-12"}

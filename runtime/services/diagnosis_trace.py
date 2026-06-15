@@ -76,6 +76,7 @@ class DiagnosisRequestTrace:
     follow_up_signal_updates: list[dict[str, Any]] = field(default_factory=list)
     status: str = "ok"
     error: str | None = None
+    failure_stage: str | None = None
 
     def to_log_event(self) -> dict[str, Any]:
         payload = asdict(self)

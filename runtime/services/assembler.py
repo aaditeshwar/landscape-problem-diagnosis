@@ -69,6 +69,21 @@ def _drought_series(mws: dict, field: str) -> dict | None:
     return out or None
 
 
+def _monsoon_onset_series(mws: dict) -> dict | None:
+    """Monsoon onset dates are ISO-like strings, not numeric drought metrics."""
+    drought = mws.get("drought_kharif") or {}
+    if not drought:
+        return None
+    out: dict[str, str] = {}
+    for year, row in drought.items():
+        if not isinstance(row, dict):
+            continue
+        value = row.get("monsoon_onset")
+        if value is not None:
+            out[str(year)] = str(value)
+    return out or None
+
+
 def _cropping_field_series(mws: dict, field: str) -> dict | None:
     ci = mws.get("cropping_intensity") or {}
     out: dict[str, float] = {}
@@ -178,7 +193,7 @@ _BASE_VARIABLE_RESOLVERS: dict[str, Any] = {
     "drought_weeks_severe": lambda m: _drought_series(m, "severe_weeks"),
     "drought_weeks_moderate": lambda m: _drought_series(m, "moderate_weeks"),
     "dry_spell_weeks": lambda m: _drought_series(m, "dry_spell_weeks"),
-    "monsoon_onset_date": lambda m: _drought_series(m, "monsoon_onset"),
+    "monsoon_onset_date": _monsoon_onset_series,
     "kharif_cropped_area_percent": lambda m: _drought_series(m, "kharif_cropped_percent"),
     "drought_causality_json": lambda m: m.get("drought_causality"),
     "drought_causality": lambda m: m.get("drought_causality"),
@@ -368,6 +383,8 @@ def authorized_follow_up_questions(
     pathways (tier 2). Within tier 2 only, questions are ordered by lowest
     confidence first (low, medium, high), then retrieval rank.
     When any uncertain pathway has eligible questions, only tier 0 is returned.
+    When tier 0 has no eligible questions (whether or not uncertain pathways remain
+    on the diagnosis), tier 1 and tier 2 are returned in that order.
     Pathways previously ruled out via user_provided confirms+FALSE are never asked again.
     """
     injected = injected or {}
@@ -383,8 +400,6 @@ def authorized_follow_up_questions(
 
     for pathway_id, data in bundle.items():
         if pathway_id in ruled_out:
-            continue
-        if uncertain and pathway_id not in uncertain:
             continue
         missing = set(data.get("missing_variables") or [])
         for q_idx, q in enumerate(data.get("missing_variable_questions") or []):

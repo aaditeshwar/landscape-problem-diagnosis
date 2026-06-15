@@ -31,6 +31,7 @@ SUMMARY_FIELDS = (
     "mws_aer_code",
     "status",
     "error",
+    "failure_stage",
 )
 
 HEAVY_FIELDS = frozenset({"prompt", "llm_raw_response", "llm_response"})

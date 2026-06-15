@@ -248,13 +248,100 @@ def test_tier_one_still_precedes_tier_two_despite_confidence_order():
     assert ordered[1] == ("tank_siltation_status", "Tank siltation question?")
 
 
-def test_scoped_follow_up_freezes_unrelated_pathways():
+def test_uncertain_without_questions_falls_through_with_tier_order():
+    """When uncertain pathways have no askable vars, tier 1 precedes tier 2 (same as empty uncertain)."""
+    bundle = {
+        "drought": {
+            "missing_variables": [],
+            "missing_variable_questions": [],
+            "present_variables": {"drought_weeks_severe": 2},
+        },
+        "irrigation_challenges": {
+            "missing_variables": [],
+            "missing_variable_questions": [
+                {
+                    "missing_variable": "annual_well_depth_m",
+                    "question_to_user": "Well depth question?",
+                },
+            ],
+            "present_variables": {},
+        },
+        "groundwater_stress": {
+            "missing_variables": ["borewell_density"],
+            "missing_variable_questions": [
+                {
+                    "missing_variable": "borewell_density",
+                    "question_to_user": "Borewell density question?",
+                },
+            ],
+            "present_variables": {},
+        },
+        "encroachment": {
+            "missing_variables": ["fra_claims_filed_count"],
+            "missing_variable_questions": [
+                {
+                    "missing_variable": "fra_claims_filed_count",
+                    "question_to_user": "FRA claims question?",
+                },
+            ],
+            "present_variables": {},
+        },
+        "rainfed_risk": {
+            "missing_variables": ["irrigated_area_ha"],
+            "missing_variable_questions": [
+                {
+                    "missing_variable": "irrigated_area_ha",
+                    "question_to_user": "Irrigated area question?",
+                },
+            ],
+            "present_variables": {},
+        },
+        "multi_sector_vulnerability": {
+            "missing_variables": ["household_income_inr"],
+            "missing_variable_questions": [
+                {
+                    "missing_variable": "household_income_inr",
+                    "question_to_user": "Income question?",
+                },
+            ],
+            "present_variables": {"migrant_household_percent": ">30%"},
+        },
+    }
+    ranks = {
+        "drought": 5,
+        "irrigation_challenges": 4,
+        "groundwater_stress": 0,
+        "encroachment": 2,
+        "rainfed_risk": 3,
+        "multi_sector_vulnerability": 1,
+    }
+    ordered = authorized_follow_up_questions(
+        bundle,
+        injected={"migrant_household_percent": {"raw": ">30%"}, "annual_well_depth_m": {"raw": "yes"}},
+        uncertain_pathway_ids={"drought", "irrigation_challenges"},
+        confirmed_pathway_ids={"encroachment", "rainfed_risk", "multi_sector_vulnerability"},
+        confirmed_pathway_confidence={
+            "encroachment": "medium",
+            "rainfed_risk": "medium",
+            "multi_sector_vulnerability": "medium",
+        },
+        pathway_retrieval_ranks=ranks,
+    )
+    assert ordered[0] == ("borewell_density", "Borewell density question?")
+    assert ordered[1] == ("fra_claims_filed_count", "FRA claims question?")
+    assert ("irrigated_area_ha", "Irrigated area question?") in ordered
+    assert ("household_income_inr", "Income question?") in ordered
+    assert all(var != "annual_well_depth_m" for var, _ in ordered)
+
+
+def main() -> int:
     tests = [
         test_diverse_select_spreads_production_systems,
         test_follow_up_prefers_uncertain_by_rank,
         test_ruled_out_pathways_excluded_from_follow_up,
         test_confirmed_follow_up_prefers_lowest_confidence,
         test_tier_one_still_precedes_tier_two_despite_confidence_order,
+        test_uncertain_without_questions_falls_through_with_tier_order,
     ]
     failed = 0
     for fn in tests:

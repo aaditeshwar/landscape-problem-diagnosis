@@ -181,19 +181,21 @@ def test_pick_next_follow_up_replaces_stale_llm_question():
     assert out.get("follow_up_question") == "Migration question?"
 
 
-def test_signal_confidence_guard_demotes_single_confirm_pathways():
+def test_signal_confidence_guard_keeps_single_confirm_at_medium():
     from services.reasoner import apply_signal_confidence_guard
 
     response = {
         "confirmed_pathways": [
             {"pathway_id": "encroachment", "confidence": "high", "reasoning": "sig_01 only"},
             {"pathway_id": "small_landholding", "confidence": "high", "reasoning": "sig_01 and sig_02"},
+            {"pathway_id": "rainfed_risk", "confidence": "medium", "reasoning": "no confirms"},
         ],
         "uncertain_pathways": [],
     }
     signal_eval = {
         "encroachment": {"summary": {"confirms_true": 1}},
         "small_landholding": {"summary": {"confirms_true": 2}},
+        "rainfed_risk": {"summary": {"confirms_true": 0}},
     }
     bundle = {
         "encroachment": {
@@ -202,15 +204,18 @@ def test_signal_confidence_guard_demotes_single_confirm_pathways():
             }
         },
         "small_landholding": {"evidence_card": {"overall_reasoning_note": "confirmed when two signals co-occur"}},
+        "rainfed_risk": {"evidence_card": {"overall_reasoning_note": "requires at least two confirming signals"}},
     }
     out = apply_signal_confidence_guard(response, signal_eval=signal_eval, bundle=bundle)
     confirmed_ids = {p["pathway_id"] for p in out["confirmed_pathways"]}
     uncertain_ids = {p["pathway_id"] for p in out["uncertain_pathways"]}
-    assert "encroachment" not in confirmed_ids
-    assert "encroachment" in uncertain_ids
+    enc = next(p for p in out["confirmed_pathways"] if p["pathway_id"] == "encroachment")
+    assert enc["confidence"] == "medium"
     assert "small_landholding" in confirmed_ids
     sl = next(p for p in out["confirmed_pathways"] if p["pathway_id"] == "small_landholding")
     assert sl["confidence"] == "high"
+    assert "rainfed_risk" not in confirmed_ids
+    assert "rainfed_risk" in uncertain_ids
 
 
 def test_scoped_follow_up_freezes_unrelated_pathways():
@@ -325,7 +330,7 @@ def main() -> int:
         test_parse_about_thirty_percent_irrigated_band,
         test_confidence_change_pathway_interpretation,
         test_pick_next_follow_up_replaces_stale_llm_question,
-        test_signal_confidence_guard_demotes_single_confirm_pathways,
+        test_signal_confidence_guard_keeps_single_confirm_at_medium,
         test_scoped_follow_up_freezes_unrelated_pathways,
         test_server_pathway_interpretation_stays_uncertain_with_one_confirm,
         test_borewell_not_successful_infers_false,
