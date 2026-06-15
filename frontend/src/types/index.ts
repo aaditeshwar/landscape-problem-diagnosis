@@ -154,6 +154,7 @@ export interface MwsDocument {
   state: string
   district: string
   tehsil: string
+  tehsils?: TehsilRef[]
   area_ha?: number
   nbss_lup_aer_code?: string
   nbss_lup_aer_name?: string

@@ -208,7 +208,7 @@ export default function App() {
     setDiagnosisLoading(true)
     setDiagnosisError(null)
     try {
-      const result = await runDiagnosisQuery(selectedMwsUid, problem, sessionId)
+      const result = await runDiagnosisQuery(selectedMwsUid, problem, sessionId, selectedTehsil)
       setDiagnosis(result)
       setFollowUpHistory([])
       setSessionId(result.session_id)
@@ -344,6 +344,7 @@ export default function App() {
           <InfoPanel
             mws={mwsData}
             loading={mwsLoading}
+            activeTehsil={selectedTehsil}
             panelUpdates={
               diagnosisSessionMwsUid && selectedMwsUid !== diagnosisSessionMwsUid ? [] : panelUpdates
             }

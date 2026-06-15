@@ -17,7 +17,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from _bootstrap import bootstrap  # noqa: E402
 
-bootstrap()
+bootstrap(runtime=True)
 
 from dotenv import load_dotenv
 from pymongo import MongoClient
@@ -48,12 +48,21 @@ def main() -> int:
     db = client[db_name]
 
     filt: dict = {}
-    if args.state:
-        filt["state"] = args.state
-    if args.district:
-        filt["district"] = args.district
-    if args.tehsil:
-        filt["tehsil"] = args.tehsil
+    if args.state and args.district and args.tehsil:
+        from services.tehsil_refs import tehsil_membership_query
+
+        filt.update(
+            tehsil_membership_query(
+                {"state": args.state, "district": args.district, "tehsil": args.tehsil}
+            )
+        )
+    else:
+        if args.state:
+            filt["state"] = args.state
+        if args.district:
+            filt["district"] = args.district
+        if args.tehsil:
+            filt["tehsil"] = args.tehsil
 
     uids = [doc["uid"] for doc in db.mws_data.find(filt, {"uid": 1}) if doc.get("uid")]
     print(f"MWS documents selected: {len(uids)}")

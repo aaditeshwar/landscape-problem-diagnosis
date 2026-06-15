@@ -14,13 +14,15 @@ from pymongo import MongoClient
 bootstrap(runtime=True)
 load_dotenv(ROOT / ".env")
 
+from services.tehsil_refs import make_tehsil_ref, tehsil_membership_query  # noqa: E402
 from services.variable_registry import collect_drought_nested_keys, drought_source_key_map  # noqa: E402
 
 client = MongoClient(os.getenv("MONGO_URI", "mongodb://localhost:27017"), serverSelectionTimeoutMS=5000)
 db = client["diagnosis_db"]
 
 manifest = db.ingest_manifest.find_one({"_id": "Maharashtra__Yavatmal__Darwha"})
-mws_count = db.mws_data.count_documents({"tehsil": "Darwha"})
+darwha_ref = make_tehsil_ref("Maharashtra", "Yavatmal", "Darwha")
+mws_count = db.mws_data.count_documents(tehsil_membership_query(darwha_ref))
 village_count = db.village_data.count_documents({"tehsil": "Darwha"})
 banayat = db.village_data.find_one({"village_id": 0})
 framework = db.diagnosis_framework.find_one({"_id": "diagnosis_framework_v1"}, {"_id": 1, "loaded_at": 1})
@@ -31,6 +33,7 @@ sample = db.mws_data.find_one(
     {
         "uid": 1,
         "tehsil": 1,
+        "tehsils": 1,
         "aquifer": 1,
         "soge": 1,
         "hydrological_annual.2023": 1,
@@ -58,6 +61,8 @@ if sample:
     hydro_2017 = (sample.get("hydrological_annual") or {}).get("2017", {})
     hydro_2023 = (sample.get("hydrological_annual") or {}).get("2023", {})
     print(f"  uid: {sample.get('uid')}")
+    print(f"  tehsils: {len(sample.get('tehsils') or [])} membership(s)")
+    print(f"  legacy tehsil: {sample.get('tehsil')}")
     print(f"  aquifer (ACWADAM): {(sample.get('aquifer') or {}).get('acwadam_class')}")
     print(f"  SOGE dev %: {(sample.get('soge') or {}).get('dev_percent')}")
     if hydro_2017:

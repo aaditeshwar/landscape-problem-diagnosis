@@ -924,7 +924,6 @@
                 <div>${ev.session_id || "—"}</div>
                 <div style="color:var(--muted);font-size:0.78rem;">${ev.mws_uid || "—"}</div>
                 <div style="color:var(--muted);font-size:0.78rem;">${fmtLocation(ev)}</div>
-                ${ev.error ? `<div style="color:var(--failed);font-size:0.78rem;margin-top:0.15rem;">${escapeHtml(ev.error.slice(0, 120))}${ev.error.length > 120 ? "…" : ""}</div>` : ""}
               </td>
               <td>${ev.model || "—"}</td>
               <td>${fmtMs(ev.timings_ms?.total)}</td>

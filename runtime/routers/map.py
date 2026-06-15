@@ -5,6 +5,7 @@ from fastapi import APIRouter, HTTPException, Query
 
 from db import get_db
 from services.geojson import boundaries_to_feature_collection
+from services.tehsil_refs import make_tehsil_ref, tehsil_membership_query
 
 router = APIRouter(prefix="/api/map", tags=["map"])
 
@@ -46,12 +47,30 @@ def get_mws_boundaries(
     tehsil: str = Query(...),
 ):
     db = get_db()
+    tehsil_ref = make_tehsil_ref(state, district, tehsil)
     docs = list(
         db.mws_boundaries.find(
             {"state": state, "district": district, "tehsil": tehsil},
             {"uid": 1, "geometry": 1, "state": 1, "district": 1, "tehsil": 1},
         )
     )
+    if not docs:
+        uids = [
+            row["uid"]
+            for row in db.mws_data.find(tehsil_membership_query(tehsil_ref), {"uid": 1})
+            if row.get("uid")
+        ]
+        if uids:
+            docs = list(
+                db.mws_boundaries.find(
+                    {"uid": {"$in": uids}, "geometry": {"$exists": True}},
+                    {"uid": 1, "geometry": 1, "state": 1, "district": 1, "tehsil": 1},
+                )
+            )
+            for doc in docs:
+                doc["state"] = state
+                doc["district"] = district
+                doc["tehsil"] = tehsil
     if not docs:
         raise HTTPException(status_code=404, detail="No MWS boundaries found for tehsil")
     return boundaries_to_feature_collection(docs, id_field="uid")

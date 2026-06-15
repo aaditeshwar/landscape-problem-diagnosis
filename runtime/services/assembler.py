@@ -7,6 +7,7 @@ from typing import Any
 
 from config import METADATA_DIR
 from services.derived_variables import resolve_derived
+from services.tehsil_refs import format_tehsil_list, normalize_tehsils, resolve_active_tehsil
 from services.variable_registry import (
     canonical_name,
     extend_resolver_map,
@@ -517,16 +518,20 @@ def assemble_variable_bundle(
     return bundle
 
 
-def location_context(mws_doc: dict) -> dict[str, Any]:
+def location_context(mws_doc: dict, tehsil_ref: dict | None = None) -> dict[str, Any]:
     terrain = mws_doc.get("terrain") or {}
     aquifer = mws_doc.get("aquifer") or {}
     villages = mws_doc.get("intersect_village_names") or []
     village_names = [v.get("name") for v in villages if v.get("name")]
+    active = resolve_active_tehsil(mws_doc, tehsil_ref)
+    tehsils = normalize_tehsils(mws_doc)
     return {
         "uid": mws_doc.get("uid"),
-        "state": mws_doc.get("state"),
-        "district": mws_doc.get("district"),
-        "tehsil": mws_doc.get("tehsil"),
+        "state": active["state"] if active else mws_doc.get("state"),
+        "district": active["district"] if active else mws_doc.get("district"),
+        "tehsil": active["tehsil"] if active else mws_doc.get("tehsil"),
+        "tehsils": tehsils,
+        "tehsil_label": format_tehsil_list(mws_doc, active),
         "area_ha": mws_doc.get("area_ha"),
         "nbss_lup_aer_code": mws_doc.get("nbss_lup_aer_code"),
         "nbss_lup_aer_name": mws_doc.get("nbss_lup_aer_name"),

@@ -823,7 +823,7 @@ def _format_location(location: dict[str, Any]) -> str:
         if aer_name:
             aer_line += f" ({aer_name})"
         aer_line += "\n"
-    return f"""MWS UID: {location.get('uid')} | Tehsil: {location.get('tehsil')} | District: {location.get('district')} | State: {location.get('state')}
+    return f"""MWS UID: {location.get('uid')} | Location: {location.get('tehsil_label') or location.get('tehsil')} | District: {location.get('district')} | State: {location.get('state')}
 {aer_line}Intersecting villages: {village_line}
 Aquifer: {location.get('aquifer_class')} ({location.get('aquifer_raw')}) | Terrain cluster: {location.get('terrain_cluster')} ({location.get('terrain_description')})
 Area: {location.get('area_ha')} ha"""

@@ -1,4 +1,5 @@
-import type { MwsDocument } from '../types'
+import type { MwsDocument, TehsilRef } from '../types'
+import { formatMwsTehsilLabel } from '../utils/tehsilRefs'
 import {
   facilityDistanceTable,
   formatAgroEcologicalZone,
@@ -28,6 +29,7 @@ interface Props {
   mws: MwsDocument | null
   loading: boolean
   panelUpdates: string[]
+  activeTehsil?: TehsilRef | null
 }
 
 function IdentityRow({ label, value }: { label: string; value: string | number | null | undefined }) {
@@ -61,7 +63,7 @@ function formatPercent(value: number | null): string {
   return `${value.toFixed(1)}%`
 }
 
-export function InfoPanel({ mws, loading, panelUpdates }: Props) {
+export function InfoPanel({ mws, loading, panelUpdates, activeTehsil }: Props) {
   if (loading) {
     return <div className="p-6 text-sm text-stone-500">Loading MWS data…</div>
   }
@@ -85,9 +87,7 @@ export function InfoPanel({ mws, loading, panelUpdates }: Props) {
     <div className="flex h-full flex-col overflow-y-auto">
       <div className="border-b border-stone-200 bg-stone-50 px-4 py-3">
         <h2 className="text-lg font-semibold text-stone-800">MWS {mws.uid}</h2>
-        <p className="text-sm text-stone-500">
-          {mws.tehsil}, {mws.district}, {mws.state}
-        </p>
+        <p className="text-sm text-stone-500">{formatMwsTehsilLabel(mws, activeTehsil)}</p>
       </div>
 
       <div className="space-y-4 p-4">

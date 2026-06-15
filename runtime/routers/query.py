@@ -31,6 +31,7 @@ from services.signal_evaluator import (
     summarize_pathway_evidence,
 )
 from services.session_manager import append_turn, create_session, get_session
+from services.tehsil_refs import make_tehsil_ref, resolve_active_tehsil
 
 router = APIRouter(prefix="/api", tags=["diagnosis"])
 
@@ -58,14 +59,21 @@ def _llm_http_exception(exc: Exception) -> HTTPException:
     return HTTPException(status_code=502, detail=_format_llm_error(exc))
 
 
-def _mws_trace_fields(mws_doc: dict) -> dict:
+def _mws_trace_fields(mws_doc: dict, tehsil_ref: dict | None = None) -> dict:
+    active = resolve_active_tehsil(mws_doc, tehsil_ref)
     return {
         "mws_uid": str(mws_doc.get("uid")),
-        "tehsil": mws_doc.get("tehsil"),
-        "district": mws_doc.get("district"),
-        "state": mws_doc.get("state"),
+        "tehsil": active["tehsil"] if active else mws_doc.get("tehsil"),
+        "district": active["district"] if active else mws_doc.get("district"),
+        "state": active["state"] if active else mws_doc.get("state"),
         "mws_aer_code": mws_doc.get("nbss_lup_aer_code"),
     }
+
+
+def _tehsil_ref_from_request(body: "QueryRequest") -> dict | None:
+    if body.state and body.district and body.tehsil:
+        return make_tehsil_ref(body.state, body.district, body.tehsil)
+    return None
 
 
 def _format_failure_error(failure_stage: str, exc: Exception) -> str:
@@ -142,12 +150,13 @@ def _log_diagnosis_failure(
     llm_raw_response: str | None = None,
     prompt: str | None = None,
     prompt_profile: str | None = None,
+    tehsil_ref: dict | None = None,
 ) -> None:
     cards = cards or []
     bundle = bundle or {}
     injected = injected or {}
     aer_tags = _aer_tags_for_retrieval(mws_doc) if mws_doc else []
-    mws_fields = _mws_trace_fields(mws_doc) if mws_doc else {"mws_uid": str(mws_uid or "")}
+    mws_fields = _mws_trace_fields(mws_doc, tehsil_ref) if mws_doc else {"mws_uid": str(mws_uid or "")}
 
     if bundle:
         signal_eval = summarize_evaluation_for_log(
@@ -243,6 +252,9 @@ class QueryRequest(BaseModel):
     uid: str
     problem_description: str
     session_id: str | None = None
+    state: str | None = None
+    district: str | None = None
+    tehsil: str | None = None
 
 
 class AnswerRequest(BaseModel):
@@ -272,6 +284,7 @@ def _run_query(
     problem_description: str,
     session_id: str | None,
     *,
+    tehsil_ref: dict | None = None,
     request_started: float | None = None,
 ) -> dict:
     request_started = request_started or time.perf_counter()
@@ -290,6 +303,7 @@ def _run_query(
                 mws_doc=mws_doc,
                 problem_description=problem_description,
                 retrieval_query=problem_description,
+                tehsil_ref=tehsil_ref,
             )
             raise exc
         if session.get("mws_uid") != mws_doc.get("uid"):
@@ -304,10 +318,12 @@ def _run_query(
                 mws_doc=mws_doc,
                 problem_description=problem_description,
                 retrieval_query=problem_description,
+                tehsil_ref=tehsil_ref or session.get("tehsil_ref"),
             )
             raise exc
+        tehsil_ref = tehsil_ref or session.get("tehsil_ref")
     else:
-        session = create_session(db, mws_doc)
+        session = create_session(db, mws_doc, tehsil_ref)
         session_id = session["_id"]
 
     injected = session.get("injected_variables") or {}
@@ -359,7 +375,7 @@ def _run_query(
     llm_started = time.perf_counter()
     try:
         diagnosis = run_diagnosis(
-            location=location_context(mws_doc),
+            location=location_context(mws_doc, tehsil_ref),
             problem_description=problem_description,
             bundle=bundle,
             injected_variables=injected or None,
@@ -413,7 +429,7 @@ def _run_query(
         llm_response=llm_response,
         follow_up_question=llm_response.get("follow_up_question"),
         follow_up_variable=llm_response.get("follow_up_variable"),
-        **_mws_trace_fields(mws_doc),
+        **_mws_trace_fields(mws_doc, tehsil_ref),
     )
     _emit_diagnosis_log(trace)
 
@@ -458,6 +474,7 @@ def diagnosis_query(body: QueryRequest):
         mws_doc,
         body.problem_description,
         body.session_id,
+        tehsil_ref=_tehsil_ref_from_request(body),
         request_started=request_started,
     )
 
@@ -498,6 +515,7 @@ def diagnosis_answer(body: AnswerRequest):
         raise
 
     injected = dict(session.get("injected_variables") or {})
+    session_tehsil_ref = session.get("tehsil_ref")
     normalized_answer = normalize_qualitative_answer(body.variable, body.answer)
     injected[body.variable] = normalized_answer
 
@@ -579,7 +597,7 @@ def diagnosis_answer(body: AnswerRequest):
     llm_started = time.perf_counter()
     try:
         diagnosis = run_diagnosis(
-            location=location_context(mws_doc),
+            location=location_context(mws_doc, session_tehsil_ref),
             problem_description=problem_description,
             bundle=bundle,
             follow_up_context=follow_up_context,
@@ -656,7 +674,7 @@ def diagnosis_answer(body: AnswerRequest):
         follow_up_variable=body.variable,
         follow_up_answer=body.answer,
         follow_up_signal_updates=llm_response.get("follow_up_signal_updates") or signal_updates,
-        **_mws_trace_fields(mws_doc),
+        **_mws_trace_fields(mws_doc, session_tehsil_ref),
     )
     _emit_diagnosis_log(trace)
 

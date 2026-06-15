@@ -53,6 +53,8 @@ SAMPLE_LOCATION = {
     "tehsil": "Hungund",
     "district": "Bagalkot",
     "state": "Karnataka",
+    "tehsil_label": "Hungund, Bagalkot, Karnataka",
+    "tehsils": [{"state": "Karnataka", "district": "Bagalkot", "tehsil": "Hungund"}],
     "nbss_lup_aer_code": "AER-3",
     "nbss_lup_aer_name": "Deccan Plateau, hot arid ecoregion",
     "aquifer_class": "crystalline_basement",

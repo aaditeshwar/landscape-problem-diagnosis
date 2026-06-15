@@ -59,6 +59,7 @@ export function runDiagnosisQuery(
   uid: string,
   problemDescription: string,
   sessionId?: string | null,
+  tehsilRef?: TehsilRef | null,
 ): Promise<DiagnosisResponse> {
   return api('/api/query', {
     method: 'POST',
@@ -67,6 +68,9 @@ export function runDiagnosisQuery(
       uid,
       problem_description: problemDescription,
       session_id: sessionId ?? null,
+      state: tehsilRef?.state ?? null,
+      district: tehsilRef?.district ?? null,
+      tehsil: tehsilRef?.tehsil ?? null,
     }),
   })
 }

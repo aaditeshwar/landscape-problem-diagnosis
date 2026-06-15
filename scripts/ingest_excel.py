@@ -769,7 +769,7 @@ def fetch_core_stack_geometries(state, district, tehsil, db, api_key):
         geom = feat.get("geometry")
         if uid and geom:
             mws_ops.append(UpdateOne(
-                {"uid": uid},
+                {"uid": uid, "state": state, "district": district, "tehsil": tehsil},
                 {"$set": {
                     "uid": uid, "state": state, "district": district, "tehsil": tehsil,
                     "geometry": geom
@@ -878,10 +878,15 @@ def fetch_core_stack_geometries(state, district, tehsil, db, api_key):
 
 def ensure_indexes(db):
     db.mws_data.create_index("uid", unique=True)
+    db.mws_data.create_index([("tehsils.state", 1), ("tehsils.district", 1), ("tehsils.tehsil", 1)])
     db.mws_data.create_index([("state", 1), ("district", 1), ("tehsil", 1)])
     db.village_data.create_index("village_id", unique=True)
     db.village_data.create_index([("state", 1), ("district", 1), ("tehsil", 1)])
     try:
+        db.mws_boundaries.create_index(
+            [("uid", 1), ("state", 1), ("district", 1), ("tehsil", 1)],
+            unique=True,
+        )
         db.mws_boundaries.create_index([("geometry", "2dsphere")])
         db.village_boundaries.create_index([("geometry", "2dsphere")])
         db.tehsil_boundaries.create_index([("geometry", "2dsphere")])
@@ -1022,7 +1027,9 @@ def main():
 
     finalize_mws_docs(mws_docs)
 
-    # Tag every MWS doc with tehsil metadata
+    tehsil_ref = {"state": args.state, "district": args.district, "tehsil": args.tehsil}
+
+    # Tag every MWS doc with location metadata (tehsils accumulates across ingests)
     for uid, doc in mws_docs.items():
         doc["state"] = args.state
         doc["district"] = args.district
@@ -1030,10 +1037,19 @@ def main():
 
     # Write MWS docs to MongoDB
     log.info(f"Writing {len(mws_docs)} MWS documents to MongoDB...")
-    mws_ops = [
-        UpdateOne({"uid": uid}, {"$set": bson_safe(doc)}, upsert=True)
-        for uid, doc in mws_docs.items()
-    ]
+    mws_ops = []
+    for uid, doc in mws_docs.items():
+        payload = bson_safe(doc)
+        mws_ops.append(
+            UpdateOne(
+                {"uid": uid},
+                {
+                    "$set": payload,
+                    "$addToSet": {"tehsils": tehsil_ref},
+                },
+                upsert=True,
+            )
+        )
     if mws_ops:
         result = db.mws_data.bulk_write(mws_ops)
         log.info(f"  MWS: {result.upserted_count} inserted, {result.modified_count} updated")

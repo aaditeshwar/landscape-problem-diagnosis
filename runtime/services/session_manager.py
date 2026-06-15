@@ -6,6 +6,8 @@ from uuid import uuid4
 
 from pymongo.database import Database
 
+from services.tehsil_refs import resolve_active_tehsil, tehsil_ref_dict
+
 
 def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -15,17 +17,20 @@ def new_session_id() -> str:
     return f"session_{uuid4().hex[:12]}"
 
 
-def create_session(db: Database, mws_doc: dict) -> dict:
+def create_session(db: Database, mws_doc: dict, tehsil_ref: dict | None = None) -> dict:
     session_id = new_session_id()
     aquifer = mws_doc.get("aquifer") or {}
+    active = resolve_active_tehsil(mws_doc, tehsil_ref)
+    active_dict = tehsil_ref_dict(active)
     doc = {
         "_id": session_id,
         "created_at": _now_iso(),
         "updated_at": _now_iso(),
         "mws_uid": mws_doc.get("uid"),
-        "state": mws_doc.get("state"),
-        "district": mws_doc.get("district"),
-        "tehsil": mws_doc.get("tehsil"),
+        "state": active["state"] if active else mws_doc.get("state"),
+        "district": active["district"] if active else mws_doc.get("district"),
+        "tehsil": active["tehsil"] if active else mws_doc.get("tehsil"),
+        "tehsil_ref": active_dict,
         "aquifer_class": aquifer.get("acwadam_class"),
         "turns": [],
         "injected_variables": {},
