@@ -45,6 +45,9 @@ export default function App() {
   const [diagnosisLoading, setDiagnosisLoading] = useState(false)
   const [diagnosisError, setDiagnosisError] = useState<string | null>(null)
   const [followUpAnswer, setFollowUpAnswer] = useState('')
+  const [diagnosisSessionMwsUid, setDiagnosisSessionMwsUid] = useState<string | null>(null)
+  const [diagnosisSessionTehsil, setDiagnosisSessionTehsil] = useState<TehsilRef | null>(null)
+  const [mwsHighlightEpoch, setMwsHighlightEpoch] = useState(0)
 
   const askedVariables = useMemo(() => askedVariablesFromHistory(followUpHistory), [followUpHistory])
   const askedQuestions = useMemo(() => askedQuestionsFromHistory(followUpHistory), [followUpHistory])
@@ -53,6 +56,9 @@ export default function App() {
     [diagnosis, askedVariables, askedQuestions],
   )
   const tehsilLoadSeq = useRef(0)
+  const activeDiagnosisContextRef = useRef<{ mwsUid: string; tehsil: TehsilRef } | null>(null)
+  const selectedTehsilRef = useRef<TehsilRef | null>(null)
+  selectedTehsilRef.current = selectedTehsil
 
   useEffect(() => {
     Promise.all([fetchTehsils(), fetchIngestedTehsils()])
@@ -70,9 +76,53 @@ export default function App() {
     setPanelUpdates([])
     setDiagnosisError(null)
     setFollowUpAnswer('')
+    setDiagnosisSessionMwsUid(null)
+    setDiagnosisSessionTehsil(null)
   }, [])
 
-  const loadTehsilLayers = useCallback(async (ref: TehsilRef) => {
+  const restoreActiveDiagnosisContext = useCallback(async () => {
+    const ctx = activeDiagnosisContextRef.current
+    activeDiagnosisContextRef.current = null
+    if (!ctx) return
+
+    const currentTehsil = selectedTehsilRef.current
+    const sameTehsil =
+      currentTehsil != null && tehsilKey(currentTehsil) === tehsilKey(ctx.tehsil)
+
+    if (!sameTehsil) {
+      const seq = ++tehsilLoadSeq.current
+      setMapError(null)
+      setSelectedTehsil(ctx.tehsil)
+      setMwsBoundaries(null)
+      if (showVillages) setVillageBoundaries(null)
+      try {
+        const boundaries = await fetchMwsBoundaries(ctx.tehsil)
+        if (tehsilLoadSeq.current !== seq) return
+        setMwsBoundaries(boundaries)
+      } catch (err) {
+        if (tehsilLoadSeq.current !== seq) return
+        setMwsBoundaries(null)
+        setMapError(err instanceof Error ? err.message : 'Failed to load tehsil layers')
+      }
+    }
+
+    setSelectedMwsUid(ctx.mwsUid)
+    setMwsHighlightEpoch((epoch) => epoch + 1)
+    setMwsLoading(true)
+    setMapError(null)
+    try {
+      const doc = await fetchMws(ctx.mwsUid)
+      setMwsData(doc)
+    } catch (err) {
+      setMwsData(null)
+      setMapError(err instanceof Error ? err.message : 'Failed to load MWS')
+    } finally {
+      setMwsLoading(false)
+    }
+  }, [showVillages])
+
+  const loadTehsilLayers = useCallback(async (ref: TehsilRef, options?: { preserveDiagnosis?: boolean }) => {
+    const preserveDiagnosis = options?.preserveDiagnosis ?? false
     const seq = ++tehsilLoadSeq.current
     setMapError(null)
     setSelectedTehsil(ref)
@@ -80,7 +130,9 @@ export default function App() {
     setMwsData(null)
     setMwsBoundaries(null)
     if (showVillages) setVillageBoundaries(null)
-    resetDiagnosisForNewMws()
+    if (!preserveDiagnosis) {
+      resetDiagnosisForNewMws()
+    }
     try {
       const mws = await fetchMwsBoundaries(ref)
       if (tehsilLoadSeq.current !== seq) return
@@ -94,7 +146,9 @@ export default function App() {
 
   const selectMws = useCallback(async (uid: string) => {
     setSelectedMwsUid(uid)
-    resetDiagnosisForNewMws()
+    if (!diagnosisLoading) {
+      resetDiagnosisForNewMws()
+    }
     setMwsLoading(true)
     setMapError(null)
     try {
@@ -106,7 +160,7 @@ export default function App() {
     } finally {
       setMwsLoading(false)
     }
-  }, [resetDiagnosisForNewMws])
+  }, [diagnosisLoading, resetDiagnosisForNewMws])
 
   const villageNames = useMemo(
     () => (mwsData?.intersect_village_names ?? []).map((v) => v.name).filter(Boolean) as string[],
@@ -147,7 +201,10 @@ export default function App() {
   }
 
   async function handleDiagnosis() {
-    if (!selectedMwsUid) return
+    if (!selectedMwsUid || !selectedTehsil) return
+    activeDiagnosisContextRef.current = { mwsUid: selectedMwsUid, tehsil: selectedTehsil }
+    setDiagnosisSessionMwsUid(selectedMwsUid)
+    setDiagnosisSessionTehsil(selectedTehsil)
     setDiagnosisLoading(true)
     setDiagnosisError(null)
     try {
@@ -161,6 +218,7 @@ export default function App() {
       setDiagnosisError(err instanceof Error ? err.message : 'Diagnosis failed')
     } finally {
       setDiagnosisLoading(false)
+      await restoreActiveDiagnosisContext()
     }
   }
 
@@ -170,6 +228,12 @@ export default function App() {
     const question =
       followUpTarget.question ??
       (followUpTarget.structured ? 'Follow-up response' : 'Additional observation')
+    if (diagnosisSessionMwsUid && diagnosisSessionTehsil) {
+      activeDiagnosisContextRef.current = {
+        mwsUid: diagnosisSessionMwsUid,
+        tehsil: diagnosisSessionTehsil,
+      }
+    }
     setDiagnosisLoading(true)
     setDiagnosisError(null)
     try {
@@ -194,6 +258,7 @@ export default function App() {
       setDiagnosisError(err instanceof Error ? err.message : 'Follow-up failed')
     } finally {
       setDiagnosisLoading(false)
+      await restoreActiveDiagnosisContext()
     }
   }
 
@@ -229,6 +294,7 @@ export default function App() {
           <LocationSearch onSelect={handleLocationSelect} disabled={diagnosisLoading} />
           <DiagnosisPanel
             selectedMwsUid={selectedMwsUid}
+            analysisMwsUid={diagnosisSessionMwsUid}
             villageNames={villageNames}
             problem={problem}
             onProblemChange={setProblem}
@@ -260,6 +326,7 @@ export default function App() {
             villageBoundaries={villageBoundaries}
             selectedTehsil={selectedTehsil}
             selectedMwsUid={selectedMwsUid}
+            mwsHighlightEpoch={mwsHighlightEpoch}
             showVillages={showVillages}
             flyTarget={flyTarget}
             onTehsilSelect={(ref) => {
@@ -267,14 +334,20 @@ export default function App() {
                 setMapError(`${ref.tehsil} is not in the ingested corpus yet.`)
                 return
               }
-              void loadTehsilLayers(ref)
+              void loadTehsilLayers(ref, { preserveDiagnosis: diagnosisLoading })
             }}
             onMwsSelect={(uid) => void selectMws(uid)}
           />
         </main>
 
         <aside className="min-h-0 border-l border-stone-300 bg-[#faf7f2]">
-          <InfoPanel mws={mwsData} loading={mwsLoading} panelUpdates={panelUpdates} />
+          <InfoPanel
+            mws={mwsData}
+            loading={mwsLoading}
+            panelUpdates={
+              diagnosisSessionMwsUid && selectedMwsUid !== diagnosisSessionMwsUid ? [] : panelUpdates
+            }
+          />
         </aside>
       </div>
     </div>

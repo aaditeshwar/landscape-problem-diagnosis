@@ -144,6 +144,61 @@ def aggregate_stats(events: list[dict[str, Any]] | None = None) -> dict[str, Any
     }
 
 
+def _empirical_cdf(values: list[float]) -> list[dict[str, float]]:
+    if not values:
+        return []
+    sorted_vals = sorted(values)
+    n = len(sorted_vals)
+    return [{"x": round(float(v), 2), "y": round((i + 1) / n, 4)} for i, v in enumerate(sorted_vals)]
+
+
+def model_timing_cdfs(model: str) -> dict[str, Any]:
+    """Empirical CDFs of prompt length and total time for query vs follow-up runs."""
+    query_prompts: list[float] = []
+    follow_prompts: list[float] = []
+    query_times: list[float] = []
+    follow_times: list[float] = []
+
+    for row in load_all_events(include_heavy=False):
+        if row.get("parse_error"):
+            continue
+        if str(row.get("model") or "") != model:
+            continue
+        event = row.get("event")
+        if event not in ("diagnosis_query", "diagnosis_follow_up"):
+            continue
+        prompt_chars = row.get("prompt_chars")
+        timings = row.get("timings_ms") or {}
+        total_ms = timings.get("total")
+        if not isinstance(prompt_chars, (int, float)) or prompt_chars <= 0:
+            continue
+        if not isinstance(total_ms, (int, float)) or total_ms <= 0:
+            continue
+        prompt_val = float(prompt_chars)
+        time_val = float(total_ms)
+        if event == "diagnosis_follow_up":
+            follow_prompts.append(prompt_val)
+            follow_times.append(time_val)
+        else:
+            query_prompts.append(prompt_val)
+            query_times.append(time_val)
+
+    return {
+        "prompt_length": {
+            "query": _empirical_cdf(query_prompts),
+            "follow_up": _empirical_cdf(follow_prompts),
+        },
+        "total_time_ms": {
+            "query": _empirical_cdf(query_times),
+            "follow_up": _empirical_cdf(follow_times),
+        },
+        "counts": {
+            "query": len(query_prompts),
+            "follow_up": len(follow_prompts),
+        },
+    }
+
+
 def dashboard_meta() -> dict[str, Any]:
     paths = log_paths()
     events = load_all_events(include_heavy=False)
@@ -152,4 +207,5 @@ def dashboard_meta() -> dict[str, Any]:
         "files_exist": {key: path.is_file() for key, path in paths.items()},
         "startup_config": startup_config_snapshot(),
         "stats": aggregate_stats(events),
+        "qwen_cdfs": model_timing_cdfs("qwen2.5:14b"),
     }

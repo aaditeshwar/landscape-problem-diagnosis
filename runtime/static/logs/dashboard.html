@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Diagnosis Log Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #fafaf9;
+      --surface: #ffffff;
+      --border: #e7e5e4;
+      --text: #1c1917;
+      --muted: #78716c;
+      --accent: #b45309;
+      --accent-soft: #fef3c7;
+      --query: #0369a1;
+      --follow: #7c3aed;
+      --failed: #b91c1c;
+      --failed-soft: #fee2e2;
+      --bar-embed: #0ea5e9;
+      --bar-search: #6366f1;
+      --bar-citations: #8b5cf6;
+      --bar-assemble: #14b8a6;
+      --bar-llm: #f59e0b;
+      --bar-post: #ef4444;
+      --bar-revision: #ec4899;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 650;
+    }
+    header p {
+      margin: 0.15rem 0 0;
+      color: var(--muted);
+      font-size: 0.875rem;
+    }
+    .header-actions { display: flex; gap: 0.5rem; align-items: center; }
+    button, .btn {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      border-radius: 0.5rem;
+      padding: 0.45rem 0.85rem;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    button.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    button:hover { filter: brightness(0.97); }
+    main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.25rem 1.5rem 2rem;
+      display: grid;
+      gap: 1rem;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 0.75rem;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 0.85rem 1rem;
+    }
+    .card .label { color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; }
+    .card .value { font-size: 1.35rem; font-weight: 650; margin-top: 0.15rem; }
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      overflow: hidden;
+    }
+    .panel-head {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .panel-head h2 { margin: 0; font-size: 1rem; }
+    .config-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem 1rem;
+      padding: 1rem;
+      font-size: 0.85rem;
+    }
+    @media (max-width: 960px) {
+      .config-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 560px) {
+      .config-grid { grid-template-columns: 1fr; }
+    }
+    .config-item {
+      background: #f5f5f4;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 0.55rem 0.7rem;
+      min-height: 3.25rem;
+    }
+    .config-item dt {
+      color: var(--muted);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .config-item dd {
+      margin: 0.2rem 0 0;
+      word-break: break-word;
+      font-weight: 550;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+    th, td {
+      text-align: left;
+      padding: 0.65rem 0.85rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    th { color: var(--muted); font-weight: 600; background: #f5f5f4; }
+    tr.event-row { cursor: pointer; }
+    tr.event-row:hover { background: #fffbeb; }
+    tr.event-row.selected { background: var(--accent-soft); }
+    .badge {
+      display: inline-block;
+      padding: 0.15rem 0.45rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .badge.query { background: #e0f2fe; color: var(--query); }
+    .badge.follow { background: #ede9fe; color: var(--follow); }
+    .badge.failed { background: var(--failed-soft); color: var(--failed); }
+    tr.event-row.failed td { background: #fff1f2; }
+    .mini-bar {
+      height: 8px;
+      border-radius: 999px;
+      background: #e7e5e4;
+      overflow: hidden;
+      display: flex;
+      min-width: 120px;
+    }
+    .mini-bar span { height: 100%; }
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      align-items: start;
+    }
+    @media (min-width: 1100px) {
+      .layout {
+        grid-template-columns: 1fr 1fr;
+        height: calc(100vh - 12rem);
+        min-height: 520px;
+      }
+      .events-panel {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        max-height: 100%;
+      }
+      .events-panel .events-scroll {
+        overflow: auto;
+        flex: 1;
+        min-height: 0;
+      }
+      #detail-panel {
+        position: sticky;
+        top: 5.5rem;
+        max-height: calc(100vh - 6.5rem);
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+      #detail-panel .detail-scroll {
+        overflow: auto;
+        flex: 1;
+        min-height: 0;
+      }
+    }
+    .detail-empty {
+      padding: 2rem 1rem;
+      text-align: center;
+      color: var(--muted);
+    }
+    .detail-body { padding: 1rem; display: grid; gap: 1rem; }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.5rem;
+      font-size: 0.85rem;
+    }
+    .meta-grid div { background: #f5f5f4; border-radius: 0.5rem; padding: 0.5rem 0.65rem; }
+    .meta-grid strong { display: block; color: var(--muted); font-size: 0.72rem; text-transform: uppercase; }
+    .chart-wrap { height: 220px; position: relative; }
+    .cdf-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1rem;
+      padding: 0 1rem 1rem;
+    }
+    .cdf-wrap { height: 280px; position: relative; }
+    .cdf-caption {
+      padding: 0 0 0.75rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    .tabs {
+      display: flex;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+    }
+    .tabs button.active {
+      background: var(--accent-soft);
+      border-color: #fcd34d;
+    }
+    pre.content-block {
+      margin: 0;
+      padding: 0.85rem;
+      background: #1c1917;
+      color: #f5f5f4;
+      border-radius: 0.5rem;
+      overflow: auto;
+      max-height: 420px;
+      font-size: 0.78rem;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .pagination {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.875rem;
+    }
+    .error-banner {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+    }
+    .error-detail-box {
+      background: var(--failed-soft);
+      border: 1px solid #fecaca;
+      border-radius: 0.5rem;
+      padding: 0.75rem;
+      margin-bottom: 0.75rem;
+      color: var(--failed);
+    }
+    .error-detail-box strong {
+      color: var(--failed);
+    }
+    .error-detail-box pre {
+      margin: 0.35rem 0 0;
+      padding: 0;
+      background: transparent;
+      color: var(--failed);
+      font-size: 0.85rem;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .chip-list { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+    .chip {
+      background: #f5f5f4;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.15rem 0.5rem;
+      font-size: 0.75rem;
+    }
+    .signal-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+      margin-top: 0.35rem;
+    }
+    .signal-table th, .signal-table td {
+      border: 1px solid var(--border);
+      padding: 0.35rem 0.45rem;
+      text-align: left;
+      vertical-align: top;
+    }
+    .signal-table th { background: #f5f5f4; color: var(--muted); }
+    .pathway-block {
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 0.65rem 0.75rem;
+      margin-top: 0.5rem;
+      background: #fafaf9;
+    }
+    .pathway-block h4 { margin: 0 0 0.35rem; font-size: 0.85rem; }
+    .status-ok { color: #047857; font-weight: 600; }
+    .status-needs { color: #b45309; font-weight: 600; }
+    .status-confirmed { color: #047857; font-weight: 600; }
+    .status-uncertain { color: #b45309; font-weight: 600; }
+    .status-absent { color: var(--muted); font-weight: 600; }
+    .pathway-meta-line { font-size: 0.82rem; color: var(--muted); margin: 0.15rem 0; }
+    .follow-up-action {
+      margin-top: 0.45rem;
+      padding: 0.45rem 0.55rem;
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 0.4rem;
+      font-size: 0.78rem;
+    }
+    .follow-up-signal-block {
+      margin-top: 0.75rem;
+      padding: 0.65rem 0.75rem;
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 0.5rem;
+      font-size: 0.82rem;
+    }
+    .follow-up-signal-block h4 {
+      margin: 0 0 0.35rem;
+      font-size: 0.85rem;
+      color: #92400e;
+    }
+    .expr-cell {
+      font-family: ui-monospace, "Cascadia Code", monospace;
+      font-size: 0.72rem;
+      word-break: break-word;
+      max-width: 280px;
+    }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Diagnosis Log Dashboard</h1>
+      <p id="log-dir">Loading log directory…</p>
+    </div>
+    <div class="header-actions">
+      <label>
+        Filter
+        <select id="filter-event">
+          <option value="">All events</option>
+          <option value="diagnosis_query">Initial queries</option>
+          <option value="diagnosis_follow_up">Follow-ups</option>
+        </select>
+      </label>
+      <button id="refresh-btn" class="primary">Refresh</button>
+    </div>
+  </header>
+
+  <main>
+    <div id="error-box" class="error-banner hidden"></div>
+
+    <div class="layout">
+      <section class="panel events-panel">
+        <div class="panel-head">
+          <h2>Diagnosis events</h2>
+          <span id="event-count-label"></span>
+        </div>
+        <div class="events-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Event</th>
+                <th>Session / MWS</th>
+                <th>Model</th>
+                <th>Total</th>
+                <th>Timing mix</th>
+              </tr>
+            </thead>
+            <tbody id="events-body"></tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <button id="prev-page" disabled>← Newer</button>
+          <span id="page-label"></span>
+          <button id="next-page">Older →</button>
+        </div>
+      </section>
+
+      <section class="panel" id="detail-panel">
+        <div class="panel-head">
+          <h2>Event detail</h2>
+        </div>
+        <div class="detail-scroll" id="detail-scroll">
+          <div id="detail-content" class="detail-empty">Select an event to inspect timings, prompt, and responses.</div>
+        </div>
+      </section>
+    </div>
+
+    <section class="cards" id="stats-cards"></section>
+
+    <details class="panel" open>
+      <summary class="panel-head" style="cursor:pointer; list-style:none;">
+        <h2>Runtime configuration</h2>
+      </summary>
+      <div class="config-grid" id="config-grid"></div>
+    </details>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>qwen2.5:14b — prompt length and total time CDFs</h2>
+        <span id="cdf-count-label"></span>
+      </div>
+      <div class="cdf-grid">
+        <div>
+          <p class="cdf-caption">Prompt length (characters)</p>
+          <div class="cdf-wrap">
+            <canvas id="cdf-prompt-chart"></canvas>
+          </div>
+        </div>
+        <div>
+          <p class="cdf-caption">Total time (milliseconds)</p>
+          <div class="cdf-wrap">
+            <canvas id="cdf-time-chart"></canvas>
+          </div>
+        </div>
+      </div>
+      <p class="cdf-caption" id="cdf-empty-note" style="padding: 0 1rem 1rem; display: none;"></p>
+    </section>
+  </main>
+
+  <script>
+    const TIMING_SEGMENTS = [
+      { key: "embed", label: "Embed", color: "var(--bar-embed)" },
+      { key: "evidence_search", label: "Search", color: "var(--bar-search)" },
+      { key: "citations", label: "Citations", color: "var(--bar-citations)" },
+      { key: "assemble_bundle", label: "Assemble", color: "var(--bar-assemble)" },
+      { key: "llm", label: "LLM", color: "var(--bar-llm)" },
+      { key: "postprocess", label: "Post", color: "var(--bar-post)" },
+      { key: "follow_up_revision", label: "Revision", color: "var(--bar-revision)" },
+    ];
+
+    const state = {
+      offset: 0,
+      limit: 25,
+      total: 0,
+      events: [],
+      filter: "",
+      selectedIndex: null,
+      chart: null,
+      cdfPromptChart: null,
+      cdfTimeChart: null,
+    };
+
+    function fmtMs(v) {
+      if (v == null || Number.isNaN(v)) return "—";
+      return `${Math.round(v)} ms`;
+    }
+
+    function fmtTime(iso) {
+      if (!iso) return "—";
+      const d = new Date(iso);
+      return d.toLocaleString();
+    }
+
+    function fmtLocation(ev) {
+      const parts = [ev.tehsil, ev.district, ev.state].filter(Boolean);
+      return parts.length ? parts.join(", ") : "—";
+    }
+
+    function formatFailureStage(stage) {
+      const labels = {
+        load_mws: "MWS load",
+        session: "Session",
+        retrieval: "Retrieval",
+        assembly: "Assembly",
+        validation: "Validation",
+        llm: "LLM",
+      };
+      return labels[stage] || stage || "Unknown";
+    }
+
+    function formatSignalResult(result, status) {
+      if (status === "user_provided_unresolved") {
+        return "UNRESOLVED (needs LLM)";
+      }
+      if (status === "user_provided") {
+        if (result === true) return "TRUE (user)";
+        if (result === false) return "FALSE (user)";
+        return "INTERPRET (user)";
+      }
+      if (status === "ok") return result === true ? "TRUE" : result === false ? "FALSE" : "—";
+      return "NEEDS_LLM";
+    }
+
+    function formatSignalExpression(sig) {
+      const expr = (sig.expression || "").trim();
+      if (expr) return expr;
+      const hint = (sig.qualitative_hint || "").trim();
+      if (hint) return `[qualitative] ${hint}`;
+      return "—";
+    }
+
+    function pathwayDiagnosisStatus(pathwayId, llm) {
+      const confirmed = (llm.confirmed_pathways || []).find((p) => p.pathway_id === pathwayId);
+      if (confirmed) {
+        return {
+          bucket: "confirmed",
+          confidence: confirmed.confidence || "medium",
+          reasoning: confirmed.reasoning || "",
+        };
+      }
+      const uncertain = (llm.uncertain_pathways || []).find((p) => p.pathway_id === pathwayId);
+      if (uncertain) {
+        return {
+          bucket: "uncertain",
+          confidence: uncertain.confidence || "low",
+          reasoning: uncertain.reasoning || "",
+          pendingQuestions: uncertain.missing_variable_questions || [],
+        };
+      }
+      return { bucket: "absent", confidence: null, reasoning: "" };
+    }
+
+    function renderMergedPathways(event) {
+      const evidenceRows = event.pathway_evidence || [];
+      const signalRows = event.signal_evaluation?.pathways || [];
+      const llm = event.llm_response || {};
+      const revision = llm.diagnosis_revision || {};
+      const changesByPathway = new Map(
+        (revision.pathway_changes || []).map((c) => [c.pathway_id, c]),
+      );
+
+      const evidenceById = new Map(evidenceRows.map((r) => [r.pathway_id, r]));
+      const signalsById = new Map(signalRows.map((r) => [r.pathway_id, r]));
+      const pathwayIds = [
+        ...new Set([
+          ...evidenceRows.map((r) => r.pathway_id),
+          ...signalRows.map((r) => r.pathway_id),
+          ...(llm.confirmed_pathways || []).map((p) => p.pathway_id),
+          ...(llm.uncertain_pathways || []).map((p) => p.pathway_id),
+        ]),
+      ].filter(Boolean);
+
+      if (!pathwayIds.length) {
+        return "";
+      }
+
+      const blocks = pathwayIds
+        .sort()
+        .map((pathwayId) => {
+          const row = evidenceById.get(pathwayId) || {};
+          const signals = signalsById.get(pathwayId) || {};
+          const status = pathwayDiagnosisStatus(pathwayId, llm);
+          const summary = signals.summary || {};
+          const aerTags = (row.aer_tags || []).join(", ") || "—";
+          const mismatch =
+            event.mws_aer_code && row.aer_tags && row.aer_tags.length && !row.aer_tags.includes(event.mws_aer_code)
+              ? ' <span style="color:#b45309;">(MWS AER not in card tags)</span>'
+              : "";
+
+          const statusClass =
+            status.bucket === "confirmed"
+              ? "status-confirmed"
+              : status.bucket === "uncertain"
+                ? "status-uncertain"
+                : "status-absent";
+          const statusLabel =
+            status.bucket === "absent"
+              ? "not in diagnosis"
+              : `${status.bucket} (${status.confidence || "—"})`;
+
+          const signalTableRows = (signals.signals || [])
+            .map(
+              (sig) => `<tr>
+                <td>${escapeHtml(sig.signal_id || "—")}</td>
+                <td class="expr-cell">${escapeHtml(formatSignalExpression(sig))}</td>
+                <td>${escapeHtml(sig.direction || "—")}</td>
+                <td class="${sig.status === "ok" ? "status-ok" : "status-needs"}">${escapeHtml(formatSignalResult(sig.result, sig.status))}</td>
+                <td>${escapeHtml(sig.status || "—")}</td>
+              </tr>`,
+            )
+            .join("");
+
+          const pendingQuestions = status.pendingQuestions || [];
+          const pendingHtml = pendingQuestions.length
+            ? `<div class="pathway-meta-line"><strong>Pending follow-up questions</strong><ul style="margin:0.25rem 0 0 1rem;padding:0;">${pendingQuestions
+                .map(
+                  (q) =>
+                    `<li><code>${escapeHtml(q.variable || q.missing_variable || "—")}</code>: ${escapeHtml(q.question || q.question_to_user || "—")}</li>`,
+                )
+                .join("")}</ul></div>`
+            : "";
+
+          const change = changesByPathway.get(pathwayId);
+          const answeredVar = event.follow_up_variable || "";
+          const actionParts = [];
+          if (change) {
+            actionParts.push(
+              `Revision: ${escapeHtml(change.from)} → ${escapeHtml(change.to)}${change.reason ? ` — ${escapeHtml(change.reason)}` : ""}`,
+            );
+          }
+          if (
+            answeredVar &&
+            change &&
+            String(change.reason || "").includes(answeredVar)
+          ) {
+            actionParts.push(
+              `Answer recorded: <code>${escapeHtml(answeredVar)}</code> = ${escapeHtml(event.follow_up_answer || "—")}`,
+            );
+          }
+          const actionHtml = actionParts.length
+            ? `<div class="follow-up-action">${actionParts.join("<br/>")}</div>`
+            : "";
+
+          const reasoningHtml = status.reasoning
+            ? `<div class="pathway-meta-line"><strong>LLM reasoning</strong>: ${escapeHtml(status.reasoning)}</div>`
+            : "";
+
+          return `<div class="pathway-block">
+            <h4>${escapeHtml(pathwayId)}</h4>
+            <div class="pathway-meta-line"><strong>Diagnosis status</strong>: <span class="${statusClass}">${escapeHtml(statusLabel)}</span></div>
+            <div class="pathway-meta-line">Card: ${escapeHtml(row.card_id || "—")} · Evidence AER: ${escapeHtml(aerTags)}${mismatch}</div>
+            <div class="pathway-meta-line">Card rainfall regime: ${escapeHtml(row.rainfall_regime || "—")}${row.aer_alignment ? ` · AER alignment: ${escapeHtml(row.aer_alignment)}` : ""}</div>
+            ${reasoningHtml}
+            ${pendingHtml}
+            ${actionHtml}
+            <div class="pathway-meta-line" style="margin-top:0.45rem;">
+              Server signals — confirms_true=${summary.confirms_true ?? 0},
+              rules_out_true=${summary.rules_out_true ?? 0},
+              amplifies_true=${summary.amplifies_true ?? 0},
+              needs_llm=${summary.needs_llm ?? 0}
+            </div>
+            <table class="signal-table">
+              <thead><tr><th>Signal</th><th>Expression</th><th>Direction</th><th>Result</th><th>Status</th></tr></thead>
+              <tbody>${signalTableRows || '<tr><td colspan="5">No signals logged</td></tr>'}</tbody>
+            </table>
+            ${signals.evidence_note ? `<div class="pathway-meta-line" style="margin-top:0.35rem;"><strong>Evidence note</strong>: ${escapeHtml(signals.evidence_note)}</div>` : ""}
+          </div>`;
+        })
+        .join("");
+
+      return `<div><strong>Pathways — evidence, diagnosis status &amp; server signals</strong>${blocks}</div>`;
+    }
+
+    function renderFollowUpSignalUpdates(event) {
+      const updates = event.follow_up_signal_updates || [];
+      const hasFollowUp = event.follow_up_variable || event.follow_up_answer || event.follow_up_question;
+      if (!hasFollowUp && !updates.length) {
+        return "";
+      }
+
+      const updateRows = updates
+        .map((update) => {
+          const inference =
+            update.inference === "unable_to_evaluate"
+              ? "Server could not auto-evaluate"
+              : update.result === true
+                ? "Supports pathway (server)"
+                : update.result === false
+                  ? "Does not support pathway (server)"
+                  : update.inference || "Needs LLM interpretation";
+          return `<div class="pathway-block" style="margin-top:0.35rem;">
+            <h4>${escapeHtml(update.pathway_id || "—")}${update.signal_id ? ` · ${escapeHtml(update.signal_id)}` : ""}</h4>
+            <div class="pathway-meta-line"><strong>Server inference</strong>: ${escapeHtml(inference)}</div>
+            ${update.inference_note ? `<div class="pathway-meta-line"><strong>Note</strong>: ${escapeHtml(update.inference_note)}</div>` : ""}
+            ${update.user_answer ? `<div class="pathway-meta-line"><strong>User answer</strong>: ${escapeHtml(update.user_answer)}</div>` : ""}
+            ${update.update_interpretation ? `<div class="pathway-meta-line"><strong>Matched card guidance</strong>: ${escapeHtml(update.update_interpretation)}</div>` : ""}
+            ${update.update_rule ? `<div class="pathway-meta-line"><strong>Card update rule</strong>: ${escapeHtml(update.update_rule)}</div>` : ""}
+          </div>`;
+        })
+        .join("");
+
+      return `<div class="follow-up-signal-block">
+        <h4>Follow-up answer &amp; server signal evaluation</h4>
+        ${event.follow_up_question ? `<div class="pathway-meta-line"><strong>Question</strong>: ${escapeHtml(event.follow_up_question)}</div>` : ""}
+        ${event.follow_up_variable ? `<div class="pathway-meta-line"><strong>Variable</strong>: <code>${escapeHtml(event.follow_up_variable)}</code></div>` : ""}
+        ${event.follow_up_answer ? `<div class="pathway-meta-line"><strong>User answer</strong>: ${escapeHtml(event.follow_up_answer)}</div>` : ""}
+        ${updates.length ? `<div style="margin-top:0.45rem;"><strong>Signal overlays</strong>${updateRows}</div>` : `<div class="pathway-meta-line" style="margin-top:0.35rem;">No server signal overlay recorded for this turn.</div>`}
+      </div>`;
+    }
+
+    function showError(msg) {
+      const box = document.getElementById("error-box");
+      if (!msg) {
+        box.classList.add("hidden");
+        box.textContent = "";
+        return;
+      }
+      box.textContent = msg;
+      box.classList.remove("hidden");
+    }
+
+    async function fetchJson(url) {
+      const res = await fetch(url);
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`${res.status} ${res.statusText}: ${text.slice(0, 200)}`);
+      }
+      return res.json();
+    }
+
+    function configEntries(cfg) {
+      const isAnthropic = cfg.llm_provider === "anthropic";
+      const entries = [
+        ["LLM provider", cfg.llm_provider],
+        ["Reason model", cfg.active_reason_model],
+        ["Follow-up model", cfg.active_followup_model],
+        ["Embed model", cfg.ollama_embed_model],
+        ["Ollama URL", cfg.ollama_url],
+        ["Embed char limit", cfg.embed_char_limit],
+        ["Retrieval pool", cfg.retrieval_candidate_pool],
+        ["Retrieval limit", cfg.retrieval_default_limit],
+        ["Mongo DB", cfg.mongo_db],
+        ["Log directory", cfg.log_dir],
+        ["Log level", cfg.log_level],
+        ["CORS origins", Array.isArray(cfg.cors_origins) ? cfg.cors_origins.join(", ") : cfg.cors_origins],
+      ];
+      if (isAnthropic) {
+        entries.splice(4, 0, ["Anthropic max tokens", cfg.anthropic_max_tokens]);
+      }
+      return entries.filter(([, v]) => v != null && v !== "");
+    }
+
+    function renderStats(meta) {
+      const stats = meta.stats || {};
+      const cfg = meta.startup_config || {};
+      document.getElementById("log-dir").textContent =
+        `Log dir: ${meta.paths?.log_dir || "—"} · JSONL exists: ${meta.files_exist?.diagnosis_jsonl ? "yes" : "no"}`;
+
+      const cards = [
+        ["Events", stats.count ?? 0],
+        ["Avg total", stats.avg_total_ms != null ? `${stats.avg_total_ms} ms` : "—"],
+        ["Avg LLM", stats.avg_llm_ms != null ? `${stats.avg_llm_ms} ms` : "—"],
+        ["Provider", cfg.llm_provider || "—"],
+        ["Reason model", cfg.active_reason_model || "—"],
+      ];
+      document.getElementById("stats-cards").innerHTML = cards
+        .map(([label, value]) => `<article class="card"><div class="label">${label}</div><div class="value">${value}</div></article>`)
+        .join("");
+
+      const grid = document.getElementById("config-grid");
+      grid.innerHTML = configEntries(cfg)
+        .map(([label, value]) => `<div class="config-item"><dt>${label}</dt><dd>${value}</dd></div>`)
+        .join("");
+
+      renderCdfCharts(meta.qwen_cdfs || {});
+    }
+
+    function destroyCdfCharts() {
+      if (state.cdfPromptChart) {
+        state.cdfPromptChart.destroy();
+        state.cdfPromptChart = null;
+      }
+      if (state.cdfTimeChart) {
+        state.cdfTimeChart.destroy();
+        state.cdfTimeChart = null;
+      }
+    }
+
+    function cdfDatasets(series, queryColor, followColor) {
+      const datasets = [];
+      if ((series.query || []).length) {
+        datasets.push({
+          label: "Initial query",
+          data: series.query,
+          borderColor: queryColor,
+          backgroundColor: queryColor,
+          stepped: "before",
+          fill: false,
+          pointRadius: 0,
+          borderWidth: 2,
+        });
+      }
+      if ((series.follow_up || []).length) {
+        datasets.push({
+          label: "Follow-up",
+          data: series.follow_up,
+          borderColor: followColor,
+          backgroundColor: followColor,
+          stepped: "before",
+          fill: false,
+          pointRadius: 0,
+          borderWidth: 2,
+        });
+      }
+      return datasets;
+    }
+
+    function renderCdfChart(canvas, datasets, xTitle) {
+      if (!canvas) return null;
+      if (!datasets.length) {
+        const ctx = canvas.getContext("2d");
+        if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+        return null;
+      }
+      return new Chart(canvas, {
+        type: "line",
+        data: { datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: "nearest", intersect: false },
+          plugins: {
+            legend: { position: "top" },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => {
+                  const xLabel =
+                    xTitle.includes("time")
+                      ? `${Math.round(ctx.parsed.x).toLocaleString()} ms`
+                      : `${Math.round(ctx.parsed.x).toLocaleString()} chars`;
+                  return `${ctx.dataset.label}: ${xLabel} · CDF ${(ctx.parsed.y * 100).toFixed(1)}%`;
+                },
+              },
+            },
+          },
+          scales: {
+            x: {
+              type: "linear",
+              title: { display: true, text: xTitle },
+              beginAtZero: false,
+            },
+            y: {
+              title: { display: true, text: "Cumulative fraction" },
+              min: 0,
+              max: 1,
+              ticks: {
+                callback: (value) => `${Math.round(Number(value) * 100)}%`,
+              },
+            },
+          },
+        },
+      });
+    }
+
+    function renderCdfCharts(cdfData) {
+      destroyCdfCharts();
+      const counts = cdfData.counts || {};
+      const queryCount = counts.query || 0;
+      const followCount = counts.follow_up || 0;
+      const label = document.getElementById("cdf-count-label");
+      if (label) {
+        label.textContent = `${queryCount} queries · ${followCount} follow-ups`;
+      }
+
+      const promptSeries = cdfData.prompt_length || {};
+      const timeSeries = cdfData.total_time_ms || {};
+      const emptyNote = document.getElementById("cdf-empty-note");
+      const hasData = queryCount + followCount > 0;
+      if (emptyNote) {
+        emptyNote.style.display = hasData ? "none" : "block";
+        emptyNote.textContent = hasData
+          ? ""
+          : "No qwen2.5:14b runs with prompt length and total time logged yet.";
+      }
+      state.cdfPromptChart = renderCdfChart(
+        document.getElementById("cdf-prompt-chart"),
+        cdfDatasets(promptSeries, "rgb(3, 105, 161)", "rgb(124, 58, 237)"),
+        "Prompt length (characters)",
+      );
+      state.cdfTimeChart = renderCdfChart(
+        document.getElementById("cdf-time-chart"),
+        cdfDatasets(timeSeries, "rgb(3, 105, 161)", "rgb(124, 58, 237)"),
+        "Total time (ms)",
+      );
+    }
+
+    function miniBarHtml(timings) {
+      const parts = TIMING_SEGMENTS
+        .map((s) => ({ ...s, value: Number(timings?.[s.key] || 0) }))
+        .filter((s) => s.value > 0);
+      const sum = parts.reduce((a, b) => a + b.value, 0) || 1;
+      return `<div class="mini-bar" title="${parts.map((p) => `${p.label}: ${Math.round(p.value)}ms`).join(", ")}">${
+        parts.map((p) => `<span style="width:${(p.value / sum) * 100}%;background:${p.color}"></span>`).join("")
+      }</div>`;
+    }
+
+    function renderEventsTable() {
+      const tbody = document.getElementById("events-body");
+      const filtered = state.filter
+        ? state.events.filter((e) => e.event === state.filter)
+        : state.events;
+
+      if (!filtered.length) {
+        tbody.innerHTML = `<tr><td colspan="6">No events found. Run a diagnosis query to populate diagnosis.jsonl.</td></tr>`;
+      } else {
+        tbody.innerHTML = filtered
+          .map((ev) => {
+            const failed = ev.status === "failed" || ev.error;
+            const badgeClass = failed ? "failed" : ev.event === "diagnosis_follow_up" ? "follow" : "query";
+            const stageSuffix = failed && ev.failure_stage ? ` · ${formatFailureStage(ev.failure_stage)}` : "";
+            const label = failed ? `Failed${stageSuffix}` : ev.event === "diagnosis_follow_up" ? "Follow-up" : "Query";
+            const selected = state.selectedIndex === ev.index ? "selected" : "";
+            const rowClass = failed ? "failed" : "";
+            return `<tr class="event-row ${rowClass} ${selected}" data-index="${ev.index}">
+              <td>${fmtTime(ev.timestamp)}</td>
+              <td><span class="badge ${badgeClass}">${label}</span></td>
+              <td>
+                <div>${ev.session_id || "—"}</div>
+                <div style="color:var(--muted);font-size:0.78rem;">${ev.mws_uid || "—"}</div>
+                <div style="color:var(--muted);font-size:0.78rem;">${fmtLocation(ev)}</div>
+                ${ev.error ? `<div style="color:var(--failed);font-size:0.78rem;margin-top:0.15rem;">${escapeHtml(ev.error.slice(0, 120))}${ev.error.length > 120 ? "…" : ""}</div>` : ""}
+              </td>
+              <td>${ev.model || "—"}</td>
+              <td>${fmtMs(ev.timings_ms?.total)}</td>
+              <td>${miniBarHtml(ev.timings_ms || {})}</td>
+            </tr>`;
+          })
+          .join("");
+      }
+
+      document.getElementById("event-count-label").textContent = `${filtered.length} shown / ${state.total} total`;
+      document.getElementById("page-label").textContent =
+        `Offset ${state.offset} · page size ${state.limit}`;
+      document.getElementById("prev-page").disabled = state.offset <= 0;
+      document.getElementById("next-page").disabled = state.offset + state.limit >= state.total;
+
+      tbody.querySelectorAll(".event-row").forEach((row) => {
+        row.addEventListener("click", () => loadDetail(Number(row.dataset.index)));
+      });
+    }
+
+    function destroyChart() {
+      if (state.chart) {
+        state.chart.destroy();
+        state.chart = null;
+      }
+    }
+
+    function renderTimingChart(timings, canvas) {
+      destroyChart();
+      const labels = [];
+      const data = [];
+      const colors = [];
+      TIMING_SEGMENTS.forEach((seg) => {
+        const val = Number(timings?.[seg.key] || 0);
+        if (val > 0) {
+          labels.push(seg.label);
+          data.push(val);
+          colors.push(seg.color);
+        }
+      });
+      state.chart = new Chart(canvas, {
+        type: "bar",
+        data: {
+          labels,
+          datasets: [{ label: "ms", data, backgroundColor: colors, borderRadius: 6 }],
+        },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => `${ctx.label}: ${Math.round(ctx.raw)} ms`,
+              },
+            },
+          },
+          scales: {
+            x: { title: { display: true, text: "milliseconds" }, beginAtZero: true },
+          },
+        },
+      });
+    }
+
+    function renderDetail(event) {
+      const container = document.getElementById("detail-content");
+      const timings = event.timings_ms || {};
+      const cards = (event.retrieved_card_ids || [])
+        .map((id) => `<span class="chip">${id}</span>`)
+        .join("");
+
+      container.className = "detail-body";
+      container.innerHTML = `
+        <div class="meta-grid">
+          <div><strong>Event</strong>${event.event || "—"}</div>
+          <div><strong>Session</strong>${event.session_id || "—"}</div>
+          <div><strong>MWS</strong>${event.mws_uid || "—"}</div>
+          <div><strong>Tehsil</strong>${event.tehsil || "—"}</div>
+          <div><strong>District</strong>${event.district || "—"}</div>
+          <div><strong>State</strong>${event.state || "—"}</div>
+          <div><strong>MWS AER</strong>${event.mws_aer_code || "—"}</div>
+          <div><strong>Model</strong>${event.model || "—"}</div>
+          <div><strong>Total</strong>${fmtMs(timings.total)}</div>
+          <div><strong>Status</strong>${event.status === "failed" || event.error ? `<span style="color:var(--failed)">failed</span>${event.failure_stage ? ` (${escapeHtml(formatFailureStage(event.failure_stage))})` : ""}` : "ok"}</div>
+          <div><strong>Prompt</strong>${event.prompt_chars ?? (event.prompt?.length || 0)} chars</div>
+        </div>
+
+        ${event.error ? `<div class="error-detail-box"><strong>Error</strong><pre>${escapeHtml(event.error)}</pre></div>` : ""}
+
+        <div>
+          <h3 style="margin:0 0 0.5rem;font-size:0.95rem;">Timing breakdown</h3>
+          <div class="chart-wrap"><canvas id="timing-chart"></canvas></div>
+          <div style="margin-top:0.5rem;font-size:0.82rem;color:var(--muted);">
+            ${TIMING_SEGMENTS.map((s) => `${s.label}: ${fmtMs(timings[s.key])}`).join(" · ")}
+          </div>
+        </div>
+
+        ${renderFollowUpSignalUpdates(event)}
+
+        <div>
+          <strong>Retrieval query</strong>
+          <pre class="content-block">${escapeHtml(event.retrieval_query || event.problem_description || "")}</pre>
+        </div>
+
+        ${cards ? `<div><strong>Evidence cards</strong><div class="chip-list">${cards}</div></div>` : ""}
+
+        ${renderMergedPathways(event)}
+
+        <div class="tabs" id="content-tabs">
+          <button type="button" class="active" data-tab="prompt">Prompt</button>
+          <button type="button" data-tab="raw">Raw LLM</button>
+          <button type="button" data-tab="parsed">Parsed response</button>
+        </div>
+        <pre class="content-block" id="tab-content"></pre>
+      `;
+
+      renderTimingChart(timings, document.getElementById("timing-chart"));
+
+      const tabContent = document.getElementById("tab-content");
+      const tabs = {
+        prompt: event.prompt || "(empty)",
+        raw: event.llm_raw_response || "(empty)",
+        parsed: JSON.stringify(event.llm_response || {}, null, 2),
+      };
+      tabContent.textContent = tabs.prompt;
+
+      document.querySelectorAll("#content-tabs button").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll("#content-tabs button").forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          tabContent.textContent = tabs[btn.dataset.tab];
+        });
+      });
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
+    async function loadDetail(index) {
+      state.selectedIndex = index;
+      renderEventsTable();
+      const detailScroll = document.getElementById("detail-scroll");
+      if (detailScroll) {
+        detailScroll.scrollTop = 0;
+      }
+      try {
+        const event = await fetchJson(`/api/logs/events/${index}`);
+        renderDetail(event);
+        if (detailScroll) {
+          detailScroll.scrollTop = 0;
+        }
+      } catch (err) {
+        showError(`Failed to load event ${index}: ${err.message}`);
+      }
+    }
+
+    async function refresh() {
+      showError("");
+      try {
+        const meta = await fetchJson("/api/logs/meta");
+        renderStats(meta);
+
+        const data = await fetchJson(`/api/logs/events?offset=${state.offset}&limit=${state.limit}`);
+        state.total = data.total;
+        state.events = data.events || [];
+        renderEventsTable();
+
+        if (state.selectedIndex != null) {
+          await loadDetail(state.selectedIndex);
+        }
+      } catch (err) {
+        showError(`Failed to load logs: ${err.message}`);
+      }
+    }
+
+    document.getElementById("refresh-btn").addEventListener("click", refresh);
+    document.getElementById("filter-event").addEventListener("change", (e) => {
+      state.filter = e.target.value;
+      renderEventsTable();
+    });
+    document.getElementById("prev-page").addEventListener("click", () => {
+      state.offset = Math.max(0, state.offset - state.limit);
+      refresh();
+    });
+    document.getElementById("next-page").addEventListener("click", () => {
+      if (state.offset + state.limit < state.total) {
+        state.offset += state.limit;
+        refresh();
+      }
+    });
+
+    refresh();
+  </script>
+</body>
+</html>

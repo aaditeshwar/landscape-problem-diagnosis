@@ -10,6 +10,7 @@ interface Props {
   villageBoundaries: FeatureCollection | null
   selectedTehsil: TehsilRef | null
   selectedMwsUid: string | null
+  mwsHighlightEpoch?: number
   showVillages: boolean
   flyTarget: { lat: number; lon: number; zoom?: number } | null
   onTehsilSelect: (ref: TehsilRef) => void
@@ -51,6 +52,7 @@ export function MapView({
   villageBoundaries,
   selectedTehsil,
   selectedMwsUid,
+  mwsHighlightEpoch = 0,
   showVillages,
   flyTarget,
   onTehsilSelect,
@@ -168,7 +170,7 @@ export function MapView({
       )}
       {visibleMws && (
         <GeoJSON
-          key={`mws-${activeTehsilKey}`}
+          key={`mws-${activeTehsilKey}-${selectedMwsUid ?? 'none'}-${mwsHighlightEpoch}`}
           data={visibleMws}
           style={mwsStyle}
           onEachFeature={bindMwsEvents}

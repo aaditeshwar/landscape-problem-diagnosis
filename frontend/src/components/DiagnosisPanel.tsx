@@ -7,6 +7,7 @@ import { SignalRichText } from './SignalRichText'
 
 interface Props {
   selectedMwsUid: string | null
+  analysisMwsUid?: string | null
   villageNames: string[]
   problem: string
   onProblemChange: (value: string) => void
@@ -27,6 +28,7 @@ interface Props {
 
 export function DiagnosisPanel({
   selectedMwsUid,
+  analysisMwsUid,
   villageNames,
   problem,
   onProblemChange,
@@ -47,6 +49,9 @@ export function DiagnosisPanel({
   const sectionTitle = followUpPromptLabel(followUpTarget, followUpHistory.length > 0)
   const resolvedMwsAer = mwsAerCode ?? diagnosis?.mws_aer_code ?? null
   const resolvedRetrievalAer = retrievalAerTags ?? diagnosis?.retrieval_aer_tags ?? null
+  const reportMwsUid = analysisMwsUid ?? selectedMwsUid
+  const browsingDuringRun =
+    loading && !!reportMwsUid && !!selectedMwsUid && selectedMwsUid !== reportMwsUid
 
   function pathwayAerLine(pathway: PathwayResult) {
     const aer = formatPathwayAerContext(pathway, resolvedMwsAer, resolvedRetrievalAer)
@@ -75,6 +80,11 @@ export function DiagnosisPanel({
             <div>
               <span className="font-medium">MWS:</span> {selectedMwsUid}
             </div>
+            {browsingDuringRun ? (
+              <div className="mt-1 text-xs text-amber-800">
+                Diagnosis running for MWS {reportMwsUid}. Map selection updates the info panel only.
+              </div>
+            ) : null}
             {villageNames.length > 0 ? (
               <div className="mt-1">
                 <span className="font-medium">Villages:</span> {villageNames.join(', ')}
@@ -113,8 +123,9 @@ export function DiagnosisPanel({
       {diagnosis && (
         <div className="space-y-4 border-t border-stone-200 pt-4">
           <p className="text-xs text-stone-500">
-            Analysis for MWS {selectedMwsUid}
-            {villageNames.length > 0 ? ` · Villages: ${villageNames.join(', ')}` : ''}
+            Analysis for MWS {reportMwsUid}
+            {browsingDuringRun ? ` · viewing ${selectedMwsUid} on map` : ''}
+            {!browsingDuringRun && villageNames.length > 0 ? ` · Villages: ${villageNames.join(', ')}` : ''}
           </p>
           <section>
             <h3 className="text-sm font-semibold text-emerald-800">Confirmed pathways</h3>
