@@ -7,6 +7,7 @@ from config import (
     OLLAMA_CHAT_TIMEOUT,
     OLLAMA_EMBED_MODEL,
     OLLAMA_FOLLOWUP_MODEL,
+    OLLAMA_NUM_PREDICT,
     OLLAMA_REASON_MODEL,
     OLLAMA_URL,
 )
@@ -36,7 +37,7 @@ def chat_json(
         "prompt": prompt,
         "stream": False,
         "format": "json",
-        "options": {"temperature": 0.2},
+        "options": {"temperature": 0.2, "num_predict": OLLAMA_NUM_PREDICT},
     }
     if client is None:
         with httpx.Client(timeout=OLLAMA_CHAT_TIMEOUT) as c:

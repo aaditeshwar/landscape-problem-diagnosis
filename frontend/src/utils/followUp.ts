@@ -25,23 +25,42 @@ export function askedQuestionsFromHistory(history: Array<{ question?: string }>)
   return asked
 }
 
+export function normalizeFollowUpQuestion(value: DiagnosisResponse['follow_up_question']): string | null {
+  if (value == null) return null
+  if (typeof value === 'string') {
+    const trimmed = value.trim()
+    return trimmed || null
+  }
+  if (typeof value === 'object' && value !== null && 'question' in value) {
+    const question = (value as { question?: unknown }).question
+    if (typeof question === 'string') {
+      const trimmed = question.trim()
+      return trimmed || null
+    }
+  }
+  return null
+}
+
 export function resolveFollowUpTarget(
   diagnosis: DiagnosisResponse | null,
-  askedVariables: Set<string>,
+  _askedVariables: Set<string>,
   askedQuestions: Set<string> = new Set(),
 ): FollowUpTarget | null {
   if (!diagnosis) return null
 
-  const followUpQuestion = diagnosis.follow_up_question?.trim() || null
+  const followUpQuestion = normalizeFollowUpQuestion(diagnosis.follow_up_question)
   const followUpVariable = diagnosis.follow_up_variable?.trim() || null
 
-  if (
-    followUpQuestion &&
-    !askedQuestions.has(followUpQuestion) &&
-    followUpVariable &&
-    !askedVariables.has(followUpVariable)
-  ) {
+  if (followUpQuestion && followUpVariable && !askedQuestions.has(followUpQuestion)) {
     return { variable: followUpVariable, question: followUpQuestion, structured: true }
+  }
+
+  if (followUpQuestion && !askedQuestions.has(followUpQuestion)) {
+    return {
+      variable: followUpVariable || USER_OBSERVATION_VARIABLE,
+      question: followUpQuestion,
+      structured: Boolean(followUpVariable),
+    }
   }
 
   return { variable: USER_OBSERVATION_VARIABLE, question: null, structured: false }

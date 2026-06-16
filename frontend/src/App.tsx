@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import L from 'leaflet'
 import {
   fetchIngestedTehsils,
   fetchMws,
@@ -47,8 +48,10 @@ export default function App() {
   const [followUpAnswer, setFollowUpAnswer] = useState('')
   const [diagnosisSessionMwsUid, setDiagnosisSessionMwsUid] = useState<string | null>(null)
   const [diagnosisSessionTehsil, setDiagnosisSessionTehsil] = useState<TehsilRef | null>(null)
+  const [analysisMwsDoc, setAnalysisMwsDoc] = useState<MwsDocument | null>(null)
   const [mwsHighlightEpoch, setMwsHighlightEpoch] = useState(0)
 
+  const activeSessionId = sessionId ?? diagnosis?.session_id ?? null
   const askedVariables = useMemo(() => askedVariablesFromHistory(followUpHistory), [followUpHistory])
   const askedQuestions = useMemo(() => askedQuestionsFromHistory(followUpHistory), [followUpHistory])
   const followUpTarget = useMemo(
@@ -56,9 +59,78 @@ export default function App() {
     [diagnosis, askedVariables, askedQuestions],
   )
   const tehsilLoadSeq = useRef(0)
+  const mwsSelectSeq = useRef(0)
+  const restoreEpoch = useRef(0)
   const activeDiagnosisContextRef = useRef<{ mwsUid: string; tehsil: TehsilRef } | null>(null)
+  const restoringDiagnosisContextRef = useRef(false)
+  const diagnosisSessionMwsUidRef = useRef<string | null>(null)
+  const diagnosisSessionTehsilRef = useRef<TehsilRef | null>(null)
+  const diagnosisLoadingRef = useRef(false)
+  const analysisMwsDocRef = useRef<MwsDocument | null>(null)
   const selectedTehsilRef = useRef<TehsilRef | null>(null)
   selectedTehsilRef.current = selectedTehsil
+  diagnosisSessionMwsUidRef.current = diagnosisSessionMwsUid
+  diagnosisSessionTehsilRef.current = diagnosisSessionTehsil
+  diagnosisLoadingRef.current = diagnosisLoading
+  analysisMwsDocRef.current = analysisMwsDoc
+
+  const lockedDiagnosisMwsUid = diagnosisSessionMwsUid ?? diagnosisSessionMwsUidRef.current
+  const lockedAnalysisMwsDoc = analysisMwsDoc ?? analysisMwsDocRef.current
+  const isDiagnosisSessionLocked = Boolean(lockedDiagnosisMwsUid)
+
+  function lockDiagnosisSession(mwsUid: string, tehsil: TehsilRef, snapshot: MwsDocument | null) {
+    activeDiagnosisContextRef.current = { mwsUid, tehsil }
+    diagnosisSessionMwsUidRef.current = mwsUid
+    diagnosisSessionTehsilRef.current = tehsil
+    setDiagnosisSessionMwsUid(mwsUid)
+    setDiagnosisSessionTehsil(tehsil)
+    if (snapshot?.uid === mwsUid) {
+      analysisMwsDocRef.current = snapshot
+      setAnalysisMwsDoc(snapshot)
+    }
+  }
+
+  function unlockDiagnosisSession() {
+    activeDiagnosisContextRef.current = null
+    diagnosisSessionMwsUidRef.current = null
+    diagnosisSessionTehsilRef.current = null
+    analysisMwsDocRef.current = null
+    setDiagnosisSessionMwsUid(null)
+    setDiagnosisSessionTehsil(null)
+    setAnalysisMwsDoc(null)
+  }
+
+  function shouldPreserveDiagnosisSession(): boolean {
+    return (
+      diagnosisLoadingRef.current ||
+      restoringDiagnosisContextRef.current ||
+      activeDiagnosisContextRef.current != null ||
+      diagnosisSessionMwsUidRef.current != null
+    )
+  }
+
+  function preserveDiagnosisOnMapBrowse(options?: { preserveDiagnosis?: boolean }): boolean {
+    return shouldPreserveDiagnosisSession() || Boolean(options?.preserveDiagnosis)
+  }
+
+  function flyToMwsUid(uid: string, tehsil: TehsilRef, boundaries: MwsFeatureCollection | null) {
+    if (!boundaries) return
+    const feature = boundaries.features.find((item) => {
+      const props = item.properties as Record<string, unknown>
+      return (
+        props.uid === uid &&
+        props.state === tehsil.state &&
+        props.district === tehsil.district &&
+        props.tehsil === tehsil.tehsil
+      )
+    })
+    if (!feature) return
+    const layer = L.geoJSON(feature)
+    const bounds = layer.getBounds()
+    if (!bounds.isValid()) return
+    const center = bounds.getCenter()
+    setFlyTarget({ lat: center.lat, lon: center.lng, zoom: 13 })
+  }
 
   useEffect(() => {
     Promise.all([fetchTehsils(), fetchIngestedTehsils()])
@@ -76,53 +148,93 @@ export default function App() {
     setPanelUpdates([])
     setDiagnosisError(null)
     setFollowUpAnswer('')
-    setDiagnosisSessionMwsUid(null)
-    setDiagnosisSessionTehsil(null)
+    unlockDiagnosisSession()
+  }, [])
+
+  const diagnosisContextSnapshot = useCallback((): { mwsUid: string; tehsil: TehsilRef } | null => {
+    if (activeDiagnosisContextRef.current) return activeDiagnosisContextRef.current
+    const mwsUid = diagnosisSessionMwsUidRef.current
+    const tehsil = diagnosisSessionTehsilRef.current
+    if (mwsUid && tehsil) return { mwsUid, tehsil }
+    return null
   }, [])
 
   const restoreActiveDiagnosisContext = useCallback(async () => {
-    const ctx = activeDiagnosisContextRef.current
-    activeDiagnosisContextRef.current = null
+    const ctx = diagnosisContextSnapshot()
     if (!ctx) return
 
-    const currentTehsil = selectedTehsilRef.current
-    const sameTehsil =
-      currentTehsil != null && tehsilKey(currentTehsil) === tehsilKey(ctx.tehsil)
-
-    if (!sameTehsil) {
-      const seq = ++tehsilLoadSeq.current
+    restoringDiagnosisContextRef.current = true
+    mwsSelectSeq.current += 1
+    tehsilLoadSeq.current += 1
+    const epoch = ++restoreEpoch.current
+    const restoreTehsilSeq = tehsilLoadSeq.current
+    try {
       setMapError(null)
       setSelectedTehsil(ctx.tehsil)
       setMwsBoundaries(null)
       if (showVillages) setVillageBoundaries(null)
+
+      let restoredBoundaries: MwsFeatureCollection | null = null
       try {
         const boundaries = await fetchMwsBoundaries(ctx.tehsil)
-        if (tehsilLoadSeq.current !== seq) return
-        setMwsBoundaries(boundaries)
+        if (restoreEpoch.current !== epoch) return
+        if (tehsilLoadSeq.current === restoreTehsilSeq) {
+          setMwsBoundaries(boundaries)
+          restoredBoundaries = boundaries
+        }
       } catch (err) {
-        if (tehsilLoadSeq.current !== seq) return
-        setMwsBoundaries(null)
-        setMapError(err instanceof Error ? err.message : 'Failed to load tehsil layers')
+        if (restoreEpoch.current !== epoch) return
+        if (tehsilLoadSeq.current === restoreTehsilSeq) {
+          setMwsBoundaries(null)
+          setMapError(err instanceof Error ? err.message : 'Failed to load tehsil layers')
+        }
       }
-    }
 
-    setSelectedMwsUid(ctx.mwsUid)
-    setMwsHighlightEpoch((epoch) => epoch + 1)
-    setMwsLoading(true)
-    setMapError(null)
-    try {
-      const doc = await fetchMws(ctx.mwsUid)
-      setMwsData(doc)
-    } catch (err) {
-      setMwsData(null)
-      setMapError(err instanceof Error ? err.message : 'Failed to load MWS')
+      if (restoreEpoch.current !== epoch) return
+
+      if (!restoredBoundaries) {
+        try {
+          const boundaries = await fetchMwsBoundaries(ctx.tehsil)
+          if (restoreEpoch.current !== epoch) return
+          setMwsBoundaries(boundaries)
+          restoredBoundaries = boundaries
+        } catch (err) {
+          if (restoreEpoch.current !== epoch) return
+          setMapError(err instanceof Error ? err.message : 'Failed to load tehsil layers')
+        }
+      }
+
+      if (restoreEpoch.current !== epoch) return
+
+      setSelectedMwsUid(ctx.mwsUid)
+      setMwsHighlightEpoch((value) => value + 1)
+      setMwsLoading(true)
+      setMapError(null)
+      try {
+        const doc = await fetchMws(ctx.mwsUid)
+        if (restoreEpoch.current !== epoch) return
+        setMwsData(doc)
+        flyToMwsUid(ctx.mwsUid, ctx.tehsil, restoredBoundaries)
+      } catch (err) {
+        if (restoreEpoch.current !== epoch) return
+        setMwsData(null)
+        setMapError(err instanceof Error ? err.message : 'Failed to load MWS')
+      } finally {
+        if (restoreEpoch.current === epoch) {
+          setMwsLoading(false)
+        }
+      }
     } finally {
-      setMwsLoading(false)
+      if (restoreEpoch.current === epoch) {
+        activeDiagnosisContextRef.current = null
+      }
+      restoringDiagnosisContextRef.current = false
     }
-  }, [showVillages])
+  }, [showVillages, diagnosisContextSnapshot])
 
   const loadTehsilLayers = useCallback(async (ref: TehsilRef, options?: { preserveDiagnosis?: boolean }) => {
-    const preserveDiagnosis = options?.preserveDiagnosis ?? false
+    if (restoringDiagnosisContextRef.current) return
+    const preserveDiagnosis = preserveDiagnosisOnMapBrowse(options)
     const seq = ++tehsilLoadSeq.current
     setMapError(null)
     setSelectedTehsil(ref)
@@ -145,26 +257,40 @@ export default function App() {
   }, [showVillages, resetDiagnosisForNewMws])
 
   const selectMws = useCallback(async (uid: string) => {
+    if (restoringDiagnosisContextRef.current) return
+    const seq = ++mwsSelectSeq.current
     setSelectedMwsUid(uid)
-    if (!diagnosisLoading) {
+    if (!shouldPreserveDiagnosisSession()) {
       resetDiagnosisForNewMws()
     }
     setMwsLoading(true)
     setMapError(null)
     try {
       const doc = await fetchMws(uid)
+      if (mwsSelectSeq.current !== seq) return
       setMwsData(doc)
     } catch (err) {
+      if (mwsSelectSeq.current !== seq) return
       setMwsData(null)
       setMapError(err instanceof Error ? err.message : 'Failed to load MWS')
     } finally {
-      setMwsLoading(false)
+      if (mwsSelectSeq.current === seq) {
+        setMwsLoading(false)
+      }
     }
-  }, [diagnosisLoading, resetDiagnosisForNewMws])
+  }, [resetDiagnosisForNewMws])
 
-  const villageNames = useMemo(
+  const mapVillageNames = useMemo(
     () => (mwsData?.intersect_village_names ?? []).map((v) => v.name).filter(Boolean) as string[],
     [mwsData],
+  )
+
+  const analysisVillageNames = useMemo(
+    () =>
+      (lockedAnalysisMwsDoc?.intersect_village_names ?? [])
+        .map((v) => v.name)
+        .filter(Boolean) as string[],
+    [lockedAnalysisMwsDoc],
   )
 
   useEffect(() => {
@@ -193,7 +319,7 @@ export default function App() {
         return
       }
       const ref = { state: located.state, district: located.district, tehsil: located.tehsil }
-      await loadTehsilLayers(ref)
+      await loadTehsilLayers(ref, { preserveDiagnosis: preserveDiagnosisOnMapBrowse() })
       if (located.mws_uid) await selectMws(located.mws_uid)
     } catch (err) {
       setMapError(err instanceof Error ? err.message : 'Locate failed')
@@ -202,13 +328,28 @@ export default function App() {
 
   async function handleDiagnosis() {
     if (!selectedMwsUid || !selectedTehsil) return
-    activeDiagnosisContextRef.current = { mwsUid: selectedMwsUid, tehsil: selectedTehsil }
-    setDiagnosisSessionMwsUid(selectedMwsUid)
-    setDiagnosisSessionTehsil(selectedTehsil)
+    const analysisUid = selectedMwsUid
+    const analysisTehsil = selectedTehsil
+    lockDiagnosisSession(analysisUid, analysisTehsil, mwsData?.uid === analysisUid ? mwsData : null)
+    if (mwsData?.uid !== analysisUid) {
+      try {
+        const snapshot = await fetchMws(analysisUid)
+        if (diagnosisSessionMwsUidRef.current === analysisUid) {
+          analysisMwsDocRef.current = snapshot
+          setAnalysisMwsDoc(snapshot)
+        }
+      } catch {
+        if (diagnosisSessionMwsUidRef.current === analysisUid) {
+          analysisMwsDocRef.current = null
+          setAnalysisMwsDoc(null)
+        }
+      }
+    }
+    diagnosisLoadingRef.current = true
     setDiagnosisLoading(true)
     setDiagnosisError(null)
     try {
-      const result = await runDiagnosisQuery(selectedMwsUid, problem, sessionId, selectedTehsil)
+      const result = await runDiagnosisQuery(analysisUid, problem, sessionId, analysisTehsil)
       setDiagnosis(result)
       setFollowUpHistory([])
       setSessionId(result.session_id)
@@ -217,8 +358,9 @@ export default function App() {
     } catch (err) {
       setDiagnosisError(err instanceof Error ? err.message : 'Diagnosis failed')
     } finally {
-      setDiagnosisLoading(false)
       await restoreActiveDiagnosisContext()
+      diagnosisLoadingRef.current = false
+      setDiagnosisLoading(false)
     }
   }
 
@@ -228,16 +370,17 @@ export default function App() {
     const question =
       followUpTarget.question ??
       (followUpTarget.structured ? 'Follow-up response' : 'Additional observation')
-    if (diagnosisSessionMwsUid && diagnosisSessionTehsil) {
-      activeDiagnosisContextRef.current = {
-        mwsUid: diagnosisSessionMwsUid,
-        tehsil: diagnosisSessionTehsil,
-      }
+    const sessionMwsUid = diagnosisSessionMwsUidRef.current
+    const sessionTehsil = diagnosisSessionTehsilRef.current
+    if (sessionMwsUid && sessionTehsil) {
+      lockDiagnosisSession(sessionMwsUid, sessionTehsil, lockedAnalysisMwsDoc)
     }
+    diagnosisLoadingRef.current = true
     setDiagnosisLoading(true)
     setDiagnosisError(null)
     try {
       const result = await submitDiagnosisAnswer(sessionId, followUpTarget.variable, answer)
+      if (result.session_id) setSessionId(result.session_id)
       setFollowUpHistory((prev) => [
         ...prev,
         {
@@ -257,10 +400,19 @@ export default function App() {
     } catch (err) {
       setDiagnosisError(err instanceof Error ? err.message : 'Follow-up failed')
     } finally {
-      setDiagnosisLoading(false)
       await restoreActiveDiagnosisContext()
+      diagnosisLoadingRef.current = false
+      setDiagnosisLoading(false)
     }
   }
+
+  const lockedDiagnosisTehsil = diagnosisSessionTehsil ?? diagnosisSessionTehsilRef.current
+  const panelDisplayLocation: TehsilRef | null = isDiagnosisSessionLocked
+    ? lockedDiagnosisTehsil
+    : selectedTehsil ??
+      (mwsData
+        ? { state: mwsData.state, district: mwsData.district, tehsil: mwsData.tehsil }
+        : null)
 
   const ingestedCount = ingestedKeys.size
 
@@ -294,8 +446,9 @@ export default function App() {
           <LocationSearch onSelect={handleLocationSelect} disabled={diagnosisLoading} />
           <DiagnosisPanel
             selectedMwsUid={selectedMwsUid}
-            analysisMwsUid={diagnosisSessionMwsUid}
-            villageNames={villageNames}
+            analysisMwsUid={lockedDiagnosisMwsUid}
+            displayMwsUid={isDiagnosisSessionLocked ? lockedDiagnosisMwsUid : selectedMwsUid}
+            villageNames={isDiagnosisSessionLocked ? analysisVillageNames : mapVillageNames}
             problem={problem}
             onProblemChange={setProblem}
             onSubmit={handleDiagnosis}
@@ -306,11 +459,19 @@ export default function App() {
             followUpAnswer={followUpAnswer}
             onFollowUpAnswerChange={setFollowUpAnswer}
             followUpTarget={followUpTarget}
-            canContinueConversation={!!sessionId && !!diagnosis}
+            canContinueConversation={Boolean(activeSessionId) && Boolean(diagnosis)}
             onSubmitFollowUp={handleFollowUp}
             disabled={!selectedMwsUid}
-            mwsAerCode={mwsData?.nbss_lup_aer_code ?? diagnosis?.mws_aer_code ?? null}
+            mwsAerCode={
+              isDiagnosisSessionLocked
+                ? lockedAnalysisMwsDoc?.nbss_lup_aer_code ?? diagnosis?.mws_aer_code ?? null
+                : mwsData?.nbss_lup_aer_code ?? diagnosis?.mws_aer_code ?? null
+            }
             retrievalAerTags={diagnosis?.retrieval_aer_tags ?? null}
+            freezeContext={isDiagnosisSessionLocked}
+            lockedTehsil={lockedDiagnosisTehsil}
+            mapTehsil={selectedTehsil}
+            displayLocation={panelDisplayLocation}
           />
         </aside>
 
@@ -334,7 +495,9 @@ export default function App() {
                 setMapError(`${ref.tehsil} is not in the ingested corpus yet.`)
                 return
               }
-              void loadTehsilLayers(ref, { preserveDiagnosis: diagnosisLoading })
+              void loadTehsilLayers(ref, {
+                preserveDiagnosis: preserveDiagnosisOnMapBrowse(),
+              })
             }}
             onMwsSelect={(uid) => void selectMws(uid)}
           />
@@ -346,7 +509,7 @@ export default function App() {
             loading={mwsLoading}
             activeTehsil={selectedTehsil}
             panelUpdates={
-              diagnosisSessionMwsUid && selectedMwsUid !== diagnosisSessionMwsUid ? [] : panelUpdates
+              lockedDiagnosisMwsUid && selectedMwsUid !== lockedDiagnosisMwsUid ? [] : panelUpdates
             }
           />
         </aside>

@@ -443,12 +443,12 @@ def _run_query(
     )
 
     return {
+        **llm_response,
         "session_id": session_id,
         "mws_aer_code": mws_doc.get("nbss_lup_aer_code"),
         "retrieval_aer_tags": _aer_tags_for_retrieval(mws_doc) or [],
         "pathway_retrieval_ranks": ranks,
         "signal_evaluation": summarize_evaluation_for_log(diagnosis.signal_evaluation or {}),
-        **llm_response,
     }
 
 
@@ -689,10 +689,10 @@ def diagnosis_answer(body: AnswerRequest):
     )
 
     return {
+        **llm_response,
         "session_id": body.session_id,
         "mws_aer_code": mws_doc.get("nbss_lup_aer_code"),
         "retrieval_aer_tags": _aer_tags_for_retrieval(mws_doc) or [],
         "pathway_retrieval_ranks": ranks,
         "signal_evaluation": summarize_evaluation_for_log(diagnosis.signal_evaluation or {}),
-        **llm_response,
     }

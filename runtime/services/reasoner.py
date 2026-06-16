@@ -145,8 +145,21 @@ def _extract_json_object(text: str) -> str:
     return text[start:].strip()
 
 
+def _repair_truncated_diagnosis_json(text: str) -> str:
+    """Close diagnosis JSON when Ollama stops after the solutions key name."""
+    repaired = text.rstrip()
+    if not repaired.endswith('"solutions"'):
+        return text
+    repaired = re.sub(
+        r"\}\]\},\s*\n\s*\"solutions\"$",
+        '}]}],\n  "solutions"',
+        repaired,
+    )
+    return repaired + ': [], "panel_update_explanation": null, "follow_up_question": null}'
+
+
 def _repair_json_text(text: str) -> str:
-    repaired = text
+    repaired = _repair_truncated_diagnosis_json(text)
     repaired = re.sub(r",\s*([}\]])", r"\1", repaired)
     repaired = re.sub(r"\bTrue\b", "true", repaired)
     repaired = re.sub(r"\bFalse\b", "false", repaired)
@@ -184,7 +197,7 @@ def _fix_unescaped_quotes_in_strings(text: str) -> str:
             lookahead = index + 1
             while lookahead < len(text) and text[lookahead] in " \t\n\r":
                 lookahead += 1
-            if lookahead < len(text) and text[lookahead] in ":,}]":
+            if lookahead >= len(text) or text[lookahead] in ":,}]":
                 out.append(char)
                 in_string = False
             else:

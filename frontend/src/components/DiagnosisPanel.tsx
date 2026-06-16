@@ -1,4 +1,4 @@
-import type { DiagnosisResponse, FollowUpExchange, PathwayResult } from '../types'
+import type { DiagnosisResponse, FollowUpExchange, PathwayResult, TehsilRef } from '../types'
 import type { FollowUpTarget } from '../utils/followUp'
 import { followUpPromptLabel } from '../utils/followUp'
 import { formatPathwayAerContext, formatPathwayHierarchy } from '../utils/pathwayLabels'
@@ -8,6 +8,7 @@ import { SignalRichText } from './SignalRichText'
 interface Props {
   selectedMwsUid: string | null
   analysisMwsUid?: string | null
+  displayMwsUid?: string | null
   villageNames: string[]
   problem: string
   onProblemChange: (value: string) => void
@@ -24,11 +25,16 @@ interface Props {
   disabled: boolean
   mwsAerCode?: string | null
   retrievalAerTags?: string[] | null
+  freezeContext?: boolean
+  lockedTehsil?: TehsilRef | null
+  mapTehsil?: TehsilRef | null
+  displayLocation?: TehsilRef | null
 }
 
 export function DiagnosisPanel({
   selectedMwsUid,
   analysisMwsUid,
+  displayMwsUid,
   villageNames,
   problem,
   onProblemChange,
@@ -45,13 +51,30 @@ export function DiagnosisPanel({
   disabled,
   mwsAerCode,
   retrievalAerTags,
+  freezeContext = false,
+  lockedTehsil,
+  mapTehsil,
+  displayLocation,
 }: Props) {
   const sectionTitle = followUpPromptLabel(followUpTarget, followUpHistory.length > 0)
   const resolvedMwsAer = mwsAerCode ?? diagnosis?.mws_aer_code ?? null
   const resolvedRetrievalAer = retrievalAerTags ?? diagnosis?.retrieval_aer_tags ?? null
-  const reportMwsUid = analysisMwsUid ?? selectedMwsUid
-  const browsingDuringRun =
-    loading && !!reportMwsUid && !!selectedMwsUid && selectedMwsUid !== reportMwsUid
+  const panelMwsUid = displayMwsUid ?? analysisMwsUid ?? selectedMwsUid
+  const reportMwsUid = analysisMwsUid ?? panelMwsUid
+  const browsingDifferentTehsil =
+    freezeContext &&
+    !!lockedTehsil &&
+    !!mapTehsil &&
+    (lockedTehsil.state !== mapTehsil.state ||
+      lockedTehsil.district !== mapTehsil.district ||
+      lockedTehsil.tehsil !== mapTehsil.tehsil)
+  const browsingDifferentMws =
+    !!reportMwsUid && !!selectedMwsUid && selectedMwsUid !== reportMwsUid
+  const browsingDuringRun = (loading || freezeContext) && (browsingDifferentTehsil || browsingDifferentMws)
+  const browsingWhileFrozen = freezeContext && !loading && (browsingDifferentTehsil || browsingDifferentMws)
+  const mapBrowseLabel = browsingDifferentTehsil
+    ? `${mapTehsil?.tehsil}, ${mapTehsil?.district}`
+    : selectedMwsUid
 
   function pathwayAerLine(pathway: PathwayResult) {
     const aer = formatPathwayAerContext(pathway, resolvedMwsAer, resolvedRetrievalAer)
@@ -75,14 +98,27 @@ export function DiagnosisPanel({
     <div className="flex h-full flex-col gap-4 overflow-y-auto p-4">
       <div>
         <h2 className="text-lg font-semibold text-stone-800">Problem diagnosis</h2>
-        {selectedMwsUid ? (
+        {panelMwsUid ? (
           <div className="mt-2 rounded-lg border border-amber-200 bg-amber-50/70 px-3 py-2 text-sm text-stone-700">
             <div>
-              <span className="font-medium">MWS:</span> {selectedMwsUid}
+              <span className="font-medium">MWS:</span> {panelMwsUid}
             </div>
+            {displayLocation ? (
+              <div className="mt-1">
+                <span className="font-medium">Tehsil:</span> {displayLocation.tehsil}
+                <span className="mx-1 text-stone-400">·</span>
+                <span className="font-medium">District:</span> {displayLocation.district}
+                <span className="mx-1 text-stone-400">·</span>
+                <span className="font-medium">State:</span> {displayLocation.state}
+              </div>
+            ) : null}
             {browsingDuringRun ? (
               <div className="mt-1 text-xs text-amber-800">
-                Diagnosis running for MWS {reportMwsUid}. Map selection updates the info panel only.
+                Diagnosis running for MWS {reportMwsUid}. Map is viewing {mapBrowseLabel}; only the info panel follows map selection.
+              </div>
+            ) : browsingWhileFrozen ? (
+              <div className="mt-1 text-xs text-amber-800">
+                Diagnosis session is for MWS {reportMwsUid}. Map is viewing {mapBrowseLabel}; only the info panel follows map selection.
               </div>
             ) : null}
             {villageNames.length > 0 ? (
@@ -124,8 +160,12 @@ export function DiagnosisPanel({
         <div className="space-y-4 border-t border-stone-200 pt-4">
           <p className="text-xs text-stone-500">
             Analysis for MWS {reportMwsUid}
-            {browsingDuringRun ? ` · viewing ${selectedMwsUid} on map` : ''}
-            {!browsingDuringRun && villageNames.length > 0 ? ` · Villages: ${villageNames.join(', ')}` : ''}
+            {browsingDuringRun || browsingWhileFrozen
+              ? ` · map viewing ${mapBrowseLabel}`
+              : ''}
+            {!(browsingDuringRun || browsingWhileFrozen) && villageNames.length > 0
+              ? ` · Villages: ${villageNames.join(', ')}`
+              : ''}
           </p>
           <section>
             <h3 className="text-sm font-semibold text-emerald-800">Confirmed pathways</h3>

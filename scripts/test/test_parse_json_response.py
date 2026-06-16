@@ -52,10 +52,36 @@ def test_parse_error_includes_raw_and_position():
         raise AssertionError("expected DiagnosisLLMParseError")
 
 
+def test_repair_truncated_diagnosis_json():
+    # Mimics Ollama stopping after the solutions key (missing ] and value tail).
+    text = (
+        '{\n  "confirmed_pathways": [{"pathway_id": "groundwater_stress", "confidence": "high", "reasoning": "ok"}],\n'
+        '  "uncertain_pathways": [{"pathway_id": "encroachment", "confidence": "low", "reasoning": "maybe", '
+        '"missing_variable_questions": [{"variable": "forest_patch_connectivity", '
+        '"question": "Have forest patches become isolated?"}]},\n'
+        '  "solutions"'
+    )
+    parsed = parse_json_response(text)
+    assert parsed["confirmed_pathways"][0]["pathway_id"] == "groundwater_stress"
+    assert parsed["uncertain_pathways"][0]["pathway_id"] == "encroachment"
+    assert parsed["solutions"] == []
+    assert parsed["follow_up_question"] is None
+
+
+def test_repair_does_not_break_closing_quote_at_eof():
+    text = '{"confirmed_pathways": [], "solutions"'
+    try:
+        parse_json_response(text)
+    except DiagnosisLLMParseError as exc:
+        assert "solutions\\" not in exc.raw
+
+
 if __name__ == "__main__":
     test_parse_valid_json()
     test_parse_strips_markdown_fence()
     test_repair_trailing_comma_and_python_literals()
     test_repair_unescaped_quotes_in_reasoning()
+    test_repair_truncated_diagnosis_json()
+    test_repair_does_not_break_closing_quote_at_eof()
     test_parse_error_includes_raw_and_position()
     print("All parse_json_response tests passed.")
