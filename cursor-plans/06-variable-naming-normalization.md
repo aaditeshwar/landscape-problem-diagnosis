@@ -1,7 +1,6 @@
 # Variable naming normalization — implementation plan
 
-> **Status:** Deferred until evidence card generation (136 cards) is complete.  
-> **Created:** 2026-06-14
+> **Status:** Complete (2026-06-15). Baseline audits in `data/audits/`.
 
 The problem spans **four layers** that currently disagree:
 
