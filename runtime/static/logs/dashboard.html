@@ -347,6 +347,40 @@
       border-radius: 0.5rem;
       font-size: 0.82rem;
     }
+    .panel-explanation-block {
+      padding: 0.75rem 1rem;
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-radius: 0.5rem;
+    }
+    .panel-explanation-block h4 {
+      margin: 0 0 0.5rem;
+      font-size: 0.95rem;
+      color: #0369a1;
+    }
+    .panel-explanation-text {
+      margin: 0;
+      font-size: 0.88rem;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .solutions-block {
+      padding: 0.75rem 1rem;
+      background: #fafaf9;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+    }
+    .solutions-block h4 {
+      margin: 0 0 0.5rem;
+      font-size: 0.95rem;
+    }
+    .solutions-block ul {
+      margin: 0;
+      padding-left: 1.25rem;
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }
     .follow-up-signal-block h4 {
       margin: 0 0 0.35rem;
       font-size: 0.85rem;
@@ -704,6 +738,63 @@
       </div>`;
     }
 
+    const PANEL_UPDATE_LABELS = {
+      "cropping_intensity + annual_delta_g_mm dual_axis": "Cropping intensity vs groundwater recharge (ΔG)",
+      "annual_well_depth_m trend": "Well depth trend",
+      "annual_precipitation_mm + annual_delta_g_mm dual_axis": "Rainfall vs groundwater recharge (ΔG)",
+      "drought_weeks stacked_bar": "Kharif drought-week breakdown",
+      "annual_et_mm + annual_runoff_mm + annual_precipitation_mm stacked_area":
+        "Water balance (ET, runoff, precipitation)",
+      "lulc_stacked_area": "Land-use class trends",
+      "cd_total_degradation_ha sparkline": "Cumulative cropping-area degradation",
+      "nrega_land_restoration_count bar": "NREGA land-restoration works",
+      "lulc_tree_forest_ha trend": "Tree/forest cover trend",
+      "cd_total_deforestation_ha + cd_total_afforestation_ha paired_bar": "Deforestation vs afforestation",
+      "drought_weeks_* stacked_bar": "Kharif drought-week breakdown",
+      "dry_spell_weeks bar": "Dry-spell weeks",
+      "monsoon_onset_date scatter": "Monsoon onset dates",
+      "cropping_intensity trend": "Cropping intensity trend",
+      "dist_*_km horizontal_bars": "Nearest facility distances",
+      "nrega_*_count stacked_bar_cumulative": "MGNREGA works by category",
+    };
+
+    function panelUpdateLabel(key) {
+      return PANEL_UPDATE_LABELS[key] || String(key).replace(/_/g, " ");
+    }
+
+    function renderPanelUpdateExplanation(event) {
+      const llm = event.llm_response || {};
+      const explanation = String(llm.panel_update_explanation || "").trim();
+      const updates = Array.isArray(llm.panel_updates) ? llm.panel_updates.filter(Boolean) : [];
+      if (!explanation && !updates.length) {
+        return "";
+      }
+
+      const updatesHtml = updates.length
+        ? `<div style="margin-top:0.5rem;"><strong>Charts highlighted</strong><ul style="margin:0.25rem 0 0 1rem;padding:0;">${updates
+            .map((u) => `<li>${escapeHtml(panelUpdateLabel(u))}</li>`)
+            .join("")}</ul></div>`
+        : "";
+
+      return `<div class="panel-explanation-block">
+        <h4>Panel update explanation</h4>
+        ${explanation ? `<p class="panel-explanation-text">${escapeHtml(explanation)}</p>` : ""}
+        ${updatesHtml}
+      </div>`;
+    }
+
+    function renderSolutions(event) {
+      const llm = event.llm_response || {};
+      const solutions = Array.isArray(llm.solutions) ? llm.solutions.filter(Boolean) : [];
+      if (!solutions.length) {
+        return "";
+      }
+      return `<div class="solutions-block">
+        <h4>Suggested solutions</h4>
+        <ul>${solutions.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul>
+      </div>`;
+    }
+
     function showError(msg) {
       const box = document.getElementById("error-box");
       if (!msg) {
@@ -1032,6 +1123,10 @@
         ${cards ? `<div><strong>Evidence cards</strong><div class="chip-list">${cards}</div></div>` : ""}
 
         ${renderMergedPathways(event)}
+
+        ${renderPanelUpdateExplanation(event)}
+
+        ${renderSolutions(event)}
 
         <div class="tabs" id="content-tabs">
           <button type="button" class="active" data-tab="prompt">Prompt</button>

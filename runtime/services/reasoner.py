@@ -935,33 +935,87 @@ def _registry_excerpt_if_needed(eval_results: dict[str, dict[str, Any]]) -> str:
     return f"\n[VARIABLE REGISTRY — for NEEDS_LLM signals only]\n{registry_excerpt_block()}\n"
 
 
-def _signal_interpretation_task(uid: str | None, *, is_revision: bool = False) -> str:
-    revision_rules = ""
-    if is_revision:
-        revision_rules = """
+def _reasoning_wording_rules() -> str:
+    return """REASONING WORDING (apply to every reasoning string in confirmed_pathways, uncertain_pathways, and follow-up revisions):
+- Do NOT write "farmer reports", "users report", "community reports", or similar unless that fact appears in [DATA ALREADY PROVIDED BY USER] or was explicitly stated in the problem description.
+- Missing variables mean data is NOT yet available — say "data not yet available on …", "follow-up needed on …", or "we do not yet know whether …"; never imply the farmer already reported something.
+- When confirming-direction signals are not supported by the available landscape data, state that the pathway is not supported by current landscape data; if it remains uncertain, cite which variables are still missing — not reported symptoms."""
+
+
+def _ollama_revision_rules() -> str:
+    return """
 10. FOLLOW-UP REVISION: only change status for pathways whose missing_variables included the answered user variable, or whose server signal results changed because of that answer. Keep all other pathways at their prior confirmed/uncertain status.
 11. Treat user_provided signals in [SIGNAL EVALUATION RESULTS] as authoritative — especially confirms+TRUE from a follow-up answer. Do not demote a previously confirmed pathway to uncertain when user_provided confirms+TRUE applies to that pathway; maintain or strengthen confidence instead. Cite the card guidance line when explaining the update.
 12. On follow-up revision, add a reasoning string to every confirmed_pathways and uncertain_pathways entry whose missing_variables included the answered variable. Explain how the user's answer strengthens, weakens, or leaves that pathway unchanged. If user_provided confirms+FALSE for a primary signal and no other confirms are TRUE, remove that pathway from uncertain_pathways rather than keeping it listed.
 """
+
+
+def _claude_revision_rules() -> str:
+    return """
+10. FOLLOW-UP REVISION: only change status for pathways whose missing_variables included the answered user variable, or whose interpretation of that answer materially changes pathway support. Keep all other pathways at their prior confirmed/uncertain status.
+11. Treat [USER FOLLOW-UP ANSWER] and [DATA ALREADY PROVIDED BY USER] as authoritative new evidence. Do not demote a previously confirmed pathway to uncertain when the new user evidence supports it; maintain or strengthen confidence instead. Cite the card guidance line when explaining the update.
+12. On follow-up revision, add a reasoning string to every confirmed_pathways and uncertain_pathways entry whose missing_variables included the answered variable. Explain how the user's answer strengthens, weakens, or leaves that pathway unchanged.
+"""
+
+
+def _ollama_signal_interpretation_task(uid: str | None, *, is_revision: bool = False) -> str:
+    revision_rules = _ollama_revision_rules() if is_revision else ""
     return f"""[TASK]
+0. Answer [USER PROBLEM] first in your own reasoning: what is the user asking, and what would a useful direct response look like for this MWS?
 1. Use [SIGNAL EVALUATION RESULTS] for status=ok and evaluated user_provided — do NOT contradict TRUE/FALSE. For user_provided_unresolved, you MUST interpret the raw answer using update_rule and set pathway status accordingly.
 2. Apply each pathway's evidence note using the summary counts: ≥2 confirming TRUE → high confidence in confirmed_pathways; exactly 1 confirming TRUE → medium confidence in confirmed_pathways (do NOT demote single-confirm pathways to uncertain_pathways unless confirms_true=0); confirms_true=0 with missing data still needed → uncertain_pathways; confirms_true=0 with confirms-direction signals FALSE → do not confirm.
 3. For NEEDS_LLM signals only: use qualitative_hint and signal explanations; do not invent numeric values.
-REASONING WORDING (apply to every reasoning string in confirmed_pathways, uncertain_pathways, and follow-up revisions):
-- Do NOT write "farmer reports", "users report", "community reports", or similar unless that fact appears in [DATA ALREADY PROVIDED BY USER] or was explicitly stated in the problem description.
-- NEEDS_LLM signals and missing_variables mean data is NOT yet available — say "data not yet available on …", "follow-up needed on …", or "we do not yet know whether …"; never imply the farmer already reported something.
-- When confirms_true=0 and every evaluated confirms-direction signal is FALSE: state that the pathway is not supported by current landscape data; if it remains uncertain, cite which variables are still missing — not reported symptoms.
-4. Put confirmed pathways in confirmed_pathways with confidence high/medium/low and short reasoning that cites signal IDs and TRUE/FALSE outcomes.
-5. In each confirmed_pathways reasoning string, explicitly mention MWS UID {uid} and relevant intersecting village names from the list above.
-6. CRITICAL — do not re-ask for data already in the prompt. Before writing follow_up_question or uncertain_pathways, check every variable against present_variables, derived/computed values, and [DATA ALREADY PROVIDED BY USER]. Put a pathway in uncertain_pathways only when genuinely required variables remain in missing_variables.
-7. List solutions from the framework for confirmed pathways only.
-8. Set panel_update_explanation to 1–3 sentences explaining WHY the charts linked to your confirmed pathways help interpret the diagnosis. Do not include a panel_updates field.
+{_reasoning_wording_rules()}
+4. Put confirmed pathways in confirmed_pathways with confidence high/medium/low. Each reasoning string must cite signal IDs with TRUE/FALSE outcomes from [SIGNAL EVALUATION RESULTS] AND include an explicit "For this question:" clause linking that pathway to [USER PROBLEM].
+5. In each confirmed_pathways and uncertain_pathways reasoning string, mention MWS UID {uid}, relevant intersecting village names, and how this pathway bears on the user's question — not only landscape stress in the abstract.
+6. CRITICAL — do not re-ask for data already in the prompt. Before writing follow_up_question or uncertain_pathways, check every variable against present_variables, derived/computed values, and [DATA ALREADY PROVIDED BY USER]. Put a pathway in uncertain_pathways only when genuinely required variables remain in missing_variables; uncertain reasoning must also state what remains unknown for answering [USER PROBLEM].
+7. List solutions from the framework for confirmed pathways only; prefer solutions that directly help answer [USER PROBLEM].
+8. Set panel_update_explanation to 2–4 sentences: (a) a direct answer to [USER PROBLEM], (b) name each confirmed pathway_id and the key evidence behind it, (c) why the highlighted charts help verify those pathways. Do not include a panel_updates field.
 9. Set follow_up_question ONLY from the pathway's "Authorized follow-up questions" list in the bundle above — copy the question text exactly and use the listed variable. Do NOT ask about variables listed under "Missing signal/derived variables". Never repeat a question from [QUESTIONS ALREADY ASKED].{revision_rules}
 """
 
 
+def _user_query_directive() -> str:
+    return """
+[ANSWER THE USER'S QUESTION]
+Treat [USER PROBLEM] as the primary deliverable. Pathway evaluation supports a direct, practical answer — do not stop at listing diagnoses.
+- Read [USER PROBLEM] carefully and identify what the user is trying to decide, compare, explain, or prioritise. Keep that question in view in every reasoning string.
+- Every confirmed_pathways and uncertain_pathways reasoning string MUST have two linked parts:
+  (1) Evidence — cite signal IDs and TRUE/FALSE outcomes (from [SIGNAL EVALUATION RESULTS] when provided, or from your own assessment when not) with the key variable values.
+  (2) For this question — one or two sentences stating what this pathway means for [USER PROBLEM] specifically (e.g. whether rainfall vs recharge drives the problem, whether past investment worked, what to prioritise).
+  Do not write pathway reasoning that only audits signals without tying them to the user's question.
+- panel_update_explanation MUST synthesise the answer from your confirmed pathways — name each confirmed pathway_id and explain how its evidence jointly answers [USER PROBLEM]. Do not give a generic landscape summary that ignores which pathways you confirmed.
+- After the answer, briefly note which highlighted charts help verify the confirmed pathways behind that answer.
+- Select solutions that address both the confirmed pathways and what the user is trying to accomplish (e.g. intervention choice, prioritisation, explanation).
+- If evidence is insufficient to fully answer the question, say so explicitly in panel_update_explanation, name which uncertain pathways block the answer, and use follow_up_question for the single highest-value missing fact.
+"""
+
+
+def _claude_interpretation_task(uid: str | None, *, is_revision: bool = False) -> str:
+    revision_rules = _claude_revision_rules() if is_revision else ""
+    return f"""[TASK]
+0. Answer [USER PROBLEM] first in your own reasoning: what is the user asking, and what would a useful direct response look like for this MWS?
+1. Evaluate each pathway's diagnostic signals yourself using present variable values, signal expressions, qualitative descriptions, and your domain knowledge of Indian watershed hydrology, aquifers, cropping systems, and rural livelihoods. Do NOT assume server-side TRUE/FALSE results — you must reason them out.
+2. Apply each pathway's evidence note from your signal assessment: ≥2 confirming signals supported → high confidence in confirmed_pathways; exactly 1 confirming signal supported → medium confidence in confirmed_pathways; insufficient support with missing data still needed → uncertain_pathways; confirming signals clearly contradicted by available data → do not confirm.
+3. When a signal expression references variables in missing_variables, treat the signal as unevaluated and rely on qualitative_description only; do not invent numeric values.
+{_reasoning_wording_rules()}
+4. Put confirmed pathways in confirmed_pathways with confidence high/medium/low. Each reasoning string must cite signal IDs with your TRUE/FALSE assessment AND include an explicit "For this question:" clause linking that pathway to [USER PROBLEM].
+5. In each confirmed_pathways and uncertain_pathways reasoning string, mention MWS UID {uid}, relevant intersecting village names, and how this pathway bears on the user's question — not only landscape stress in the abstract.
+6. CRITICAL — do not re-ask for data already in the prompt. Before writing follow_up_question or uncertain_pathways, check every variable against present_variables, derived/computed values, and [DATA ALREADY PROVIDED BY USER]. Put a pathway in uncertain_pathways only when genuinely required variables remain in missing_variables; uncertain reasoning must also state what remains unknown for answering [USER PROBLEM].
+7. List solutions from the framework for confirmed pathways only; prefer solutions that directly help answer [USER PROBLEM].
+8. Set panel_update_explanation to 2–4 sentences: (a) a direct answer to [USER PROBLEM], (b) name each confirmed pathway_id and the key evidence behind it, (c) why the highlighted charts help verify those pathways. Do not include a panel_updates field.
+9. Set follow_up_question ONLY from the pathway's "Authorized follow-up questions" list in the bundle above — copy the question text exactly and use the listed variable. Do NOT ask about variables listed under "Missing signal/derived variables". Never repeat a question from [QUESTIONS ALREADY ASKED].{revision_rules}
+"""
+
+
+def _signal_interpretation_task(uid: str | None, profile: str, *, is_revision: bool = False) -> str:
+    if profile == "claude":
+        return _claude_interpretation_task(uid, is_revision=is_revision)
+    return _ollama_signal_interpretation_task(uid, is_revision=is_revision)
+
+
 def _task_section(uid: str | None, profile: str, *, is_revision: bool = False) -> str:
-    shared = _signal_interpretation_task(uid, is_revision=is_revision) + """
+    shared = _signal_interpretation_task(uid, profile, is_revision=is_revision) + """
 Return JSON with exactly these keys:
 {
   "confirmed_pathways": [{"pathway_id": "...", "confidence": "high|medium|low", "reasoning": "..."}],
@@ -991,11 +1045,14 @@ def _intro_line(profile: str) -> str:
         return (
             "You are an expert agro-ecological diagnostician for Indian micro-watersheds. "
             "Use the variable values, evidence notes, and your domain knowledge of NBSS-LUP "
-            "agro-ecological regions, aquifer behaviour, and rural livelihood systems."
+            "agro-ecological regions, aquifer behaviour, and rural livelihood systems. "
+            "Your job is to answer the user's specific question in [USER PROBLEM] — not merely "
+            "to classify pathways in isolation."
         )
     return (
         "You are an agro-ecological diagnosis assistant for Indian micro-watersheds. "
-        "Interpret the server-computed signal results and evidence notes before writing the final JSON."
+        "Interpret the server-computed signal results and evidence notes, then answer the user's "
+        "specific question in [USER PROBLEM] — not merely classify pathways in isolation."
     )
 
 
@@ -1040,21 +1097,38 @@ def _build_prompt(
 
     revision_task = ""
     if is_revision:
-        revision_task = """
+        if profile == "claude":
+            revision_task = """
+[REVISION TASK — follow-up turn]
+You are revising the prior diagnosis after a user follow-up answer.
+- Re-run your own signal interpretation using updated present variables, injected user evidence, and domain knowledge.
+- Only change pathway status for pathways that use the answered variable in missing_variables/diagnostic scope, or where your interpretation changed because of that answer.
+- Preserve prior status for all other candidate pathways unless rules_out signals are clearly contradicted by available data.
+- Update reasoning on changed pathways to cite signal IDs and the new user evidence.
+- Update solutions to match the revised confirmed set.
+- Do NOT repeat a follow-up question already listed under QUESTIONS ALREADY ASKED.
+"""
+        else:
+            revision_task = """
 [REVISION TASK — follow-up turn]
 You are revising the prior diagnosis after a user follow-up answer.
 - Re-run interpretation using updated [SIGNAL EVALUATION RESULTS] and injected user evidence.
 - Only change pathway status for pathways that use the answered variable in missing_variables/diagnostic scope, or where ok-signal TRUE/FALSE counts changed because of that answer.
 - Preserve prior status for all other candidate pathways unless rules_out signals are now TRUE.
-- Update reasoning on changed pathways to cite signal IDs and the new user evidence.
-- Update solutions to match the revised confirmed set.
+- Update reasoning on changed pathways to cite signal IDs, the new user evidence, and how the revision affects the answer to [USER PROBLEM].
+- Update solutions to match the revised confirmed set and the user's question.
 - Do NOT repeat a follow-up question already listed under QUESTIONS ALREADY ASKED.
 """
 
     uid = location.get("uid")
-    eval_results = signal_eval if signal_eval is not None else evaluate_bundle_signals(bundle, injected=injected_variables)
-    signal_results_block = _format_signal_evaluation_results(eval_results)
-    registry_block = _registry_excerpt_if_needed(eval_results)
+    query_block = _user_query_directive()
+    if profile == "claude":
+        signal_results_block = ""
+        registry_block = ""
+    else:
+        eval_results = signal_eval if signal_eval is not None else evaluate_bundle_signals(bundle, injected=injected_variables)
+        signal_results_block = _format_signal_evaluation_results(eval_results)
+        registry_block = _registry_excerpt_if_needed(eval_results)
 
     return f"""{_intro_line(profile)}
 
@@ -1063,7 +1137,7 @@ You are revising the prior diagnosis after a user follow-up answer.
 
 [USER PROBLEM]
 {problem_description}
-{follow_block}{prior_diagnosis_block}{revision_task}
+{query_block}{follow_block}{prior_diagnosis_block}{revision_task}
 [MWS VARIABLE VALUES AND CANDIDATE PATHWAYS]
 {_format_bundle(bundle, profile)}
 
@@ -1073,6 +1147,44 @@ You are revising the prior diagnosis after a user follow-up answer.
 {_format_prior_user_blocks(injected_variables, prior_asked_questions)}
 {_task_section(uid, profile, is_revision=is_revision)}
 """
+
+
+def _postprocess_diagnosis_response(
+    response: dict[str, Any],
+    *,
+    profile: str,
+    signal_eval: dict[str, dict[str, Any]],
+    bundle: dict[str, dict],
+    injected_variables: dict[str, Any] | None,
+    prior_asked_questions: list[str] | None,
+    pathway_retrieval_ranks: dict[str, int] | None,
+    ruled_out_pathways: set[str],
+    follow_up_context: str | None,
+) -> dict[str, Any]:
+    use_signal_guards = profile != "claude"
+    ruled_out_for_follow_up = ruled_out_pathways if use_signal_guards else None
+
+    if use_signal_guards:
+        response = apply_signal_confidence_guard(
+            response,
+            signal_eval=signal_eval,
+            bundle=bundle,
+        )
+    response = sanitize_uncertain_pathways(
+        response,
+        bundle=bundle,
+        injected_variables=injected_variables,
+        prior_asked_questions=prior_asked_questions,
+    )
+    response = pick_next_follow_up(
+        response,
+        injected_variables,
+        bundle=bundle,
+        prior_asked_questions=prior_asked_questions,
+        pathway_retrieval_ranks=pathway_retrieval_ranks,
+        ruled_out_pathway_ids=ruled_out_for_follow_up,
+    )
+    return apply_panel_updates_from_standards(response, follow_up_context=follow_up_context)
 
 
 def run_diagnosis(
@@ -1090,7 +1202,10 @@ def run_diagnosis(
 ) -> DiagnosisRun:
     profile = _prompt_profile()
     signal_eval = evaluate_bundle_signals(bundle, injected=injected_variables)
-    ruled_out_pathways = pathways_ruled_out_from_signal_evaluation(signal_eval)
+    use_signal_guards = profile != "claude"
+    ruled_out_pathways = (
+        pathways_ruled_out_from_signal_evaluation(signal_eval) if use_signal_guards else set()
+    )
     prompt = _build_prompt(
         location=location,
         problem_description=problem_description,
@@ -1122,29 +1237,20 @@ def run_diagnosis(
         prior_asked_questions=prior_asked_questions,
         follow_up_context=follow_up_context,
         pathway_retrieval_ranks=pathway_retrieval_ranks,
-        ruled_out_pathway_ids=ruled_out_pathways,
+        ruled_out_pathway_ids=ruled_out_pathways if use_signal_guards else None,
     )
-    response = apply_signal_confidence_guard(
+    response = _postprocess_diagnosis_response(
         response,
+        profile=profile,
         signal_eval=signal_eval,
-        bundle=bundle,
-    )
-    response = sanitize_uncertain_pathways(
-        response,
         bundle=bundle,
         injected_variables=injected_variables,
         prior_asked_questions=prior_asked_questions,
-    )
-    response = pick_next_follow_up(
-        response,
-        injected_variables,
-        bundle=bundle,
-        prior_asked_questions=prior_asked_questions,
         pathway_retrieval_ranks=pathway_retrieval_ranks,
-        ruled_out_pathway_ids=ruled_out_pathways,
+        ruled_out_pathways=ruled_out_pathways,
+        follow_up_context=follow_up_context,
     )
-    response = apply_panel_updates_from_standards(response, follow_up_context=follow_up_context)
-    if follow_up and answered_variable and prior_diagnosis:
+    if follow_up and answered_variable and prior_diagnosis and use_signal_guards:
         response = apply_scoped_follow_up(
             response,
             prior_diagnosis,
@@ -1162,26 +1268,17 @@ def run_diagnosis(
             signal_evaluation=signal_eval,
             answered_variable=answered_variable,
         )
-        response = apply_signal_confidence_guard(
+        response = _postprocess_diagnosis_response(
             response,
+            profile=profile,
             signal_eval=signal_eval,
-            bundle=bundle,
-        )
-        response = sanitize_uncertain_pathways(
-            response,
             bundle=bundle,
             injected_variables=injected_variables,
             prior_asked_questions=prior_asked_questions,
-        )
-        response = pick_next_follow_up(
-            response,
-            injected_variables,
-            bundle=bundle,
-            prior_asked_questions=prior_asked_questions,
             pathway_retrieval_ranks=pathway_retrieval_ranks,
-            ruled_out_pathway_ids=ruled_out_pathways,
+            ruled_out_pathways=ruled_out_pathways,
+            follow_up_context=follow_up_context,
         )
-        response = apply_panel_updates_from_standards(response, follow_up_context=follow_up_context)
     postprocess_ms = (time.perf_counter() - t1) * 1000
     run = DiagnosisRun(
         response=response,

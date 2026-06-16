@@ -100,6 +100,12 @@ def test_ollama_prompt_has_signal_results_and_json_fence():
     )
     assert "[SIGNAL EVALUATION RESULTS" in prompt
     assert "server-computed" in prompt
+    assert "[ANSWER THE USER'S QUESTION" in prompt
+    assert "primary deliverable" in prompt
+    assert "For this question:" in prompt
+    assert "name each confirmed pathway_id" in prompt
+    assert "Answer [USER PROBLEM] first" in prompt
+    assert "not merely classify pathways in isolation" in prompt
     assert "sig_01" in prompt
     assert "TRUE" in prompt or "FALSE" in prompt
     assert "Evaluate each signal expression against present_variables" not in prompt
@@ -110,15 +116,20 @@ def test_ollama_prompt_has_signal_results_and_json_fence():
     assert "interaction_with" not in _format_bundle(SAMPLE_BUNDLE, "ollama")
 
 
-def test_claude_prompt_has_signal_results_without_json_fence():
+def test_claude_prompt_reasons_signals_without_server_eval():
     claude = _build_prompt(
         location=SAMPLE_LOCATION,
         problem_description="Report stresses",
         bundle=SAMPLE_BUNDLE,
         profile="claude",
     )
-    assert "[SIGNAL EVALUATION RESULTS" in claude
-    assert "server-computed" in claude
+    assert "[SIGNAL EVALUATION RESULTS — server-computed" not in claude
+    assert "server-computed; authoritative" not in claude
+    assert "Answer [USER PROBLEM] first" in claude or "ANSWER THE USER'S QUESTION" in claude
+    assert "primary deliverable" in claude
+    assert "For this question:" in claude
+    assert "name each confirmed pathway_id" in claude
+    assert "Do NOT assume server-side TRUE/FALSE" in claude
     assert "sig_01" in claude
     assert "expert agro-ecological diagnostician" in claude
     assert "Signals:" in claude
@@ -146,7 +157,7 @@ def test_prompt_includes_reasoning_wording_rules():
         location=SAMPLE_LOCATION,
         problem_description="Report stresses",
         bundle=SAMPLE_BUNDLE,
-        profile="claude",
+        profile="ollama",
     )
     assert "NEEDS_LLM means the variable is missing from landscape data" in prompt
     assert 'Do NOT write "farmer reports"' in prompt
@@ -158,7 +169,7 @@ def main() -> int:
     test_split_present_variables()
     test_null_if_placeholder()
     test_ollama_prompt_has_signal_results_and_json_fence()
-    test_claude_prompt_has_signal_results_without_json_fence()
+    test_claude_prompt_reasons_signals_without_server_eval()
     test_prompt_includes_injected_data_and_prior_questions()
     test_prompt_includes_reasoning_wording_rules()
     print("All prompt builder tests passed.")

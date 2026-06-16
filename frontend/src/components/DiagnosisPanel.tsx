@@ -167,6 +167,17 @@ export function DiagnosisPanel({
               ? ` · Villages: ${villageNames.join(', ')}`
               : ''}
           </p>
+          {diagnosis.panel_update_explanation?.trim() ? (
+            <section className="rounded-lg border border-sky-200 bg-sky-50/60 px-3 py-2">
+              <h3 className="text-sm font-semibold text-sky-900">Answer</h3>
+              <p className="mt-1 text-sm text-stone-800">
+                <SignalRichText
+                  text={diagnosis.panel_update_explanation}
+                  signalEvaluation={diagnosis.signal_evaluation}
+                />
+              </p>
+            </section>
+          ) : null}
           <section>
             <h3 className="text-sm font-semibold text-emerald-800">Confirmed pathways</h3>
             {diagnosis.confirmed_pathways.length === 0 ? (
