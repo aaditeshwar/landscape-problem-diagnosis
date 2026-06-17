@@ -16,6 +16,7 @@ from services.diagnosis_revision import (
 from services.diagnosis_trace import DiagnosisRequestTrace
 from services.llm_client import model_for_turn
 from services.mws_enrich import enrich_mws_doc
+from services.evidence_note import DEFAULT_RETRIEVAL_PROBE
 from services.follow_up_mcq import attach_follow_up_mcq, normalized_answer_from_mcq_choice
 from services.reasoner import DiagnosisLLMParseError, _collect_prior_follow_up, run_diagnosis, run_server_diagnosis
 from services.retriever import (
