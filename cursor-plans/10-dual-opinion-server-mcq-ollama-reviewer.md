@@ -1,7 +1,7 @@
-# Dual-opinion diagnosis: server evidence + LLM reviewer + MCQ follow-ups
+# Dual-opinion diagnosis: server evidence + optional LLM reviewer + MCQ follow-ups
 
 > **Status:** Planned — awaiting review (do not implement until approved)  
-> **Created:** 2026-06-16  
+> **Created:** 2026-06-16 · **Updated:** 2026-06-16 (v2)  
 > **Branch:** `llm-in-loop` (implementation work)  
 > **Prerequisite:** Plan 07 (backend signal evaluation) — **complete**; query-focused prompt + UI work on `main` (2026-06-16)
 
@@ -9,23 +9,16 @@
 
 ## Context
 
-Recent Claude replay runs (log events 162–163, `claude_replay_full_20260616T172601Z.json`) showed:
+Recent Claude replay runs (log events 162–163) showed strong query-focused panel answers but unreliable strict signal booleans when the LLM self-reasons expressions (e.g. `groundwater_stress` sig_02). Card evidence notes carry useful narrative that should not falsify expression results.
 
-- **Strong** query-focused `panel_update_explanation` when the prompt requires pathway-linked answers.
-- **Weak** strict signal evaluation when the LLM self-reasons booleans — e.g. `groundwater_stress` sig_02 marked TRUE despite server FALSE (trend +12 mm/yr, mean −95 mm/yr; expression requires **both** trend &lt; 0 and mean &lt; 0).
-- Card **evidence note narrative** (“if SOGE Safe but delta_g negative, prioritise water balance”) is valuable but should not falsify expression booleans.
+**Proposed architecture:**
 
-Current Ollama runs already treat pathway **reasoning strings** as signal audits; they rarely tie the user question into per-pathway evidence. The **Answer** / `panel_update_explanation` layer is the right place for `[USER PROBLEM]`.
+| Mode | Server (always) | LLM (optional) |
+|------|-----------------|----------------|
+| **Signal evaluation** | Deterministic TRUE/FALSE, pathway status, evidence note, solutions union, panel chart keys | Reviewer commentary + contextual answer + optional solutions review |
+| **Follow-up** | MCQ → re-eval → server revision summary (“what changed”) | Same server re-eval + LLM reviewer + change opinion + panel update |
 
-**Proposed architecture:** split diagnosis into three user-visible layers:
-
-| Layer | Source | Role |
-|-------|--------|------|
-| **Server evidence** | `signal_evaluator` + guards | Deterministic TRUE/FALSE, pathway status, formatted evidence note |
-| **Reviewer commentary** | LLM (Ollama / Claude) | Agree / partial / disagree with server eval using variables + confounders + card notes |
-| **Answer** | LLM | `panel_update_explanation` synthesising server + reviewer to answer `[USER PROBLEM]` |
-
-Follow-up turns use **MCQ** choices so **all** signal evaluation (including user-provided signals) stays server-side.
+The LLM is **optional**. Users who only want data-driven diagnosis can turn it off; users who want a second opinion and natural-language synthesis turn it on.
 
 ---
 
@@ -33,43 +26,191 @@ Follow-up turns use **MCQ** choices so **all** signal evaluation (including user
 
 | Principle | Rationale |
 |-----------|-----------|
-| Server owns booleans | Expressions and `apply_signal_confidence_guard` are canonical for confirmed/uncertain lists |
-| LLM never re-executes `ok` signals | Same as Plan 07; reviewer may *interpret* outcomes, not change stored TRUE/FALSE |
-| MCQ over free text for structured follow-ups | Maps to existing `infer_user_signal_result` / band thresholds; eliminates `user_provided_unresolved` |
-| Dual opinion, single answer | Transparency for users and graders; preserves card-narrative nuance without fake sig_02 TRUE |
-| Same LLM task for Ollama and Claude | Fair comparison: both receive identical server eval block; differ only by model |
-| Evidence note ≠ user question | Server note is diagnostic; Answer addresses the question |
+| Server owns booleans | Expressions and guards are canonical for confirmed/uncertain lists |
+| Server owns solutions when LLM off | Union of framework/card solutions for confirmed pathways |
+| MCQ metadata lives on **evidence cards** | Follow-up structure is card-specific; assembler already loads cards into bundle |
+| LLM optional end-to-end | Same API; `want_llm_opinion` gates LLM call and UI sections |
+| MCQ only for follow-up | No free-text answer box; `choice_id` enables Submit |
+| LLM never re-executes `ok` signals | Reviewer interprets; does not change stored TRUE/FALSE |
+| Query text optional when LLM off | Landscape diagnosis without a user question; retrieval can use a default probe query |
+| Evidence note ≠ user question | Server note is diagnostic; Answer (LLM) or server summary addresses the question when provided |
 
 ---
 
 ## Target user experience
 
-### Initial diagnosis
+### Initial query — LLM toggle (above problem description)
 
-1. User submits problem for an MWS.
-2. **Left panel — Server diagnosis**
-   - Confirmed / uncertain pathways (from server status + guards)
-   - Per-pathway signal table (from logged `signal_evaluation`)
-   - Short server-generated evidence summary (new formatter)
-3. **Left panel — Reviewer notes** (new section)
-   - Per-pathway: `agree` | `partial` | `disagree` + 1–3 sentences
-   - Explicit call-outs where card evidence note overrides strict booleans (e.g. sig_02 FALSE but chronic mean ΔG)
-4. **Left panel — Answer** (existing `panel_update_explanation` UI)
-   - Direct response to user question citing **both** server pathway IDs and reviewer nuance
-5. **Right panel — Charts** (unchanged; driven by `panel_updates` from standards)
+**Toggle:** “Include LLM opinion” (default: **off** for faster/cheaper runs; product default TBD at review).
 
-### Follow-up turn
+| Toggle | Problem description UI | Run Diagnosis enabled when |
+|--------|----------------------|----------------------------|
+| **Off** | Hidden (no textbox) | Always (MWS selected) |
+| **On** | Visible textbox | User has entered non-empty text |
 
-1. Server picks next MCQ from authorized questions (`pick_next_follow_up` driven by server uncertain set).
-2. User selects an option (not free text).
-3. Server re-evaluates bundle with injected canonical answer → updates pathway status.
-4. LLM re-runs reviewer + Answer only (no full signal re-audit in JSON).
+**Run Diagnosis** calls `POST /api/query` with:
+
+```json
+{
+  "uid": "4_91594",
+  "problem_description": "…",
+  "state": "…",
+  "district": "…",
+  "tehsil": "…",
+  "want_llm_opinion": false
+}
+```
+
+When `want_llm_opinion` is false, `problem_description` may be omitted or ignored; server uses a default retrieval/diagnosis probe (existing behaviour when problem is generic).
+
+### Initial diagnosis — LLM off (`want_llm_opinion: false`)
+
+**Left panel:**
+
+1. **Server diagnosis** — confirmed/uncertain pathways, per-pathway signal table, server evidence note (formatter)
+2. **Suggested solutions** — deduplicated union from confirmed pathways (server)
+3. **Summary** — short server `panel_update_explanation` template: names confirmed `pathway_id`s, key signal counts, no user-question narrative unless a problem was supplied
+
+**Hidden:** Reviewer notes, LLM Answer block
+
+**Right panel:** Charts from `panel_updates` (unchanged)
+
+**No LLM call** — no reasoner latency; log event records `llm_skipped: true`.
+
+### Initial diagnosis — LLM on (`want_llm_opinion: true`)
+
+**Left panel:**
+
+1. **Server diagnosis** (same as above — always shown first)
+2. **Reviewer notes** — LLM `server_review`: agree | partial | disagree per pathway
+3. **Answer** — LLM `panel_update_explanation` synthesising server + reviewer + `[USER PROBLEM]`
+4. **Suggested solutions** — server union, optionally filtered/reordered with LLM `solutions_review` notes in response
+
+**Right panel:** Charts (unchanged)
+
+### Follow-up turn — MCQ only (no answer textbox)
+
+1. Server exposes next follow-up as **`follow_up_mcq`**: `{ variable, question, choices[] }` (from evidence card).
+2. User selects one MCQ option → **Submit answer** enabled (disabled until selection).
+3. `POST /api/answer` with `{ session_id, variable, choice_id, want_llm_opinion }` (no free-text `answer`).
+
+**LLM off:**
+
+- Server injects normalized MCQ value → re-runs `evaluate_bundle_signals`
+- Server updates pathway status, `panel_updates`, solutions union
+- Server builds **`diagnosis_revision`** (pathway_changes + summary of what the MCQ changed)
+- Server sets **`panel_update_explanation`** to a deterministic “what changed” narrative
+- Response to frontend; **no LLM call**
+
+**LLM on:**
+
+- Same server re-eval and revision diff
+- LLM receives: prior state, updated server eval, MCQ choice, revision diff
+- LLM outputs: `server_review`, opinion on **changes made**, updated `panel_update_explanation`, optional `solutions_review`
+- Post-process merges; response to frontend
+
+Toggle state for `want_llm_opinion` should **persist for the session** (sent on each answer; UI reflects last choice or session default from initial query).
 
 ---
 
-## LLM output schema (new)
+## Evidence card MCQ schema (not `diagnosis_framework.json`)
 
-Replace per-pathway `reasoning` essays with:
+MCQ wiring belongs on **evidence cards** — the same source as `missing_variable_questions`, `how_answer_updates_diagnosis`, and signal `update_rule` text. The assembler already loads cards into the per-pathway bundle; the server reads MCQ definitions from the bundle at runtime.
+
+**Extend each entry in** `missing_variable_questions[]` **on evidence card JSON** (under `data/evidence_cards/raw/*.json`, then reload/index):
+
+```json
+{
+  "missing_variable": "borewell_density",
+  "question_to_user": "Roughly how many borewells or tubewells are there in your village or the surrounding area?",
+  "how_answer_updates_diagnosis": "High borewell density…",
+  "response_type": "mcq",
+  "choices": [
+    {
+      "id": "few",
+      "label": "Very few (fewer than 10 within 2–3 km)",
+      "normalized": { "band": "low", "present": true }
+    },
+    {
+      "id": "moderate",
+      "label": "Moderate (10–50 within 2–3 km)",
+      "normalized": { "band": "moderate", "present": true }
+    },
+    {
+      "id": "many",
+      "label": "More than 50 within 2–3 km",
+      "normalized": { "band": "high", "present": true }
+    }
+  ]
+}
+```
+
+**Rules:**
+
+- `response_type`: `"mcq"` (required for server-generated MCQ UI) or omit/`"text"` only during migration for cards not yet converted.
+- `choices[].normalized` must match shapes already consumed by `infer_user_signal_result` / `_injected_payload` in `signal_evaluator.py` and `diagnosis_revision.py`.
+- `how_answer_updates_diagnosis` remains the server-side text for revision summaries (maps to existing update_rule matching).
+- **Do not** duplicate MCQ definitions in `diagnosis_framework.json`; framework keeps pathway-level **solutions** lists only (or references card_id).
+
+**Card maintenance pipeline:**
+
+1. Update raw card JSON files (136 cards × variables — phased).
+2. Re-run existing card reload / Mongo ingest (same as Plan 05/06 card updates).
+3. `scripts/maintenance/audit_follow_up_mcq_coverage.py` — report cards/variables missing `response_type: mcq`.
+
+**Assembler (`runtime/services/assembler.py`):** pass `missing_variable_questions` (with MCQ) into bundle unchanged; prompt builder lists authorized questions from bundle, not framework.
+
+---
+
+## Server-only response building
+
+### Pathway status
+
+New: `pathway_status_from_evaluation(signal_eval, bundle) -> { confirmed_pathways, uncertain_pathways }`
+
+- Uses `confirms_true` counts + evidence-note thresholds + `apply_signal_confidence_guard`
+- Pathway `reasoning` field becomes **server evidence snippet** (from formatter), not LLM prose
+
+### Solutions union
+
+New: `solutions_for_confirmed_pathways(confirmed_ids, bundle) -> list[str]`
+
+- For each confirmed `pathway_id`, collect `bundle[pathway_id].solutions` (sourced from framework at assemble time)
+- **Deduplicate** preserving stable order (first-seen)
+- Optional cap (e.g. top 12) to avoid huge lists when many pathways confirm
+
+When **LLM on**, LLM may return:
+
+```json
+{
+  "solutions_review": {
+    "notes": "Prioritise recharge structures given confirmed groundwater_stress…",
+    "priority_order": ["Trench and check-dam construction…", "…"]
+  }
+}
+```
+
+Post-process applies `priority_order` if valid subset of server union; otherwise keeps server order and appends notes only.
+
+### Panel explanation (server, LLM off)
+
+New: `build_server_panel_summary(location, confirmed, uncertain, signal_eval, problem_description?) -> str`
+
+- Always lists confirmed `pathway_id`s with confidence and top confirming signals
+- If `problem_description` provided (LLM-on path always; LLM-off optional if user typed before toggling off — edge case), append one sentence linking pathways to question
+- Does **not** simulate LLM confounder reasoning
+
+### Follow-up revision (server, LLM off)
+
+Extend `diagnosis_revision.py`:
+
+- After MCQ injection + re-eval, compute `pathway_changes` as today
+- **`summary`**: template from `how_answer_updates_diagnosis` + signal overlay + which variables changed TRUE/FALSE
+- Expose as `diagnosis_revision.summary` and mirror key points into `panel_update_explanation` for the turn
+
+---
+
+## LLM output schema (when `want_llm_opinion: true`)
 
 ```json
 {
@@ -81,180 +222,144 @@ Replace per-pathway `reasoning` essays with:
         {
           "signal_id": "sig_02",
           "server_result": false,
-          "comment": "Expression FALSE is correct, but card note supports prioritising mean delta_g for this MWS."
+          "comment": "Expression FALSE is correct; card note still supports prioritising mean delta_g."
         }
       ],
-      "pathway_comment": "For this question, recharge deficit matters even at medium server confidence."
+      "pathway_comment": "For this question, recharge deficit matters at medium server confidence."
     }
   ],
-  "panel_update_explanation": "…direct answer naming confirmed pathway_ids…",
-  "solutions": ["…"],
-  "follow_up_variable": null,
+  "change_review": null,
+  "panel_update_explanation": "…",
+  "solutions_review": {
+    "notes": "…",
+    "priority_order": ["…"]
+  },
   "follow_up_question": null
 }
 ```
 
-**Server-derived fields** (not from LLM JSON):
+On **follow-up turns**, `change_review` summarises agreement with server `diagnosis_revision` (pathway moves + MCQ implication).
 
-- `confirmed_pathways` / `uncertain_pathways` — built from `signal_eval` + guards + card rules
-- `panel_updates` — from `apply_panel_updates_from_standards`
-- `signal_evaluation` — already logged
+**Never from LLM JSON:** `confirmed_pathways`, `uncertain_pathways`, raw `solutions` list (server-derived).
 
-Post-process merges LLM `server_review` into API response as `reviewer_commentary` (new field) for UI and logs.
+---
+
+## API changes
+
+| Endpoint | New / changed fields |
+|----------|---------------------|
+| `POST /api/query` | Request: `want_llm_opinion: boolean`. Response: `want_llm_opinion`, `reviewer_commentary?`, `llm_skipped`, `follow_up_mcq?` |
+| `POST /api/answer` | Request: `choice_id` (required), `want_llm_opinion`; deprecate free-text `answer`. Response: same optional LLM fields + `diagnosis_revision` |
+| Session | Store `want_llm_opinion` default from first query (optional) |
+
+Update `metadata/response_schema.json` accordingly.
 
 ---
 
 ## Implementation phases
 
-### Phase 0 — Branch and baseline (done before Phase 1)
+### Phase 0 — Branch and baseline ✅
 
-- [x] Push query-focused prompt, log dashboard, frontend Answer, replay scripts to `main`
-- [x] Create `llm-in-loop` branch for this plan
-- [ ] User approves this plan
-
----
-
-### Phase 1 — Server evidence note formatter
-
-**Goal:** Deterministic prose for UI/logs without LLM.
-
-**New:** `runtime/services/evidence_note.py` (or extend `signal_evaluator.py`)
-
-- Input: `eval_results`, `bundle`, optional `mws_uid`, `location`
-- Output per pathway:
-  - Signal table (id, direction, result, status) — reuse log summary shape
-  - Summary line: `confirms_true`, `amplifies_true`, `needs_llm`
-  - Card `overall_reasoning_note` excerpt (already in bundle)
-  - **Server pathway verdict:** confirmed | uncertain | not_supported (from guards, not LLM)
-- **No** `[USER PROBLEM]` in this block
-
-**Tests:** `scripts/test/test_evidence_note.py` — golden cases for runs 162/163 pathway summaries.
-
-**UI:** Optional rename “Confirmed pathways” reasoning to show server table + verdict; hide LLM pathway reasoning when empty.
+- [x] Push prompt/UI/replay work to `main`
+- [x] Branch `llm-in-loop`
+- [ ] User approves this plan (v2)
 
 ---
 
-### Phase 2 — MCQ follow-up infrastructure
+### Phase 1 — Server evidence note + pathway status + solutions union
 
-**Goal:** Server-only evaluation for user-provided signals.
+**New modules:** `evidence_note.py`, extend `reasoner.py` or `diagnosis_revision.py`
 
-#### 2a — Metadata / card wiring
+- Evidence formatter per pathway (signal table, verdict, card note excerpt)
+- `pathway_status_from_evaluation`
+- `solutions_for_confirmed_pathways`
+- `build_server_panel_summary` (LLM-off panel text)
 
-- Audit all `Authorized follow-up questions` in bundle for band-style wording already compatible with `infer_from_update_rule_threshold`.
-- Extend `diagnosis_framework.json` (or card metadata) with optional `response_type: "mcq"` and `choices[]`:
+**Tests:** `test_evidence_note.py`, `test_server_solutions.py`, golden cases for runs 162–163
 
-  ```json
-  {
-    "variable": "borewell_density",
-    "question": "Roughly how many borewells…",
-    "choices": [
-      { "id": "few", "label": "Very few (<10)", "normalized": { "band": "low" } },
-      { "id": "moderate", "label": "10–50", "normalized": { "band": "moderate" } },
-      { "id": "many", "label": "More than 50", "normalized": { "band": "high" } }
-    ]
-  }
-  ```
-
-- Script: `scripts/maintenance/audit_follow_up_mcq_coverage.py` — report variables still requiring free text.
-
-#### 2b — API contract
-
-- `GET /api/query/...` or diagnosis response includes `follow_up_mcq: { variable, question, choices[] }` when structured follow-up available.
-- `POST` follow-up accepts `choice_id` (preferred) or legacy `answer` string for transition.
-
-**Files:** `runtime/routers/query.py`, `frontend/src/types`, `App.tsx`, `DiagnosisPanel.tsx`
-
-#### 2c — Injection path
-
-- Map `choice_id` → `injected_variables[variable]` using choice `normalized` payload (same shape `signal_evaluator` expects today).
-- Ensure `evaluate_bundle_signals` re-run on follow-up uses injection before LLM call.
-
-**Tests:** Extend `test_diagnosis_revision.py` for MCQ injection → `user_provided` TRUE/FALSE without LLM.
+**Deliverable:** Server can build a complete diagnosis response **without LLM** (except retrieval embed still runs).
 
 ---
 
-### Phase 3 — Pathway status from server only
+### Phase 2 — Evidence card MCQ wiring
 
-**Goal:** LLM no longer emits `confirmed_pathways` / `uncertain_pathways` with reasoning strings.
+**Not** `diagnosis_framework.json`.
 
-**File:** `runtime/services/reasoner.py`
+1. Define MCQ schema on evidence cards (`missing_variable_questions[].choices`).
+2. Migration script to add MCQ blocks to high-traffic variables (`borewell_density`, `annual_well_depth_m`, `migrant_household_percent`, etc.) — derive choices from existing question_to_user wording.
+3. Reload cards to Mongo / bundle.
+4. Server: `follow_up_mcq_from_bundle(bundle, pick_next_follow_up variable)` → UI payload.
+5. Answer handler: `choice_id` → `injected_variables` → re-eval.
 
-1. New function `pathway_status_from_evaluation(signal_eval, bundle) -> { confirmed, uncertain }`:
-   - Apply evidence-note thresholds (≥2 confirms → confirmed high, 1 → medium, 0 + missing → uncertain)
-   - Reuse `apply_signal_confidence_guard` logic or call it on a synthetic response shell
-2. After LLM parse, **replace** LLM pathway lists with server-derived lists (keep LLM solutions filtered to confirmed server pathways).
-3. Remove from Ollama/Claude prompt task:
-   - Per-pathway reasoning requirements
-   - Self signal evaluation (Claude)
-4. Keep `[USER PROBLEM]` + `[ANSWER THE USER'S QUESTION]` for panel only.
+**Tests:** MCQ injection → `user_provided` TRUE/FALSE; extend `test_diagnosis_revision.py`
 
-**Claude profile:** Inject `[SIGNAL EVALUATION RESULTS]` same as Ollama; remove “Do NOT assume server-side TRUE/FALSE” self-reason task.
-
-**Tests:** Update `test_prompt_builder.py`; add `test_pathway_status_from_evaluation.py`.
+**Audit script:** `audit_follow_up_mcq_coverage.py`
 
 ---
 
-### Phase 4 — LLM reviewer + panel task
+### Phase 3 — API: `want_llm_opinion` + server-only path
 
-**Goal:** Ollama/Claude critique server eval and write Answer.
+**Files:** `runtime/routers/query.py`, `reasoner.py`, `session_manager.py`, `diagnosis_trace.py`
 
-**Prompt block:** `[SERVER SIGNAL EVALUATION — authoritative booleans]` (existing formatter) plus:
-
-```
-[REVIEWER TASK]
-For each pathway in the bundle, state agreement with server summary (agree | partial | disagree).
-- agree: server booleans and pathway verdict fit the variables and card evidence note.
-- partial: booleans correct but card note or confounders change how the pathway bears on [USER PROBLEM].
-- disagree: a confounder or variable pattern suggests a different reading (cite signal_ids; do NOT change server booleans).
-
-[PANEL TASK]
-Write panel_update_explanation: (a) answer [USER PROBLEM], (b) name server-confirmed pathway_ids and key evidence, (c) integrate reviewer partial/disagree notes where they change the practical answer, (d) mention charts that verify the diagnosis.
-```
-
-**Post-process:** `parse_json_response` validates `server_review`; store as `reviewer_commentary` on diagnosis response and in JSONL logs.
-
-**Tests:** Prompt builder asserts absence of old reasoning task; presence of `server_review` schema.
+1. Accept `want_llm_opinion` on query and answer.
+2. When false: skip `run_diagnosis` LLM call; assemble response from Phase 1 helpers + `apply_panel_updates_from_standards`.
+3. Log `llm_skipped: true`, `want_llm_opinion: false`.
+4. When true: existing LLM path refactored to Phase 4 schema (not legacy reasoning JSON).
 
 ---
 
-### Phase 5 — Frontend and log dashboard
+### Phase 4 — LLM reviewer task (only if `want_llm_opinion`)
 
-**Frontend (`DiagnosisPanel.tsx`):**
+**File:** `reasoner.py`
 
-| Section | Source |
-|---------|--------|
-| Server pathways | `confirmed_pathways` / `uncertain_pathways` + `signal_evaluation` |
-| Reviewer notes | `reviewer_commentary` (new) |
-| Answer | `panel_update_explanation` |
-| Follow-up | MCQ radio/buttons when `follow_up_mcq` present |
+- Prompt: server eval block + confounders + optional `[USER PROBLEM]` + reviewer task + panel task + solutions_review task
+- Follow-up prompt adds `[SERVER REVISION]` + `change_review` task
+- Claude and Ollama **identical** task; both receive server eval (Claude no longer self-reasons signals)
+- Post-process: merge `reviewer_commentary`; never replace server pathway lists
 
-**Log dashboard (`dashboard.html`):**
-
-- Server signal table (existing merged pathways block)
-- **Reviewer commentary** section (new)
-- Panel explanation + solutions (existing)
-
-**Types:** `DiagnosisResponse.reviewer_commentary`, `FollowUpMcq`.
+**Tests:** `test_prompt_builder.py` for reviewer schema; skip LLM tests when flag false
 
 ---
 
-### Phase 6 — Follow-up revision path
+### Phase 5 — Frontend
 
-**File:** `runtime/services/diagnosis_revision.py`, `reasoner.py`
+**`DiagnosisPanel.tsx` / `App.tsx`:**
 
-- Follow-up turn: server re-eval → server pathway status → LLM reviewer + panel only
-- MCQ answer injected before eval; no `user_provided_unresolved` path for structured variables
-- `diagnosis_revision` summary can cite server signal overlay + reviewer update
+| Control | Behaviour |
+|---------|-----------|
+| Toggle “Include LLM opinion” | Above problem description; controls textbox visibility + Run enabled rule |
+| Run Diagnosis | Sends `want_llm_opinion` |
+| Server diagnosis section | Always visible |
+| Reviewer + Answer sections | Visible only if `want_llm_opinion` was true **and** response includes them |
+| Solutions | Always visible (server list) |
+| Follow-up | MCQ radio/list; **no textbox**; Submit enabled on selection |
+| Submit answer | Sends `choice_id` + `want_llm_opinion` |
 
-**Tests:** Extend `test_diagnosis_revision.py` for MCQ follow-up end-to-end mock.
+Persist toggle in component state; pass on each answer (or lock to session initial value — decide at review).
+
+**Log dashboard:** sections for server evidence, reviewer (if present), `llm_skipped`, solutions, panel explanation, MCQ choice on follow-up logs
 
 ---
 
-### Phase 7 — Replay and comparison hygiene
+### Phase 6 — Follow-up: server revision vs LLM change opinion
 
-- Update `scripts/replay_diagnosis_runs.py` to record `reviewer_commentary` and server pathway status separately from LLM raw JSON.
-- Re-run baseline 20 queries on `llm-in-loop` with Ollama reviewer task; compare to Claude on **same** server eval.
-- Optional: `scripts/maintenance/compare_server_vs_reviewer.py` — flags pathways where reviewer `disagree` rate is high.
+**LLM off:**
+
+- Full server path: re-eval → pathway status → `diagnosis_revision` → `build_follow_up_summary()` → response
+
+**LLM on:**
+
+- Server revision computed first; LLM asked to comment on changes + update panel + optional solutions_review
+
+**Remove:** free-text follow-up textarea and legacy `answer` string path once MCQ coverage complete
+
+---
+
+### Phase 7 — Replay and comparison
+
+- Replay script passes `want_llm_opinion` flag
+- Compare server-only vs LLM-on runs on same MWS
+- Record MCQ `choice_id` in logs
 
 ---
 
@@ -262,14 +367,16 @@ Write panel_update_explanation: (a) answer [USER PROBLEM], (b) name server-confi
 
 | Area | Files |
 |------|--------|
-| Server evidence | `signal_evaluator.py` or new `evidence_note.py`, `reasoner.py` |
-| Pathway status | `reasoner.py`, possibly `diagnosis_revision.py` |
-| MCQ | `diagnosis_framework.json`, `assembler.py`, `query.py`, `session_manager.py`, frontend follow-up UI |
-| LLM prompt | `reasoner.py`, `test_prompt_builder.py` |
-| API types | `frontend/src/types`, API client |
-| UI | `DiagnosisPanel.tsx`, `dashboard.html` |
-| Tests | `test_evidence_note.py`, `test_diagnosis_revision.py`, prompt tests |
-| Plans/docs | this file |
+| Evidence cards | `data/evidence_cards/raw/*.json`, card reload scripts |
+| MCQ server | `assembler.py`, `signal_evaluator.py`, `diagnosis_revision.py`, `query.py` |
+| Server response | `evidence_note.py`, `reasoner.py`, `panel_updates.py` |
+| LLM (optional) | `reasoner.py`, `test_prompt_builder.py` |
+| API schema | `metadata/response_schema.json` |
+| Frontend | `DiagnosisPanel.tsx`, `App.tsx`, types, API client |
+| Logs/UI | `dashboard.html`, `diagnosis_trace.py` |
+| Tests | `test_evidence_note.py`, `test_server_solutions.py`, `test_diagnosis_revision.py` |
+
+**Explicitly not changed for MCQ:** `diagnosis_framework.json` (except unchanged pathway solutions lists consumed via bundle)
 
 ---
 
@@ -277,52 +384,54 @@ Write panel_update_explanation: (a) answer [USER PROBLEM], (b) name server-confi
 
 | Risk | Mitigation |
 |------|------------|
-| Card narrative not in expressions (sig_02 groundwater) | Reviewer `partial` + panel cites card note; optional Phase 1b server **derived signals** later if needed |
-| MCQ cannot cover all variables | Audit script; keep free-text fallback behind feature flag until coverage ≥ 90% |
-| LLM reviewer contradicts server in panel | Prompt: “do not change server booleans”; panel may *qualify* not *override* |
-| Claude/Ollama comparison unfair if tasks differ | Phase 3 forces identical server eval + reviewer task for both profiles |
-| Larger API response | `reviewer_commentary` compact; full detail in logs |
+| Card MCQ migration is large (136 cards) | Phased rollout; audit script; block follow-up for variables without MCQ until wired |
+| LLM off feels terse | Invest in server summary templates + evidence note formatter quality |
+| Toggle + empty problem when LLM on | Enforce non-empty problem client-side when toggle on |
+| Solutions union too long | Dedupe + cap; LLM priority_order optional |
+| Session toggle drift | Persist `want_llm_opinion` on session document |
+| Retrieval without user problem when LLM off | Use default probe query (e.g. pathway retrieval from MWS context) — document in API |
 
 ---
 
 ## Acceptance criteria
 
-1. Initial query: pathway confirmed/uncertain lists match server `confirms_true` counts (± guard rules), not LLM invention.
-2. Run 1 (4_91594): server shows sig_02 **FALSE**; reviewer **partial** on groundwater_stress; panel still answers “recharge not rainfall deficit”.
-3. Run 2 (4_92694): server does **not** confirm `irrigation_challenges`; reviewer agrees; panel addresses MGNREGA effectiveness.
-4. Follow-up: MCQ for `borewell_density`, `annual_well_depth_m`, etc. resolves to `user_provided` without LLM interpretation.
-5. Log dashboard shows server evidence, reviewer notes, solutions, panel explanation.
-6. Frontend shows Answer + Reviewer notes + server pathways in separate sections.
-7. All existing `test_diagnosis_revision.py` and prompt builder tests pass; new golden tests for evidence note and MCQ injection.
-
----
-
-## Out of scope (this plan)
-
-- Encoding card narrative overrides as new Python expressions (future plan if reviewer variance is too high)
-- Committing `data/runs/` replay JSON or `runtime/logs/` to git
-- Changing retrieval or evidence card corpus
+1. **LLM off:** `POST /api/query` with `want_llm_opinion: false` returns in &lt;2s LLM time (no reasoner call); confirmed pathways match server eval; solutions = union of confirmed pathway solutions.
+2. **LLM on:** Same server pathway lists + reviewer + Answer; user must supply problem text.
+3. **Toggle UI:** Textbox hidden and Run enabled when off; textbox required when on.
+4. **Follow-up:** MCQ only; Submit disabled until choice selected; no textarea.
+5. **Follow-up LLM off:** `diagnosis_revision.summary` explains MCQ impact without LLM.
+6. **Follow-up LLM on:** `change_review` present; panel updates reflect both server diff and LLM opinion.
+7. **MCQ source:** `follow_up_mcq.choices` loaded from evidence card JSON in bundle, not framework.
+8. Log dashboard reflects `llm_skipped`, server evidence, optional reviewer, solutions.
 
 ---
 
 ## Suggested implementation order
 
-1. Phase 1 — evidence note formatter (read-only UI improvement)
-2. Phase 3 — server pathway status (backend truth)
-3. Phase 4 — reviewer + panel LLM task
-4. Phase 5 — UI/dashboard
-5. Phase 2 — MCQ follow-ups (can parallelize with 4–5 for initial queries)
-6. Phase 6 — follow-up revision
-7. Phase 7 — replay comparison
+1. Phase 1 — server response without LLM (pathways, evidence, solutions, summary)
+2. Phase 3 — `want_llm_opinion` API gate + server-only path wired end-to-end
+3. Phase 5 (partial) — frontend toggle + LLM-off UX
+4. Phase 2 — evidence card MCQ + follow-up MCQ UI
+5. Phase 6 — follow-up server revision + LLM change review
+6. Phase 4 — LLM reviewer when flag on
+7. Phase 5 (complete) — reviewer UI + dashboard
+8. Phase 7 — replay tooling
+
+Rationale: deliver usable **server-only diagnosis** early; add MCQ and optional LLM incrementally.
 
 ---
 
-## Review checklist for user
+## Review checklist (v2)
 
-- [ ] Accept server-canonical pathway lists (LLM no longer confirms pathways)
-- [ ] Accept MCQ-only follow-ups for structured variables (free text deprecated)
-- [ ] Accept three-layer UI: Server evidence | Reviewer | Answer
-- [ ] Accept same task for Claude and Ollama after Phase 3
-- [ ] Approve phase order or request reprioritisation (e.g. MCQ before reviewer)
+- [ ] MCQ definitions live on **evidence cards** (`missing_variable_questions`), not `diagnosis_framework.json`
+- [ ] Accept **optional LLM** via toggle + `want_llm_opinion` API flag
+- [ ] LLM off: no problem textbox; Run always enabled (MWS selected)
+- [ ] LLM on: problem text required; reviewer + Answer shown
+- [ ] Follow-up: **MCQ only**, no answer textbox
+- [ ] Follow-up LLM off: server generates change explanation
+- [ ] Follow-up LLM on: LLM comments on server revision + panel
+- [ ] **Solutions:** server union when LLM off; LLM `solutions_review` optional when on
+- [ ] Server-canonical pathway lists in both modes
+- [ ] Approve implementation order above
 
-**Do not merge implementation PRs until this checklist is signed off.**
+**Do not implement until this checklist is signed off.**
