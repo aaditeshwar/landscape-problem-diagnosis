@@ -8,7 +8,9 @@
     "confirmed_pathways",
     "uncertain_pathways",
     "solutions",
-    "panel_updates"
+    "panel_updates",
+    "want_llm_opinion",
+    "llm_skipped"
   ],
   "additionalProperties": false,
   "properties": {
@@ -53,11 +55,41 @@
     },
     "panel_update_explanation": {
       "type": ["string", "null"],
-      "description": "1–3 sentences explaining why panel_updates were chosen. Shown in the follow-up chat trail under \"Action taken\"; often null on the first query."
+      "description": "Server summary or LLM answer text explaining panel_updates and diagnosis."
     },
     "follow_up_question": {
       "type": ["string", "null"],
-      "description": "Next structured question for the user, if any. Post-processed to exclude repeats and variables already in MWS data or prior answers."
+      "description": "Next structured question for the user, if any."
+    },
+    "want_llm_opinion": {
+      "type": "boolean",
+      "description": "Whether the client requested an LLM reviewer opinion for this turn."
+    },
+    "llm_skipped": {
+      "type": "boolean",
+      "description": "True when the server completed diagnosis without calling the LLM."
+    },
+    "follow_up_mcq": {
+      "type": ["object", "null"],
+      "description": "MCQ follow-up payload when the evidence card defines response_type=mcq.",
+      "required": ["variable", "question", "choices"],
+      "additionalProperties": false,
+      "properties": {
+        "variable": { "type": "string" },
+        "question": { "type": "string" },
+        "choices": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "label"],
+            "additionalProperties": false,
+            "properties": {
+              "id": { "type": "string" },
+              "label": { "type": "string" }
+            }
+          }
+        }
+      }
     },
     "diagnosis_revision": {
       "type": ["object", "null"],

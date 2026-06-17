@@ -178,12 +178,67 @@
     {
       "missing_variable": "annual_well_depth_m",
       "question_to_user": "Have farmers in this area needed to deepen their borewells or dug wells over the past 5–10 years? Approximately how many metres deeper are new borewells compared to those drilled 10 years ago? Have any existing wells failed completely and been abandoned?",
-      "how_answer_updates_diagnosis": "Confirmed well deepening of more than 3–5 metres over a decade, or widespread borewell failure, strongly confirms the groundwater stress pathway in hard rock terrain where the saturated weathered zone is typically only 15–40 m deep. Rapid deepening (>0.5 m/year) combined with elevated SOGE provides high-confidence diagnosis."
+      "how_answer_updates_diagnosis": "Confirmed well deepening of more than 3–5 metres over a decade, or widespread borewell failure, strongly confirms the groundwater stress pathway in hard rock terrain where the saturated weathered zone is typically only 15–40 m deep. Rapid deepening (>0.5 m/year) combined with elevated SOGE provides high-confidence diagnosis.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "stable",
+          "label": "Well depth has stayed roughly the same (within ~1 m)",
+          "normalized": {
+            "trend": "stable",
+            "present": true
+          }
+        },
+        {
+          "id": "deepening",
+          "label": "Wells have deepened by more than 2–3 m in the last 5–10 years",
+          "normalized": {
+            "trend": "worsening",
+            "present": true
+          }
+        },
+        {
+          "id": "failed",
+          "label": "Springs or shallow wells have dried up permanently or for much longer",
+          "normalized": {
+            "trend": "worsening",
+            "present": true,
+            "band": "high"
+          }
+        }
+      ]
     },
     {
       "missing_variable": "borewell_density",
       "question_to_user": "Roughly how many borewells or tubewells are there in your village or the surrounding 2–3 km area? Has the number of borewells increased significantly in the last 5–10 years?",
-      "how_answer_updates_diagnosis": "High borewell density (more than 50 per village) in a hard rock aquifer with low storativity confirms localised over-extraction that may not be captured by block-level SOGE. Rapid recent growth in borewell numbers indicates accelerating extraction pressure and shifts the diagnosis toward demand-side intervention."
+      "how_answer_updates_diagnosis": "High borewell density (more than 50 per village) in a hard rock aquifer with low storativity confirms localised over-extraction that may not be captured by block-level SOGE. Rapid recent growth in borewell numbers indicates accelerating extraction pressure and shifts the diagnosis toward demand-side intervention.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "few",
+          "label": "Very few (fewer than 10 within 2–3 km)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "moderate",
+          "label": "Moderate (10–50 within 2–3 km)",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "many",
+          "label": "More than 50 within 2–3 km",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "groundwater_salinity",

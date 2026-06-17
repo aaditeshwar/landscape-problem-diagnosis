@@ -163,12 +163,67 @@
     {
       "missing_variable": "annual_well_depth_m",
       "question_to_user": "Have farmers in this area had to deepen their borewells or tubewells in the last 5-10 years? Approximately how many metres deeper are they now compared to when they were first installed? Do shallow dug wells that previously held water through the rabi season now run dry?",
-      "how_answer_updates_diagnosis": "Reported well deepening of more than 2-3 metres over 5-10 years in an alluvial setting strongly confirms chronic groundwater table decline driven by over-extraction. If wells are running dry specifically in rabi and zaid seasons, this confirms that extraction for irrigated crops is the primary driver, consistent with the groundwater_stress pathway."
+      "how_answer_updates_diagnosis": "Reported well deepening of more than 2-3 metres over 5-10 years in an alluvial setting strongly confirms chronic groundwater table decline driven by over-extraction. If wells are running dry specifically in rabi and zaid seasons, this confirms that extraction for irrigated crops is the primary driver, consistent with the groundwater_stress pathway.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "stable",
+          "label": "Well depth has stayed roughly the same (within ~1 m)",
+          "normalized": {
+            "trend": "stable",
+            "present": true
+          }
+        },
+        {
+          "id": "deepening",
+          "label": "Wells have deepened by more than 2–3 m in the last 5–10 years",
+          "normalized": {
+            "trend": "worsening",
+            "present": true
+          }
+        },
+        {
+          "id": "failed",
+          "label": "Springs or shallow wells have dried up permanently or for much longer",
+          "normalized": {
+            "trend": "worsening",
+            "present": true,
+            "band": "high"
+          }
+        }
+      ]
     },
     {
       "missing_variable": "borewell_density",
       "question_to_user": "Roughly how many borewells or tubewells are there per village in this area? Has the number of borewells increased significantly in the last 10-15 years, particularly for irrigation of wheat, potato, or sugarcane in the rabi season?",
-      "how_answer_updates_diagnosis": "High and rapidly increasing borewell density in alluvial plains confirms extraction pressure exceeding recharge. In the Indo-Gangetic Plain, rapid proliferation of private tubewells for rabi irrigation is a well-documented driver of depletion. A reported large increase in borewell numbers would strongly confirm the groundwater_stress pathway and support recommendations for collective groundwater governance."
+      "how_answer_updates_diagnosis": "High and rapidly increasing borewell density in alluvial plains confirms extraction pressure exceeding recharge. In the Indo-Gangetic Plain, rapid proliferation of private tubewells for rabi irrigation is a well-documented driver of depletion. A reported large increase in borewell numbers would strongly confirm the groundwater_stress pathway and support recommendations for collective groundwater governance.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "few",
+          "label": "Very few (fewer than 10 within 2–3 km)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "moderate",
+          "label": "Moderate (10–50 within 2–3 km)",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "many",
+          "label": "More than 50 within 2–3 km",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "groundwater_salinity",

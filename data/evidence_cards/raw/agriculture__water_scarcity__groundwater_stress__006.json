@@ -165,12 +165,67 @@
     {
       "missing_variable": "annual_well_depth_m",
       "question_to_user": "Has the depth of borewells or dug-wells in your area increased over the past 5-10 years? Have any previously productive shallow wells dried up or needed to be deepened? If possible, can you share the depth (in feet or metres) of wells drilled in different years?",
-      "how_answer_updates_diagnosis": "A reported increase in well depth of more than 2-3 metres over 5-8 years in a coastal alluvial setting strongly confirms chronic groundwater depletion. If farmers report that shallow dug-wells (less than 10m) have failed and been replaced by deeper borewells (20-40m), this indicates the water table has dropped below the shallow alluvial zone, confirming the groundwater stress pathway."
+      "how_answer_updates_diagnosis": "A reported increase in well depth of more than 2-3 metres over 5-8 years in a coastal alluvial setting strongly confirms chronic groundwater depletion. If farmers report that shallow dug-wells (less than 10m) have failed and been replaced by deeper borewells (20-40m), this indicates the water table has dropped below the shallow alluvial zone, confirming the groundwater stress pathway.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "stable",
+          "label": "Well depth has stayed roughly the same (within ~1 m)",
+          "normalized": {
+            "trend": "stable",
+            "present": true
+          }
+        },
+        {
+          "id": "deepening",
+          "label": "Wells have deepened by more than 2–3 m in the last 5–10 years",
+          "normalized": {
+            "trend": "worsening",
+            "present": true
+          }
+        },
+        {
+          "id": "failed",
+          "label": "Springs or shallow wells have dried up permanently or for much longer",
+          "normalized": {
+            "trend": "worsening",
+            "present": true,
+            "band": "high"
+          }
+        }
+      ]
     },
     {
       "missing_variable": "borewell_density",
       "question_to_user": "Roughly how many borewells or tubewells are there in your village or the surrounding area? Has the number of borewells increased significantly in the last 10 years? Are there many borewells installed for paddy or other irrigated crops?",
-      "how_answer_updates_diagnosis": "High borewell density in a coastal alluvial plain with moderate SOGE confirms localised over-extraction not captured by block-level statistics. Rapid proliferation of borewells over the past decade, particularly for paddy irrigation, would strongly confirm the groundwater stress pathway and indicate that demand-side governance (participatory groundwater management, crop diversification) is needed alongside recharge infrastructure."
+      "how_answer_updates_diagnosis": "High borewell density in a coastal alluvial plain with moderate SOGE confirms localised over-extraction not captured by block-level statistics. Rapid proliferation of borewells over the past decade, particularly for paddy irrigation, would strongly confirm the groundwater stress pathway and indicate that demand-side governance (participatory groundwater management, crop diversification) is needed alongside recharge infrastructure.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "few",
+          "label": "Very few (fewer than 10 within 2–3 km)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "moderate",
+          "label": "Moderate (10–50 within 2–3 km)",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "many",
+          "label": "More than 50 within 2–3 km",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "groundwater_salinity",

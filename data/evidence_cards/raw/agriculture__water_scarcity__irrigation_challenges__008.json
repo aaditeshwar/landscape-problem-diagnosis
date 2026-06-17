@@ -133,7 +133,35 @@
     {
       "missing_variable": "annual_well_depth_m",
       "question_to_user": "Have farmers in this area noticed that their open wells or borewells are producing less water during the rabi season compared to 5–10 years ago? Have any wells gone dry or required deepening? If possible, what is the approximate current depth to water in the dry season (January–March)?",
-      "how_answer_updates_diagnosis": "If wells are shallower in yield or have required deepening, this confirms that surface storage failure (rapid tank drying) is reducing groundwater recharge from tank seepage, compounding the irrigation challenge. If well yields are stable despite low SWB rabi/kharif ratios, groundwater may be recharged from other sources (river connectivity, regional aquifer), and the diagnosis should focus on surface storage rehabilitation rather than groundwater interventions."
+      "how_answer_updates_diagnosis": "If wells are shallower in yield or have required deepening, this confirms that surface storage failure (rapid tank drying) is reducing groundwater recharge from tank seepage, compounding the irrigation challenge. If well yields are stable despite low SWB rabi/kharif ratios, groundwater may be recharged from other sources (river connectivity, regional aquifer), and the diagnosis should focus on surface storage rehabilitation rather than groundwater interventions.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "stable",
+          "label": "Well depth has stayed roughly the same (within ~1 m)",
+          "normalized": {
+            "trend": "stable",
+            "present": true
+          }
+        },
+        {
+          "id": "deepening",
+          "label": "Wells have deepened by more than 2–3 m in the last 5–10 years",
+          "normalized": {
+            "trend": "worsening",
+            "present": true
+          }
+        },
+        {
+          "id": "failed",
+          "label": "Springs or shallow wells have dried up permanently or for much longer",
+          "normalized": {
+            "trend": "worsening",
+            "present": true,
+            "band": "high"
+          }
+        }
+      ]
     }
   ],
   "sources": [

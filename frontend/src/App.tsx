@@ -39,6 +39,7 @@ export default function App() {
   const [flyTarget, setFlyTarget] = useState<{ lat: number; lon: number; zoom?: number } | null>(null)
 
   const [problem, setProblem] = useState('')
+  const [wantLlmOpinion, setWantLlmOpinion] = useState(false)
   const [sessionId, setSessionId] = useState<string | null>(null)
   const [diagnosis, setDiagnosis] = useState<DiagnosisResponse | null>(null)
   const [followUpHistory, setFollowUpHistory] = useState<FollowUpExchange[]>([])
@@ -349,7 +350,13 @@ export default function App() {
     setDiagnosisLoading(true)
     setDiagnosisError(null)
     try {
-      const result = await runDiagnosisQuery(analysisUid, problem, sessionId, analysisTehsil)
+      const result = await runDiagnosisQuery(
+        analysisUid,
+        wantLlmOpinion ? problem : '',
+        sessionId,
+        analysisTehsil,
+        wantLlmOpinion,
+      )
       setDiagnosis(result)
       setFollowUpHistory([])
       setSessionId(result.session_id)
@@ -365,10 +372,20 @@ export default function App() {
   }
 
   async function handleFollowUp() {
-    if (!sessionId || !followUpAnswer.trim() || !followUpTarget) return
+    if (!sessionId || !followUpTarget) return
+    const mcq = diagnosis?.follow_up_mcq
+    const usingMcq = Boolean(mcq && mcq.variable === followUpTarget.variable)
+    if (usingMcq && !followUpAnswer.trim()) return
+    if (!usingMcq && !followUpAnswer.trim()) return
+
     const answer = followUpAnswer.trim()
+
+    const displayAnswer = usingMcq
+      ? mcq!.choices.find((choice) => choice.id === answer)?.label ?? answer
+      : answer
     const question =
       followUpTarget.question ??
+      mcq?.question ??
       (followUpTarget.structured ? 'Follow-up response' : 'Additional observation')
     const sessionMwsUid = diagnosisSessionMwsUidRef.current
     const sessionTehsil = diagnosisSessionTehsilRef.current
@@ -379,13 +396,19 @@ export default function App() {
     setDiagnosisLoading(true)
     setDiagnosisError(null)
     try {
-      const result = await submitDiagnosisAnswer(sessionId, followUpTarget.variable, answer)
+      const result = await submitDiagnosisAnswer(
+        sessionId,
+        followUpTarget.variable,
+        usingMcq ? '' : answer,
+        wantLlmOpinion,
+        usingMcq ? answer : null,
+      )
       if (result.session_id) setSessionId(result.session_id)
       setFollowUpHistory((prev) => [
         ...prev,
         {
           question,
-          answer,
+          answer: displayAnswer,
           actions: result.panel_updates ?? [],
           explanation: result.panel_update_explanation ?? null,
           variable: followUpTarget.variable,
@@ -451,6 +474,8 @@ export default function App() {
             villageNames={isDiagnosisSessionLocked ? analysisVillageNames : mapVillageNames}
             problem={problem}
             onProblemChange={setProblem}
+            wantLlmOpinion={wantLlmOpinion}
+            onWantLlmOpinionChange={setWantLlmOpinion}
             onSubmit={handleDiagnosis}
             loading={diagnosisLoading}
             error={diagnosisError}

@@ -131,7 +131,35 @@
     {
       "missing_variable": "annual_well_depth_m",
       "question_to_user": "Have farmers in this area noticed that they need to pump from greater depths than before, or that pumping costs have increased over the past 5–10 years? Approximately how deep are tubewells or borewells currently (less than 20 m, 20–50 m, or more than 50 m)?",
-      "how_answer_updates_diagnosis": "If well depth has increased substantially or pumping costs have risen sharply during rabi/zaid seasons, this confirms that surface irrigation failure is forcing groundwater substitution, strengthening the irrigation_challenges diagnosis. If well depth is very deep (>50 m) and increasing rapidly even in normal rainfall years, the diagnosis should be reviewed for a co-occurring groundwater_stress pathway, and solar pump or micro-irrigation solutions become more urgent."
+      "how_answer_updates_diagnosis": "If well depth has increased substantially or pumping costs have risen sharply during rabi/zaid seasons, this confirms that surface irrigation failure is forcing groundwater substitution, strengthening the irrigation_challenges diagnosis. If well depth is very deep (>50 m) and increasing rapidly even in normal rainfall years, the diagnosis should be reviewed for a co-occurring groundwater_stress pathway, and solar pump or micro-irrigation solutions become more urgent.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "stable",
+          "label": "Well depth has stayed roughly the same (within ~1 m)",
+          "normalized": {
+            "trend": "stable",
+            "present": true
+          }
+        },
+        {
+          "id": "deepening",
+          "label": "Wells have deepened by more than 2–3 m in the last 5–10 years",
+          "normalized": {
+            "trend": "worsening",
+            "present": true
+          }
+        },
+        {
+          "id": "failed",
+          "label": "Springs or shallow wells have dried up permanently or for much longer",
+          "normalized": {
+            "trend": "worsening",
+            "present": true,
+            "band": "high"
+          }
+        }
+      ]
     }
   ],
   "sources": [

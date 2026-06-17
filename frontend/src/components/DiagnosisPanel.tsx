@@ -12,6 +12,8 @@ interface Props {
   villageNames: string[]
   problem: string
   onProblemChange: (value: string) => void
+  wantLlmOpinion: boolean
+  onWantLlmOpinionChange: (value: boolean) => void
   onSubmit: () => void
   loading: boolean
   error: string | null
@@ -38,6 +40,8 @@ export function DiagnosisPanel({
   villageNames,
   problem,
   onProblemChange,
+  wantLlmOpinion,
+  onWantLlmOpinionChange,
   onSubmit,
   loading,
   error,
@@ -75,6 +79,9 @@ export function DiagnosisPanel({
   const mapBrowseLabel = browsingDifferentTehsil
     ? `${mapTehsil?.tehsil}, ${mapTehsil?.district}`
     : selectedMwsUid
+  const runEnabled = wantLlmOpinion ? Boolean(problem.trim()) : true
+  const summaryHeading =
+    diagnosis?.llm_skipped === false && (diagnosis?.want_llm_opinion ?? wantLlmOpinion) ? 'Answer' : 'Summary'
 
   function pathwayAerLine(pathway: PathwayResult) {
     const aer = formatPathwayAerContext(pathway, resolvedMwsAer, resolvedRetrievalAer)
@@ -130,25 +137,42 @@ export function DiagnosisPanel({
             )}
           </div>
         ) : (
-          <p className="mt-1 text-sm text-stone-500">Select an MWS on the map, then describe the farmer-reported problem.</p>
+          <p className="mt-1 text-sm text-stone-500">Select an MWS on the map to run landscape diagnosis.</p>
         )}
       </div>
 
-      <label className="flex flex-col gap-2 text-sm">
-        <span className="font-medium text-stone-700">Problem description</span>
-        <textarea
-          className="min-h-28 rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-200 disabled:bg-stone-100"
-          value={problem}
-          onChange={(e) => onProblemChange(e.target.value)}
-          placeholder="e.g. Our wells are drying up and cotton yields are falling"
+      <label className="flex items-center gap-2 text-sm">
+        <input
+          type="checkbox"
+          checked={wantLlmOpinion}
+          onChange={(e) => onWantLlmOpinionChange(e.target.checked)}
           disabled={disabled || loading}
+          className="rounded border-stone-400"
         />
+        <span className="font-medium text-stone-700">Include LLM opinion</span>
       </label>
+
+      {wantLlmOpinion ? (
+        <label className="flex flex-col gap-2 text-sm">
+          <span className="font-medium text-stone-700">Problem description</span>
+          <textarea
+            className="min-h-28 rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-200 disabled:bg-stone-100"
+            value={problem}
+            onChange={(e) => onProblemChange(e.target.value)}
+            placeholder="e.g. Our wells are drying up and cotton yields are falling"
+            disabled={disabled || loading}
+          />
+        </label>
+      ) : (
+        <p className="text-sm text-stone-600">
+          Server-only diagnosis uses landscape data and evidence cards without a user question.
+        </p>
+      )}
 
       <button
         type="button"
         onClick={onSubmit}
-        disabled={disabled || loading || !problem.trim()}
+        disabled={disabled || loading || !runEnabled}
         className="rounded-lg bg-amber-700 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-amber-800 disabled:cursor-not-allowed disabled:bg-stone-300"
       >
         {loading ? 'Analyzing…' : 'Run diagnosis'}
@@ -169,7 +193,7 @@ export function DiagnosisPanel({
           </p>
           {diagnosis.panel_update_explanation?.trim() ? (
             <section className="rounded-lg border border-sky-200 bg-sky-50/60 px-3 py-2">
-              <h3 className="text-sm font-semibold text-sky-900">Answer</h3>
+              <h3 className="text-sm font-semibold text-sky-900">{summaryHeading}</h3>
               <p className="mt-1 text-sm text-stone-800">
                 <SignalRichText
                   text={diagnosis.panel_update_explanation}
@@ -207,12 +231,31 @@ export function DiagnosisPanel({
           {diagnosis.uncertain_pathways.length > 0 && (
             <section>
               <h3 className="text-sm font-semibold text-amber-800">Uncertain pathways</h3>
+              <p className="mt-1 text-xs text-amber-900/80">
+                Not yet confirmed — follow-up questions may move these to confirmed.
+              </p>
               <ul className="mt-2 space-y-2">
                 {diagnosis.uncertain_pathways.map((p: PathwayResult) => (
                   <li key={p.pathway_id} className="rounded-lg bg-amber-50 px-3 py-2 text-sm">
                     <div className="font-medium">{formatPathwayHierarchy(p)}</div>
                     {pathwayAerLine(p)}
                     <div className="text-xs uppercase text-amber-700">{p.confidence} confidence</div>
+                    {p.reasoning && (
+                      <p className="mt-1 text-stone-700">
+                        <SignalRichText
+                          text={p.reasoning}
+                          pathwayId={p.pathway_id}
+                          signalEvaluation={diagnosis.signal_evaluation}
+                        />
+                      </p>
+                    )}
+                    {p.missing_variable_questions && p.missing_variable_questions.length > 0 ? (
+                      <ul className="mt-2 list-disc space-y-1 pl-5 text-xs text-stone-600">
+                        {p.missing_variable_questions.map((q) => (
+                          <li key={`${p.pathway_id}-${q.variable}`}>{q.question}</li>
+                        ))}
+                      </ul>
+                    ) : null}
                   </li>
                 ))}
               </ul>
@@ -342,25 +385,50 @@ export function DiagnosisPanel({
           {canContinueConversation && followUpTarget && (
             <section className="rounded-lg border border-amber-200 bg-amber-50/60 p-3">
               <h3 className="text-sm font-semibold text-amber-900">{sectionTitle}</h3>
-              {followUpTarget.question ? (
-                <p className="mt-1 text-sm text-stone-700">{followUpTarget.question}</p>
+              {(followUpTarget.question || diagnosis.follow_up_mcq?.question) ? (
+                <p className="mt-1 text-sm text-stone-700">
+                  {diagnosis.follow_up_mcq?.question ?? followUpTarget.question}
+                </p>
               ) : (
                 <p className="mt-1 text-sm text-stone-600">
                   No further structured questions from the diagnosis model. You can still add observations,
                   corrections, or clarifications below and the analysis will be updated.
                 </p>
               )}
-              <textarea
-                className="mt-2 min-h-20 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
-                value={followUpAnswer}
-                onChange={(e) => onFollowUpAnswerChange(e.target.value)}
-                placeholder={
-                  followUpTarget.question
-                    ? 'Type your answer…'
-                    : 'e.g. We also noticed siltation in the farm pond after last monsoon…'
-                }
-                disabled={loading}
-              />
+              {diagnosis.follow_up_mcq &&
+              diagnosis.follow_up_mcq.variable === followUpTarget.variable ? (
+                <div className="mt-2 space-y-2">
+                  {diagnosis.follow_up_mcq.choices.map((choice) => (
+                    <label
+                      key={choice.id}
+                      className="flex cursor-pointer items-start gap-2 rounded-md border border-stone-200 bg-white px-3 py-2 text-sm"
+                    >
+                      <input
+                        type="radio"
+                        name="follow-up-mcq"
+                        value={choice.id}
+                        checked={followUpAnswer === choice.id}
+                        onChange={() => onFollowUpAnswerChange(choice.id)}
+                        disabled={loading}
+                        className="mt-0.5"
+                      />
+                      <span className="text-stone-800">{choice.label}</span>
+                    </label>
+                  ))}
+                </div>
+              ) : (
+                <textarea
+                  className="mt-2 min-h-20 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
+                  value={followUpAnswer}
+                  onChange={(e) => onFollowUpAnswerChange(e.target.value)}
+                  placeholder={
+                    followUpTarget.question
+                      ? 'Type your answer…'
+                      : 'e.g. We also noticed siltation in the farm pond after last monsoon…'
+                  }
+                  disabled={loading}
+                />
+              )}
               <button
                 type="button"
                 onClick={onSubmitFollowUp}

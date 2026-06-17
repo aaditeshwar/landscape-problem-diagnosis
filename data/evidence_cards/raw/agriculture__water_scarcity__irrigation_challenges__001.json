@@ -149,7 +149,35 @@
     {
       "missing_variable": "annual_well_depth_m",
       "question_to_user": "Have farmers in your village had to deepen their wells or borewells in the last 5-10 years to find water? If yes, roughly how many metres deeper are they now compared to when the well was first dug or drilled?",
-      "how_answer_updates_diagnosis": "If well depth has increased significantly (more than 3-5 metres over the record), this suggests groundwater depletion is co-occurring with surface irrigation failure, strengthening the case for both irrigation_challenges and groundwater_stress pathways. It also indicates that solar pump or lift irrigation solutions must account for higher pumping heads and costs."
+      "how_answer_updates_diagnosis": "If well depth has increased significantly (more than 3-5 metres over the record), this suggests groundwater depletion is co-occurring with surface irrigation failure, strengthening the case for both irrigation_challenges and groundwater_stress pathways. It also indicates that solar pump or lift irrigation solutions must account for higher pumping heads and costs.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "stable",
+          "label": "Well depth has stayed roughly the same (within ~1 m)",
+          "normalized": {
+            "trend": "stable",
+            "present": true
+          }
+        },
+        {
+          "id": "deepening",
+          "label": "Wells have deepened by more than 2–3 m in the last 5–10 years",
+          "normalized": {
+            "trend": "worsening",
+            "present": true
+          }
+        },
+        {
+          "id": "failed",
+          "label": "Springs or shallow wells have dried up permanently or for much longer",
+          "normalized": {
+            "trend": "worsening",
+            "present": true,
+            "band": "high"
+          }
+        }
+      ]
     }
   ],
   "sources": [

@@ -171,12 +171,67 @@
     {
       "missing_variable": "annual_well_depth_m",
       "question_to_user": "Have farmers in this area had to deepen their dug wells or drill new borewells deeper than before over the past 3–5 years? If yes, roughly how many metres deeper are they now compared to 5 years ago?",
-      "how_answer_updates_diagnosis": "A reported increase in well depth of more than 3 metres over 5 years (~0.6 m/year) in a crystalline basement aquifer strongly confirms the groundwater stress pathway. This is especially significant if it occurs in the pre-monsoon period (April–May), indicating incomplete recharge recovery during the previous monsoon. Combined with elevated SOGE or negative delta_g trend, this makes the diagnosis high-confidence."
+      "how_answer_updates_diagnosis": "A reported increase in well depth of more than 3 metres over 5 years (~0.6 m/year) in a crystalline basement aquifer strongly confirms the groundwater stress pathway. This is especially significant if it occurs in the pre-monsoon period (April–May), indicating incomplete recharge recovery during the previous monsoon. Combined with elevated SOGE or negative delta_g trend, this makes the diagnosis high-confidence.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "stable",
+          "label": "Well depth has stayed roughly the same (within ~1 m)",
+          "normalized": {
+            "trend": "stable",
+            "present": true
+          }
+        },
+        {
+          "id": "deepening",
+          "label": "Wells have deepened by more than 2–3 m in the last 5–10 years",
+          "normalized": {
+            "trend": "worsening",
+            "present": true
+          }
+        },
+        {
+          "id": "failed",
+          "label": "Springs or shallow wells have dried up permanently or for much longer",
+          "normalized": {
+            "trend": "worsening",
+            "present": true,
+            "band": "high"
+          }
+        }
+      ]
     },
     {
       "missing_variable": "borewell_density",
       "question_to_user": "Approximately how many borewells or tubewells are there in your village or the surrounding 2–3 km area? Would you say very few (fewer than 10), a moderate number (10–30), or a large number (more than 30)?",
-      "how_answer_updates_diagnosis": "High borewell density (>30 in a small area) in a crystalline basement aquifer with spatially limited fracture zones confirms localised over-extraction that block-level SOGE cannot capture. This would elevate diagnosis confidence to high even if block-level SOGE appears Safe, because multiple borewells competing for the same fracture network can rapidly deplete local storage."
+      "how_answer_updates_diagnosis": "High borewell density (>30 in a small area) in a crystalline basement aquifer with spatially limited fracture zones confirms localised over-extraction that block-level SOGE cannot capture. This would elevate diagnosis confidence to high even if block-level SOGE appears Safe, because multiple borewells competing for the same fracture network can rapidly deplete local storage.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "few",
+          "label": "Very few (fewer than 10 within 2–3 km)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "moderate",
+          "label": "Moderate (10–50 within 2–3 km)",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "many",
+          "label": "More than 50 within 2–3 km",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "groundwater_salinity",

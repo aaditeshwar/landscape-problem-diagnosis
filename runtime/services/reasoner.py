@@ -7,7 +7,13 @@ from typing import Any
 
 from config import LLM_PROVIDER
 from services.assembler import authorized_follow_up_questions, find_pathway
-from services.diagnosis_revision import apply_ruled_out_guard, apply_scoped_follow_up, apply_user_rule_out, pathways_ruled_out_from_signal_evaluation
+from services.diagnosis_revision import (
+    apply_follow_up_revision,
+    apply_ruled_out_guard,
+    apply_scoped_follow_up,
+    apply_user_rule_out,
+    pathways_ruled_out_from_signal_evaluation,
+)
 from services.diagnosis_trace import DiagnosisRun
 from services.llm_client import chat_json, model_for_turn
 from services.panel_updates import apply_panel_updates_from_standards
@@ -1291,3 +1297,134 @@ def run_diagnosis(
         signal_evaluation=signal_eval,
     )
     return run
+
+
+def run_server_diagnosis(
+    *,
+    location: dict,
+    problem_description: str,
+    bundle: dict[str, dict],
+    follow_up_context: str | None = None,
+    follow_up: bool = False,
+    injected_variables: dict[str, Any] | None = None,
+    prior_asked_questions: list[str] | None = None,
+    prior_diagnosis: dict[str, Any] | None = None,
+    pathway_retrieval_ranks: dict[str, int] | None = None,
+    answered_variable: str | None = None,
+) -> DiagnosisRun:
+    """Build a complete diagnosis response without calling the LLM."""
+    from services.evidence_note import (
+        build_follow_up_panel_summary,
+        build_server_panel_summary,
+        pathway_status_from_evaluation,
+        solutions_for_confirmed_pathways,
+    )
+    from services.signal_evaluator import collect_follow_up_signal_updates, evaluate_bundle_signals
+
+    t0 = time.perf_counter()
+    signal_eval = evaluate_bundle_signals(bundle, injected=injected_variables)
+    ruled_out = pathways_ruled_out_from_signal_evaluation(signal_eval)
+
+    status = pathway_status_from_evaluation(
+        signal_eval,
+        bundle,
+        injected_variables=injected_variables,
+        ruled_out_ids=ruled_out,
+        location=location,
+    )
+    response: dict[str, Any] = {
+        "confirmed_pathways": status["confirmed_pathways"],
+        "uncertain_pathways": status["uncertain_pathways"],
+        "solutions": [],
+        "panel_updates": [],
+        "panel_update_explanation": None,
+        "follow_up_question": None,
+        "follow_up_variable": None,
+    }
+
+    response = apply_signal_confidence_guard(
+        response,
+        signal_eval=signal_eval,
+        bundle=bundle,
+    )
+
+    if follow_up and answered_variable and prior_diagnosis:
+        response = apply_scoped_follow_up(
+            response,
+            prior_diagnosis,
+            answered_variable,
+            signal_evaluation=signal_eval,
+        )
+        response = apply_user_rule_out(
+            response,
+            answered_variable,
+            signal_evaluation=signal_eval,
+        )
+        response = apply_ruled_out_guard(
+            response,
+            signal_evaluation=signal_eval,
+            answered_variable=answered_variable,
+        )
+        ruled_out = pathways_ruled_out_from_signal_evaluation(signal_eval)
+
+    confirmed_ids = [
+        str(p.get("pathway_id") or "")
+        for p in response.get("confirmed_pathways") or []
+        if isinstance(p, dict) and p.get("pathway_id")
+    ]
+    response["solutions"] = solutions_for_confirmed_pathways(confirmed_ids, bundle)
+
+    response = _enrich_pathways_from_bundle(response, bundle)
+    response = sanitize_uncertain_pathways(
+        response,
+        bundle=bundle,
+        injected_variables=injected_variables,
+        prior_asked_questions=prior_asked_questions,
+    )
+    response = pick_next_follow_up(
+        response,
+        injected_variables,
+        bundle=bundle,
+        prior_asked_questions=prior_asked_questions,
+        pathway_retrieval_ranks=pathway_retrieval_ranks,
+        ruled_out_pathway_ids=ruled_out,
+    )
+    response = apply_panel_updates_from_standards(response, follow_up_context=follow_up_context)
+
+    if follow_up and prior_diagnosis:
+        signal_updates = collect_follow_up_signal_updates(signal_eval, answered_variable)
+        response = apply_follow_up_revision(
+            response,
+            prior_diagnosis,
+            answered_variable=answered_variable,
+            follow_up_signal_updates=signal_updates,
+            signal_evaluation=signal_eval,
+        )
+        if not response.get("panel_update_explanation"):
+            response["panel_update_explanation"] = build_follow_up_panel_summary(
+                response.get("diagnosis_revision")
+            )
+    else:
+        response["panel_update_explanation"] = build_server_panel_summary(
+            location,
+            response.get("confirmed_pathways") or [],
+            response.get("uncertain_pathways") or [],
+            signal_eval,
+            problem_description=problem_description or None,
+        )
+
+    from services.follow_up_mcq import attach_follow_up_mcq
+
+    response = attach_follow_up_mcq(response, bundle)
+
+    postprocess_ms = (time.perf_counter() - t0) * 1000
+    return DiagnosisRun(
+        response=response,
+        prompt="",
+        raw_llm_text="",
+        model="server",
+        llm_ms=0.0,
+        postprocess_ms=postprocess_ms,
+        prompt_profile="server",
+        signal_evaluation=signal_eval,
+    )

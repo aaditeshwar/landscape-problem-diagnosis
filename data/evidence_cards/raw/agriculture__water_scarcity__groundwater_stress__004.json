@@ -170,12 +170,67 @@
     {
       "missing_variable": "annual_well_depth_m",
       "question_to_user": "Have you or other farmers in your village had to deepen your borewells or tubewells in the last 5–10 years? If yes, by roughly how many feet or metres? Are any shallow dug wells now dry during the rabi (winter) or zaid (summer) season that used to have water?",
-      "how_answer_updates_diagnosis": "Confirmed well deepening of more than 3–5 metres over the available record, or seasonal drying of previously reliable wells, strongly confirms the groundwater stress pathway in the alluvial aquifer. If wells are deepening rapidly (>1 m/year), the diagnosis severity should be elevated to high and urgent intervention recommended."
+      "how_answer_updates_diagnosis": "Confirmed well deepening of more than 3–5 metres over the available record, or seasonal drying of previously reliable wells, strongly confirms the groundwater stress pathway in the alluvial aquifer. If wells are deepening rapidly (>1 m/year), the diagnosis severity should be elevated to high and urgent intervention recommended.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "stable",
+          "label": "Well depth has stayed roughly the same (within ~1 m)",
+          "normalized": {
+            "trend": "stable",
+            "present": true
+          }
+        },
+        {
+          "id": "deepening",
+          "label": "Wells have deepened by more than 2–3 m in the last 5–10 years",
+          "normalized": {
+            "trend": "worsening",
+            "present": true
+          }
+        },
+        {
+          "id": "failed",
+          "label": "Springs or shallow wells have dried up permanently or for much longer",
+          "normalized": {
+            "trend": "worsening",
+            "present": true,
+            "band": "high"
+          }
+        }
+      ]
     },
     {
       "missing_variable": "borewell_density",
       "question_to_user": "Roughly how many borewells or tubewells are there in your village or in the surrounding 2–3 km area? Would you say there are very few (less than 10), a moderate number (10–50), or a large number (more than 50)? Have many new borewells been drilled in the last 5 years?",
-      "how_answer_updates_diagnosis": "High borewell density in an arid alluvial setting with Critical or Over-exploited SOGE confirms localised extraction pressure exceeding recharge. Rapid recent growth in borewell numbers indicates accelerating depletion and strengthens the case for collective groundwater governance interventions such as Atal Bhujal Yojana participation."
+      "how_answer_updates_diagnosis": "High borewell density in an arid alluvial setting with Critical or Over-exploited SOGE confirms localised extraction pressure exceeding recharge. Rapid recent growth in borewell numbers indicates accelerating depletion and strengthens the case for collective groundwater governance interventions such as Atal Bhujal Yojana participation.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "few",
+          "label": "Very few (fewer than 10 within 2–3 km)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "moderate",
+          "label": "Moderate (10–50 within 2–3 km)",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "many",
+          "label": "More than 50 within 2–3 km",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "groundwater_salinity",

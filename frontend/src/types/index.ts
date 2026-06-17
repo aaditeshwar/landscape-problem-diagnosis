@@ -121,6 +121,17 @@ export interface DiagnosisRevision {
   pathway_interpretations?: PathwayInterpretation[]
 }
 
+export interface FollowUpMcqChoice {
+  id: string
+  label: string
+}
+
+export interface FollowUpMcq {
+  variable: string
+  question: string
+  choices: FollowUpMcqChoice[]
+}
+
 export interface DiagnosisResponse {
   session_id: string
   mws_aer_code?: string | null
@@ -132,10 +143,13 @@ export interface DiagnosisResponse {
   panel_update_explanation?: string | null
   follow_up_question?: string | null
   follow_up_variable?: string | null
+  follow_up_mcq?: FollowUpMcq | null
   diagnosis_revision?: DiagnosisRevision | null
   follow_up_signal_updates?: FollowUpSignalUpdate[]
   pathway_retrieval_ranks?: Record<string, number>
   signal_evaluation?: SignalEvaluation | null
+  want_llm_opinion?: boolean
+  llm_skipped?: boolean
 }
 
 export interface FollowUpExchange {

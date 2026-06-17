@@ -60,6 +60,7 @@ export function runDiagnosisQuery(
   problemDescription: string,
   sessionId?: string | null,
   tehsilRef?: TehsilRef | null,
+  wantLlmOpinion = false,
 ): Promise<DiagnosisResponse> {
   return api('/api/query', {
     method: 'POST',
@@ -71,6 +72,7 @@ export function runDiagnosisQuery(
       state: tehsilRef?.state ?? null,
       district: tehsilRef?.district ?? null,
       tehsil: tehsilRef?.tehsil ?? null,
+      want_llm_opinion: wantLlmOpinion,
     }),
   })
 }
@@ -79,10 +81,18 @@ export function submitDiagnosisAnswer(
   sessionId: string,
   variable: string,
   answer: string,
+  wantLlmOpinion?: boolean,
+  choiceId?: string | null,
 ): Promise<DiagnosisResponse> {
   return api('/api/answer', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ session_id: sessionId, variable, answer }),
+    body: JSON.stringify({
+      session_id: sessionId,
+      variable,
+      answer: choiceId ? '' : answer,
+      choice_id: choiceId ?? null,
+      want_llm_opinion: wantLlmOpinion ?? null,
+    }),
   })
 }

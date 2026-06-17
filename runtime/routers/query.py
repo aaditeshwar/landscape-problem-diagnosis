@@ -16,7 +16,8 @@ from services.diagnosis_revision import (
 from services.diagnosis_trace import DiagnosisRequestTrace
 from services.llm_client import model_for_turn
 from services.mws_enrich import enrich_mws_doc
-from services.reasoner import DiagnosisLLMParseError, _collect_prior_follow_up, run_diagnosis
+from services.follow_up_mcq import attach_follow_up_mcq, normalized_answer_from_mcq_choice
+from services.reasoner import DiagnosisLLMParseError, _collect_prior_follow_up, run_diagnosis, run_server_diagnosis
 from services.retriever import (
     frozen_retrieval_result,
     load_evidence_cards_by_ids,
@@ -30,7 +31,13 @@ from services.signal_evaluator import (
     summarize_evaluation_for_log,
     summarize_pathway_evidence,
 )
-from services.session_manager import append_turn, create_session, get_session
+from services.session_manager import (
+    append_turn,
+    create_session,
+    get_session,
+    session_want_llm_opinion,
+    set_session_want_llm_opinion,
+)
 from services.tehsil_refs import make_tehsil_ref, resolve_active_tehsil
 
 router = APIRouter(prefix="/api", tags=["diagnosis"])
@@ -250,17 +257,36 @@ def _log_failed_diagnosis(
 
 class QueryRequest(BaseModel):
     uid: str
-    problem_description: str
+    problem_description: str = ""
     session_id: str | None = None
     state: str | None = None
     district: str | None = None
     tehsil: str | None = None
+    want_llm_opinion: bool = False
 
 
 class AnswerRequest(BaseModel):
     session_id: str
     variable: str
-    answer: str
+    answer: str = ""
+    choice_id: str | None = None
+    want_llm_opinion: bool | None = None
+
+
+def _effective_retrieval_query(problem_description: str, *, want_llm_opinion: bool) -> str:
+    text = str(problem_description or "").strip()
+    if want_llm_opinion and not text:
+        raise HTTPException(
+            status_code=400,
+            detail="problem_description is required when want_llm_opinion is true",
+        )
+    return text or DEFAULT_RETRIEVAL_PROBE
+
+
+def _resolve_want_llm_opinion(request_flag: bool | None, session: dict | None) -> bool:
+    if request_flag is not None:
+        return bool(request_flag)
+    return session_want_llm_opinion(session)
 
 
 def _load_mws(uid: str) -> dict:
@@ -286,9 +312,12 @@ def _run_query(
     *,
     tehsil_ref: dict | None = None,
     request_started: float | None = None,
+    want_llm_opinion: bool = False,
 ) -> dict:
     request_started = request_started or time.perf_counter()
     db = get_db()
+    retrieval_query = _effective_retrieval_query(problem_description, want_llm_opinion=want_llm_opinion)
+    user_problem = str(problem_description or "").strip()
     if session_id:
         session = get_session(db, session_id)
         if not session:
@@ -326,9 +355,11 @@ def _run_query(
         session = create_session(db, mws_doc, tehsil_ref)
         session_id = session["_id"]
 
+    set_session_want_llm_opinion(db, session_id, want_llm_opinion)
+
     injected = session.get("injected_variables") or {}
     try:
-        retrieval = retrieve_evidence_cards(db, problem_description, mws_doc)
+        retrieval = retrieve_evidence_cards(db, retrieval_query, mws_doc)
     except Exception as exc:
         _log_diagnosis_failure(
             event="diagnosis_query",
@@ -338,8 +369,8 @@ def _run_query(
             request_started=request_started,
             session_id=session_id,
             mws_doc=mws_doc,
-            problem_description=problem_description,
-            retrieval_query=problem_description,
+            problem_description=user_problem,
+            retrieval_query=retrieval_query,
             injected=injected,
         )
         raise HTTPException(
@@ -361,8 +392,8 @@ def _run_query(
             request_started=request_started,
             session_id=session_id,
             mws_doc=mws_doc,
-            problem_description=problem_description,
-            retrieval_query=problem_description,
+            problem_description=user_problem,
+            retrieval_query=retrieval_query,
             cards=cards,
             injected=injected,
             retrieval=retrieval,
@@ -373,22 +404,50 @@ def _run_query(
     ranks = pathway_retrieval_ranks(cards)
 
     llm_started = time.perf_counter()
+    llm_skipped = not want_llm_opinion
     try:
-        diagnosis = run_diagnosis(
-            location=location_context(mws_doc, tehsil_ref),
-            problem_description=problem_description,
-            bundle=bundle,
-            injected_variables=injected or None,
-            pathway_retrieval_ranks=ranks,
-        )
+        if want_llm_opinion:
+            diagnosis = run_diagnosis(
+                location=location_context(mws_doc, tehsil_ref),
+                problem_description=user_problem,
+                bundle=bundle,
+                injected_variables=injected or None,
+                pathway_retrieval_ranks=ranks,
+            )
+        else:
+            diagnosis = run_server_diagnosis(
+                location=location_context(mws_doc, tehsil_ref),
+                problem_description=user_problem,
+                bundle=bundle,
+                injected_variables=injected or None,
+                pathway_retrieval_ranks=ranks,
+            )
     except Exception as exc:
+        if llm_skipped:
+            _log_diagnosis_failure(
+                event="diagnosis_query",
+                turn_type="initial",
+                failure_stage="validation",
+                exc=exc,
+                request_started=request_started,
+                session_id=session_id,
+                mws_doc=mws_doc,
+                problem_description=user_problem,
+                retrieval_query=retrieval_query,
+                cards=cards,
+                bundle=bundle,
+                injected=injected,
+                retrieval=retrieval,
+                assemble_ms=assemble_ms,
+            )
+            raise HTTPException(status_code=500, detail=f"Server diagnosis failed: {exc}") from exc
         _log_failed_diagnosis(
             event="diagnosis_query",
             turn_type="initial",
             session_id=session_id,
             mws_doc=mws_doc,
-            problem_description=problem_description,
-            retrieval_query=problem_description,
+            problem_description=user_problem,
+            retrieval_query=retrieval_query,
             cards=cards,
             bundle=bundle,
             injected=injected,
@@ -402,6 +461,7 @@ def _run_query(
         raise _llm_http_exception(exc) from exc
 
     llm_response = diagnosis.response
+    llm_response = attach_follow_up_mcq(llm_response, bundle)
     total_ms = (time.perf_counter() - request_started) * 1000
     timings = {
         **retrieval.metrics.as_dict(),
@@ -415,8 +475,8 @@ def _run_query(
         session_id=session_id,
         turn_type="initial",
         model=diagnosis.model,
-        retrieval_query=problem_description,
-        problem_description=problem_description,
+        retrieval_query=retrieval_query,
+        problem_description=user_problem or None,
         retrieved_card_ids=_card_ids(cards),
         pathway_evidence=summarize_pathway_evidence(
             bundle, mws_aer_code=mws_doc.get("nbss_lup_aer_code"), retrieval_aer_tags=_aer_tags_for_retrieval(mws_doc)
@@ -429,6 +489,8 @@ def _run_query(
         llm_response=llm_response,
         follow_up_question=llm_response.get("follow_up_question"),
         follow_up_variable=llm_response.get("follow_up_variable"),
+        want_llm_opinion=want_llm_opinion,
+        llm_skipped=llm_skipped,
         **_mws_trace_fields(mws_doc, tehsil_ref),
     )
     _emit_diagnosis_log(trace)
@@ -436,9 +498,9 @@ def _run_query(
     append_turn(
         db,
         session_id,
-        user_input=problem_description,
+        user_input=user_problem,
         retrieved_cards=_card_ids(cards),
-        llm_model=model_for_turn(follow_up=False),
+        llm_model=diagnosis.model if want_llm_opinion else "server",
         llm_response=llm_response,
     )
 
@@ -449,12 +511,29 @@ def _run_query(
         "retrieval_aer_tags": _aer_tags_for_retrieval(mws_doc) or [],
         "pathway_retrieval_ranks": ranks,
         "signal_evaluation": summarize_evaluation_for_log(diagnosis.signal_evaluation or {}),
+        "want_llm_opinion": want_llm_opinion,
+        "llm_skipped": llm_skipped,
     }
 
 
 @router.post("/query")
 def diagnosis_query(body: QueryRequest):
     request_started = time.perf_counter()
+    try:
+        _effective_retrieval_query(body.problem_description, want_llm_opinion=body.want_llm_opinion)
+    except HTTPException as exc:
+        _log_diagnosis_failure(
+            event="diagnosis_query",
+            turn_type="initial",
+            failure_stage="validation",
+            exc=exc,
+            request_started=request_started,
+            session_id=body.session_id,
+            mws_uid=body.uid,
+            problem_description=body.problem_description,
+            retrieval_query=body.problem_description,
+        )
+        raise
     try:
         mws_doc = _load_mws(body.uid)
     except HTTPException as exc:
@@ -476,6 +555,7 @@ def diagnosis_query(body: QueryRequest):
         body.session_id,
         tehsil_ref=_tehsil_ref_from_request(body),
         request_started=request_started,
+        want_llm_opinion=body.want_llm_opinion,
     )
 
 
@@ -516,8 +596,6 @@ def diagnosis_answer(body: AnswerRequest):
 
     injected = dict(session.get("injected_variables") or {})
     session_tehsil_ref = session.get("tehsil_ref")
-    normalized_answer = normalize_qualitative_answer(body.variable, body.answer)
-    injected[body.variable] = normalized_answer
 
     first_turn = (session.get("turns") or [{}])[0]
     problem_description = first_turn.get("user_input") or ""
@@ -557,8 +635,49 @@ def diagnosis_answer(body: AnswerRequest):
         )
         raise exc
 
+    if body.choice_id:
+        normalized_answer = normalized_answer_from_mcq_choice(cards, body.variable, body.choice_id)
+        if not normalized_answer:
+            exc = HTTPException(status_code=400, detail=f"Unknown MCQ choice for {body.variable}: {body.choice_id}")
+            _log_diagnosis_failure(
+                event="diagnosis_follow_up",
+                turn_type="follow_up",
+                failure_stage="validation",
+                exc=exc,
+                request_started=request_started,
+                session_id=body.session_id,
+                mws_doc=mws_doc,
+                problem_description=problem_description,
+                follow_up_variable=body.variable,
+                follow_up_answer=body.choice_id,
+                injected=injected,
+            )
+            raise exc
+        answer_text = normalized_answer.get("raw", body.choice_id)
+    elif str(body.answer or "").strip():
+        normalized_answer = normalize_qualitative_answer(body.variable, body.answer)
+        answer_text = normalized_answer.get("raw", body.answer)
+    else:
+        exc = HTTPException(status_code=400, detail="Provide choice_id or answer for follow-up")
+        _log_diagnosis_failure(
+            event="diagnosis_follow_up",
+            turn_type="follow_up",
+            failure_stage="validation",
+            exc=exc,
+            request_started=request_started,
+            session_id=body.session_id,
+            mws_doc=mws_doc,
+            problem_description=problem_description,
+            follow_up_variable=body.variable,
+            follow_up_answer=body.answer,
+            injected=injected,
+        )
+        raise exc
+
+    injected[body.variable] = normalized_answer
+
     retrieval = frozen_retrieval_result(cards)
-    retrieval_query = f"{problem_description} | follow-up: {body.variable}={normalized_answer.get('raw', body.answer)}"
+    retrieval_query = f"{problem_description} | follow-up: {body.variable}={answer_text}"
     t0 = time.perf_counter()
     try:
         bundle = assemble_variable_bundle(mws_doc, cards, injected=injected)
@@ -585,7 +704,7 @@ def diagnosis_answer(body: AnswerRequest):
     assemble_ms = (time.perf_counter() - t0) * 1000
     ranks = pathway_retrieval_ranks(cards)
 
-    follow_up_context = f"{body.variable}: {normalized_answer.get('raw', body.answer)}"
+    follow_up_context = f"{body.variable}: {answer_text}"
     if normalized_answer.get("present") is not None:
         follow_up_context += f" (present={normalized_answer['present']}"
         if normalized_answer.get("trend"):
@@ -594,21 +713,59 @@ def diagnosis_answer(body: AnswerRequest):
 
     _injected, prior_asked_questions = _collect_prior_follow_up(session)
     prior_diagnosis = prior_diagnosis_from_session(session)
+    want_llm_opinion = _resolve_want_llm_opinion(body.want_llm_opinion, session)
+    set_session_want_llm_opinion(db, body.session_id, want_llm_opinion)
+    llm_skipped = not want_llm_opinion
+
     llm_started = time.perf_counter()
     try:
-        diagnosis = run_diagnosis(
-            location=location_context(mws_doc, session_tehsil_ref),
-            problem_description=problem_description,
-            bundle=bundle,
-            follow_up_context=follow_up_context,
-            follow_up=True,
-            injected_variables=injected,
-            prior_asked_questions=prior_asked_questions,
-            prior_diagnosis=prior_diagnosis,
-            pathway_retrieval_ranks=ranks,
-            answered_variable=body.variable,
-        )
+        if want_llm_opinion:
+            diagnosis = run_diagnosis(
+                location=location_context(mws_doc, session_tehsil_ref),
+                problem_description=problem_description,
+                bundle=bundle,
+                follow_up_context=follow_up_context,
+                follow_up=True,
+                injected_variables=injected,
+                prior_asked_questions=prior_asked_questions,
+                prior_diagnosis=prior_diagnosis,
+                pathway_retrieval_ranks=ranks,
+                answered_variable=body.variable,
+            )
+        else:
+            diagnosis = run_server_diagnosis(
+                location=location_context(mws_doc, session_tehsil_ref),
+                problem_description=problem_description,
+                bundle=bundle,
+                follow_up_context=follow_up_context,
+                follow_up=True,
+                injected_variables=injected,
+                prior_asked_questions=prior_asked_questions,
+                prior_diagnosis=prior_diagnosis,
+                pathway_retrieval_ranks=ranks,
+                answered_variable=body.variable,
+            )
     except Exception as exc:
+        if llm_skipped:
+            _log_diagnosis_failure(
+                event="diagnosis_follow_up",
+                turn_type="follow_up",
+                failure_stage="validation",
+                exc=exc,
+                request_started=request_started,
+                session_id=body.session_id,
+                mws_doc=mws_doc,
+                problem_description=problem_description,
+                retrieval_query=retrieval_query,
+                cards=cards,
+                bundle=bundle,
+                injected=injected,
+                retrieval=retrieval,
+                assemble_ms=assemble_ms,
+                follow_up_variable=body.variable,
+                follow_up_answer=body.answer,
+            )
+            raise HTTPException(status_code=500, detail=f"Server follow-up failed: {exc}") from exc
         _log_failed_diagnosis(
             event="diagnosis_follow_up",
             turn_type="follow_up",
@@ -631,18 +788,26 @@ def diagnosis_answer(body: AnswerRequest):
         raise _llm_http_exception(exc) from exc
 
     t1 = time.perf_counter()
-    signal_updates = collect_follow_up_signal_updates(
-        diagnosis.signal_evaluation or {},
-        body.variable,
-    )
-    llm_response = apply_follow_up_revision(
-        diagnosis.response,
-        prior_diagnosis,
-        answered_variable=body.variable,
-        follow_up_signal_updates=signal_updates,
-        signal_evaluation=diagnosis.signal_evaluation or {},
-    )
+    if want_llm_opinion:
+        signal_updates = collect_follow_up_signal_updates(
+            diagnosis.signal_evaluation or {},
+            body.variable,
+        )
+        llm_response = apply_follow_up_revision(
+            diagnosis.response,
+            prior_diagnosis,
+            answered_variable=body.variable,
+            follow_up_signal_updates=signal_updates,
+            signal_evaluation=diagnosis.signal_evaluation or {},
+        )
+    else:
+        llm_response = diagnosis.response
+        signal_updates = llm_response.get("follow_up_signal_updates") or collect_follow_up_signal_updates(
+            diagnosis.signal_evaluation or {},
+            body.variable,
+        )
     revision_ms = (time.perf_counter() - t1) * 1000
+    llm_response = attach_follow_up_mcq(llm_response, bundle)
 
     total_ms = (time.perf_counter() - request_started) * 1000
     timings = {
@@ -672,8 +837,10 @@ def diagnosis_answer(body: AnswerRequest):
         llm_response=llm_response,
         follow_up_question=llm_response.get("follow_up_question"),
         follow_up_variable=body.variable,
-        follow_up_answer=body.answer,
+        follow_up_answer=answer_text,
         follow_up_signal_updates=llm_response.get("follow_up_signal_updates") or signal_updates,
+        want_llm_opinion=want_llm_opinion,
+        llm_skipped=llm_skipped,
         **_mws_trace_fields(mws_doc, session_tehsil_ref),
     )
     _emit_diagnosis_log(trace)
@@ -681,9 +848,9 @@ def diagnosis_answer(body: AnswerRequest):
     append_turn(
         db,
         body.session_id,
-        user_input=body.answer,
+        user_input=answer_text,
         retrieved_cards=_card_ids(cards),
-        llm_model=model_for_turn(follow_up=True),
+        llm_model=diagnosis.model if want_llm_opinion else "server",
         llm_response=llm_response,
         injected_variable={body.variable: normalized_answer},
     )
@@ -695,4 +862,6 @@ def diagnosis_answer(body: AnswerRequest):
         "retrieval_aer_tags": _aer_tags_for_retrieval(mws_doc) or [],
         "pathway_retrieval_ranks": ranks,
         "signal_evaluation": summarize_evaluation_for_log(diagnosis.signal_evaluation or {}),
+        "want_llm_opinion": want_llm_opinion,
+        "llm_skipped": llm_skipped,
     }

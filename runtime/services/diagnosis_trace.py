@@ -74,6 +74,8 @@ class DiagnosisRequestTrace:
     pathway_evidence: list[dict[str, Any]] = field(default_factory=list)
     signal_evaluation: dict[str, Any] = field(default_factory=dict)
     follow_up_signal_updates: list[dict[str, Any]] = field(default_factory=list)
+    want_llm_opinion: bool = False
+    llm_skipped: bool = False
     status: str = "ok"
     error: str | None = None
     failure_stage: str | None = None

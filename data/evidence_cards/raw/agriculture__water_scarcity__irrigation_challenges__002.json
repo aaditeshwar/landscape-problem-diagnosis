@@ -123,7 +123,35 @@
     {
       "missing_variable": "annual_well_depth_m",
       "question_to_user": "Have the wells or borewells in your village become deeper over the past 5–10 years? Roughly how deep are they now compared to before — for example, have they gone from 20 feet to 50 feet, or from 50 feet to 100 feet? Have farmers noticed that pumping costs have increased significantly?",
-      "how_answer_updates_diagnosis": "If well depths have increased substantially (more than 10 metres over 5–8 years) and pumping costs have risen, this confirms that groundwater-based irrigation is becoming economically inaccessible for marginal farmers, amplifying the irrigation challenges diagnosis and supporting solar pump installation as a priority intervention to reduce energy costs. If well depths are stable, the water scarcity is more likely attributable to surface storage failure alone."
+      "how_answer_updates_diagnosis": "If well depths have increased substantially (more than 10 metres over 5–8 years) and pumping costs have risen, this confirms that groundwater-based irrigation is becoming economically inaccessible for marginal farmers, amplifying the irrigation challenges diagnosis and supporting solar pump installation as a priority intervention to reduce energy costs. If well depths are stable, the water scarcity is more likely attributable to surface storage failure alone.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "stable",
+          "label": "Well depth has stayed roughly the same (within ~1 m)",
+          "normalized": {
+            "trend": "stable",
+            "present": true
+          }
+        },
+        {
+          "id": "deepening",
+          "label": "Wells have deepened by more than 2–3 m in the last 5–10 years",
+          "normalized": {
+            "trend": "worsening",
+            "present": true
+          }
+        },
+        {
+          "id": "failed",
+          "label": "Springs or shallow wells have dried up permanently or for much longer",
+          "normalized": {
+            "trend": "worsening",
+            "present": true,
+            "band": "high"
+          }
+        }
+      ]
     }
   ],
   "sources": [

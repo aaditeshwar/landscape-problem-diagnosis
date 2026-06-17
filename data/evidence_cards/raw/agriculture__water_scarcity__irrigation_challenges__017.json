@@ -129,7 +129,35 @@
     {
       "missing_variable": "annual_well_depth_m",
       "question_to_user": "Have farmers in this area noticed changes in their well water over the past 5 years — for example, has the water become saltier, has the water level dropped, or have pumping costs increased significantly?",
-      "how_answer_updates_diagnosis": "If wells have become saline or water levels have dropped despite high rainfall, this confirms coastal aquifer stress as an amplifying factor, making groundwater an unreliable backup to surface storage failures and strengthening the irrigation challenges diagnosis. If wells are stable and freshwater, groundwater may partially compensate for surface storage deficits, reducing overall severity."
+      "how_answer_updates_diagnosis": "If wells have become saline or water levels have dropped despite high rainfall, this confirms coastal aquifer stress as an amplifying factor, making groundwater an unreliable backup to surface storage failures and strengthening the irrigation challenges diagnosis. If wells are stable and freshwater, groundwater may partially compensate for surface storage deficits, reducing overall severity.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "stable",
+          "label": "Well depth has stayed roughly the same (within ~1 m)",
+          "normalized": {
+            "trend": "stable",
+            "present": true
+          }
+        },
+        {
+          "id": "deepening",
+          "label": "Wells have deepened by more than 2–3 m in the last 5–10 years",
+          "normalized": {
+            "trend": "worsening",
+            "present": true
+          }
+        },
+        {
+          "id": "failed",
+          "label": "Springs or shallow wells have dried up permanently or for much longer",
+          "normalized": {
+            "trend": "worsening",
+            "present": true,
+            "band": "high"
+          }
+        }
+      ]
     }
   ],
   "sources": [

@@ -170,12 +170,67 @@
     {
       "missing_variable": "annual_well_depth_m",
       "question_to_user": "Have farmers in this area had to deepen their borewells or tubewells in the last 5–10 years? If yes, roughly how many metres deeper are they now compared to when they were first installed? Are any shallow dug wells or hand pumps running dry during the rabi (winter) or zaid (summer) season?",
-      "how_answer_updates_diagnosis": "If farmers confirm borewell deepening of more than 5–10 metres over a decade, or report seasonal drying of shallow wells, this strongly confirms the groundwater stress pathway in the alluvial aquifer. A deepening rate of more than 1 m/year in alluvial settings is considered significant and consistent with the rapid declines (>0.5 m/year) documented globally in intensively irrigated cropland aquifers."
+      "how_answer_updates_diagnosis": "If farmers confirm borewell deepening of more than 5–10 metres over a decade, or report seasonal drying of shallow wells, this strongly confirms the groundwater stress pathway in the alluvial aquifer. A deepening rate of more than 1 m/year in alluvial settings is considered significant and consistent with the rapid declines (>0.5 m/year) documented globally in intensively irrigated cropland aquifers.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "stable",
+          "label": "Well depth has stayed roughly the same (within ~1 m)",
+          "normalized": {
+            "trend": "stable",
+            "present": true
+          }
+        },
+        {
+          "id": "deepening",
+          "label": "Wells have deepened by more than 2–3 m in the last 5–10 years",
+          "normalized": {
+            "trend": "worsening",
+            "present": true
+          }
+        },
+        {
+          "id": "failed",
+          "label": "Springs or shallow wells have dried up permanently or for much longer",
+          "normalized": {
+            "trend": "worsening",
+            "present": true,
+            "band": "high"
+          }
+        }
+      ]
     },
     {
       "missing_variable": "borewell_density",
       "question_to_user": "Approximately how many tubewells or borewells are there per village or per 100 hectares in this area? Has the number of new borewells increased significantly in the last 10 years?",
-      "how_answer_updates_diagnosis": "High borewell density (more than 50 per 100 ha) in an alluvial plain with elevated SOGE confirms that aggregate extraction pressure is the primary driver of depletion. Rapid recent growth in borewell numbers suggests the problem is worsening and that demand-side governance interventions (e.g., Atal Bhujal Yojana participatory groundwater management) are urgently needed."
+      "how_answer_updates_diagnosis": "High borewell density (more than 50 per 100 ha) in an alluvial plain with elevated SOGE confirms that aggregate extraction pressure is the primary driver of depletion. Rapid recent growth in borewell numbers suggests the problem is worsening and that demand-side governance interventions (e.g., Atal Bhujal Yojana participatory groundwater management) are urgently needed.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "few",
+          "label": "Very few (fewer than 10 within 2–3 km)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "moderate",
+          "label": "Moderate (10–50 within 2–3 km)",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "many",
+          "label": "More than 50 within 2–3 km",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "groundwater_salinity",

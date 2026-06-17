@@ -44,6 +44,19 @@ def get_session(db: Database, session_id: str) -> dict | None:
     return db.sessions.find_one({"_id": session_id})
 
 
+def set_session_want_llm_opinion(db: Database, session_id: str, want_llm_opinion: bool) -> None:
+    db.sessions.update_one(
+        {"_id": session_id},
+        {"$set": {"want_llm_opinion": want_llm_opinion, "updated_at": _now_iso()}},
+    )
+
+
+def session_want_llm_opinion(session: dict | None) -> bool:
+    if not session:
+        return False
+    return bool(session.get("want_llm_opinion"))
+
+
 def append_turn(
     db: Database,
     session_id: str,

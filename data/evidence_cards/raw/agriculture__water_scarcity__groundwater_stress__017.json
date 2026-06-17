@@ -170,12 +170,67 @@
     {
       "missing_variable": "borewell_density",
       "question_to_user": "Approximately how many borewells, tubewells, or dug wells are used for irrigation or drinking water in your village or island settlement? Has the number of wells increased significantly in the past 5–10 years?",
-      "how_answer_updates_diagnosis": "High and increasing borewell density on a small island with a limited freshwater lens confirms localised over-extraction not captured by block-level SOGE. Even a moderate number of borewells can exceed recharge capacity on small coral or volcanic islands where the freshwater lens is thin. This would strongly confirm the groundwater stress pathway and elevate severity to high."
+      "how_answer_updates_diagnosis": "High and increasing borewell density on a small island with a limited freshwater lens confirms localised over-extraction not captured by block-level SOGE. Even a moderate number of borewells can exceed recharge capacity on small coral or volcanic islands where the freshwater lens is thin. This would strongly confirm the groundwater stress pathway and elevate severity to high.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "few",
+          "label": "Very few (fewer than 10 within 2–3 km)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "moderate",
+          "label": "Moderate (10–50 within 2–3 km)",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "many",
+          "label": "More than 50 within 2–3 km",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "annual_well_depth_m",
       "question_to_user": "Has the depth at which water is found in wells or borewells increased over the past few years? Do farmers need to deepen existing wells or drill new deeper borewells to access water that was previously available at shallower depths?",
-      "how_answer_updates_diagnosis": "Increasing well depth over time is a direct proxy for a declining groundwater table. On island aquifers with thin freshwater lenses, even a 1–2 metre decline in the water table can indicate significant depletion of the usable freshwater resource and increased risk of saline intrusion from below."
+      "how_answer_updates_diagnosis": "Increasing well depth over time is a direct proxy for a declining groundwater table. On island aquifers with thin freshwater lenses, even a 1–2 metre decline in the water table can indicate significant depletion of the usable freshwater resource and increased risk of saline intrusion from below.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "stable",
+          "label": "Well depth has stayed roughly the same (within ~1 m)",
+          "normalized": {
+            "trend": "stable",
+            "present": true
+          }
+        },
+        {
+          "id": "deepening",
+          "label": "Wells have deepened by more than 2–3 m in the last 5–10 years",
+          "normalized": {
+            "trend": "worsening",
+            "present": true
+          }
+        },
+        {
+          "id": "failed",
+          "label": "Springs or shallow wells have dried up permanently or for much longer",
+          "normalized": {
+            "trend": "worsening",
+            "present": true,
+            "band": "high"
+          }
+        }
+      ]
     }
   ],
   "overall_reasoning_note": "Groundwater stress in humid and perhumid island settings (AER-20) presents differently from mainland semi-arid contexts. Despite high annual rainfall (1600–3000 mm), the freshwater resource is structurally limited by small island area, thin freshwater lenses overlying saline groundwater, and low-storativity volcanic or coral aquifers. Confirmation requires at least two signals: elevated SOGE classification and either a declining delta_g trend or confirmed volcanic/crystalline aquifer class. The primary risk mechanism is saline intrusion triggered by over-extraction rather than simple aquifer emptying. Low MGNREGA SWC investment amplifies risk but does not confirm stress independently. Always investigate salinity before recommending any new extraction infrastructure on island aquifers.",
