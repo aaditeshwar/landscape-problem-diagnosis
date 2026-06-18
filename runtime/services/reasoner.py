@@ -997,6 +997,21 @@ Treat [USER PROBLEM] as the primary deliverable. Pathway evaluation supports a d
 """
 
 
+def _reviewer_user_query_directive() -> str:
+    return """
+[ANSWER THE USER'S QUESTION — REVIEWER]
+Treat [USER PROBLEM] as the primary deliverable. You are reviewing server-computed pathways, not re-classifying them.
+- Read [USER PROBLEM] first: what is the user trying to decide, compare, explain, or prioritise?
+- panel_update_explanation MUST open with a direct, practical answer to [USER PROBLEM] in plain language.
+  Then explain how the server-confirmed pathways (from [SERVER DIAGNOSIS].confirmed_pathways) jointly support that answer.
+  Name each confirmed pathway_id and cite key server TRUE/FALSE signals. Do not give a generic landscape summary that ignores the user's question.
+- Reference [SERVER DIAGNOSIS].panel_updates — briefly say why those highlighted charts help verify the answer (the server chose them; explain their relevance to [USER PROBLEM]).
+- For each server_review entry with a pathway_comment, include an explicit "For this question:" clause linking that pathway to [USER PROBLEM].
+- If evidence is insufficient to fully answer [USER PROBLEM], say so in panel_update_explanation and note which uncertain pathways or follow-up gaps block a complete answer.
+- Do not contradict server TRUE/FALSE for status=ok signals. Use partial/disagree only for interpretation or emphasis, not to invent new pathway lists.
+"""
+
+
 def _claude_interpretation_task(uid: str | None, *, is_revision: bool = False) -> str:
     revision_rules = _claude_revision_rules() if is_revision else ""
     return f"""[TASK]
@@ -1040,6 +1055,210 @@ IMPORTANT: Output ONLY the JSON object. No preamble, no explanation, no markdown
 The first character of your response must be '{' and the last must be '}'."""
         )
     return shared + "\nOutput valid JSON only. No prose outside JSON."
+
+
+def _reviewer_intro_line() -> str:
+    return (
+        "You are reviewing a server-computed watershed diagnosis for Indian micro-watersheds. "
+        "The server owns confirmed_pathways, uncertain_pathways, follow-up selection, and the base "
+        "solutions list. Your job is to comment on the server evaluation, answer [USER PROBLEM], "
+        "and optionally suggest solution prioritisation — not to re-classify pathways."
+    )
+
+
+def _format_server_diagnosis_for_reviewer(server_response: dict[str, Any]) -> str:
+    payload = {
+        "confirmed_pathways": server_response.get("confirmed_pathways") or [],
+        "uncertain_pathways": server_response.get("uncertain_pathways") or [],
+        "solutions": server_response.get("solutions") or [],
+        "panel_updates": server_response.get("panel_updates") or [],
+        "panel_update_explanation": server_response.get("panel_update_explanation"),
+        "follow_up_question": server_response.get("follow_up_question"),
+        "follow_up_variable": server_response.get("follow_up_variable"),
+        "diagnosis_revision": server_response.get("diagnosis_revision"),
+    }
+    return json.dumps(payload, default=str, indent=2)
+
+
+def _reviewer_task_section(*, is_revision: bool = False) -> str:
+    change_task = ""
+    if is_revision:
+        change_task = """
+6. Set change_review to a short object summarising whether you agree with the server diagnosis_revision
+   (pathway moves and MCQ implication). Example:
+   {"summary": "...", "agrees_with_revision": true}
+"""
+    else:
+        change_task = """
+6. Set change_review to null on the initial turn.
+"""
+    return f"""[REVIEWER TASK]
+1. Read [SERVER DIAGNOSIS] and [SIGNAL EVALUATION RESULTS]. Do NOT output confirmed_pathways or uncertain_pathways.
+2. For each pathway in confirmed_pathways or uncertain_pathways, add a server_review entry with:
+   pathway_id, agreement (agree|partial|disagree), optional signal_notes (signal_id, server_result, comment),
+   and pathway_comment linking the pathway to [USER PROBLEM] when relevant.
+3. Set panel_update_explanation to 2–4 sentences: (a) direct answer to [USER PROBLEM] first,
+   (b) how server-confirmed pathways address it with pathway_id names and key signals,
+   (c) why [SERVER DIAGNOSIS].panel_updates charts help verify that answer,
+   (d) note any partial disagreement in server_review without contradicting server TRUE/FALSE for status=ok signals.
+4. Optionally set solutions_review with notes and priority_order — priority_order must be a reordering
+   of items from [SERVER DIAGNOSIS].solutions only (subset allowed).
+5. Set follow_up_question to null — the server selects follow-up questions.
+{change_task}
+{_reviewer_user_query_directive()}
+Return JSON with exactly these keys:
+{{
+  "server_review": [
+    {{
+      "pathway_id": "...",
+      "agreement": "agree|partial|disagree",
+      "signal_notes": [{{"signal_id": "...", "server_result": true, "comment": "..."}}],
+      "pathway_comment": "..."
+    }}
+  ],
+  "change_review": null,
+  "panel_update_explanation": "...",
+  "solutions_review": {{"notes": "...", "priority_order": ["..."]}},
+  "follow_up_question": null
+}}
+Output valid JSON only. No prose outside JSON.
+IMPORTANT: Output ONLY the JSON object. No markdown fences."""
+
+
+def _build_reviewer_prompt(
+    *,
+    location: dict,
+    problem_description: str,
+    bundle: dict[str, dict],
+    server_response: dict[str, Any],
+    signal_eval: dict[str, dict[str, Any]],
+    follow_up_context: str | None = None,
+    injected_variables: dict[str, Any] | None = None,
+    prior_asked_questions: list[str] | None = None,
+    is_revision: bool = False,
+) -> str:
+    follow_block = ""
+    if follow_up_context:
+        follow_block = f"\n[USER FOLLOW-UP ANSWER]\n{follow_up_context}\n"
+
+    revision_block = ""
+    if is_revision and server_response.get("diagnosis_revision"):
+        revision_block = (
+            "\n[SERVER REVISION — after follow-up answer]\n"
+            f"{json.dumps(server_response.get('diagnosis_revision'), default=str, indent=2)}\n"
+        )
+
+    signal_results_block = _format_signal_evaluation_results(signal_eval)
+    registry_block = _registry_excerpt_if_needed(signal_eval)
+
+    return f"""{_reviewer_intro_line()}
+
+[LOCATION CONTEXT]
+{_format_location(location)}
+
+[USER PROBLEM]
+{problem_description}
+{follow_block}{revision_block}
+[SERVER DIAGNOSIS — canonical; do not replace pathway lists]
+{_format_server_diagnosis_for_reviewer(server_response)}
+
+[MWS VARIABLE VALUES AND CANDIDATE PATHWAYS]
+{_format_bundle(bundle, "ollama")}
+
+{signal_results_block}{registry_block}
+{_format_solutions_available(bundle)}
+
+{_format_prior_user_blocks(injected_variables, prior_asked_questions)}
+{_reviewer_task_section(is_revision=is_revision)}
+"""
+
+
+def _normalize_reviewer_response(parsed: dict[str, Any]) -> dict[str, Any]:
+    out: dict[str, Any] = {}
+    reviews = parsed.get("server_review") or []
+    normalized_reviews: list[dict[str, Any]] = []
+    if isinstance(reviews, list):
+        for item in reviews:
+            if not isinstance(item, dict):
+                continue
+            pathway_id = str(item.get("pathway_id") or "").strip()
+            if not pathway_id:
+                continue
+            agreement = str(item.get("agreement") or "partial").lower()
+            if agreement not in {"agree", "partial", "disagree"}:
+                agreement = "partial"
+            entry: dict[str, Any] = {
+                "pathway_id": pathway_id,
+                "agreement": agreement,
+            }
+            if item.get("pathway_comment"):
+                entry["pathway_comment"] = str(item.get("pathway_comment")).strip()
+            notes = []
+            for note in item.get("signal_notes") or []:
+                if isinstance(note, dict) and note.get("signal_id"):
+                    notes.append(
+                        {
+                            "signal_id": str(note.get("signal_id")),
+                            "server_result": note.get("server_result"),
+                            "comment": str(note.get("comment") or "").strip(),
+                        }
+                    )
+            if notes:
+                entry["signal_notes"] = notes
+            normalized_reviews.append(entry)
+    out["server_review"] = normalized_reviews
+
+    change = parsed.get("change_review")
+    out["change_review"] = change if isinstance(change, dict) else None
+
+    panel = parsed.get("panel_update_explanation")
+    out["panel_update_explanation"] = _null_if_placeholder(panel)
+
+    sol_review = parsed.get("solutions_review")
+    if isinstance(sol_review, dict):
+        out["solutions_review"] = {
+            "notes": str(sol_review.get("notes") or "").strip(),
+            "priority_order": _as_str_list(sol_review.get("priority_order")),
+        }
+    else:
+        out["solutions_review"] = None
+    return out
+
+
+def _merge_reviewer_into_response(
+    server_response: dict[str, Any],
+    reviewer: dict[str, Any],
+) -> dict[str, Any]:
+    out = dict(server_response)
+    out["reviewer_commentary"] = reviewer.get("server_review") or []
+
+    panel = reviewer.get("panel_update_explanation")
+    if panel:
+        out["panel_update_explanation"] = panel
+
+    change = reviewer.get("change_review")
+    if change:
+        out["change_review"] = change
+
+    sol_review = reviewer.get("solutions_review") or {}
+    notes = str(sol_review.get("notes") or "").strip()
+    if notes:
+        out["solutions_review_notes"] = notes
+    priority = sol_review.get("priority_order") or []
+    base = list(out.get("solutions") or [])
+    if priority and base:
+        seen = set()
+        ordered: list[str] = []
+        for item in priority:
+            text = str(item or "").strip()
+            if text and text in base and text not in seen:
+                ordered.append(text)
+                seen.add(text)
+        for item in base:
+            if item not in seen:
+                ordered.append(item)
+        out["solutions"] = ordered
+    return out
 
 
 def _prompt_profile() -> str:
@@ -1405,13 +1624,26 @@ def run_server_diagnosis(
                 response.get("diagnosis_revision")
             )
     else:
-        response["panel_update_explanation"] = build_server_panel_summary(
+        summary = build_server_panel_summary(
             location,
             response.get("confirmed_pathways") or [],
             response.get("uncertain_pathways") or [],
             signal_eval,
             problem_description=problem_description or None,
         )
+        updates = response.get("panel_updates") or []
+        if updates:
+            from services.panel_updates import build_panel_update_explanation
+
+            chart_part = build_panel_update_explanation(
+                response.get("confirmed_pathways") or [],
+                updates,
+            )
+            response["panel_update_explanation"] = (
+                f"{summary} {chart_part}" if chart_part else summary
+            )
+        else:
+            response["panel_update_explanation"] = summary
 
     from services.follow_up_mcq import attach_follow_up_mcq
 
@@ -1426,5 +1658,71 @@ def run_server_diagnosis(
         llm_ms=0.0,
         postprocess_ms=postprocess_ms,
         prompt_profile="server",
+        signal_evaluation=signal_eval,
+    )
+
+
+def run_llm_reviewer_diagnosis(
+    *,
+    location: dict,
+    problem_description: str,
+    bundle: dict[str, dict],
+    follow_up_context: str | None = None,
+    follow_up: bool = False,
+    injected_variables: dict[str, Any] | None = None,
+    prior_asked_questions: list[str] | None = None,
+    prior_diagnosis: dict[str, Any] | None = None,
+    pathway_retrieval_ranks: dict[str, int] | None = None,
+    answered_variable: str | None = None,
+) -> DiagnosisRun:
+    """Server-canonical diagnosis plus optional LLM reviewer commentary."""
+    profile = _prompt_profile()
+    server_run = run_server_diagnosis(
+        location=location,
+        problem_description=problem_description,
+        bundle=bundle,
+        follow_up_context=follow_up_context,
+        follow_up=follow_up,
+        injected_variables=injected_variables,
+        prior_asked_questions=prior_asked_questions,
+        prior_diagnosis=prior_diagnosis,
+        pathway_retrieval_ranks=pathway_retrieval_ranks,
+        answered_variable=answered_variable,
+    )
+    signal_eval = server_run.signal_evaluation or {}
+    prompt = _build_reviewer_prompt(
+        location=location,
+        problem_description=problem_description,
+        bundle=bundle,
+        server_response=server_run.response,
+        signal_eval=signal_eval,
+        follow_up_context=follow_up_context,
+        injected_variables=injected_variables,
+        prior_asked_questions=prior_asked_questions,
+        is_revision=follow_up,
+    )
+    chosen_model = model_for_turn(follow_up=follow_up)
+    t0 = time.perf_counter()
+    raw = chat_json(prompt, model=chosen_model, follow_up=follow_up)
+    llm_ms = (time.perf_counter() - t0) * 1000
+
+    t1 = time.perf_counter()
+    try:
+        parsed = parse_json_response(raw)
+    except DiagnosisLLMParseError as exc:
+        exc.prompt = prompt
+        exc.prompt_profile = f"{profile}_reviewer"
+        raise
+    reviewer = _normalize_reviewer_response(parsed)
+    response = _merge_reviewer_into_response(server_run.response, reviewer)
+    postprocess_ms = (time.perf_counter() - t1) * 1000
+    return DiagnosisRun(
+        response=response,
+        prompt=prompt,
+        raw_llm_text=raw,
+        model=chosen_model,
+        llm_ms=llm_ms,
+        postprocess_ms=postprocess_ms + server_run.postprocess_ms,
+        prompt_profile=f"{profile}_reviewer",
         signal_evaluation=signal_eval,
     )

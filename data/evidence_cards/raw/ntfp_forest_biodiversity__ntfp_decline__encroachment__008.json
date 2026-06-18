@@ -150,12 +150,72 @@
     {
       "missing_variable": "fra_claims_filed_count",
       "question_to_user": "Have community members filed Forest Rights Act (FRA) claims for individual or community forest rights in this village? If yes, how many claims have been filed and how many have been recognised?",
-      "how_answer_updates_diagnosis": "Low FRA claim filing in a high-ST village with forest conversion confirms that encroachment is occurring without legal tenure recognition, strengthening the encroachment diagnosis and pointing to FRA claim support as the primary intervention. High filing with low recognition suggests administrative bottlenecks rather than active encroachment."
+      "how_answer_updates_diagnosis": "Low FRA claim filing in a high-ST village with forest conversion confirms that encroachment is occurring without legal tenure recognition, strengthening the encroachment diagnosis and pointing to FRA claim support as the primary intervention. High filing with low recognition suggests administrative bottlenecks rather than active encroachment.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "none",
+          "label": "No FRA claims filed by community members",
+          "normalized": {
+            "present": false
+          }
+        },
+        {
+          "id": "pending",
+          "label": "Claims filed but mostly pending or rejected",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "recognized",
+          "label": "Several claims recognised (individual or community forest rights)",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "ntfp_collection_trend_qualitative",
       "question_to_user": "Have NTFP collectors in the village reported a decline in the quantity or quality of forest produce (e.g. tendu leaves, mahua, amla, honey) over the past 5 years? Do they attribute this to reduced forest area, restricted access, or reduced forest density?",
-      "how_answer_updates_diagnosis": "If collectors specifically attribute decline to reduced forest area or blocked access routes (rather than drought or over-harvesting), this directly confirms encroachment as the causal pathway. Attribution to reduced density without area loss would shift diagnosis toward degradation or fire pathways."
+      "how_answer_updates_diagnosis": "If collectors specifically attribute decline to reduced forest area or blocked access routes (rather than drought or over-harvesting), this directly confirms encroachment as the causal pathway. Attribution to reduced density without area loss would shift diagnosis toward degradation or fire pathways.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "little_change",
+          "label": "Little change — decline under 25% or stable collection",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "trend": "stable",
+            "percent_upper": 25
+          }
+        },
+        {
+          "id": "moderate_decline",
+          "label": "Noticeable decline of about 25–50% in collection volume",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening",
+            "percent_lower": 25,
+            "percent_upper": 50
+          }
+        },
+        {
+          "id": "severe_decline",
+          "label": "Severe decline over 50% or access largely blocked",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "worsening",
+            "percent_lower": 50
+          }
+        }
+      ]
     }
   ],
   "sources": [

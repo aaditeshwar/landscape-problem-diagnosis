@@ -152,12 +152,72 @@
     {
       "missing_variable": "ntfp_species_presence",
       "question_to_user": "Have community members noticed a reduction in the availability of key forest products such as mahua flowers, tendu leaves, achar seeds, harra fruit, or aonla in the forests they access? Are there specific areas where these species used to be found but are no longer present?",
-      "how_answer_updates_diagnosis": "Confirmed decline in named NTFP species strongly confirms the forest degradation pathway. If communities report species loss in areas that satellite data shows as still forested, this may indicate degradation of forest quality (canopy thinning, understory loss) not captured by area-based metrics, and would increase confidence in the diagnosis. If species are still present but access is restricted, the pathway may shift toward governance or tenure issues rather than ecological degradation."
+      "how_answer_updates_diagnosis": "Confirmed decline in named NTFP species strongly confirms the forest degradation pathway. If communities report species loss in areas that satellite data shows as still forested, this may indicate degradation of forest quality (canopy thinning, understory loss) not captured by area-based metrics, and would increase confidence in the diagnosis. If species are still present but access is restricted, the pathway may shift toward governance or tenure issues rather than ecological degradation.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "abundant",
+          "label": "NTFP species are still common and easy to find",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "stable"
+          }
+        },
+        {
+          "id": "reduced",
+          "label": "Some species are harder to find than 5–10 years ago",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "rare",
+          "label": "Several species that used to be common are now rare or absent",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "trend": "worsening"
+          }
+        }
+      ]
     },
     {
       "missing_variable": "forest_fire_frequency",
       "question_to_user": "How often do forest fires occur in or near the forests used by your community? Have fires become more frequent or more severe in recent years? Do fires typically affect the same areas repeatedly?",
-      "how_answer_updates_diagnosis": "Frequent or intensifying forest fires in semi-arid plateau terrain are a major driver of forest degradation that is not directly captured by the available variables. High fire frequency would strongly confirm the forest degradation pathway and would prioritise fire line creation and community forest watch patrols as immediate interventions. Repeated burning of the same patches indicates chronic degradation that prevents regeneration of NTFP-bearing species."
+      "how_answer_updates_diagnosis": "Frequent or intensifying forest fires in semi-arid plateau terrain are a major driver of forest degradation that is not directly captured by the available variables. High fire frequency would strongly confirm the forest degradation pathway and would prioritise fire line creation and community forest watch patrols as immediate interventions. Repeated burning of the same patches indicates chronic degradation that prevents regeneration of NTFP-bearing species.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "rare",
+          "label": "Forest fires are rare; no increase in recent years",
+          "normalized": {
+            "band": "low",
+            "present": false,
+            "trend": "stable"
+          }
+        },
+        {
+          "id": "occasional",
+          "label": "Occasional fires; frequency or severity increasing",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "frequent",
+          "label": "Frequent or repeated fires in the same forest patches",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "worsening"
+          }
+        }
+      ]
     }
   ],
   "sources": [

@@ -146,7 +146,7 @@
           "label": "Well depth has stayed roughly the same (within ~1 m)",
           "normalized": {
             "trend": "stable",
-            "present": true
+            "present": false
           }
         },
         {
@@ -171,7 +171,36 @@
     {
       "missing_variable": "tank_siltation_status",
       "question_to_user": "Are the local tanks, ponds, or check dams in the area visibly silted up, shallower than they used to be, or drying out faster after the monsoon than they did 10 years ago?",
-      "how_answer_updates_diagnosis": "Farmer confirmation of visible siltation directly supports sig_01 and sig_02, confirming that declining SWB area is due to infrastructure degradation rather than reduced rainfall. This would prioritise tank desilting through MGNREGA as the primary recommended intervention."
+      "how_answer_updates_diagnosis": "Farmer confirmation of visible siltation directly supports sig_01 and sig_02, confirming that declining SWB area is due to infrastructure degradation rather than reduced rainfall. This would prioritise tank desilting through MGNREGA as the primary recommended intervention.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "none",
+          "label": "Tanks and ponds not visibly silted; depth and retention similar to before",
+          "normalized": {
+            "present": false,
+            "trend": "stable"
+          }
+        },
+        {
+          "id": "moderate",
+          "label": "Visible siltation or shallower than before; dries somewhat faster",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "severe",
+          "label": "Heavily silted, much shallower, or drying out quickly after monsoon",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "worsening"
+          }
+        }
+      ]
     }
   ],
   "sources": [

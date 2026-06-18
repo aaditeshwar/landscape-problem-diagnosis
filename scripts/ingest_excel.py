@@ -43,6 +43,11 @@ _RUNTIME_DIR = Path(__file__).resolve().parents[1] / "runtime"
 if str(_RUNTIME_DIR) not in sys.path:
     sys.path.insert(0, str(_RUNTIME_DIR))
 from services.aer_lookup import attach_aer_to_mws, validate_aer_geojson  # noqa: E402
+from services.aquifer_classification import (  # noqa: E402
+    LITHOLOGY_COLUMNS,
+    build_aquifer_payload,
+    infer_acwadam_class,
+)
 
 # ── Configuration ─────────────────────────────────────────────────────────────
 CORE_STACK_BASE = "https://geoserver.core-stack.org/api/v1"
@@ -245,34 +250,53 @@ def parse_drainage_density(rows, docs):
 
 
 def parse_aquifer(rows, docs):
-    lithology_cols = [
-        "Alluvium", "Banded Gneissic Complex", "Basalt", "Charnockite", "Gneiss",
-        "Granite", "Intrusive", "Khondalite", "Laterite", "Limestone",
-        "Quartzite", "Sandstone", "Schist", "Shale", "None",
-    ]
     for r in rows:
         uid = r["UID"]
         if uid not in docs:
             continue
         raw_class = safe(r.get("aquifer_class")) or ""
-        # Map CoRE Stack "Hard Rock" to ACWADAM taxonomy
-        acwadam_map = {
-            "Hard Rock": "crystalline_basement",
-            "Alluvium": "alluvium",
-            "Basalt": "volcanic",
-            "Sandstone": "sedimentary_soft_rock",
-            "Limestone": "sedimentary_soft_rock",
-        }
-        acwadam_class = acwadam_map.get(raw_class, raw_class.lower().replace(" ", "_"))
         lithology = {
             lit: safe(r.get(f"principle_aq_{lit}_percent"))
-            for lit in lithology_cols
+            for lit in LITHOLOGY_COLUMNS
         }
-        docs[uid]["aquifer"] = {
-            "raw_class": raw_class,
-            "acwadam_class": acwadam_class,
-            "lithology_percent": lithology,
-        }
+        docs[uid]["aquifer"] = build_aquifer_payload(raw_class, lithology)
+
+
+def refine_aquifer_acwadam(db, uids: list[str]) -> dict[str, int]:
+    """Recompute aquifer.acwadam_class using lithology + persisted nbss_lup_aer_code."""
+    stats = {"requested": len(uids), "updated": 0, "missing": 0}
+    if not uids:
+        return stats
+
+    ops: list[UpdateOne] = []
+    for doc in db.mws_data.find(
+        {"uid": {"$in": uids}},
+        {"uid": 1, "aquifer": 1, "nbss_lup_aer_code": 1},
+    ):
+        uid = doc.get("uid")
+        aquifer = doc.get("aquifer") or {}
+        lithology = aquifer.get("lithology_percent") or {}
+        if not lithology:
+            stats["missing"] += 1
+            continue
+        inferred = infer_acwadam_class(lithology, doc.get("nbss_lup_aer_code"))
+        ops.append(
+            UpdateOne(
+                {"uid": uid},
+                {
+                    "$set": {
+                        "aquifer.dominant_lithology": inferred["dominant_lithology"],
+                        "aquifer.acwadam_class": inferred["acwadam_class"],
+                        "aquifer.acwadam_source": inferred["acwadam_source"],
+                    }
+                },
+            )
+        )
+        stats["updated"] += 1
+
+    if ops:
+        db.mws_data.bulk_write(ops)
+    return stats
 
 
 def parse_soge(rows, docs):
@@ -491,7 +515,7 @@ def finalize_mws_docs(docs: dict) -> None:
 
 
 def parse_nrega_mws(rows, docs):
-    nrega_years = list(range(2005, 2025))
+    nrega_years = list(range(2005, 2026))
     for r in rows:
         uid = r.get("mws_id")
         if uid not in docs:
@@ -1097,12 +1121,19 @@ def main():
                 "; ".join(aer_report.summary_lines()[-2:]),
             )
         else:
-            aer_stats = attach_aer_to_mws(db, list(mws_docs.keys()))
+            uids = list(mws_docs.keys())
+            aer_stats = attach_aer_to_mws(db, uids)
             log.info(
                 "AER tagging: updated=%s missing_boundary=%s lookup_failed=%s",
                 aer_stats["updated"],
                 aer_stats["missing_boundary"],
                 aer_stats["lookup_failed"],
+            )
+            aquifer_stats = refine_aquifer_acwadam(db, uids)
+            log.info(
+                "Aquifer ACWADAM refine: updated=%s missing_lithology=%s",
+                aquifer_stats["updated"],
+                aquifer_stats["missing"],
             )
 
     # ── Update manifest ───────────────────────────────────────────────────────

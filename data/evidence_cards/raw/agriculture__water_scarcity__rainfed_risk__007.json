@@ -154,7 +154,38 @@
     {
       "missing_variable": "irrigated_area_ha",
       "question_to_user": "Do you have any information on the net irrigated area in this micro-watershed — for example from district agriculture census records or state irrigation department data? Approximately what share of the cultivated land receives any irrigation (even supplemental) during kharif or rabi seasons?",
-      "how_answer_updates_diagnosis": "If net irrigated area exceeds 25–30% of net sown area, the rainfed risk diagnosis should be moderated and the analysis should examine whether irrigation is concentrated among a subset of farmers (equity issue) or broadly distributed. Very low irrigated area (<10%) strongly confirms the rainfed risk pathway and supports prioritisation of water harvesting interventions."
+      "how_answer_updates_diagnosis": "If net irrigated area exceeds 25–30% of net sown area, the rainfed risk diagnosis should be moderated and the analysis should examine whether irrigation is concentrated among a subset of farmers (equity issue) or broadly distributed. Very low irrigated area (<10%) strongly confirms the rainfed risk pathway and supports prioritisation of water harvesting interventions.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "low",
+          "label": "Less than 10% of cultivated land is irrigated",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "percent_upper": 10
+          }
+        },
+        {
+          "id": "moderate",
+          "label": "Between 10% and 30% of cultivated land is irrigated",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "percent_lower": 10,
+            "percent_upper": 30
+          }
+        },
+        {
+          "id": "high",
+          "label": "More than 30% of cultivated land is irrigated",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "percent_lower": 30
+          }
+        }
+      ]
     }
   ],
   "sources": [

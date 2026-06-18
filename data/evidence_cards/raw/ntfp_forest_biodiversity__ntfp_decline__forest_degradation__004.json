@@ -138,7 +138,37 @@
     {
       "missing_variable": "ntfp_species_presence",
       "question_to_user": "Have community members noticed a reduction in the number or fruiting of key forest trees they collect from, such as mahua (Madhuca indica), harra (Terminalia chebula), tendu (Diospyros melanoxylon), or gum-producing acacias? Would you say these species are: still abundant, noticeably reduced, or very rare or locally disappeared?",
-      "how_answer_updates_diagnosis": "If key NTFP species are reported as noticeably reduced or locally disappeared, this strongly confirms the forest degradation pathway and elevates diagnosis confidence to high. If species are still abundant despite declining forest area in LULC data, consider that degradation may be recent or that remaining patches are high-quality refugia, and investigate whether collection pressure rather than habitat loss is the primary driver."
+      "how_answer_updates_diagnosis": "If key NTFP species are reported as noticeably reduced or locally disappeared, this strongly confirms the forest degradation pathway and elevates diagnosis confidence to high. If species are still abundant despite declining forest area in LULC data, consider that degradation may be recent or that remaining patches are high-quality refugia, and investigate whether collection pressure rather than habitat loss is the primary driver.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "abundant",
+          "label": "NTFP species are still common and easy to find",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "stable"
+          }
+        },
+        {
+          "id": "reduced",
+          "label": "Some species are harder to find than 5–10 years ago",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "rare",
+          "label": "Several species that used to be common are now rare or absent",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "trend": "worsening"
+          }
+        }
+      ]
     }
   ],
   "sources": [

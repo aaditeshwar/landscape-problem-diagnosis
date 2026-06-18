@@ -162,17 +162,100 @@
     {
       "missing_variable": "landholding_size_distribution",
       "question_to_user": "Approximately what proportion of farming households in this village own less than 1 hectare of land? Would you say it is fewer than one-third, about half, or more than two-thirds of households?",
-      "how_answer_updates_diagnosis": "If more than 60% of households are marginal holders (<1 ha), this strongly confirms the small landholding pathway. If most households hold 2–5 ha, the income stress is more likely driven by market access, drought, or input cost factors rather than landholding fragmentation per se."
+      "how_answer_updates_diagnosis": "If more than 60% of households are marginal holders (<1 ha), this strongly confirms the small landholding pathway. If most households hold 2–5 ha, the income stress is more likely driven by market access, drought, or input cost factors rather than landholding fragmentation per se.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "minority",
+          "label": "Less than one-quarter of farming households own under 1 ha",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "about_half",
+          "label": "About half of farming households own under 1 ha",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "majority",
+          "label": "More than half (or two-thirds) of households are marginal (<1 ha)",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "household_income_inr",
       "question_to_user": "What is the approximate annual household income from farming alone (excluding wages, MGNREGA, or remittances) for a typical family in this village? Is it below Rs 50,000, between Rs 50,000–1,00,000, or above Rs 1,00,000 per year?",
-      "how_answer_updates_diagnosis": "Farm income below Rs 50,000 per year for a household with less than 1 ha confirms severe income stress from small landholding. If farm income is supplemented significantly by wages or remittances, the livelihood diversification pathway is already partially active and interventions should focus on formalising and strengthening those non-farm income streams."
+      "how_answer_updates_diagnosis": "Farm income below Rs 50,000 per year for a household with less than 1 ha confirms severe income stress from small landholding. If farm income is supplemented significantly by wages or remittances, the livelihood diversification pathway is already partially active and interventions should focus on formalising and strengthening those non-farm income streams.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "below_50k",
+          "label": "Below ₹50,000 per year from farming (or total household income)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "50k_to_100k",
+          "label": "Between ₹50,000 and ₹1,00,000 per year",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "above_100k",
+          "label": "Above ₹1,00,000 per year",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "market_price_crop",
       "question_to_user": "When farmers sell their main kharif crop (paddy, maize, or millets), do they typically receive the government MSP, below MSP, or are they unaware of the MSP? Who do they usually sell to — government procurement centres, local traders, or other farmers?",
-      "how_answer_updates_diagnosis": "If farmers consistently receive below-MSP prices and sell to local traders rather than government procurement, market failure is amplifying the income loss from small landholding. This would strengthen the case for FPO formation and collective marketing as priority interventions over land consolidation alone."
+      "how_answer_updates_diagnosis": "If farmers consistently receive below-MSP prices and sell to local traders rather than government procurement, market failure is amplifying the income loss from small landholding. This would strengthen the case for FPO formation and collective marketing as priority interventions over land consolidation alone.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "near_msp",
+          "label": "Prices close to government MSP (mandi or procurement)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "below_msp",
+          "label": "Prices significantly below MSP (e.g. farm-gate or trader)",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "unable_to_sell",
+          "label": "Unable to sell at all or forced to accept very low prices",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "worsening"
+          }
+        }
+      ]
     }
   ],
   "sources": [

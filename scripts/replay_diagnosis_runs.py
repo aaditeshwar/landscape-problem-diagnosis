@@ -117,6 +117,7 @@ def extract_runs(
                     "state": event.get("state"),
                     "district": event.get("district"),
                     "tehsil": event.get("tehsil"),
+                    "want_llm_opinion": bool(event.get("want_llm_opinion")),
                 },
                 "llm_configuration": {
                     "model": event.get("model"),
@@ -178,6 +179,7 @@ def replay_runs(
     output_dir: Path,
     dry_run: bool = False,
     limit: int | None = None,
+    want_llm_opinion: bool | None = None,
 ) -> Path:
     baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
     runs = baseline.get("runs") or []
@@ -196,12 +198,18 @@ def replay_runs(
         results: list[dict[str, Any]] = []
         for run in runs:
             query = run["query"]
+            effective_want_llm = (
+                want_llm_opinion
+                if want_llm_opinion is not None
+                else bool(query.get("want_llm_opinion"))
+            )
             body = {
                 "uid": query["uid"],
                 "problem_description": query["problem_description"],
                 "state": query.get("state"),
                 "district": query.get("district"),
                 "tehsil": query.get("tehsil"),
+                "want_llm_opinion": effective_want_llm,
             }
             started = time.perf_counter()
             response = client.post(f"{api_base.rstrip('/')}/api/query", json=body)
@@ -245,6 +253,7 @@ def replay_runs(
         "llm_provider_env": os.getenv("LLM_PROVIDER"),
         "llm_configuration": _llm_config_from_env(),
         "dry_run": dry_run,
+        "want_llm_opinion_override": want_llm_opinion,
         "run_count": len(results),
         "results": results,
     }
@@ -287,6 +296,16 @@ def main() -> int:
         help="Replay only the first baseline run",
     )
     replay_parser.add_argument("--limit", type=int, help="Replay only the first N runs")
+    replay_parser.add_argument(
+        "--want-llm-opinion",
+        action="store_true",
+        help="Force want_llm_opinion=true on replay requests",
+    )
+    replay_parser.add_argument(
+        "--no-want-llm-opinion",
+        action="store_true",
+        help="Force want_llm_opinion=false (server-only replay)",
+    )
 
     args = parser.parse_args()
     output_dir = Path(args.output_dir)
@@ -300,12 +319,19 @@ def main() -> int:
         print(out)
         return 0
 
+    want_llm: bool | None = None
+    if getattr(args, "want_llm_opinion", False):
+        want_llm = True
+    elif getattr(args, "no_want_llm_opinion", False):
+        want_llm = False
+
     out = replay_runs(
         baseline_path=Path(args.baseline),
         api_base=args.api_base,
         output_dir=output_dir,
         dry_run=args.dry_run,
         limit=args.limit,
+        want_llm_opinion=want_llm,
     )
     print(out)
     return 0

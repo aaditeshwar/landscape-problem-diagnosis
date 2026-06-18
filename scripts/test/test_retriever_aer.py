@@ -78,7 +78,7 @@ def test_aer_neighbors_for_aer3():
 def test_fetch_candidates_excludes_wrong_aer():
     db = FakeDB(SAMPLE_CARDS)
     aer_tags = AER_RETRIEVAL_NEIGHBORS["AER-3"]
-    candidates = _fetch_candidates(db, "hard_rock", aer_tags)
+    candidates = _fetch_candidates(db, ["hard_rock"], aer_tags)
     ids = {c["card_id"] for c in candidates}
     assert "enc_001" in ids
     assert "enc_003" not in ids
@@ -86,8 +86,16 @@ def test_fetch_candidates_excludes_wrong_aer():
 
 
 def test_card_query_uses_in_for_multiple_aers():
-    query = _card_query("hard_rock", ["AER-3", "AER-6"])
+    query = _card_query(["hard_rock"], ["AER-3", "AER-6"])
     assert query == {"aquifer_tags": "hard_rock", "aer_tags": {"$in": ["AER-3", "AER-6"]}}
+
+
+def test_card_query_coastal_alluvium_pair():
+    query = _card_query(["coastal", "alluvium"], ["AER-18"])
+    assert query == {
+        "aquifer_tags": {"$in": ["coastal", "alluvium"]},
+        "aer_tags": "AER-18",
+    }
 
 
 def test_aer_neighbors_for_aer11():
@@ -109,6 +117,7 @@ def main() -> int:
     test_aer_neighbors_for_aer11()
     test_fetch_candidates_excludes_wrong_aer()
     test_card_query_uses_in_for_multiple_aers()
+    test_card_query_coastal_alluvium_pair()
     test_direct_aer_bonus_prefers_mws_aer_card()
     print("All retriever AER tests passed.")
     return 0

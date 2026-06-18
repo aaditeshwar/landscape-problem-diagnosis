@@ -151,12 +151,71 @@
     {
       "missing_variable": "ntfp_species_presence",
       "question_to_user": "Have community members noticed a reduction in the availability of key forest products such as mahua flowers, aonla fruit, harra, or honey in the forests near your village over the past 5–10 years? Are there specific species that used to be common but are now rare or absent?",
-      "how_answer_updates_diagnosis": "Confirmed decline in named NTFP species strongly confirms the forest degradation pathway and helps prioritise which species to target in community plantation and assisted natural regeneration interventions. If communities report no change in species availability despite declining forest area in remote sensing data, the pathway may be partially offset by intensified collection from remaining patches, which itself signals future risk."
+      "how_answer_updates_diagnosis": "Confirmed decline in named NTFP species strongly confirms the forest degradation pathway and helps prioritise which species to target in community plantation and assisted natural regeneration interventions. If communities report no change in species availability despite declining forest area in remote sensing data, the pathway may be partially offset by intensified collection from remaining patches, which itself signals future risk.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "abundant",
+          "label": "NTFP species are still common and easy to find",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "stable"
+          }
+        },
+        {
+          "id": "reduced",
+          "label": "Some species are harder to find than 5–10 years ago",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "rare",
+          "label": "Several species that used to be common are now rare or absent",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "trend": "worsening"
+          }
+        }
+      ]
     },
     {
       "missing_variable": "forest_patch_connectivity",
       "question_to_user": "Are the remaining forest patches in your area connected to each other, or are they isolated small patches surrounded by agricultural land? Has this connectivity changed in recent years?",
-      "how_answer_updates_diagnosis": "Highly fragmented and isolated forest patches in the plains context of AER-9 are more vulnerable to edge effects and local species extinction, amplifying the severity of even small absolute forest area losses. High fragmentation with low connectivity would increase confidence in the forest degradation pathway and strengthen the case for corridor planting and assisted natural regeneration interventions."
+      "how_answer_updates_diagnosis": "Highly fragmented and isolated forest patches in the plains context of AER-9 are more vulnerable to edge effects and local species extinction, amplifying the severity of even small absolute forest area losses. High fragmentation with low connectivity would increase confidence in the forest degradation pathway and strengthen the case for corridor planting and assisted natural regeneration interventions.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "connected",
+          "label": "Forest areas remain connected; little new fragmentation",
+          "normalized": {
+            "present": false,
+            "trend": "stable"
+          }
+        },
+        {
+          "id": "partial",
+          "label": "Some patches separated by fields, roads, or cleared land",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "isolated",
+          "label": "Forest broken into small isolated patches",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "worsening"
+          }
+        }
+      ]
     }
   ],
   "sources": [

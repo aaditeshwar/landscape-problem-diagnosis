@@ -142,7 +142,37 @@
     {
       "missing_variable": "ntfp_species_presence",
       "question_to_user": "Have community members noticed a reduction in the availability of key forest products like mahua flowers, tendu leaves, harra fruit, or achar seeds over the past 5-10 years? Are these species still found in the same areas, or have they become harder to find or disappeared from some patches?",
-      "how_answer_updates_diagnosis": "Confirmed decline in abundance or local disappearance of key NTFP species strongly confirms the forest degradation pathway. If species are still present but yields per tree are lower, this may indicate tree stress from drought or soil degradation rather than structural forest loss, shifting the diagnosis toward a different causal pathway. If species are absent from previously productive patches, this confirms habitat loss as the primary driver."
+      "how_answer_updates_diagnosis": "Confirmed decline in abundance or local disappearance of key NTFP species strongly confirms the forest degradation pathway. If species are still present but yields per tree are lower, this may indicate tree stress from drought or soil degradation rather than structural forest loss, shifting the diagnosis toward a different causal pathway. If species are absent from previously productive patches, this confirms habitat loss as the primary driver.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "abundant",
+          "label": "NTFP species are still common and easy to find",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "stable"
+          }
+        },
+        {
+          "id": "reduced",
+          "label": "Some species are harder to find than 5–10 years ago",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "rare",
+          "label": "Several species that used to be common are now rare or absent",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "trend": "worsening"
+          }
+        }
+      ]
     }
   ],
   "sources": [

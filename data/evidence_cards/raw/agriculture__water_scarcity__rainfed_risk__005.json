@@ -132,7 +132,38 @@
     {
       "missing_variable": "irrigated_area_ha",
       "question_to_user": "Approximately what share of the cultivated land in this area receives any irrigation — from canals, borewells, dug wells, or lift schemes — during the rabi (winter) season? Would you estimate it as less than 10%, 10–30%, or more than 30% of total farmland?",
-      "how_answer_updates_diagnosis": "If less than 10% of farmland is irrigated in rabi, this strongly confirms the rainfed risk pathway and justifies high-severity classification. If 10–30% is irrigated, the pathway is confirmed but severity is moderate and solutions should focus on expanding existing water sources. If more than 30% is irrigated, the rainfed risk pathway is less likely to be primary and groundwater stress or canal water reliability pathways should be investigated instead."
+      "how_answer_updates_diagnosis": "If less than 10% of farmland is irrigated in rabi, this strongly confirms the rainfed risk pathway and justifies high-severity classification. If 10–30% is irrigated, the pathway is confirmed but severity is moderate and solutions should focus on expanding existing water sources. If more than 30% is irrigated, the rainfed risk pathway is less likely to be primary and groundwater stress or canal water reliability pathways should be investigated instead.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "low",
+          "label": "Less than 10% of cultivated land is irrigated",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "percent_upper": 10
+          }
+        },
+        {
+          "id": "moderate",
+          "label": "Between 10% and 30% of cultivated land is irrigated",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "percent_lower": 10,
+            "percent_upper": 30
+          }
+        },
+        {
+          "id": "high",
+          "label": "More than 30% of cultivated land is irrigated",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "percent_lower": 30
+          }
+        }
+      ]
     }
   ],
   "sources": [

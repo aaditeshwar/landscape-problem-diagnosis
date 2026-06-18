@@ -135,7 +135,37 @@
     {
       "missing_variable": "ntfp_species_presence",
       "question_to_user": "Compared to 5–10 years ago, have community members noticed a reduction in the availability of key forest products such as bamboo, medicinal plants, wild fruits, honey, or other NTFPs they collect? Are there specific species that have become harder to find or have disappeared from areas where they were previously abundant?",
-      "how_answer_updates_diagnosis": "Confirmed decline in multiple NTFP species across the landscape strongly confirms the forest degradation pathway. If decline is limited to one or two high-value species, over-harvesting may be the primary driver rather than broad forest degradation. If communities report that collection areas have shrunk or moved further from villages, this corroborates forest cover loss detected in remote sensing data."
+      "how_answer_updates_diagnosis": "Confirmed decline in multiple NTFP species across the landscape strongly confirms the forest degradation pathway. If decline is limited to one or two high-value species, over-harvesting may be the primary driver rather than broad forest degradation. If communities report that collection areas have shrunk or moved further from villages, this corroborates forest cover loss detected in remote sensing data.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "abundant",
+          "label": "NTFP species are still common and easy to find",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "stable"
+          }
+        },
+        {
+          "id": "reduced",
+          "label": "Some species are harder to find than 5–10 years ago",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "rare",
+          "label": "Several species that used to be common are now rare or absent",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "trend": "worsening"
+          }
+        }
+      ]
     }
   ],
   "sources": [

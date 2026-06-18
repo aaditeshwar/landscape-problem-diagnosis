@@ -132,6 +132,24 @@ export interface FollowUpMcq {
   choices: FollowUpMcqChoice[]
 }
 
+export interface ReviewerSignalNote {
+  signal_id: string
+  server_result?: boolean | null
+  comment?: string
+}
+
+export interface ReviewerPathwayComment {
+  pathway_id: string
+  agreement: string
+  signal_notes?: ReviewerSignalNote[]
+  pathway_comment?: string
+}
+
+export interface ChangeReview {
+  summary?: string
+  agrees_with_revision?: boolean
+}
+
 export interface DiagnosisResponse {
   session_id: string
   mws_aer_code?: string | null
@@ -150,6 +168,9 @@ export interface DiagnosisResponse {
   signal_evaluation?: SignalEvaluation | null
   want_llm_opinion?: boolean
   llm_skipped?: boolean
+  reviewer_commentary?: ReviewerPathwayComment[]
+  change_review?: ChangeReview | null
+  solutions_review_notes?: string | null
 }
 
 export interface FollowUpExchange {

@@ -162,17 +162,100 @@
     {
       "missing_variable": "landholding_size_distribution",
       "question_to_user": "Approximately what proportion of farming households in this village own less than 1 hectare (about 2.5 acres) of land? Would you say it is less than one-quarter, about half, or more than three-quarters of households?",
-      "how_answer_updates_diagnosis": "If more than 50% of households own less than 1 ha, the marginal-holder proportion is high and the small_landholding pathway is strongly confirmed. This directly substitutes for the per-capita cropland proxy in sig_01 and raises confidence from medium to high."
+      "how_answer_updates_diagnosis": "If more than 50% of households own less than 1 ha, the marginal-holder proportion is high and the small_landholding pathway is strongly confirmed. This directly substitutes for the per-capita cropland proxy in sig_01 and raises confidence from medium to high.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "minority",
+          "label": "Less than one-quarter of farming households own under 1 ha",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "about_half",
+          "label": "About half of farming households own under 1 ha",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "majority",
+          "label": "More than half (or two-thirds) of households are marginal (<1 ha)",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "household_income_inr",
       "question_to_user": "What is the approximate annual household income from all sources (farm, livestock, wage labour, government schemes) for a typical farming family in this village? Is it below ₹60,000, between ₹60,000–₹1,20,000, or above ₹1,20,000 per year?",
-      "how_answer_updates_diagnosis": "Annual household income below ₹60,000 (~₹5,000/month) confirms the low_income stress directly. Combined with small landholding evidence, it confirms the causal pathway. Income above ₹1,20,000 with diversified sources would weaken the diagnosis and suggest the stress is transient or driven by a different pathway such as drought or market failure."
+      "how_answer_updates_diagnosis": "Annual household income below ₹60,000 (~₹5,000/month) confirms the low_income stress directly. Combined with small landholding evidence, it confirms the causal pathway. Income above ₹1,20,000 with diversified sources would weaken the diagnosis and suggest the stress is transient or driven by a different pathway such as drought or market failure.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "below_50k",
+          "label": "Below ₹50,000 per year from farming (or total household income)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "50k_to_100k",
+          "label": "Between ₹50,000 and ₹1,00,000 per year",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "above_100k",
+          "label": "Above ₹1,00,000 per year",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "market_price_crop",
       "question_to_user": "For the main crop grown here (e.g. groundnut, jowar, cotton), do farmers typically receive a price close to the government's Minimum Support Price (MSP), or do they usually sell at significantly lower prices through local traders?",
-      "how_answer_updates_diagnosis": "If farmers consistently receive 20–40% below MSP, market exploitation of small holders is confirmed as an income-suppressing mechanism, strengthening the small_landholding pathway (small holders lack bargaining power). If prices are near MSP, the income constraint is more directly attributable to low production volume from small holdings rather than price exploitation."
+      "how_answer_updates_diagnosis": "If farmers consistently receive 20–40% below MSP, market exploitation of small holders is confirmed as an income-suppressing mechanism, strengthening the small_landholding pathway (small holders lack bargaining power). If prices are near MSP, the income constraint is more directly attributable to low production volume from small holdings rather than price exploitation.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "near_msp",
+          "label": "Prices close to government MSP (mandi or procurement)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "below_msp",
+          "label": "Prices significantly below MSP (e.g. farm-gate or trader)",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "unable_to_sell",
+          "label": "Unable to sell at all or forced to accept very low prices",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "worsening"
+          }
+        }
+      ]
     }
   ],
   "sources": [

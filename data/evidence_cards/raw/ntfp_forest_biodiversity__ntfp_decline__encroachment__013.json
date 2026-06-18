@@ -157,12 +157,72 @@
     {
       "missing_variable": "fra_claims_filed_count",
       "question_to_user": "Have community members filed individual or community forest rights claims under the Forest Rights Act (FRA) in this village? If yes, approximately how many claims have been filed and how many have been recognised?",
-      "how_answer_updates_diagnosis": "Low FRA claim filing or high rejection rates in a village with high ST population and active forest conversion strongly confirms encroachment-driven tenure insecurity as the mechanism behind NTFP access loss. High recognition rates would suggest formal rights are in place and the pathway may be driven by other factors."
+      "how_answer_updates_diagnosis": "Low FRA claim filing or high rejection rates in a village with high ST population and active forest conversion strongly confirms encroachment-driven tenure insecurity as the mechanism behind NTFP access loss. High recognition rates would suggest formal rights are in place and the pathway may be driven by other factors.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "none",
+          "label": "No FRA claims filed by community members",
+          "normalized": {
+            "present": false
+          }
+        },
+        {
+          "id": "pending",
+          "label": "Claims filed but mostly pending or rejected",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "recognized",
+          "label": "Several claims recognised (individual or community forest rights)",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "ntfp_collection_trend_qualitative",
       "question_to_user": "Over the past 5-10 years, have community members noticed a reduction in the quantity or quality of forest produce they can collect (e.g. bamboo, medicinal plants, wild fruits, honey)? Is the reduction due to less forest area being accessible, or because the forest is still accessible but producing less?",
-      "how_answer_updates_diagnosis": "If the reduction is attributed to reduced accessible area, this confirms the encroachment pathway. If the forest is accessible but producing less, degradation or over-harvesting pathways become more likely and the diagnosis should be revised accordingly."
+      "how_answer_updates_diagnosis": "If the reduction is attributed to reduced accessible area, this confirms the encroachment pathway. If the forest is accessible but producing less, degradation or over-harvesting pathways become more likely and the diagnosis should be revised accordingly.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "little_change",
+          "label": "Little change — decline under 25% or stable collection",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "trend": "stable",
+            "percent_upper": 25
+          }
+        },
+        {
+          "id": "moderate_decline",
+          "label": "Noticeable decline of about 25–50% in collection volume",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening",
+            "percent_lower": 25,
+            "percent_upper": 50
+          }
+        },
+        {
+          "id": "severe_decline",
+          "label": "Severe decline over 50% or access largely blocked",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "worsening",
+            "percent_lower": 50
+          }
+        }
+      ]
     }
   ],
   "sources": [

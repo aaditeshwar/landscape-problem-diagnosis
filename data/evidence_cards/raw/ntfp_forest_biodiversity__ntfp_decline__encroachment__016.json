@@ -159,12 +159,66 @@
     {
       "missing_variable": "fra_claims_filed_count",
       "question_to_user": "Have community members filed individual or community forest rights claims under the Forest Rights Act (FRA)? If yes, how many claims have been filed and how many have been recognized or rejected?",
-      "how_answer_updates_diagnosis": "Low FRA claim filing or high rejection rates in a village with high ST population and declining NTFP access strongly confirms the encroachment and tenure insecurity pathway. Recognized FRA claims that are subsequently violated by encroachers would indicate enforcement failure rather than absence of rights."
+      "how_answer_updates_diagnosis": "Low FRA claim filing or high rejection rates in a village with high ST population and declining NTFP access strongly confirms the encroachment and tenure insecurity pathway. Recognized FRA claims that are subsequently violated by encroachers would indicate enforcement failure rather than absence of rights.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "none",
+          "label": "No FRA claims filed by community members",
+          "normalized": {
+            "present": false
+          }
+        },
+        {
+          "id": "pending",
+          "label": "Claims filed but mostly pending or rejected",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "recognized",
+          "label": "Several claims recognised (individual or community forest rights)",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "forest_boundary_demarcation_status",
       "question_to_user": "Are the boundaries of the forest land clearly demarcated with pillars or signage? Are there recent disputes about where the forest boundary lies?",
-      "how_answer_updates_diagnosis": "Absence of clear boundary demarcation is a precondition for encroachment and confirms the pathway. Active boundary disputes indicate ongoing encroachment pressure. Clear demarcation with no disputes would reduce confidence in the encroachment pathway and redirect diagnosis toward other causes of NTFP decline."
+      "how_answer_updates_diagnosis": "Absence of clear boundary demarcation is a precondition for encroachment and confirms the pathway. Active boundary disputes indicate ongoing encroachment pressure. Clear demarcation with no disputes would reduce confidence in the encroachment pathway and redirect diagnosis toward other causes of NTFP decline.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "clear",
+          "label": "Boundaries clearly marked; no recent disputes",
+          "normalized": {
+            "present": false,
+            "trend": "stable"
+          }
+        },
+        {
+          "id": "partial",
+          "label": "Some marking exists but incomplete or poorly maintained",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "absent",
+          "label": "No clear demarcation or active boundary disputes",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "worsening"
+          }
+        }
+      ]
     }
   ],
   "sources": [

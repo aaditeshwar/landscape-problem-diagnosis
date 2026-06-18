@@ -8,20 +8,21 @@ from config import LLM_PROVIDER, OLLAMA_CHAT_TIMEOUT, OLLAMA_URL
 from db import get_db
 from logging_setup import log_diagnosis_event
 from services.assembler import assemble_variable_bundle, location_context
-from services.diagnosis_revision import (
-    apply_follow_up_revision,
-    normalize_qualitative_answer,
-    prior_diagnosis_from_session,
-)
+from services.diagnosis_revision import prior_diagnosis_from_session
 from services.diagnosis_trace import DiagnosisRequestTrace
 from services.llm_client import model_for_turn
 from services.mws_enrich import enrich_mws_doc
-from services.evidence_note import DEFAULT_RETRIEVAL_PROBE
 from services.follow_up_mcq import attach_follow_up_mcq, normalized_answer_from_mcq_choice
-from services.reasoner import DiagnosisLLMParseError, _collect_prior_follow_up, run_diagnosis, run_server_diagnosis
+from services.reasoner import (
+    DiagnosisLLMParseError,
+    _collect_prior_follow_up,
+    run_llm_reviewer_diagnosis,
+    run_server_diagnosis,
+)
 from services.retriever import (
     frozen_retrieval_result,
     load_evidence_cards_by_ids,
+    load_mws_scoped_evidence_cards,
     pathway_retrieval_ranks,
     retrieve_evidence_cards,
     _aer_tags_for_retrieval,
@@ -274,6 +275,9 @@ class AnswerRequest(BaseModel):
     want_llm_opinion: bool | None = None
 
 
+SERVER_SCOPED_RETRIEVAL_QUERY = "[server-scoped: all MWS-relevant pathways, no embedding]"
+
+
 def _effective_retrieval_query(problem_description: str, *, want_llm_opinion: bool) -> str:
     text = str(problem_description or "").strip()
     if want_llm_opinion and not text:
@@ -281,7 +285,9 @@ def _effective_retrieval_query(problem_description: str, *, want_llm_opinion: bo
             status_code=400,
             detail="problem_description is required when want_llm_opinion is true",
         )
-    return text or DEFAULT_RETRIEVAL_PROBE
+    if not want_llm_opinion:
+        return SERVER_SCOPED_RETRIEVAL_QUERY if not text else text
+    return text
 
 
 def _resolve_want_llm_opinion(request_flag: bool | None, session: dict | None) -> bool:
@@ -360,7 +366,10 @@ def _run_query(
 
     injected = session.get("injected_variables") or {}
     try:
-        retrieval = retrieve_evidence_cards(db, retrieval_query, mws_doc)
+        if want_llm_opinion:
+            retrieval = retrieve_evidence_cards(db, retrieval_query, mws_doc)
+        else:
+            retrieval = load_mws_scoped_evidence_cards(db, mws_doc)
     except Exception as exc:
         _log_diagnosis_failure(
             event="diagnosis_query",
@@ -408,7 +417,7 @@ def _run_query(
     llm_skipped = not want_llm_opinion
     try:
         if want_llm_opinion:
-            diagnosis = run_diagnosis(
+            diagnosis = run_llm_reviewer_diagnosis(
                 location=location_context(mws_doc, tehsil_ref),
                 problem_description=user_problem,
                 bundle=bundle,
@@ -656,8 +665,24 @@ def diagnosis_answer(body: AnswerRequest):
             raise exc
         answer_text = normalized_answer.get("raw", body.choice_id)
     elif str(body.answer or "").strip():
-        normalized_answer = normalize_qualitative_answer(body.variable, body.answer)
-        answer_text = normalized_answer.get("raw", body.answer)
+        exc = HTTPException(
+            status_code=400,
+            detail="Follow-up requires choice_id; free-text answer is no longer supported",
+        )
+        _log_diagnosis_failure(
+            event="diagnosis_follow_up",
+            turn_type="follow_up",
+            failure_stage="validation",
+            exc=exc,
+            request_started=request_started,
+            session_id=body.session_id,
+            mws_doc=mws_doc,
+            problem_description=problem_description,
+            follow_up_variable=body.variable,
+            follow_up_answer=body.answer,
+            injected=injected,
+        )
+        raise exc
     else:
         exc = HTTPException(status_code=400, detail="Provide choice_id or answer for follow-up")
         _log_diagnosis_failure(
@@ -721,7 +746,7 @@ def diagnosis_answer(body: AnswerRequest):
     llm_started = time.perf_counter()
     try:
         if want_llm_opinion:
-            diagnosis = run_diagnosis(
+            diagnosis = run_llm_reviewer_diagnosis(
                 location=location_context(mws_doc, session_tehsil_ref),
                 problem_description=problem_description,
                 bundle=bundle,
@@ -789,24 +814,11 @@ def diagnosis_answer(body: AnswerRequest):
         raise _llm_http_exception(exc) from exc
 
     t1 = time.perf_counter()
-    if want_llm_opinion:
-        signal_updates = collect_follow_up_signal_updates(
-            diagnosis.signal_evaluation or {},
-            body.variable,
-        )
-        llm_response = apply_follow_up_revision(
-            diagnosis.response,
-            prior_diagnosis,
-            answered_variable=body.variable,
-            follow_up_signal_updates=signal_updates,
-            signal_evaluation=diagnosis.signal_evaluation or {},
-        )
-    else:
-        llm_response = diagnosis.response
-        signal_updates = llm_response.get("follow_up_signal_updates") or collect_follow_up_signal_updates(
-            diagnosis.signal_evaluation or {},
-            body.variable,
-        )
+    llm_response = diagnosis.response
+    signal_updates = llm_response.get("follow_up_signal_updates") or collect_follow_up_signal_updates(
+        diagnosis.signal_evaluation or {},
+        body.variable,
+    )
     revision_ms = (time.perf_counter() - t1) * 1000
     llm_response = attach_follow_up_mcq(llm_response, bundle)
 
@@ -839,6 +851,7 @@ def diagnosis_answer(body: AnswerRequest):
         follow_up_question=llm_response.get("follow_up_question"),
         follow_up_variable=body.variable,
         follow_up_answer=answer_text,
+        follow_up_choice_id=body.choice_id,
         follow_up_signal_updates=llm_response.get("follow_up_signal_updates") or signal_updates,
         want_llm_opinion=want_llm_opinion,
         llm_skipped=llm_skipped,

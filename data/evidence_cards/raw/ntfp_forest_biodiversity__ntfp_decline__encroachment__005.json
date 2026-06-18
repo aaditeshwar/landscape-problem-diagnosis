@@ -150,12 +150,72 @@
     {
       "missing_variable": "fra_claims_filed_count",
       "question_to_user": "Have community members filed claims under the Forest Rights Act (FRA) for individual or community forest rights in this village? If yes, how many claims have been filed and how many have been recognized?",
-      "how_answer_updates_diagnosis": "Low FRA claim filing or high rejection rates in a village with high ST population and forest-to-farm conversion confirms that tenure insecurity is enabling encroachment and restricting legitimate community access, strongly supporting the encroachment pathway and prioritizing FRA support as an intervention."
+      "how_answer_updates_diagnosis": "Low FRA claim filing or high rejection rates in a village with high ST population and forest-to-farm conversion confirms that tenure insecurity is enabling encroachment and restricting legitimate community access, strongly supporting the encroachment pathway and prioritizing FRA support as an intervention.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "none",
+          "label": "No FRA claims filed by community members",
+          "normalized": {
+            "present": false
+          }
+        },
+        {
+          "id": "pending",
+          "label": "Claims filed but mostly pending or rejected",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "recognized",
+          "label": "Several claims recognised (individual or community forest rights)",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "ntfp_collection_trend_qualitative",
       "question_to_user": "Over the past 5-10 years, have NTFP collectors in this village reported that they need to travel farther to collect forest produce, or that previously accessible collection areas are now blocked or converted to farmland?",
-      "how_answer_updates_diagnosis": "Reports of increased travel distance or blocked access areas directly confirm encroachment as the mechanism of NTFP decline, distinguishing it from degradation-driven decline where access areas remain but yields are lower."
+      "how_answer_updates_diagnosis": "Reports of increased travel distance or blocked access areas directly confirm encroachment as the mechanism of NTFP decline, distinguishing it from degradation-driven decline where access areas remain but yields are lower.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "little_change",
+          "label": "Little change — decline under 25% or stable collection",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "trend": "stable",
+            "percent_upper": 25
+          }
+        },
+        {
+          "id": "moderate_decline",
+          "label": "Noticeable decline of about 25–50% in collection volume",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening",
+            "percent_lower": 25,
+            "percent_upper": 50
+          }
+        },
+        {
+          "id": "severe_decline",
+          "label": "Severe decline over 50% or access largely blocked",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "worsening",
+            "percent_lower": 50
+          }
+        }
+      ]
     }
   ],
   "sources": [

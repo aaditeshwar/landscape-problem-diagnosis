@@ -175,12 +175,72 @@
     {
       "missing_variable": "ntfp_collection_trend_qualitative",
       "question_to_user": "Have community members noticed a reduction in the quantity of forest produce (such as tendu leaves, mahua, amla, or medicinal plants) they are able to collect compared to five or ten years ago? If so, do they attribute this to reduced forest area, restricted access, or reduced density of the species within the forest?",
-      "how_answer_updates_diagnosis": "If communities report reduced collection quantities and attribute it to shrinking forest area or blocked access routes, this directly confirms the encroachment pathway. If they attribute it to reduced species density within an unchanged forest area, over-harvesting or degradation pathways become more likely and the encroachment diagnosis should be weighted lower."
+      "how_answer_updates_diagnosis": "If communities report reduced collection quantities and attribute it to shrinking forest area or blocked access routes, this directly confirms the encroachment pathway. If they attribute it to reduced species density within an unchanged forest area, over-harvesting or degradation pathways become more likely and the encroachment diagnosis should be weighted lower.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "little_change",
+          "label": "Little change — decline under 25% or stable collection",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "trend": "stable",
+            "percent_upper": 25
+          }
+        },
+        {
+          "id": "moderate_decline",
+          "label": "Noticeable decline of about 25–50% in collection volume",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening",
+            "percent_lower": 25,
+            "percent_upper": 50
+          }
+        },
+        {
+          "id": "severe_decline",
+          "label": "Severe decline over 50% or access largely blocked",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "worsening",
+            "percent_lower": 50
+          }
+        }
+      ]
     },
     {
       "missing_variable": "fra_claims_filed_count",
       "question_to_user": "Have community members filed individual or community forest rights claims under the Forest Rights Act (FRA) in this village? If yes, what proportion have been approved, rejected, or are still pending?",
-      "how_answer_updates_diagnosis": "A high number of pending or rejected FRA claims alongside forest-to-farm conversion trends strongly confirms that tenure insecurity is enabling encroachment and that the FRA claim filing support intervention is the priority recommendation. If FRA claims have been largely approved, the encroachment may be occurring despite legal protections, pointing to enforcement failure as the key intervention gap."
+      "how_answer_updates_diagnosis": "A high number of pending or rejected FRA claims alongside forest-to-farm conversion trends strongly confirms that tenure insecurity is enabling encroachment and that the FRA claim filing support intervention is the priority recommendation. If FRA claims have been largely approved, the encroachment may be occurring despite legal protections, pointing to enforcement failure as the key intervention gap.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "none",
+          "label": "No FRA claims filed by community members",
+          "normalized": {
+            "present": false
+          }
+        },
+        {
+          "id": "pending",
+          "label": "Claims filed but mostly pending or rejected",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "recognized",
+          "label": "Several claims recognised (individual or community forest rights)",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     }
   ],
   "sources": [

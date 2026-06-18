@@ -6,10 +6,15 @@ import {
   hasNregaData,
   intersectVillageRows,
   landChangeTotals,
+  degradationBreakdown,
+  afforestationBreakdown,
+  deforestationBreakdown,
+  urbanizationBreakdown,
   mwsRainfallBand,
 } from '../utils/mwsData'
 import { hasPanelHighlights, panelHighlightFlags } from '../utils/panelHighlight'
 import {
+  ChangeDetectionStackedBar,
   CroppingChart,
   DeltaGChart,
   DeforestationPairChart,
@@ -41,7 +46,17 @@ function IdentityRow({ label, value }: { label: string; value: string | number |
   )
 }
 
-function LandChangeRow({ label, value, tone }: { label: string; value: number; tone: 'red' | 'emerald' | 'amber' | 'stone' }) {
+function LandChangeRow({
+  label,
+  value,
+  tone,
+  breakdown,
+}: {
+  label: string
+  value: number
+  tone: 'red' | 'emerald' | 'amber' | 'stone'
+  breakdown?: Array<{ key: string; label: string; ha: number; color: string }>
+}) {
   const toneClass =
     tone === 'red'
       ? 'text-red-700'
@@ -51,9 +66,12 @@ function LandChangeRow({ label, value, tone }: { label: string; value: number; t
           ? 'text-amber-700'
           : 'text-stone-800'
   return (
-    <div className="flex justify-between border-b border-stone-100 py-1.5 text-sm last:border-b-0">
-      <span className="text-stone-600">{label}</span>
-      <span className={`font-medium ${toneClass}`}>{value.toFixed(1)} ha</span>
+    <div className="border-b border-stone-100 py-2 last:border-b-0">
+      <div className="flex justify-between text-sm">
+        <span className="text-stone-600">{label}</span>
+        <span className={`font-medium ${toneClass}`}>{value.toFixed(1)} ha</span>
+      </div>
+      {breakdown && breakdown.length > 0 && <ChangeDetectionStackedBar segments={breakdown} />}
     </div>
   )
 }
@@ -77,6 +95,12 @@ export function InfoPanel({ mws, loading, panelUpdates, activeTehsil }: Props) {
   }
 
   const landChange = landChangeTotals(mws)
+  const landBreakdowns = {
+    degradation: degradationBreakdown(mws),
+    afforestation: afforestationBreakdown(mws),
+    deforestation: deforestationBreakdown(mws),
+    urbanization: urbanizationBreakdown(mws),
+  }
   const villages = intersectVillageRows(mws)
   const facilities = facilityDistanceTable(mws)
   const highlights = panelHighlightFlags(panelUpdates)
@@ -128,7 +152,12 @@ export function InfoPanel({ mws, loading, panelUpdates, activeTehsil }: Props) {
               {highlights.degradationSummary && (
                 <div className="rounded-lg border border-stone-200 bg-white p-3 text-sm">
                   <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-stone-500">Land change (2017–25)</h4>
-                  <LandChangeRow label="Cropping area degradation" value={landChange.croppingDegradation} tone="red" />
+                  <LandChangeRow
+                    label="Cropping area degradation"
+                    value={landChange.croppingDegradation}
+                    tone="red"
+                    breakdown={landBreakdowns.degradation}
+                  />
                 </div>
               )}
             </div>
@@ -150,10 +179,30 @@ export function InfoPanel({ mws, loading, panelUpdates, activeTehsil }: Props) {
             <CroppingChart mws={mws} />
             <div className="rounded-lg border border-stone-200 bg-white p-3 text-sm">
               <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-stone-500">Land change (2017–25)</h4>
-              <LandChangeRow label="Cropping area degradation" value={landChange.croppingDegradation} tone="red" />
-              <LandChangeRow label="Afforestation" value={landChange.afforestation} tone="emerald" />
-              <LandChangeRow label="Deforestation" value={landChange.deforestation} tone="red" />
-              <LandChangeRow label="Urbanization" value={landChange.urbanization} tone="amber" />
+              <LandChangeRow
+                label="Cropping area degradation"
+                value={landChange.croppingDegradation}
+                tone="red"
+                breakdown={landBreakdowns.degradation}
+              />
+              <LandChangeRow
+                label="Afforestation"
+                value={landChange.afforestation}
+                tone="emerald"
+                breakdown={landBreakdowns.afforestation}
+              />
+              <LandChangeRow
+                label="Deforestation"
+                value={landChange.deforestation}
+                tone="red"
+                breakdown={landBreakdowns.deforestation}
+              />
+              <LandChangeRow
+                label="Urbanization"
+                value={landChange.urbanization}
+                tone="amber"
+                breakdown={landBreakdowns.urbanization}
+              />
             </div>
           </div>
         </section>

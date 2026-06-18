@@ -66,6 +66,7 @@ class DiagnosisRequestTrace:
     follow_up_question: str | None = None
     follow_up_variable: str | None = None
     follow_up_answer: str | None = None
+    follow_up_choice_id: str | None = None
     problem_description: str | None = None
     state: str | None = None
     district: str | None = None

@@ -155,7 +155,38 @@
     {
       "missing_variable": "irrigated_area_ha",
       "question_to_user": "Approximately what share of your village's cropland receives any irrigation — from canals, lift irrigation, springs (naulas), or pumped groundwater — during the rabi (winter) or zaid (summer) season? Would you say it is less than 10%, between 10 and 30%, or more than 30% of total farmland?",
-      "how_answer_updates_diagnosis": "If irrigated area is less than 10% of total cropland, this strongly confirms the rainfed_risk pathway and justifies high severity. If 10–30% is irrigated, the pathway is partially confirmed and solutions should focus on expanding existing irrigation sources. If more than 30% is irrigated, the rainfed_risk pathway may be secondary and groundwater stress or canal reliability should be investigated as alternative causal pathways."
+      "how_answer_updates_diagnosis": "If irrigated area is less than 10% of total cropland, this strongly confirms the rainfed_risk pathway and justifies high severity. If 10–30% is irrigated, the pathway is partially confirmed and solutions should focus on expanding existing irrigation sources. If more than 30% is irrigated, the rainfed_risk pathway may be secondary and groundwater stress or canal reliability should be investigated as alternative causal pathways.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "low",
+          "label": "Less than 10% of cultivated land is irrigated",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "percent_upper": 10
+          }
+        },
+        {
+          "id": "moderate",
+          "label": "Between 10% and 30% of cultivated land is irrigated",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "percent_lower": 10,
+            "percent_upper": 30
+          }
+        },
+        {
+          "id": "high",
+          "label": "More than 30% of cultivated land is irrigated",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "percent_lower": 30
+          }
+        }
+      ]
     }
   ],
   "sources": [

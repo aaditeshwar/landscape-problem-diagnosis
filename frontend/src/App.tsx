@@ -61,11 +61,10 @@ export default function App() {
   )
   const tehsilLoadSeq = useRef(0)
   const mwsSelectSeq = useRef(0)
-  const restoreEpoch = useRef(0)
-  const activeDiagnosisContextRef = useRef<{ mwsUid: string; tehsil: TehsilRef } | null>(null)
-  const restoringDiagnosisContextRef = useRef(false)
   const diagnosisSessionMwsUidRef = useRef<string | null>(null)
   const diagnosisSessionTehsilRef = useRef<TehsilRef | null>(null)
+  const diagnosisRequestSeq = useRef(0)
+  const followUpRequestSeq = useRef(0)
   const diagnosisLoadingRef = useRef(false)
   const analysisMwsDocRef = useRef<MwsDocument | null>(null)
   const selectedTehsilRef = useRef<TehsilRef | null>(null)
@@ -80,7 +79,6 @@ export default function App() {
   const isDiagnosisSessionLocked = Boolean(lockedDiagnosisMwsUid)
 
   function lockDiagnosisSession(mwsUid: string, tehsil: TehsilRef, snapshot: MwsDocument | null) {
-    activeDiagnosisContextRef.current = { mwsUid, tehsil }
     diagnosisSessionMwsUidRef.current = mwsUid
     diagnosisSessionTehsilRef.current = tehsil
     setDiagnosisSessionMwsUid(mwsUid)
@@ -92,7 +90,6 @@ export default function App() {
   }
 
   function unlockDiagnosisSession() {
-    activeDiagnosisContextRef.current = null
     diagnosisSessionMwsUidRef.current = null
     diagnosisSessionTehsilRef.current = null
     analysisMwsDocRef.current = null
@@ -102,12 +99,7 @@ export default function App() {
   }
 
   function shouldPreserveDiagnosisSession(): boolean {
-    return (
-      diagnosisLoadingRef.current ||
-      restoringDiagnosisContextRef.current ||
-      activeDiagnosisContextRef.current != null ||
-      diagnosisSessionMwsUidRef.current != null
-    )
+    return diagnosisLoadingRef.current || diagnosisSessionMwsUidRef.current != null
   }
 
   function preserveDiagnosisOnMapBrowse(options?: { preserveDiagnosis?: boolean }): boolean {
@@ -133,6 +125,44 @@ export default function App() {
     setFlyTarget({ lat: center.lat, lon: center.lng, zoom: 13 })
   }
 
+  const focusDiagnosisMwsOnMap = useCallback(async () => {
+    const mwsUid = diagnosisSessionMwsUidRef.current
+    const tehsil = diagnosisSessionTehsilRef.current
+    if (!mwsUid || !tehsil) return
+
+    setMapError(null)
+    setSelectedTehsil(tehsil)
+    let boundaries = mwsBoundaries
+    const sameTehsil =
+      selectedTehsil?.state === tehsil.state &&
+      selectedTehsil?.district === tehsil.district &&
+      selectedTehsil?.tehsil === tehsil.tehsil
+    if (!sameTehsil || !boundaries) {
+      try {
+        boundaries = await fetchMwsBoundaries(tehsil)
+        setMwsBoundaries(boundaries)
+      } catch (err) {
+        setMapError(err instanceof Error ? err.message : 'Failed to load tehsil layers')
+        return
+      }
+    }
+
+    setSelectedMwsUid(mwsUid)
+    setMwsHighlightEpoch((value) => value + 1)
+    flyToMwsUid(mwsUid, tehsil, boundaries)
+
+    setMwsLoading(true)
+    try {
+      const doc = await fetchMws(mwsUid)
+      setMwsData(doc)
+    } catch (err) {
+      setMwsData(null)
+      setMapError(err instanceof Error ? err.message : 'Failed to load MWS')
+    } finally {
+      setMwsLoading(false)
+    }
+  }, [mwsBoundaries, selectedTehsil])
+
   useEffect(() => {
     Promise.all([fetchTehsils(), fetchIngestedTehsils()])
       .then(([tehsilGeo, ingested]) => {
@@ -152,89 +182,7 @@ export default function App() {
     unlockDiagnosisSession()
   }, [])
 
-  const diagnosisContextSnapshot = useCallback((): { mwsUid: string; tehsil: TehsilRef } | null => {
-    if (activeDiagnosisContextRef.current) return activeDiagnosisContextRef.current
-    const mwsUid = diagnosisSessionMwsUidRef.current
-    const tehsil = diagnosisSessionTehsilRef.current
-    if (mwsUid && tehsil) return { mwsUid, tehsil }
-    return null
-  }, [])
-
-  const restoreActiveDiagnosisContext = useCallback(async () => {
-    const ctx = diagnosisContextSnapshot()
-    if (!ctx) return
-
-    restoringDiagnosisContextRef.current = true
-    mwsSelectSeq.current += 1
-    tehsilLoadSeq.current += 1
-    const epoch = ++restoreEpoch.current
-    const restoreTehsilSeq = tehsilLoadSeq.current
-    try {
-      setMapError(null)
-      setSelectedTehsil(ctx.tehsil)
-      setMwsBoundaries(null)
-      if (showVillages) setVillageBoundaries(null)
-
-      let restoredBoundaries: MwsFeatureCollection | null = null
-      try {
-        const boundaries = await fetchMwsBoundaries(ctx.tehsil)
-        if (restoreEpoch.current !== epoch) return
-        if (tehsilLoadSeq.current === restoreTehsilSeq) {
-          setMwsBoundaries(boundaries)
-          restoredBoundaries = boundaries
-        }
-      } catch (err) {
-        if (restoreEpoch.current !== epoch) return
-        if (tehsilLoadSeq.current === restoreTehsilSeq) {
-          setMwsBoundaries(null)
-          setMapError(err instanceof Error ? err.message : 'Failed to load tehsil layers')
-        }
-      }
-
-      if (restoreEpoch.current !== epoch) return
-
-      if (!restoredBoundaries) {
-        try {
-          const boundaries = await fetchMwsBoundaries(ctx.tehsil)
-          if (restoreEpoch.current !== epoch) return
-          setMwsBoundaries(boundaries)
-          restoredBoundaries = boundaries
-        } catch (err) {
-          if (restoreEpoch.current !== epoch) return
-          setMapError(err instanceof Error ? err.message : 'Failed to load tehsil layers')
-        }
-      }
-
-      if (restoreEpoch.current !== epoch) return
-
-      setSelectedMwsUid(ctx.mwsUid)
-      setMwsHighlightEpoch((value) => value + 1)
-      setMwsLoading(true)
-      setMapError(null)
-      try {
-        const doc = await fetchMws(ctx.mwsUid)
-        if (restoreEpoch.current !== epoch) return
-        setMwsData(doc)
-        flyToMwsUid(ctx.mwsUid, ctx.tehsil, restoredBoundaries)
-      } catch (err) {
-        if (restoreEpoch.current !== epoch) return
-        setMwsData(null)
-        setMapError(err instanceof Error ? err.message : 'Failed to load MWS')
-      } finally {
-        if (restoreEpoch.current === epoch) {
-          setMwsLoading(false)
-        }
-      }
-    } finally {
-      if (restoreEpoch.current === epoch) {
-        activeDiagnosisContextRef.current = null
-      }
-      restoringDiagnosisContextRef.current = false
-    }
-  }, [showVillages, diagnosisContextSnapshot])
-
   const loadTehsilLayers = useCallback(async (ref: TehsilRef, options?: { preserveDiagnosis?: boolean }) => {
-    if (restoringDiagnosisContextRef.current) return
     const preserveDiagnosis = preserveDiagnosisOnMapBrowse(options)
     const seq = ++tehsilLoadSeq.current
     setMapError(null)
@@ -258,7 +206,6 @@ export default function App() {
   }, [showVillages, resetDiagnosisForNewMws])
 
   const selectMws = useCallback(async (uid: string) => {
-    if (restoringDiagnosisContextRef.current) return
     const seq = ++mwsSelectSeq.current
     setSelectedMwsUid(uid)
     if (!shouldPreserveDiagnosisSession()) {
@@ -327,8 +274,17 @@ export default function App() {
     }
   }
 
+  const handleCloseDiagnosis = useCallback(() => {
+    diagnosisRequestSeq.current += 1
+    followUpRequestSeq.current += 1
+    diagnosisLoadingRef.current = false
+    setDiagnosisLoading(false)
+    resetDiagnosisForNewMws()
+  }, [resetDiagnosisForNewMws])
+
   async function handleDiagnosis() {
-    if (!selectedMwsUid || !selectedTehsil) return
+    if (!selectedMwsUid || !selectedTehsil || isDiagnosisSessionLocked) return
+    const requestSeq = ++diagnosisRequestSeq.current
     const analysisUid = selectedMwsUid
     const analysisTehsil = selectedTehsil
     lockDiagnosisSession(analysisUid, analysisTehsil, mwsData?.uid === analysisUid ? mwsData : null)
@@ -357,17 +313,21 @@ export default function App() {
         analysisTehsil,
         wantLlmOpinion,
       )
+      if (diagnosisRequestSeq.current !== requestSeq) return
       setDiagnosis(result)
       setFollowUpHistory([])
       setSessionId(result.session_id)
       setPanelUpdates(result.panel_updates ?? [])
       setFollowUpAnswer('')
     } catch (err) {
+      if (diagnosisRequestSeq.current !== requestSeq) return
       setDiagnosisError(err instanceof Error ? err.message : 'Diagnosis failed')
+      unlockDiagnosisSession()
     } finally {
-      await restoreActiveDiagnosisContext()
-      diagnosisLoadingRef.current = false
-      setDiagnosisLoading(false)
+      if (diagnosisRequestSeq.current === requestSeq) {
+        diagnosisLoadingRef.current = false
+        setDiagnosisLoading(false)
+      }
     }
   }
 
@@ -375,18 +335,15 @@ export default function App() {
     if (!sessionId || !followUpTarget) return
     const mcq = diagnosis?.follow_up_mcq
     const usingMcq = Boolean(mcq && mcq.variable === followUpTarget.variable)
-    if (usingMcq && !followUpAnswer.trim()) return
-    if (!usingMcq && !followUpAnswer.trim()) return
+    if (!usingMcq) {
+      setDiagnosisError('Follow-up requires an MCQ choice for this variable.')
+      return
+    }
+    if (!followUpAnswer.trim()) return
 
     const answer = followUpAnswer.trim()
-
-    const displayAnswer = usingMcq
-      ? mcq!.choices.find((choice) => choice.id === answer)?.label ?? answer
-      : answer
-    const question =
-      followUpTarget.question ??
-      mcq?.question ??
-      (followUpTarget.structured ? 'Follow-up response' : 'Additional observation')
+    const displayAnswer = mcq!.choices.find((choice) => choice.id === answer)?.label ?? answer
+    const question = followUpTarget.question ?? mcq!.question ?? 'Follow-up response'
     const sessionMwsUid = diagnosisSessionMwsUidRef.current
     const sessionTehsil = diagnosisSessionTehsilRef.current
     if (sessionMwsUid && sessionTehsil) {
@@ -395,14 +352,16 @@ export default function App() {
     diagnosisLoadingRef.current = true
     setDiagnosisLoading(true)
     setDiagnosisError(null)
+    const requestSeq = ++followUpRequestSeq.current
     try {
       const result = await submitDiagnosisAnswer(
         sessionId,
         followUpTarget.variable,
-        usingMcq ? '' : answer,
+        '',
         wantLlmOpinion,
-        usingMcq ? answer : null,
+        answer,
       )
+      if (followUpRequestSeq.current !== requestSeq) return
       if (result.session_id) setSessionId(result.session_id)
       setFollowUpHistory((prev) => [
         ...prev,
@@ -421,11 +380,13 @@ export default function App() {
       setPanelUpdates((prev) => [...prev, ...(result.panel_updates ?? [])])
       setFollowUpAnswer('')
     } catch (err) {
+      if (followUpRequestSeq.current !== requestSeq) return
       setDiagnosisError(err instanceof Error ? err.message : 'Follow-up failed')
     } finally {
-      await restoreActiveDiagnosisContext()
-      diagnosisLoadingRef.current = false
-      setDiagnosisLoading(false)
+      if (followUpRequestSeq.current === requestSeq) {
+        diagnosisLoadingRef.current = false
+        setDiagnosisLoading(false)
+      }
     }
   }
 
@@ -477,6 +438,9 @@ export default function App() {
             wantLlmOpinion={wantLlmOpinion}
             onWantLlmOpinionChange={setWantLlmOpinion}
             onSubmit={handleDiagnosis}
+            onCloseDiagnosis={handleCloseDiagnosis}
+            onFocusDiagnosisMws={() => void focusDiagnosisMwsOnMap()}
+            sessionActive={isDiagnosisSessionLocked}
             loading={diagnosisLoading}
             error={diagnosisError}
             diagnosis={diagnosis}

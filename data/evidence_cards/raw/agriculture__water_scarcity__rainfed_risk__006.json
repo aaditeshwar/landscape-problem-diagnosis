@@ -154,7 +154,38 @@
     {
       "missing_variable": "irrigated_area_ha",
       "question_to_user": "Approximately what share of your village's farmland is irrigated during the rabi (winter) or zaid (summer) season — would you say less than 10%, between 10–30%, or more than 30%? What are the main irrigation sources used (wells, canals, tanks, ponds)?",
-      "how_answer_updates_diagnosis": "If less than 10% of farmland is irrigated and sources are limited to seasonal tanks or rain-fed ponds, this strongly confirms the rainfed risk pathway. If more than 30% is irrigated from wells or canals, the water scarcity stress may be better explained by groundwater depletion or canal failure pathways rather than structural rainfed dependence."
+      "how_answer_updates_diagnosis": "If less than 10% of farmland is irrigated and sources are limited to seasonal tanks or rain-fed ponds, this strongly confirms the rainfed risk pathway. If more than 30% is irrigated from wells or canals, the water scarcity stress may be better explained by groundwater depletion or canal failure pathways rather than structural rainfed dependence.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "low",
+          "label": "Less than 10% of cultivated land is irrigated",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "percent_upper": 10
+          }
+        },
+        {
+          "id": "moderate",
+          "label": "Between 10% and 30% of cultivated land is irrigated",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "percent_lower": 10,
+            "percent_upper": 30
+          }
+        },
+        {
+          "id": "high",
+          "label": "More than 30% of cultivated land is irrigated",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "percent_lower": 30
+          }
+        }
+      ]
     }
   ],
   "sources": [

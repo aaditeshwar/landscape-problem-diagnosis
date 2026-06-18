@@ -134,7 +134,37 @@
     {
       "missing_variable": "ntfp_species_presence",
       "question_to_user": "Have community members noticed a reduction in the availability of key forest products such as Tendu leaves, Mahua flowers, Harra fruit, Achar seeds, or honey in the forests they depend on? If yes, which species have declined most, and over roughly how many years has this been observed?",
-      "how_answer_updates_diagnosis": "Confirmed decline in specific NTFP species, especially those associated with mature forest trees (Mahua, Harra, Achar), strongly confirms the forest degradation pathway. If decline is limited to understory or ground-layer species, it may indicate selective logging or fire damage rather than wholesale deforestation. Species-specific decline patterns help prioritise which NTFP-bearing species to include in community plantation programmes."
+      "how_answer_updates_diagnosis": "Confirmed decline in specific NTFP species, especially those associated with mature forest trees (Mahua, Harra, Achar), strongly confirms the forest degradation pathway. If decline is limited to understory or ground-layer species, it may indicate selective logging or fire damage rather than wholesale deforestation. Species-specific decline patterns help prioritise which NTFP-bearing species to include in community plantation programmes.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "abundant",
+          "label": "NTFP species are still common and easy to find",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "stable"
+          }
+        },
+        {
+          "id": "reduced",
+          "label": "Some species are harder to find than 5–10 years ago",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "rare",
+          "label": "Several species that used to be common are now rare or absent",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "trend": "worsening"
+          }
+        }
+      ]
     }
   ],
   "sources": [

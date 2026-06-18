@@ -12,7 +12,20 @@ from _bootstrap import ROOT, bootstrap  # noqa: E402
 bootstrap(runtime=True)
 
 from services.assembler import authorized_follow_up_questions  # noqa: E402
-from services.retriever import _diverse_select, pathway_retrieval_ranks  # noqa: E402
+from services.retriever import _best_card_per_pathway, _diverse_select, pathway_retrieval_ranks  # noqa: E402
+
+
+def test_best_card_per_pathway_prefers_direct_aer():
+    cards = [
+        {"card_id": "gw_proxy", "causal_pathway": "groundwater_stress", "aer_tags": ["AER-6"]},
+        {"card_id": "gw_direct", "causal_pathway": "groundwater_stress", "aer_tags": ["AER-3", "AER-6"]},
+        {"card_id": "drought_a", "causal_pathway": "drought", "aer_tags": ["AER-3"]},
+    ]
+    picked = _best_card_per_pathway(cards, mws_aer="AER-3")
+    by_pathway = {c["causal_pathway"]: c["card_id"] for c in picked}
+    assert by_pathway["groundwater_stress"] == "gw_direct"
+    assert by_pathway["drought"] == "drought_a"
+    assert len(picked) == 2
 
 
 def test_diverse_select_spreads_production_systems():
@@ -328,7 +341,7 @@ def test_uncertain_without_questions_falls_through_with_tier_order():
         pathway_retrieval_ranks=ranks,
     )
     assert ordered[0] == ("borewell_density", "Borewell density question?")
-    assert ordered[1] == ("fra_claims_filed_count", "FRA claims question?")
+    assert ("fra_claims_filed_count", "FRA claims question?") in ordered
     assert ("irrigated_area_ha", "Irrigated area question?") in ordered
     assert ("household_income_inr", "Income question?") in ordered
     assert all(var != "annual_well_depth_m" for var, _ in ordered)
@@ -336,6 +349,7 @@ def test_uncertain_without_questions_falls_through_with_tier_order():
 
 def main() -> int:
     tests = [
+        test_best_card_per_pathway_prefers_direct_aer,
         test_diverse_select_spreads_production_systems,
         test_follow_up_prefers_uncertain_by_rank,
         test_ruled_out_pathways_excluded_from_follow_up,

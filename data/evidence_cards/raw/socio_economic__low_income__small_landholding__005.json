@@ -162,17 +162,100 @@
     {
       "missing_variable": "landholding_size_distribution",
       "question_to_user": "What is the approximate average farm size in this village? Are most farmers cultivating less than 1 acre, 1–2.5 acres, or more than 2.5 acres? Roughly what share of households own less than 1 acre of land?",
-      "how_answer_updates_diagnosis": "If more than 60% of households own less than 1 ha (2.5 acres), this directly confirms the small landholding pathway. If average holdings are above 2 ha, the income stress may be driven by other factors such as market failure, drought, or input costs rather than landholding fragmentation."
+      "how_answer_updates_diagnosis": "If more than 60% of households own less than 1 ha (2.5 acres), this directly confirms the small landholding pathway. If average holdings are above 2 ha, the income stress may be driven by other factors such as market failure, drought, or input costs rather than landholding fragmentation.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "minority",
+          "label": "Less than one-quarter of farming households own under 1 ha",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "about_half",
+          "label": "About half of farming households own under 1 ha",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "majority",
+          "label": "More than half (or two-thirds) of households are marginal (<1 ha)",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "household_income_inr",
       "question_to_user": "Can you estimate the average annual household income in this village from all sources — farm sales, livestock, daily wage labour, MGNREGA, remittances? Is it roughly below Rs 50,000, between Rs 50,000–1,00,000, or above Rs 1,00,000 per year?",
-      "how_answer_updates_diagnosis": "Annual household income below Rs 50,000 (approximately the rural poverty threshold for a family of five) confirms the low income stress. The breakdown by source (farm vs non-farm) reveals whether diversification is already occurring or absent, directly informing whether FPO formation or livelihood diversification is the priority intervention."
+      "how_answer_updates_diagnosis": "Annual household income below Rs 50,000 (approximately the rural poverty threshold for a family of five) confirms the low income stress. The breakdown by source (farm vs non-farm) reveals whether diversification is already occurring or absent, directly informing whether FPO formation or livelihood diversification is the priority intervention.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "below_50k",
+          "label": "Below ₹50,000 per year from farming (or total household income)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "50k_to_100k",
+          "label": "Between ₹50,000 and ₹1,00,000 per year",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "above_100k",
+          "label": "Above ₹1,00,000 per year",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "market_price_crop",
       "question_to_user": "For the main crop sold (e.g. soybean, wheat, gram), what price did farmers receive per quintal in the last season? How does this compare to the government MSP announced for that crop?",
-      "how_answer_updates_diagnosis": "If farmers are receiving prices 20% or more below MSP, market failure is amplifying the income loss from small landholding. This would strengthen the recommendation for FPO formation and collective marketing. If prices are near MSP, the income problem is primarily a volume problem (insufficient surplus from small holdings) rather than a price problem."
+      "how_answer_updates_diagnosis": "If farmers are receiving prices 20% or more below MSP, market failure is amplifying the income loss from small landholding. This would strengthen the recommendation for FPO formation and collective marketing. If prices are near MSP, the income problem is primarily a volume problem (insufficient surplus from small holdings) rather than a price problem.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "near_msp",
+          "label": "Prices close to government MSP (mandi or procurement)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "below_msp",
+          "label": "Prices significantly below MSP (e.g. farm-gate or trader)",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "unable_to_sell",
+          "label": "Unable to sell at all or forced to accept very low prices",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "worsening"
+          }
+        }
+      ]
     }
   ],
   "sources": [

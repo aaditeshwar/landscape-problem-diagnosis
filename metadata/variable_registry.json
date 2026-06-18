@@ -51,11 +51,77 @@
         "mongo_path": "change_detection.urbanization.total_ha",
         "legacy_aliases": ["cd_total_urbanization_ha"]
       },
+      "cd_total_urbanization_ha": {
+        "canonical_name": "cd_urbanization_ha",
+        "type": "static",
+        "mongo_path": "change_detection.urbanization.total_ha",
+        "legacy_aliases": []
+      },
+      "cd_barren_shrub_to_built_up_ha": {
+        "canonical_name": "cd_barren_shrub_to_built_up_ha",
+        "type": "static",
+        "mongo_path": "change_detection.urbanization.barren_shrub_to_built_up_ha",
+        "legacy_aliases": []
+      },
+      "cd_built_up_to_built_up_ha": {
+        "canonical_name": "cd_built_up_to_built_up_ha",
+        "type": "static",
+        "mongo_path": "change_detection.urbanization.built_up_to_built_up_ha",
+        "legacy_aliases": []
+      },
+      "cd_tree_farm_to_built_up_ha": {
+        "canonical_name": "cd_tree_farm_to_built_up_ha",
+        "type": "static",
+        "mongo_path": "change_detection.urbanization.tree_farm_to_built_up_ha",
+        "legacy_aliases": []
+      },
+      "cd_water_to_built_up_ha": {
+        "canonical_name": "cd_water_to_built_up_ha",
+        "type": "static",
+        "mongo_path": "change_detection.urbanization.water_to_built_up_ha",
+        "legacy_aliases": []
+      },
       "cd_afforestation_ha": {
         "canonical_name": "cd_afforestation_ha",
         "type": "static",
         "mongo_path": "change_detection.afforestation.total_ha",
         "legacy_aliases": ["cd_total_afforestation_ha"]
+      },
+      "cd_total_afforestation_ha": {
+        "canonical_name": "cd_afforestation_ha",
+        "type": "static",
+        "mongo_path": "change_detection.afforestation.total_ha",
+        "legacy_aliases": []
+      },
+      "cd_barren_to_forest_ha": {
+        "canonical_name": "cd_barren_to_forest_ha",
+        "type": "static",
+        "mongo_path": "change_detection.afforestation.barren_to_forest_ha",
+        "legacy_aliases": []
+      },
+      "cd_built_up_to_forest_ha": {
+        "canonical_name": "cd_built_up_to_forest_ha",
+        "type": "static",
+        "mongo_path": "change_detection.afforestation.built_up_to_forest_ha",
+        "legacy_aliases": []
+      },
+      "cd_farm_to_forest_ha": {
+        "canonical_name": "cd_farm_to_forest_ha",
+        "type": "static",
+        "mongo_path": "change_detection.afforestation.farm_to_forest_ha",
+        "legacy_aliases": []
+      },
+      "cd_afforestation_forest_to_forest_ha": {
+        "canonical_name": "cd_afforestation_forest_to_forest_ha",
+        "type": "static",
+        "mongo_path": "change_detection.afforestation.forest_to_forest_ha",
+        "legacy_aliases": []
+      },
+      "cd_scrubland_to_forest_ha": {
+        "canonical_name": "cd_scrubland_to_forest_ha",
+        "type": "static",
+        "mongo_path": "change_detection.afforestation.scrubland_to_forest_ha",
+        "legacy_aliases": []
       },
       "cd_total_degradation_ha": {
         "canonical_name": "cd_total_degradation_ha",
@@ -67,6 +133,24 @@
         "canonical_name": "cd_farm_to_barren_ha",
         "type": "static",
         "mongo_path": "change_detection.degradation.farm_to_barren_ha",
+        "legacy_aliases": []
+      },
+      "cd_farm_to_built_up_ha": {
+        "canonical_name": "cd_farm_to_built_up_ha",
+        "type": "static",
+        "mongo_path": "change_detection.degradation.farm_to_built_up_ha",
+        "legacy_aliases": []
+      },
+      "cd_farm_to_farm_ha": {
+        "canonical_name": "cd_farm_to_farm_ha",
+        "type": "static",
+        "mongo_path": "change_detection.degradation.farm_to_farm_ha",
+        "legacy_aliases": []
+      },
+      "cd_farm_to_scrubland_ha": {
+        "canonical_name": "cd_farm_to_scrubland_ha",
+        "type": "static",
+        "mongo_path": "change_detection.degradation.farm_to_scrubland_ha",
         "legacy_aliases": []
       },
       "cd_total_deforestation_ha": {
@@ -81,10 +165,166 @@
         "mongo_path": "change_detection.deforestation.forest_to_farm_ha",
         "legacy_aliases": []
       },
+      "cd_forest_to_barren_ha": {
+        "canonical_name": "cd_forest_to_barren_ha",
+        "type": "static",
+        "mongo_path": "change_detection.deforestation.forest_to_barren_ha",
+        "legacy_aliases": []
+      },
+      "cd_forest_to_built_up_ha": {
+        "canonical_name": "cd_forest_to_built_up_ha",
+        "type": "static",
+        "mongo_path": "change_detection.deforestation.forest_to_built_up_ha",
+        "legacy_aliases": []
+      },
+      "cd_deforestation_forest_to_forest_ha": {
+        "canonical_name": "cd_deforestation_forest_to_forest_ha",
+        "type": "static",
+        "mongo_path": "change_detection.deforestation.forest_to_forest_ha",
+        "legacy_aliases": []
+      },
+      "cd_forest_to_scrubland_ha": {
+        "canonical_name": "cd_forest_to_scrubland_ha",
+        "type": "static",
+        "mongo_path": "change_detection.deforestation.forest_to_scrubland_ha",
+        "legacy_aliases": []
+      },
+      "cd_single_to_single_ha": {
+        "canonical_name": "cd_single_to_single_ha",
+        "type": "static",
+        "mongo_path": "change_detection.crop_intensity.single_to_single_ha",
+        "legacy_aliases": []
+      },
       "cd_single_to_double_ha": {
         "canonical_name": "cd_single_to_double_ha",
         "type": "static",
         "mongo_path": "change_detection.crop_intensity.single_to_double_ha",
+        "legacy_aliases": []
+      },
+      "cd_single_to_triple_ha": {
+        "canonical_name": "cd_single_to_triple_ha",
+        "type": "static",
+        "mongo_path": "change_detection.crop_intensity.single_to_triple_ha",
+        "legacy_aliases": []
+      },
+      "cd_double_to_single_ha": {
+        "canonical_name": "cd_double_to_single_ha",
+        "type": "static",
+        "mongo_path": "change_detection.crop_intensity.double_to_single_ha",
+        "legacy_aliases": []
+      },
+      "cd_double_to_double_ha": {
+        "canonical_name": "cd_double_to_double_ha",
+        "type": "static",
+        "mongo_path": "change_detection.crop_intensity.double_to_double_ha",
+        "legacy_aliases": []
+      },
+      "cd_double_to_triple_ha": {
+        "canonical_name": "cd_double_to_triple_ha",
+        "type": "static",
+        "mongo_path": "change_detection.crop_intensity.double_to_triple_ha",
+        "legacy_aliases": []
+      },
+      "cd_triple_to_single_ha": {
+        "canonical_name": "cd_triple_to_single_ha",
+        "type": "static",
+        "mongo_path": "change_detection.crop_intensity.triple_to_single_ha",
+        "legacy_aliases": []
+      },
+      "cd_triple_to_double_ha": {
+        "canonical_name": "cd_triple_to_double_ha",
+        "type": "static",
+        "mongo_path": "change_detection.crop_intensity.triple_to_double_ha",
+        "legacy_aliases": []
+      },
+      "cd_triple_to_triple_ha": {
+        "canonical_name": "cd_triple_to_triple_ha",
+        "type": "static",
+        "mongo_path": "change_detection.crop_intensity.triple_to_triple_ha",
+        "legacy_aliases": []
+      },
+      "cd_crop_intensity_total_change_ha": {
+        "canonical_name": "cd_crop_intensity_total_change_ha",
+        "type": "static",
+        "mongo_path": "change_detection.crop_intensity.total_change_ha",
+        "legacy_aliases": []
+      },
+      "sub_basin_code": {
+        "canonical_name": "sub_basin_code",
+        "type": "static",
+        "mongo_path": "sub_basin_code",
+        "legacy_aliases": []
+      },
+      "terrain_lulc_slope": {
+        "canonical_name": "terrain_lulc_slope",
+        "type": "static",
+        "mongo_path": "terrain_lulc_slope",
+        "legacy_aliases": []
+      },
+      "terrain_lulc_plain": {
+        "canonical_name": "terrain_lulc_plain",
+        "type": "static",
+        "mongo_path": "terrain_lulc_plain",
+        "legacy_aliases": []
+      },
+      "kharif_drought_total_weeks": {
+        "canonical_name": "kharif_drought_total_weeks",
+        "type": "time_series",
+        "mongo_path": "drought_kharif.<year>.total_weeks",
+        "legacy_aliases": []
+      },
+      "kharif_cropped_sqkm": {
+        "canonical_name": "kharif_cropped_sqkm",
+        "type": "time_series",
+        "mongo_path": "drought_kharif.<year>.kharif_cropped_sqkm",
+        "legacy_aliases": []
+      },
+      "single_kharif_area_ha": {
+        "canonical_name": "single_kharif_area_ha",
+        "type": "time_series",
+        "mongo_path": "cropping_intensity.<year>.single_kharif_ha",
+        "legacy_aliases": []
+      },
+      "single_non_kharif_area_ha": {
+        "canonical_name": "single_non_kharif_area_ha",
+        "type": "time_series",
+        "mongo_path": "cropping_intensity.<year>.single_non_kharif_ha",
+        "legacy_aliases": []
+      },
+      "double_crop_area_ha": {
+        "canonical_name": "double_crop_area_ha",
+        "type": "time_series",
+        "mongo_path": "cropping_intensity.<year>.double_crop_ha",
+        "legacy_aliases": []
+      },
+      "triple_crop_area_ha": {
+        "canonical_name": "triple_crop_area_ha",
+        "type": "time_series",
+        "mongo_path": "cropping_intensity.<year>.triple_crop_ha",
+        "legacy_aliases": []
+      },
+      "dist_school_upper_primary_km": {
+        "canonical_name": "dist_school_upper_primary_km",
+        "type": "static",
+        "mongo_path": "facility_distances.dist_school_upper_primary_km",
+        "legacy_aliases": []
+      },
+      "dist_school_higher_secondary_km": {
+        "canonical_name": "dist_school_higher_secondary_km",
+        "type": "static",
+        "mongo_path": "facility_distances.dist_school_higher_secondary_km",
+        "legacy_aliases": []
+      },
+      "dist_university_km": {
+        "canonical_name": "dist_university_km",
+        "type": "static",
+        "mongo_path": "facility_distances.dist_university_km",
+        "legacy_aliases": []
+      },
+      "dist_agri_support_km": {
+        "canonical_name": "dist_agri_support_km",
+        "type": "static",
+        "mongo_path": "facility_distances.dist_agri_support_km",
         "legacy_aliases": []
       },
       "precipitation_mm": {

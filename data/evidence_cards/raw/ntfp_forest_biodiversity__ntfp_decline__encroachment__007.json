@@ -152,12 +152,72 @@
     {
       "missing_variable": "fra_claims_filed_count",
       "question_to_user": "How many individual or community Forest Rights Act (FRA) claims have been filed and recognised in this village or gram panchayat? Are there pending or rejected claims?",
-      "how_answer_updates_diagnosis": "A high number of pending or rejected FRA claims alongside forest conversion strongly confirms the encroachment-tenure conflict pathway. Recognised claims with demarcated boundaries would reduce the likelihood of ongoing encroachment and shift focus to other NTFP decline drivers."
+      "how_answer_updates_diagnosis": "A high number of pending or rejected FRA claims alongside forest conversion strongly confirms the encroachment-tenure conflict pathway. Recognised claims with demarcated boundaries would reduce the likelihood of ongoing encroachment and shift focus to other NTFP decline drivers.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "none",
+          "label": "No FRA claims filed by community members",
+          "normalized": {
+            "present": false
+          }
+        },
+        {
+          "id": "pending",
+          "label": "Claims filed but mostly pending or rejected",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "recognized",
+          "label": "Several claims recognised (individual or community forest rights)",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "ntfp_collection_trend_qualitative",
       "question_to_user": "Over the past 5–10 years, has the quantity of NTFPs collected (e.g. tendu leaves, mahua, sal seeds, amla) per household per season increased, stayed the same, or decreased? By roughly what percentage?",
-      "how_answer_updates_diagnosis": "A reported decline of more than 30% in collection volumes per household, combined with positive forest-to-farm conversion signals, strongly confirms encroachment as the causal pathway. If volumes are stable despite forest loss, communities may have adapted collection routes, suggesting partial rather than severe access restriction."
+      "how_answer_updates_diagnosis": "A reported decline of more than 30% in collection volumes per household, combined with positive forest-to-farm conversion signals, strongly confirms encroachment as the causal pathway. If volumes are stable despite forest loss, communities may have adapted collection routes, suggesting partial rather than severe access restriction.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "little_change",
+          "label": "Little change — decline under 25% or stable collection",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "trend": "stable",
+            "percent_upper": 25
+          }
+        },
+        {
+          "id": "moderate_decline",
+          "label": "Noticeable decline of about 25–50% in collection volume",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening",
+            "percent_lower": 25,
+            "percent_upper": 50
+          }
+        },
+        {
+          "id": "severe_decline",
+          "label": "Severe decline over 50% or access largely blocked",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "worsening",
+            "percent_lower": 50
+          }
+        }
+      ]
     }
   ],
   "sources": [

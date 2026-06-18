@@ -137,7 +137,37 @@
     {
       "missing_variable": "ntfp_species_presence",
       "question_to_user": "Have community members noticed a decline in the availability of key forest products such as bamboo, cane, wild fruits, medicinal plants, or honey over the past 5–10 years? Do collectors need to travel farther into the forest to find these products compared to before?",
-      "how_answer_updates_diagnosis": "Confirmed community-reported decline in NTFP availability or increased collection distance strongly confirms the forest_degradation pathway. If communities report stable or improving NTFP availability despite forest cover loss in remote sensing data, consider that degradation may be recent and not yet felt, or that the affected forest patches are not the primary collection areas. If decline is reported but forest cover is stable, shift diagnosis toward over-harvesting or market-driven extraction pressure as the primary pathway."
+      "how_answer_updates_diagnosis": "Confirmed community-reported decline in NTFP availability or increased collection distance strongly confirms the forest_degradation pathway. If communities report stable or improving NTFP availability despite forest cover loss in remote sensing data, consider that degradation may be recent and not yet felt, or that the affected forest patches are not the primary collection areas. If decline is reported but forest cover is stable, shift diagnosis toward over-harvesting or market-driven extraction pressure as the primary pathway.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "abundant",
+          "label": "NTFP species are still common and easy to find",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "stable"
+          }
+        },
+        {
+          "id": "reduced",
+          "label": "Some species are harder to find than 5–10 years ago",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "rare",
+          "label": "Several species that used to be common are now rare or absent",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "trend": "worsening"
+          }
+        }
+      ]
     }
   ],
   "sources": [

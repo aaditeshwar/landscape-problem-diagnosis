@@ -101,8 +101,11 @@ def _min_distance(rows: list[dict], field: str) -> float | None:
 _FACILITY_DISTANCE_SPECS: list[tuple[str, str | tuple[str, ...], str]] = [
     # Education
     ("dist_school_primary_km", "school_primary", "Primary school"),
+    ("dist_school_upper_primary_km", "school_upper_primary", "Upper primary school"),
     ("dist_school_secondary_km", "school_secondary", "Secondary school"),
+    ("dist_school_higher_secondary_km", "school_higher_secondary", "Higher secondary school"),
     ("dist_college_km", "college", "College"),
+    ("dist_university_km", "university", "University"),
     # Health
     ("dist_chc_km", "chc", "Community health centre"),
     ("dist_phc_km", "phc", "Primary health centre"),
@@ -113,6 +116,7 @@ _FACILITY_DISTANCE_SPECS: list[tuple[str, str | tuple[str, ...], str]] = [
     ("dist_markets_trading_km", "markets_trading", "Agricultural market"),
     ("dist_storage_warehousing_km", "storage_warehousing", "Cold storage / warehousing"),
     ("dist_agri_processing_km", "agri_processing", "Agri processing"),
+    ("dist_agri_support_km", "agri_support", "Agri support infrastructure"),
     ("dist_apmc_km", "apmc", "APMC"),
     ("dist_dairy_km", "dairy", "Dairy / animal husbandry"),
     # Financial & public services

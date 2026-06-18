@@ -137,7 +137,38 @@
     {
       "missing_variable": "irrigated_area_ha",
       "question_to_user": "Do you know approximately what share of the cultivated land in this area has access to any form of irrigation — whether from canals, tubewells, open wells, or farm ponds? Would you estimate it is less than 10%, between 10–30%, or more than 30% of the total farmed area?",
-      "how_answer_updates_diagnosis": "If less than 10–15% of cultivated area is irrigated, this strongly confirms the rainfed risk pathway and justifies high-severity classification. If 20–30% or more is irrigated, the diagnosis should be reviewed — water scarcity may be driven by groundwater stress or canal failure rather than structural rainfed dependency, and solution recommendations should shift accordingly."
+      "how_answer_updates_diagnosis": "If less than 10–15% of cultivated area is irrigated, this strongly confirms the rainfed risk pathway and justifies high-severity classification. If 20–30% or more is irrigated, the diagnosis should be reviewed — water scarcity may be driven by groundwater stress or canal failure rather than structural rainfed dependency, and solution recommendations should shift accordingly.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "low",
+          "label": "Less than 10% of cultivated land is irrigated",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "percent_upper": 10
+          }
+        },
+        {
+          "id": "moderate",
+          "label": "Between 10% and 30% of cultivated land is irrigated",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "percent_lower": 10,
+            "percent_upper": 30
+          }
+        },
+        {
+          "id": "high",
+          "label": "More than 30% of cultivated land is irrigated",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "percent_lower": 30
+          }
+        }
+      ]
     }
   ],
   "sources": [

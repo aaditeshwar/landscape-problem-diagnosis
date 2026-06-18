@@ -161,17 +161,100 @@
     {
       "missing_variable": "landholding_size_distribution",
       "question_to_user": "What proportion of farming households in your village own less than 1 hectare of land? Would you estimate it is less than a quarter, about half, or more than three-quarters of all farming families?",
-      "how_answer_updates_diagnosis": "If more than half of households own less than 1 ha, this directly confirms the small_landholding pathway as the primary driver of low income. If most households own 1–2 ha or more, the diagnosis should shift toward market access failure or input cost stress as the primary causal pathway."
+      "how_answer_updates_diagnosis": "If more than half of households own less than 1 ha, this directly confirms the small_landholding pathway as the primary driver of low income. If most households own 1–2 ha or more, the diagnosis should shift toward market access failure or input cost stress as the primary causal pathway.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "minority",
+          "label": "Less than one-quarter of farming households own under 1 ha",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "about_half",
+          "label": "About half of farming households own under 1 ha",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "majority",
+          "label": "More than half (or two-thirds) of households are marginal (<1 ha)",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "household_income_inr",
       "question_to_user": "Can you estimate the average annual household income from farming alone (excluding wages, fishing, or government transfers) for a typical family in your village? Is it below Rs 50,000, between Rs 50,000–1,00,000, or above Rs 1,00,000 per year?",
-      "how_answer_updates_diagnosis": "Farm income below Rs 50,000 per year for a household confirms severe income insufficiency. If farm income is supplemented substantially by fishing or wage labour, the diagnosis should note livelihood diversification as a partial buffer, and recommendations should focus on strengthening those non-farm channels rather than land consolidation alone."
+      "how_answer_updates_diagnosis": "Farm income below Rs 50,000 per year for a household confirms severe income insufficiency. If farm income is supplemented substantially by fishing or wage labour, the diagnosis should note livelihood diversification as a partial buffer, and recommendations should focus on strengthening those non-farm channels rather than land consolidation alone.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "below_50k",
+          "label": "Below ₹50,000 per year from farming (or total household income)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "50k_to_100k",
+          "label": "Between ₹50,000 and ₹1,00,000 per year",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "above_100k",
+          "label": "Above ₹1,00,000 per year",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "market_price_crop",
       "question_to_user": "For your main crop, what price do you typically receive at the farm gate compared to the government Minimum Support Price (MSP)? Do you receive close to MSP, significantly below MSP, or is MSP not relevant for your crop?",
-      "how_answer_updates_diagnosis": "A large gap between farm-gate price and MSP confirms that market failure is amplifying the income loss from small landholding. If prices are close to MSP, the income stress is more purely a function of low volume (small area) rather than price exploitation, pointing toward FPO formation and lease-land models as priority interventions."
+      "how_answer_updates_diagnosis": "A large gap between farm-gate price and MSP confirms that market failure is amplifying the income loss from small landholding. If prices are close to MSP, the income stress is more purely a function of low volume (small area) rather than price exploitation, pointing toward FPO formation and lease-land models as priority interventions.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "near_msp",
+          "label": "Prices close to government MSP (mandi or procurement)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "below_msp",
+          "label": "Prices significantly below MSP (e.g. farm-gate or trader)",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "unable_to_sell",
+          "label": "Unable to sell at all or forced to accept very low prices",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "worsening"
+          }
+        }
+      ]
     }
   ],
   "sources": [

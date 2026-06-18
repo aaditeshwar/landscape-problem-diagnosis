@@ -138,7 +138,37 @@
     {
       "missing_variable": "ntfp_species_presence",
       "question_to_user": "Have community members noticed a reduction in the availability of specific forest products they used to collect — such as wild fruits, honey, medicinal plants, resins, or leaves — compared to 10-15 years ago? Which species or products have become harder to find, and do they attribute this to fewer trees, forest clearing, or other reasons?",
-      "how_answer_updates_diagnosis": "If communities confirm specific NTFP species have declined or disappeared and link this to forest clearing or degradation, this strongly confirms the forest degradation pathway. If decline is attributed to over-collection or market changes without forest loss, the diagnosis shifts toward over-harvesting or market pathway rather than forest degradation."
+      "how_answer_updates_diagnosis": "If communities confirm specific NTFP species have declined or disappeared and link this to forest clearing or degradation, this strongly confirms the forest degradation pathway. If decline is attributed to over-collection or market changes without forest loss, the diagnosis shifts toward over-harvesting or market pathway rather than forest degradation.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "abundant",
+          "label": "NTFP species are still common and easy to find",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "stable"
+          }
+        },
+        {
+          "id": "reduced",
+          "label": "Some species are harder to find than 5–10 years ago",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "rare",
+          "label": "Several species that used to be common are now rare or absent",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "trend": "worsening"
+          }
+        }
+      ]
     }
   ],
   "sources": [

@@ -157,17 +157,100 @@
     {
       "missing_variable": "landholding_size_distribution",
       "question_to_user": "What is the typical farm size in this village? Are most farmers cultivating less than 1 acre (marginal), 1–5 acres (small), or more than 5 acres? Roughly what percentage of households own less than 2 acres of land?",
-      "how_answer_updates_diagnosis": "If more than 60% of households own less than 2 acres (approximately 0.8 ha), this directly confirms the small landholding pathway. If most households own 5+ acres, the low income stress is more likely driven by price, input cost, or drought pathways rather than landholding fragmentation."
+      "how_answer_updates_diagnosis": "If more than 60% of households own less than 2 acres (approximately 0.8 ha), this directly confirms the small landholding pathway. If most households own 5+ acres, the low income stress is more likely driven by price, input cost, or drought pathways rather than landholding fragmentation.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "minority",
+          "label": "Less than one-quarter of farming households own under 1 ha",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "about_half",
+          "label": "About half of farming households own under 1 ha",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "majority",
+          "label": "More than half (or two-thirds) of households are marginal (<1 ha)",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "household_income_inr",
       "question_to_user": "What is the approximate annual household income from farming alone? Is it below Rs 50,000 per year? What share of income comes from farming versus wage labour, livestock, or other sources?",
-      "how_answer_updates_diagnosis": "If farm income is below Rs 50,000/year and constitutes more than 70% of total household income, this confirms both the low income stress and the single-livelihood dependence aspect of the pathway. High dependence on farm income from a small holding with no diversification is the core diagnostic pattern. If wage income already exceeds farm income, the household may be transitioning out of agriculture and solutions should focus on non-farm livelihood quality rather than farm productivity."
+      "how_answer_updates_diagnosis": "If farm income is below Rs 50,000/year and constitutes more than 70% of total household income, this confirms both the low income stress and the single-livelihood dependence aspect of the pathway. High dependence on farm income from a small holding with no diversification is the core diagnostic pattern. If wage income already exceeds farm income, the household may be transitioning out of agriculture and solutions should focus on non-farm livelihood quality rather than farm productivity.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "below_50k",
+          "label": "Below ₹50,000 per year from farming (or total household income)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "50k_to_100k",
+          "label": "Between ₹50,000 and ₹1,00,000 per year",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "above_100k",
+          "label": "Above ₹1,00,000 per year",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "market_price_crop",
       "question_to_user": "When farmers sell their main crop (soybean, wheat, cotton), do they typically receive the government MSP or less? How much below MSP do they usually sell, and who do they sell to — government procurement, APMC, or local traders?",
-      "how_answer_updates_diagnosis": "If farmers consistently receive 20–40% below MSP, price realisation failure is compounding the income loss from small landholding. This strengthens the case for FPO formation and collective marketing as the primary intervention. If prices are near MSP, the income problem is primarily a volume/scale problem from small landholding, and land consolidation or lease-farming models become more relevant."
+      "how_answer_updates_diagnosis": "If farmers consistently receive 20–40% below MSP, price realisation failure is compounding the income loss from small landholding. This strengthens the case for FPO formation and collective marketing as the primary intervention. If prices are near MSP, the income problem is primarily a volume/scale problem from small landholding, and land consolidation or lease-farming models become more relevant.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "near_msp",
+          "label": "Prices close to government MSP (mandi or procurement)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "below_msp",
+          "label": "Prices significantly below MSP (e.g. farm-gate or trader)",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "unable_to_sell",
+          "label": "Unable to sell at all or forced to accept very low prices",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "worsening"
+          }
+        }
+      ]
     }
   ],
   "sources": [

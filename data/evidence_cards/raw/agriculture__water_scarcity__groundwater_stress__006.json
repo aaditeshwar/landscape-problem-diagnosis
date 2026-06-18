@@ -173,7 +173,7 @@
           "label": "Well depth has stayed roughly the same (within ~1 m)",
           "normalized": {
             "trend": "stable",
-            "present": true
+            "present": false
           }
         },
         {
@@ -230,7 +230,36 @@
     {
       "missing_variable": "groundwater_salinity",
       "question_to_user": "Have farmers noticed that borewell or well water has become saltier, tastes different, leaves white or crusty deposits on soil or equipment, or is no longer suitable for certain crops? Has this problem worsened in recent dry seasons?",
-      "how_answer_updates_diagnosis": "Increasing salinity in coastal alluvial aquifers can indicate seawater intrusion triggered by over-extraction lowering the freshwater hydraulic head. If salinity is confirmed, the diagnosis shifts to include coastal saline intrusion as a co-pathway, and solutions must prioritise reducing extraction near the coast and restoring freshwater head through managed recharge, rather than simply increasing recharge volume."
+      "how_answer_updates_diagnosis": "Increasing salinity in coastal alluvial aquifers can indicate seawater intrusion triggered by over-extraction lowering the freshwater hydraulic head. If salinity is confirmed, the diagnosis shifts to include coastal saline intrusion as a co-pathway, and solutions must prioritise reducing extraction near the coast and restoring freshwater head through managed recharge, rather than simply increasing recharge volume.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "none",
+          "label": "No — water quality has not changed; no saltiness or deposits",
+          "normalized": {
+            "present": false,
+            "trend": "stable"
+          }
+        },
+        {
+          "id": "mild",
+          "label": "Some salinity or white deposits; still usable for some crops",
+          "normalized": {
+            "present": true,
+            "band": "moderate",
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "severe",
+          "label": "Brackish or salty water; crop damage or unsuitable for irrigation",
+          "normalized": {
+            "present": true,
+            "band": "high",
+            "trend": "worsening"
+          }
+        }
+      ]
     }
   ],
   "sources": [

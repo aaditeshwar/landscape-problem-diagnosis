@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import type { DiagnosisResponse, FollowUpExchange, PathwayResult, TehsilRef } from '../types'
 import type { FollowUpTarget } from '../utils/followUp'
 import { followUpPromptLabel } from '../utils/followUp'
@@ -15,6 +16,9 @@ interface Props {
   wantLlmOpinion: boolean
   onWantLlmOpinionChange: (value: boolean) => void
   onSubmit: () => void
+  onCloseDiagnosis: () => void
+  onFocusDiagnosisMws?: () => void
+  sessionActive: boolean
   loading: boolean
   error: string | null
   diagnosis: DiagnosisResponse | null
@@ -43,6 +47,9 @@ export function DiagnosisPanel({
   wantLlmOpinion,
   onWantLlmOpinionChange,
   onSubmit,
+  onCloseDiagnosis,
+  onFocusDiagnosisMws,
+  sessionActive,
   loading,
   error,
   diagnosis,
@@ -60,6 +67,10 @@ export function DiagnosisPanel({
   mapTehsil,
   displayLocation,
 }: Props) {
+  const confirmedPathwaysRef = useRef<HTMLElement>(null)
+  const followUpUpdateRefs = useRef<(HTMLDivElement | null)[]>([])
+  const prevFollowUpCountRef = useRef(followUpHistory.length)
+  const prevLoadingRef = useRef(loading)
   const sectionTitle = followUpPromptLabel(followUpTarget, followUpHistory.length > 0)
   const resolvedMwsAer = mwsAerCode ?? diagnosis?.mws_aer_code ?? null
   const resolvedRetrievalAer = retrievalAerTags ?? diagnosis?.retrieval_aer_tags ?? null
@@ -79,9 +90,30 @@ export function DiagnosisPanel({
   const mapBrowseLabel = browsingDifferentTehsil
     ? `${mapTehsil?.tehsil}, ${mapTehsil?.district}`
     : selectedMwsUid
-  const runEnabled = wantLlmOpinion ? Boolean(problem.trim()) : true
+  const runMwsUid = selectedMwsUid ?? panelMwsUid
+  const runEnabled =
+    !sessionActive && !loading && (wantLlmOpinion ? Boolean(problem.trim()) : true)
+  const hasPendingFollowUp = Boolean(canContinueConversation && followUpTarget)
+  const canFocusDiagnosisMws = Boolean(sessionActive && reportMwsUid && onFocusDiagnosisMws)
   const summaryHeading =
     diagnosis?.llm_skipped === false && (diagnosis?.want_llm_opinion ?? wantLlmOpinion) ? 'Answer' : 'Summary'
+  const showReviewer =
+    Boolean(diagnosis?.reviewer_commentary?.length) &&
+    (diagnosis?.want_llm_opinion ?? wantLlmOpinion) &&
+    diagnosis?.llm_skipped !== true
+
+  useEffect(() => {
+    if (prevLoadingRef.current && !loading) {
+      if (followUpHistory.length > prevFollowUpCountRef.current) {
+        const latestIndex = followUpHistory.length - 1
+        followUpUpdateRefs.current[latestIndex]?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      } else if (diagnosis && followUpHistory.length === 0) {
+        confirmedPathwaysRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    }
+    prevLoadingRef.current = loading
+    prevFollowUpCountRef.current = followUpHistory.length
+  }, [loading, diagnosis, followUpHistory.length])
 
   function pathwayAerLine(pathway: PathwayResult) {
     const aer = formatPathwayAerContext(pathway, resolvedMwsAer, resolvedRetrievalAer)
@@ -108,7 +140,19 @@ export function DiagnosisPanel({
         {panelMwsUid ? (
           <div className="mt-2 rounded-lg border border-amber-200 bg-amber-50/70 px-3 py-2 text-sm text-stone-700">
             <div>
-              <span className="font-medium">MWS:</span> {panelMwsUid}
+              <span className="font-medium">MWS:</span>{' '}
+              {canFocusDiagnosisMws ? (
+                <button
+                  type="button"
+                  onClick={onFocusDiagnosisMws}
+                  className="font-medium text-amber-900 underline decoration-amber-400 underline-offset-2 hover:text-amber-950"
+                  title="Show this MWS on the map"
+                >
+                  {reportMwsUid}
+                </button>
+              ) : (
+                panelMwsUid
+              )}
             </div>
             {displayLocation ? (
               <div className="mt-1">
@@ -121,11 +165,18 @@ export function DiagnosisPanel({
             ) : null}
             {browsingDuringRun ? (
               <div className="mt-1 text-xs text-amber-800">
-                Diagnosis running for MWS {reportMwsUid}. Map is viewing {mapBrowseLabel}; only the info panel follows map selection.
+                Diagnosis running for MWS {reportMwsUid}. Map is viewing {mapBrowseLabel}; the map will not
+                snap back when analysis finishes. Use Close diagnosis to cancel or end the session.
               </div>
             ) : browsingWhileFrozen ? (
               <div className="mt-1 text-xs text-amber-800">
-                Diagnosis session is for MWS {reportMwsUid}. Map is viewing {mapBrowseLabel}; only the info panel follows map selection.
+                Diagnosis session is for MWS {reportMwsUid}. Map is viewing {mapBrowseLabel}; only the info
+                panel follows map selection. Use Close diagnosis to end this session and analyze another MWS.
+              </div>
+            ) : sessionActive ? (
+              <div className="mt-1 text-xs text-amber-800">
+                Active diagnosis session for this MWS
+                {hasPendingFollowUp ? ' — answer the follow-up below or close the session.' : '.'}
               </div>
             ) : null}
             {villageNames.length > 0 ? (
@@ -146,7 +197,7 @@ export function DiagnosisPanel({
           type="checkbox"
           checked={wantLlmOpinion}
           onChange={(e) => onWantLlmOpinionChange(e.target.checked)}
-          disabled={disabled || loading}
+          disabled={disabled || loading || sessionActive}
           className="rounded border-stone-400"
         />
         <span className="font-medium text-stone-700">Include LLM opinion</span>
@@ -160,7 +211,7 @@ export function DiagnosisPanel({
             value={problem}
             onChange={(e) => onProblemChange(e.target.value)}
             placeholder="e.g. Our wells are drying up and cotton yields are falling"
-            disabled={disabled || loading}
+            disabled={disabled || loading || sessionActive}
           />
         </label>
       ) : (
@@ -169,14 +220,29 @@ export function DiagnosisPanel({
         </p>
       )}
 
-      <button
-        type="button"
-        onClick={onSubmit}
-        disabled={disabled || loading || !runEnabled}
-        className="rounded-lg bg-amber-700 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-amber-800 disabled:cursor-not-allowed disabled:bg-stone-300"
-      >
-        {loading ? 'Analyzing…' : 'Run diagnosis'}
-      </button>
+      <div className="flex flex-col gap-2">
+        <button
+          type="button"
+          onClick={onSubmit}
+          disabled={disabled || !runEnabled}
+          className="rounded-lg bg-amber-700 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-amber-800 disabled:cursor-not-allowed disabled:bg-stone-300"
+        >
+          {loading
+            ? 'Analyzing…'
+            : runMwsUid
+              ? `Run diagnosis for ${runMwsUid}`
+              : 'Run diagnosis'}
+        </button>
+        {sessionActive ? (
+          <button
+            type="button"
+            onClick={onCloseDiagnosis}
+            className="rounded-lg border border-stone-400 bg-white px-4 py-2 text-sm font-semibold text-stone-800 shadow-sm hover:bg-stone-50"
+          >
+            {reportMwsUid ? `Close diagnosis for ${reportMwsUid}` : 'Close diagnosis'}
+          </button>
+        ) : null}
+      </div>
 
       {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
 
@@ -191,18 +257,7 @@ export function DiagnosisPanel({
               ? ` · Villages: ${villageNames.join(', ')}`
               : ''}
           </p>
-          {diagnosis.panel_update_explanation?.trim() ? (
-            <section className="rounded-lg border border-sky-200 bg-sky-50/60 px-3 py-2">
-              <h3 className="text-sm font-semibold text-sky-900">{summaryHeading}</h3>
-              <p className="mt-1 text-sm text-stone-800">
-                <SignalRichText
-                  text={diagnosis.panel_update_explanation}
-                  signalEvaluation={diagnosis.signal_evaluation}
-                />
-              </p>
-            </section>
-          ) : null}
-          <section>
+          <section ref={confirmedPathwaysRef}>
             <h3 className="text-sm font-semibold text-emerald-800">Confirmed pathways</h3>
             {diagnosis.confirmed_pathways.length === 0 ? (
               <p className="mt-1 text-sm text-stone-500">None yet.</p>
@@ -262,9 +317,54 @@ export function DiagnosisPanel({
             </section>
           )}
 
+          {showReviewer ? (
+            <section className="rounded-lg border border-violet-200 bg-violet-50/60 px-3 py-2">
+              <h3 className="text-sm font-semibold text-violet-900">Reviewer notes</h3>
+              <ul className="mt-2 space-y-2">
+                {diagnosis.reviewer_commentary!.map((item) => (
+                  <li key={item.pathway_id} className="text-sm text-stone-800">
+                    <div className="font-medium">
+                      {formatPathwayHierarchy({ pathway_id: item.pathway_id })}
+                      <span className="ml-2 text-xs uppercase text-violet-800">{item.agreement}</span>
+                    </div>
+                    {item.pathway_comment ? (
+                      <p className="mt-1 text-stone-700">
+                        <SignalRichText
+                          text={item.pathway_comment}
+                          pathwayId={item.pathway_id}
+                          signalEvaluation={diagnosis.signal_evaluation}
+                        />
+                      </p>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+              {diagnosis.change_review?.summary ? (
+                <p className="mt-2 text-sm text-stone-700">
+                  <span className="font-medium text-violet-900">Change review: </span>
+                  {diagnosis.change_review.summary}
+                </p>
+              ) : null}
+            </section>
+          ) : null}
+          {diagnosis.panel_update_explanation?.trim() ? (
+            <section className="rounded-lg border border-sky-200 bg-sky-50/60 px-3 py-2">
+              <h3 className="text-sm font-semibold text-sky-900">{summaryHeading}</h3>
+              <p className="mt-1 text-sm text-stone-800">
+                <SignalRichText
+                  text={diagnosis.panel_update_explanation}
+                  signalEvaluation={diagnosis.signal_evaluation}
+                />
+              </p>
+            </section>
+          ) : null}
+
           {diagnosis.solutions.length > 0 && (
             <section>
               <h3 className="text-sm font-semibold text-stone-800">Suggested solutions</h3>
+              {diagnosis.solutions_review_notes ? (
+                <p className="mt-1 text-xs text-stone-600">{diagnosis.solutions_review_notes}</p>
+              ) : null}
               <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-stone-700">
                 {diagnosis.solutions.map((s: string) => (
                   <li key={s}>{s}</li>
@@ -288,7 +388,12 @@ export function DiagnosisPanel({
                   <div className="mt-2 text-xs font-medium uppercase tracking-wide text-stone-500">Your answer</div>
                   <p className="mt-1 text-stone-700">{entry.answer}</p>
                   {entry.revision ? (
-                    <div className="mt-2 rounded-md border border-violet-100 bg-violet-50/60 px-2 py-2">
+                    <div
+                      ref={(node) => {
+                        followUpUpdateRefs.current[index] = node
+                      }}
+                      className="mt-2 rounded-md border border-violet-100 bg-violet-50/60 px-2 py-2"
+                    >
                       <div className="text-xs font-medium uppercase tracking-wide text-violet-800">
                         Diagnosis update
                       </div>
@@ -391,8 +496,7 @@ export function DiagnosisPanel({
                 </p>
               ) : (
                 <p className="mt-1 text-sm text-stone-600">
-                  No further structured questions from the diagnosis model. You can still add observations,
-                  corrections, or clarifications below and the analysis will be updated.
+                  Select an option below to answer the follow-up question.
                 </p>
               )}
               {diagnosis.follow_up_mcq &&
@@ -417,22 +521,22 @@ export function DiagnosisPanel({
                   ))}
                 </div>
               ) : (
-                <textarea
-                  className="mt-2 min-h-20 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
-                  value={followUpAnswer}
-                  onChange={(e) => onFollowUpAnswerChange(e.target.value)}
-                  placeholder={
-                    followUpTarget.question
-                      ? 'Type your answer…'
-                      : 'e.g. We also noticed siltation in the farm pond after last monsoon…'
-                  }
-                  disabled={loading}
-                />
+                <p className="mt-2 text-sm text-amber-900/90">
+                  This follow-up variable is not yet wired as an MCQ on the evidence card. Run the MCQ
+                  migration for <code className="text-xs">{followUpTarget.variable}</code> before answering.
+                </p>
               )}
               <button
                 type="button"
                 onClick={onSubmitFollowUp}
-                disabled={loading || !followUpAnswer.trim()}
+                disabled={
+                  loading ||
+                  !followUpAnswer.trim() ||
+                  !(
+                    diagnosis.follow_up_mcq &&
+                    diagnosis.follow_up_mcq.variable === followUpTarget.variable
+                  )
+                }
                 className="mt-2 rounded-lg bg-stone-800 px-3 py-2 text-sm font-medium text-white hover:bg-stone-900 disabled:bg-stone-300"
               >
                 Submit answer

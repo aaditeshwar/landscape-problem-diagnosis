@@ -142,6 +142,60 @@ def _change_detection_value(mws: dict, sheet: str, field: str) -> Any:
     return ((mws.get("change_detection") or {}).get(sheet) or {}).get(field)
 
 
+def _terrain_lulc_value(mws: dict, terrain_type: str, field: str) -> Any:
+    return ((mws.get(f"terrain_lulc_{terrain_type}") or {}).get(field))
+
+
+_CHANGE_DETECTION_RESOLVERS: dict[str, tuple[str, str]] = {
+    # Degradation (2017-18 → 2024-25)
+    "cd_farm_to_barren_ha": ("degradation", "farm_to_barren_ha"),
+    "cd_farm_to_built_up_ha": ("degradation", "farm_to_built_up_ha"),
+    "cd_farm_to_farm_ha": ("degradation", "farm_to_farm_ha"),
+    "cd_farm_to_scrubland_ha": ("degradation", "farm_to_scrubland_ha"),
+    "cd_total_degradation_ha": ("degradation", "total_ha"),
+    # Deforestation
+    "cd_forest_to_barren_ha": ("deforestation", "forest_to_barren_ha"),
+    "cd_forest_to_built_up_ha": ("deforestation", "forest_to_built_up_ha"),
+    "cd_forest_to_farm_ha": ("deforestation", "forest_to_farm_ha"),
+    "cd_deforestation_forest_to_forest_ha": ("deforestation", "forest_to_forest_ha"),
+    "cd_forest_to_scrubland_ha": ("deforestation", "forest_to_scrubland_ha"),
+    "cd_total_deforestation_ha": ("deforestation", "total_ha"),
+    # Urbanization
+    "cd_barren_shrub_to_built_up_ha": ("urbanization", "barren_shrub_to_built_up_ha"),
+    "cd_built_up_to_built_up_ha": ("urbanization", "built_up_to_built_up_ha"),
+    "cd_tree_farm_to_built_up_ha": ("urbanization", "tree_farm_to_built_up_ha"),
+    "cd_water_to_built_up_ha": ("urbanization", "water_to_built_up_ha"),
+    "cd_urbanization_ha": ("urbanization", "total_ha"),
+    "cd_total_urbanization_ha": ("urbanization", "total_ha"),
+    # Afforestation
+    "cd_barren_to_forest_ha": ("afforestation", "barren_to_forest_ha"),
+    "cd_built_up_to_forest_ha": ("afforestation", "built_up_to_forest_ha"),
+    "cd_farm_to_forest_ha": ("afforestation", "farm_to_forest_ha"),
+    "cd_afforestation_forest_to_forest_ha": ("afforestation", "forest_to_forest_ha"),
+    "cd_scrubland_to_forest_ha": ("afforestation", "scrubland_to_forest_ha"),
+    "cd_afforestation_ha": ("afforestation", "total_ha"),
+    "cd_total_afforestation_ha": ("afforestation", "total_ha"),
+    # Crop intensity transitions
+    "cd_single_to_single_ha": ("crop_intensity", "single_to_single_ha"),
+    "cd_single_to_double_ha": ("crop_intensity", "single_to_double_ha"),
+    "cd_single_to_triple_ha": ("crop_intensity", "single_to_triple_ha"),
+    "cd_double_to_single_ha": ("crop_intensity", "double_to_single_ha"),
+    "cd_double_to_double_ha": ("crop_intensity", "double_to_double_ha"),
+    "cd_double_to_triple_ha": ("crop_intensity", "double_to_triple_ha"),
+    "cd_triple_to_single_ha": ("crop_intensity", "triple_to_single_ha"),
+    "cd_triple_to_double_ha": ("crop_intensity", "triple_to_double_ha"),
+    "cd_triple_to_triple_ha": ("crop_intensity", "triple_to_triple_ha"),
+    "cd_crop_intensity_total_change_ha": ("crop_intensity", "total_change_ha"),
+}
+
+
+def _change_detection_resolvers() -> dict[str, Any]:
+    return {
+        var: (lambda m, sheet=sheet, field=field: _change_detection_value(m, sheet, field))
+        for var, (sheet, field) in _CHANGE_DETECTION_RESOLVERS.items()
+    }
+
+
 def _cropping_intensity_series(mws: dict) -> dict | None:
     return _cropping_field_series(mws, "cropping_intensity")
 
@@ -218,15 +272,23 @@ _BASE_VARIABLE_RESOLVERS: dict[str, Any] = {
     "swb_count": _swb_count,
     "canal_name": _canal_name,
     "river_name": lambda m: m.get("river_name"),
-    "cd_total_degradation_ha": lambda m: _change_detection_value(m, "degradation", "total_ha"),
-    "cd_farm_to_barren_ha": lambda m: _change_detection_value(m, "degradation", "farm_to_barren_ha"),
-    "cd_total_deforestation_ha": lambda m: _change_detection_value(m, "deforestation", "total_ha"),
-    "cd_forest_to_farm_ha": lambda m: _change_detection_value(m, "deforestation", "forest_to_farm_ha"),
-    "cd_total_urbanization_ha": lambda m: _change_detection_value(m, "urbanization", "total_ha"),
-    "cd_urbanization_ha": lambda m: _change_detection_value(m, "urbanization", "total_ha"),
-    "cd_total_afforestation_ha": lambda m: _change_detection_value(m, "afforestation", "total_ha"),
-    "cd_afforestation_ha": lambda m: _change_detection_value(m, "afforestation", "total_ha"),
-    "cd_single_to_double_ha": lambda m: _change_detection_value(m, "crop_intensity", "single_to_double_ha"),
+    "sub_basin_code": lambda m: m.get("sub_basin_code"),
+    "terrain_lulc_slope": lambda m: m.get("terrain_lulc_slope"),
+    "terrain_lulc_plain": lambda m: m.get("terrain_lulc_plain"),
+    "terrain_lulc_slope_forest_percent": lambda m: _terrain_lulc_value(m, "slope", "forest_percent"),
+    "terrain_lulc_slope_barren_percent": lambda m: _terrain_lulc_value(m, "slope", "barren_percent"),
+    "terrain_lulc_slope_shrub_scrub_percent": lambda m: _terrain_lulc_value(m, "slope", "shrub_scrub_percent"),
+    "terrain_lulc_plain_forest_percent": lambda m: _terrain_lulc_value(m, "plain", "forest_percent"),
+    "terrain_lulc_plain_barren_percent": lambda m: _terrain_lulc_value(m, "plain", "barren_percent"),
+    "terrain_lulc_plain_shrub_scrub_percent": lambda m: _terrain_lulc_value(m, "plain", "shrub_scrub_percent"),
+    "kharif_drought_total_weeks": lambda m: _drought_series(m, "total_weeks"),
+    "kharif_cropped_sqkm": lambda m: _drought_series(m, "kharif_cropped_sqkm"),
+    "kharif_cropped_area_ha": lambda m: _drought_series(m, "kharif_cropped_ha"),
+    "single_kharif_area_ha": lambda m: _cropping_field_series(m, "single_kharif_ha"),
+    "single_non_kharif_area_ha": lambda m: _cropping_field_series(m, "single_non_kharif_ha"),
+    "double_crop_area_ha": lambda m: _cropping_field_series(m, "double_crop_ha"),
+    "triple_crop_area_ha": lambda m: _cropping_field_series(m, "triple_crop_ha"),
+    **_change_detection_resolvers(),
     "stream_order_N_area_percent": _stream_order_n_percent,
     "terrain_cluster_id": lambda m: (m.get("terrain") or {}).get("cluster_id"),
     "slopy_area_percent": lambda m: (m.get("terrain") or {}).get("slopy_percent"),
@@ -276,10 +338,14 @@ _BASE_VARIABLE_RESOLVERS: dict[str, Any] = {
     "dist_sub_centre_km": lambda m: _facility_distance(m, "dist_sub_centre_km"),
     "dist_district_hospital_km": lambda m: _facility_distance(m, "dist_district_hospital_km"),
     "dist_school_primary_km": lambda m: _facility_distance(m, "dist_school_primary_km"),
+    "dist_school_upper_primary_km": lambda m: _facility_distance(m, "dist_school_upper_primary_km"),
     "dist_school_secondary_km": lambda m: _facility_distance(m, "dist_school_secondary_km"),
+    "dist_school_higher_secondary_km": lambda m: _facility_distance(m, "dist_school_higher_secondary_km"),
     "dist_college_km": lambda m: _facility_distance(m, "dist_college_km"),
+    "dist_university_km": lambda m: _facility_distance(m, "dist_university_km"),
     "dist_csc_km": lambda m: _facility_distance(m, "dist_csc_km"),
     "dist_pds_km": lambda m: _facility_distance(m, "dist_pds_km"),
+    "dist_agri_support_km": lambda m: _facility_distance(m, "dist_agri_support_km"),
 }
 
 VARIABLE_RESOLVERS = extend_resolver_map(_BASE_VARIABLE_RESOLVERS)

@@ -172,12 +172,72 @@
     {
       "missing_variable": "fra_claims_filed_count",
       "question_to_user": "Have households or gram sabhas in this village filed individual or community forest rights claims under the Forest Rights Act (FRA)? If yes, how many claims have been filed, and how many have been approved, rejected, or are pending?",
-      "how_answer_updates_diagnosis": "A high number of pending or rejected FRA claims alongside measurable forest-to-farm conversion strongly confirms the encroachment pathway — it indicates that tenure insecurity is leaving forest boundaries contested and NTFP access unprotected. Approved community forest rights (CFR) claims would suggest the community has legal standing to resist encroachment, shifting the diagnosis toward enforcement failure rather than rights absence."
+      "how_answer_updates_diagnosis": "A high number of pending or rejected FRA claims alongside measurable forest-to-farm conversion strongly confirms the encroachment pathway — it indicates that tenure insecurity is leaving forest boundaries contested and NTFP access unprotected. Approved community forest rights (CFR) claims would suggest the community has legal standing to resist encroachment, shifting the diagnosis toward enforcement failure rather than rights absence.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "none",
+          "label": "No FRA claims filed by community members",
+          "normalized": {
+            "present": false
+          }
+        },
+        {
+          "id": "pending",
+          "label": "Claims filed but mostly pending or rejected",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "recognized",
+          "label": "Several claims recognised (individual or community forest rights)",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "ntfp_collection_trend_qualitative",
       "question_to_user": "Have NTFP collectors in this village noticed a decline in the quantity or variety of forest produce (e.g. wild fruits, medicinal plants, honey, bamboo) over the past 5-10 years? Do they attribute this to reduced forest area, restricted access, or reduced forest quality?",
-      "how_answer_updates_diagnosis": "Community-reported decline in NTFP quantity or access, attributed to reduced forest area or blocked access routes, directly corroborates the encroachment pathway. If collectors attribute decline to reduced forest quality (e.g. invasive species, fire) without mentioning area loss, alternative pathways such as forest degradation or fire should be weighted more heavily."
+      "how_answer_updates_diagnosis": "Community-reported decline in NTFP quantity or access, attributed to reduced forest area or blocked access routes, directly corroborates the encroachment pathway. If collectors attribute decline to reduced forest quality (e.g. invasive species, fire) without mentioning area loss, alternative pathways such as forest degradation or fire should be weighted more heavily.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "little_change",
+          "label": "Little change — decline under 25% or stable collection",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "trend": "stable",
+            "percent_upper": 25
+          }
+        },
+        {
+          "id": "moderate_decline",
+          "label": "Noticeable decline of about 25–50% in collection volume",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening",
+            "percent_lower": 25,
+            "percent_upper": 50
+          }
+        },
+        {
+          "id": "severe_decline",
+          "label": "Severe decline over 50% or access largely blocked",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "worsening",
+            "percent_lower": 50
+          }
+        }
+      ]
     }
   ],
   "sources": [

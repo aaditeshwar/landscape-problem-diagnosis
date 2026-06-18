@@ -147,12 +147,67 @@
     {
       "missing_variable": "fra_claims_filed_count",
       "question_to_user": "Have community members or households in this village filed individual or community forest rights claims under the Forest Rights Act (FRA)? If yes, approximately how many claims have been filed and how many have been recognised?",
-      "how_answer_updates_diagnosis": "A high number of pending or rejected FRA claims alongside reported NTFP decline strongly confirms that encroachment and tenure insecurity are the primary drivers. Recognised community forest rights (CFR) would indicate some legal protection exists, shifting the diagnosis toward enforcement failure rather than absence of rights."
+      "how_answer_updates_diagnosis": "A high number of pending or rejected FRA claims alongside reported NTFP decline strongly confirms that encroachment and tenure insecurity are the primary drivers. Recognised community forest rights (CFR) would indicate some legal protection exists, shifting the diagnosis toward enforcement failure rather than absence of rights.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "none",
+          "label": "No FRA claims filed by community members",
+          "normalized": {
+            "present": false
+          }
+        },
+        {
+          "id": "pending",
+          "label": "Claims filed but mostly pending or rejected",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "recognized",
+          "label": "Several claims recognised (individual or community forest rights)",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "forest_patch_connectivity",
       "question_to_user": "Have community members noticed that forest areas near the village have become more broken up or isolated — for example, that patches of forest are now separated by fields or roads that were not there 10–15 years ago?",
-      "how_answer_updates_diagnosis": "Reported fragmentation of previously contiguous forest patches corroborates the cd_forest_to_farm_ha trend signal and confirms that encroachment is reducing both forest extent and connectivity, compounding NTFP access loss beyond what area metrics alone capture."
+      "how_answer_updates_diagnosis": "Reported fragmentation of previously contiguous forest patches corroborates the cd_forest_to_farm_ha trend signal and confirms that encroachment is reducing both forest extent and connectivity, compounding NTFP access loss beyond what area metrics alone capture.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "connected",
+          "label": "Forest areas remain connected; little new fragmentation",
+          "normalized": {
+            "present": false,
+            "trend": "stable"
+          }
+        },
+        {
+          "id": "partial",
+          "label": "Some patches separated by fields, roads, or cleared land",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "isolated",
+          "label": "Forest broken into small isolated patches",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "worsening"
+          }
+        }
+      ]
     }
   ],
   "sources": [

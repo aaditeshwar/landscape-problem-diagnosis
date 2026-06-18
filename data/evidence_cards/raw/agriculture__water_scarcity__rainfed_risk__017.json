@@ -153,7 +153,38 @@
     {
       "missing_variable": "irrigated_area_ha",
       "question_to_user": "Do farmers in this area have access to any form of irrigation — such as pumped wells, drip systems, government canals, or community tanks — that they use during the dry season or during dry spells within the monsoon? If yes, roughly what share of cultivated land is irrigated?",
-      "how_answer_updates_diagnosis": "If irrigated area is reported as negligible (<5% of cultivated land), this strongly confirms the rainfed risk pathway. If a meaningful irrigated area exists (>20%), the diagnosis should be revisited to assess whether water scarcity is driven by irrigation system failure or groundwater stress rather than structural rainfed dependence."
+      "how_answer_updates_diagnosis": "If irrigated area is reported as negligible (<5% of cultivated land), this strongly confirms the rainfed risk pathway. If a meaningful irrigated area exists (>20%), the diagnosis should be revisited to assess whether water scarcity is driven by irrigation system failure or groundwater stress rather than structural rainfed dependence.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "low",
+          "label": "Less than 10% of cultivated land is irrigated",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "percent_upper": 10
+          }
+        },
+        {
+          "id": "moderate",
+          "label": "Between 10% and 30% of cultivated land is irrigated",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "percent_lower": 10,
+            "percent_upper": 30
+          }
+        },
+        {
+          "id": "high",
+          "label": "More than 30% of cultivated land is irrigated",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "percent_lower": 30
+          }
+        }
+      ]
     }
   ],
   "sources": [

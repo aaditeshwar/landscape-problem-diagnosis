@@ -157,12 +157,72 @@
     {
       "missing_variable": "fra_claims_filed_count",
       "question_to_user": "Have community members or individual households filed claims under the Forest Rights Act (FRA) for individual or community forest rights in this village? If yes, approximately how many claims have been filed and how many have been recognized?",
-      "how_answer_updates_diagnosis": "A high number of pending or rejected FRA claims alongside active encroachment signals a tenure rights conflict rather than simple illegal encroachment, shifting the recommended intervention toward FRA claim support and legal advocacy. Recognized FRA rights with continued NTFP decline would instead point toward enforcement failure or boundary disputes."
+      "how_answer_updates_diagnosis": "A high number of pending or rejected FRA claims alongside active encroachment signals a tenure rights conflict rather than simple illegal encroachment, shifting the recommended intervention toward FRA claim support and legal advocacy. Recognized FRA rights with continued NTFP decline would instead point toward enforcement failure or boundary disputes.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "none",
+          "label": "No FRA claims filed by community members",
+          "normalized": {
+            "present": false
+          }
+        },
+        {
+          "id": "pending",
+          "label": "Claims filed but mostly pending or rejected",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "recognized",
+          "label": "Several claims recognised (individual or community forest rights)",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "ntfp_collection_trend_qualitative",
       "question_to_user": "Have community members noticed a reduction in the quantity of forest produce (such as tendu leaves, gum, honey, medicinal plants, or fuelwood) collected per household over the past 5 years? Would you estimate the decline as less than 25%, 25-50%, or more than 50%?",
-      "how_answer_updates_diagnosis": "A reported decline of more than 25% in NTFP collection volume, when combined with confirmed forest-to-farm conversion, strongly confirms the encroachment pathway. A decline exceeding 50% indicates severe livelihood impact and elevates the priority for immediate boundary demarcation and livelihood alternative interventions."
+      "how_answer_updates_diagnosis": "A reported decline of more than 25% in NTFP collection volume, when combined with confirmed forest-to-farm conversion, strongly confirms the encroachment pathway. A decline exceeding 50% indicates severe livelihood impact and elevates the priority for immediate boundary demarcation and livelihood alternative interventions.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "little_change",
+          "label": "Little change — decline under 25% or stable collection",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "trend": "stable",
+            "percent_upper": 25
+          }
+        },
+        {
+          "id": "moderate_decline",
+          "label": "Noticeable decline of about 25–50% in collection volume",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening",
+            "percent_lower": 25,
+            "percent_upper": 50
+          }
+        },
+        {
+          "id": "severe_decline",
+          "label": "Severe decline over 50% or access largely blocked",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "worsening",
+            "percent_lower": 50
+          }
+        }
+      ]
     }
   ],
   "sources": [

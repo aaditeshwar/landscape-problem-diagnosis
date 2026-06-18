@@ -178,7 +178,7 @@
           "label": "Well depth has stayed roughly the same (within ~1 m)",
           "normalized": {
             "trend": "stable",
-            "present": true
+            "present": false
           }
         },
         {
@@ -235,7 +235,36 @@
     {
       "missing_variable": "groundwater_salinity",
       "question_to_user": "Has the quality of borewell or well water changed in recent years? Do you notice white deposits on fields after irrigation, reduced crop yields even with adequate water, or a salty or bitter taste in the water?",
-      "how_answer_updates_diagnosis": "Confirmed salinity (white deposits, crop damage, taste changes) indicates that the water scarcity stress may be compounded by or partially caused by saline groundwater, which is common in deeper alluvial zones in Rajasthan and Kachchh. This would shift part of the diagnosis toward a salinity-driven water quality pathway and change solution recommendations toward desalination, blending, or crop variety substitution alongside recharge interventions."
+      "how_answer_updates_diagnosis": "Confirmed salinity (white deposits, crop damage, taste changes) indicates that the water scarcity stress may be compounded by or partially caused by saline groundwater, which is common in deeper alluvial zones in Rajasthan and Kachchh. This would shift part of the diagnosis toward a salinity-driven water quality pathway and change solution recommendations toward desalination, blending, or crop variety substitution alongside recharge interventions.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "none",
+          "label": "No — water quality has not changed; no saltiness or deposits",
+          "normalized": {
+            "present": false,
+            "trend": "stable"
+          }
+        },
+        {
+          "id": "mild",
+          "label": "Some salinity or white deposits; still usable for some crops",
+          "normalized": {
+            "present": true,
+            "band": "moderate",
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "severe",
+          "label": "Brackish or salty water; crop damage or unsuitable for irrigation",
+          "normalized": {
+            "present": true,
+            "band": "high",
+            "trend": "worsening"
+          }
+        }
+      ]
     }
   ],
   "sources": [

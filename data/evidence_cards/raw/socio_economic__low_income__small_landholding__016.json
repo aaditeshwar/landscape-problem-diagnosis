@@ -180,17 +180,100 @@
     {
       "missing_variable": "landholding_size_distribution",
       "question_to_user": "What is the typical size of a farm plot in your village? Would you say most households farm less than half a hectare (about 1 acre), between half and 1 hectare, or more than 1 hectare? Are plots scattered across multiple locations or consolidated?",
-      "how_answer_updates_diagnosis": "If most households report holdings under 0.5 ha and plots are fragmented across multiple terraces, this strongly confirms the small landholding pathway. Fragmentation across terraces in Ladakh also prevents mechanisation, further compressing income. If holdings are larger but income is still low, the diagnosis should shift weight toward market isolation or climate stress pathways."
+      "how_answer_updates_diagnosis": "If most households report holdings under 0.5 ha and plots are fragmented across multiple terraces, this strongly confirms the small landholding pathway. Fragmentation across terraces in Ladakh also prevents mechanisation, further compressing income. If holdings are larger but income is still low, the diagnosis should shift weight toward market isolation or climate stress pathways.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "minority",
+          "label": "Less than one-quarter of farming households own under 1 ha",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "about_half",
+          "label": "About half of farming households own under 1 ha",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "majority",
+          "label": "More than half (or two-thirds) of households are marginal (<1 ha)",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "household_income_inr",
       "question_to_user": "Can you estimate the approximate annual household income from all sources — farm crops, livestock, government wages (MGNREGA), remittances, or other jobs? Is farm income the main source, or do most households depend on non-farm income?",
-      "how_answer_updates_diagnosis": "If annual household income is below INR 60,000 and farm income constitutes more than 70% of total income, this confirms both low income and single-source livelihood dependence. If non-farm income already dominates, the diagnosis should focus on why farm income is not supplementing adequately, and solutions should prioritise value chain access rather than diversification."
+      "how_answer_updates_diagnosis": "If annual household income is below INR 60,000 and farm income constitutes more than 70% of total income, this confirms both low income and single-source livelihood dependence. If non-farm income already dominates, the diagnosis should focus on why farm income is not supplementing adequately, and solutions should prioritise value chain access rather than diversification.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "below_50k",
+          "label": "Below ₹50,000 per year from farming (or total household income)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "50k_to_100k",
+          "label": "Between ₹50,000 and ₹1,00,000 per year",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "above_100k",
+          "label": "Above ₹1,00,000 per year",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "market_price_crop",
       "question_to_user": "What price do farmers typically receive for their main crops (e.g., barley, peas, vegetables)? Is this price close to the government Minimum Support Price (MSP), or significantly lower? Do traders come to the village or do farmers have to travel to sell?",
-      "how_answer_updates_diagnosis": "A large gap between realised price and MSP (more than 30% below MSP) confirms that market failure is amplifying the income loss from small holdings. If prices are near MSP, the income problem is primarily a volume problem (too little surplus from small holdings), confirming the landholding size pathway as primary."
+      "how_answer_updates_diagnosis": "A large gap between realised price and MSP (more than 30% below MSP) confirms that market failure is amplifying the income loss from small holdings. If prices are near MSP, the income problem is primarily a volume problem (too little surplus from small holdings), confirming the landholding size pathway as primary.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "near_msp",
+          "label": "Prices close to government MSP (mandi or procurement)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "below_msp",
+          "label": "Prices significantly below MSP (e.g. farm-gate or trader)",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "unable_to_sell",
+          "label": "Unable to sell at all or forced to accept very low prices",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "worsening"
+          }
+        }
+      ]
     }
   ],
   "sources": [

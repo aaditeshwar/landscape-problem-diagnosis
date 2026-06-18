@@ -151,12 +151,66 @@
     {
       "missing_variable": "fra_claims_filed_count",
       "question_to_user": "Have community members or households in this village filed claims under the Forest Rights Act (FRA) for individual or community forest rights? If yes, approximately how many claims have been filed, and how many have been recognised or rejected?",
-      "how_answer_updates_diagnosis": "A high number of pending or rejected FRA claims alongside reported NTFP decline strongly confirms the encroachment pathway, as it indicates that forest land is contested and communities lack legal standing to defend access. Recognised FRA claims with continued NTFP decline would shift diagnosis toward degradation or over-harvesting pathways."
+      "how_answer_updates_diagnosis": "A high number of pending or rejected FRA claims alongside reported NTFP decline strongly confirms the encroachment pathway, as it indicates that forest land is contested and communities lack legal standing to defend access. Recognised FRA claims with continued NTFP decline would shift diagnosis toward degradation or over-harvesting pathways.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "none",
+          "label": "No FRA claims filed by community members",
+          "normalized": {
+            "present": false
+          }
+        },
+        {
+          "id": "pending",
+          "label": "Claims filed but mostly pending or rejected",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "recognized",
+          "label": "Several claims recognised (individual or community forest rights)",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "forest_boundary_demarcation_status",
       "question_to_user": "Are the boundaries of the forest land in this area clearly marked on the ground (e.g. with pillars, fencing, or signage)? Have there been any recent disputes about where the forest boundary lies?",
-      "how_answer_updates_diagnosis": "Absent or disputed boundary demarcation is a precondition for encroachment and would strongly support this pathway. Clear demarcation with no disputes would reduce the probability of encroachment as the primary driver and suggest other causes of NTFP decline."
+      "how_answer_updates_diagnosis": "Absent or disputed boundary demarcation is a precondition for encroachment and would strongly support this pathway. Clear demarcation with no disputes would reduce the probability of encroachment as the primary driver and suggest other causes of NTFP decline.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "clear",
+          "label": "Boundaries clearly marked; no recent disputes",
+          "normalized": {
+            "present": false,
+            "trend": "stable"
+          }
+        },
+        {
+          "id": "partial",
+          "label": "Some marking exists but incomplete or poorly maintained",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "absent",
+          "label": "No clear demarcation or active boundary disputes",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "worsening"
+          }
+        }
+      ]
     }
   ],
   "sources": [

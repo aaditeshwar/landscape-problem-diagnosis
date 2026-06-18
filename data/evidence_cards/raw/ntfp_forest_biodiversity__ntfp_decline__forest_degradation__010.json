@@ -148,12 +148,68 @@
     {
       "missing_variable": "ntfp_species_presence",
       "question_to_user": "Have community members noticed a decline in the availability of key forest products such as sal seeds, mahua flowers, tendu leaves, honey, or medicinal plants over the past 5-10 years? Are these products now harder to find, requiring longer travel into the forest, or are some species no longer found locally?",
-      "how_answer_updates_diagnosis": "Confirmed decline in specific NTFP species abundance strongly confirms the forest degradation pathway and helps identify which species and forest strata are most affected, guiding targeted restoration interventions such as community plantation of indigenous NTFP-bearing species or assisted natural regeneration in degraded patches."
+      "how_answer_updates_diagnosis": "Confirmed decline in specific NTFP species abundance strongly confirms the forest degradation pathway and helps identify which species and forest strata are most affected, guiding targeted restoration interventions such as community plantation of indigenous NTFP-bearing species or assisted natural regeneration in degraded patches.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "abundant",
+          "label": "NTFP species are still common and easy to find",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "stable"
+          }
+        },
+        {
+          "id": "reduced",
+          "label": "Some species are harder to find than 5–10 years ago",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "rare",
+          "label": "Several species that used to be common are now rare or absent",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "trend": "worsening"
+          }
+        }
+      ]
     },
     {
       "missing_variable": "community_forest_governance_status",
       "question_to_user": "Does the village have a functioning Joint Forest Management (JFM) committee or has it filed for Community Forest Resource (CFR) rights under the Forest Rights Act? If CFR rights have been granted, are community forest protection patrols or bylaws in place?",
-      "how_answer_updates_diagnosis": "The presence of active JFM or CFR rights with enforcement mechanisms significantly reduces the likelihood of ongoing forest degradation and shifts the diagnosis toward historical legacy degradation or over-harvesting rather than active deforestation. Absence of these governance structures confirms institutional vulnerability and supports recommendations for FRA claim facilitation and community forest watch establishment."
+      "how_answer_updates_diagnosis": "The presence of active JFM or CFR rights with enforcement mechanisms significantly reduces the likelihood of ongoing forest degradation and shifts the diagnosis toward historical legacy degradation or over-harvesting rather than active deforestation. Absence of these governance structures confirms institutional vulnerability and supports recommendations for FRA claim facilitation and community forest watch establishment.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "active",
+          "label": "Active JFM/Van Suraksha Samiti or recognised CFR with patrols or bylaws",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        },
+        {
+          "id": "inactive",
+          "label": "Committee exists on paper but little enforcement or activity",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "none",
+          "label": "No functioning forest governance institution in the village",
+          "normalized": {
+            "present": false
+          }
+        }
+      ]
     }
   ],
   "sources": [

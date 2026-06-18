@@ -174,7 +174,7 @@
           "label": "Well depth has stayed roughly the same (within ~1 m)",
           "normalized": {
             "trend": "stable",
-            "present": true
+            "present": false
           }
         },
         {
@@ -231,7 +231,36 @@
     {
       "missing_variable": "groundwater_salinity",
       "question_to_user": "Has the taste of well or borewell water changed in recent years — becoming saltier or brackish? Do you notice white crusty deposits on pipes or irrigation equipment? Have any crops shown unusual leaf burn or poor germination that might indicate salt in the irrigation water?",
-      "how_answer_updates_diagnosis": "Reported salinity increase in coastal alluvial aquifers (Kerala, Goa, Konkan) indicates saline intrusion as a co-occurring or alternative pathway. This changes the solution set from recharge augmentation to managed aquifer recharge with freshwater barriers and demand reduction, and may require desalination or alternative water sources for sensitive crops."
+      "how_answer_updates_diagnosis": "Reported salinity increase in coastal alluvial aquifers (Kerala, Goa, Konkan) indicates saline intrusion as a co-occurring or alternative pathway. This changes the solution set from recharge augmentation to managed aquifer recharge with freshwater barriers and demand reduction, and may require desalination or alternative water sources for sensitive crops.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "none",
+          "label": "No — water quality has not changed; no saltiness or deposits",
+          "normalized": {
+            "present": false,
+            "trend": "stable"
+          }
+        },
+        {
+          "id": "mild",
+          "label": "Some salinity or white deposits; still usable for some crops",
+          "normalized": {
+            "present": true,
+            "band": "moderate",
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "severe",
+          "label": "Brackish or salty water; crop damage or unsuitable for irrigation",
+          "normalized": {
+            "present": true,
+            "band": "high",
+            "trend": "worsening"
+          }
+        }
+      ]
     }
   ],
   "sources": [

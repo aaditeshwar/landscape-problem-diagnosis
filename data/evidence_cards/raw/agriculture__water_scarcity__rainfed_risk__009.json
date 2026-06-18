@@ -157,7 +157,38 @@
     {
       "missing_variable": "irrigated_area_ha",
       "question_to_user": "What share of the cultivated land in this area is irrigated during the rabi (winter) season? Would you estimate it as very little (less than 10%), some (10–40%), or most (more than 40%)? What are the main sources — tubewells, canals, ponds, or lift irrigation?",
-      "how_answer_updates_diagnosis": "If more than 40% of land is irrigated in rabi from tubewells or canals, the rainfed risk pathway is weakened and groundwater stress or canal dependency pathways should be considered instead. If irrigation is negligible or limited to small patches near ponds, the rainfed risk diagnosis is strongly confirmed. The source of irrigation also matters: tubewell-dependent rabi irrigation in alluvial plains may indicate emerging groundwater stress rather than pure rainfed vulnerability."
+      "how_answer_updates_diagnosis": "If more than 40% of land is irrigated in rabi from tubewells or canals, the rainfed risk pathway is weakened and groundwater stress or canal dependency pathways should be considered instead. If irrigation is negligible or limited to small patches near ponds, the rainfed risk diagnosis is strongly confirmed. The source of irrigation also matters: tubewell-dependent rabi irrigation in alluvial plains may indicate emerging groundwater stress rather than pure rainfed vulnerability.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "low",
+          "label": "Less than 10% of cultivated land is irrigated",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "percent_upper": 10
+          }
+        },
+        {
+          "id": "moderate",
+          "label": "Between 10% and 30% of cultivated land is irrigated",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "percent_lower": 10,
+            "percent_upper": 30
+          }
+        },
+        {
+          "id": "high",
+          "label": "More than 30% of cultivated land is irrigated",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "percent_lower": 30
+          }
+        }
+      ]
     }
   ],
   "sources": [

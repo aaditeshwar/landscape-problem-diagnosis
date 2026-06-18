@@ -28,7 +28,25 @@ def apply_templates(*, dry_run: bool = False) -> dict[str, int]:
             template = MCQ_TEMPLATES.get(var)
             if not template:
                 continue
+            template_choices = {
+                str(choice.get("id") or "").strip(): choice
+                for choice in template.get("choices") or []
+                if isinstance(choice, dict) and choice.get("id")
+            }
             if entry.get("response_type") == "mcq" and entry.get("choices"):
+                for choice in entry.get("choices") or []:
+                    if not isinstance(choice, dict):
+                        continue
+                    template_choice = template_choices.get(str(choice.get("id") or "").strip())
+                    if not template_choice:
+                        continue
+                    if choice.get("label") != template_choice.get("label"):
+                        choice["label"] = template_choice["label"]
+                        changed = True
+                    template_norm = template_choice.get("normalized")
+                    if isinstance(template_norm, dict) and choice.get("normalized") != template_norm:
+                        choice["normalized"] = json.loads(json.dumps(template_norm))
+                        changed = True
                 continue
             entry["response_type"] = template["response_type"]
             entry["choices"] = json.loads(json.dumps(template["choices"]))

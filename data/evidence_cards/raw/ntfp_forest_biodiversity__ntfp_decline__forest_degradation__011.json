@@ -137,7 +137,37 @@
     {
       "missing_variable": "ntfp_species_presence",
       "question_to_user": "Have community members noticed a reduction in the availability of specific forest products they collect — such as medicinal plants, wild fruits, honey, resins, or fodder — over the past 5 to 10 years? Are there particular species that used to be common but are now difficult to find in the forest?",
-      "how_answer_updates_diagnosis": "Confirmed reduction in abundance or local disappearance of key NTFP species strongly confirms the forest degradation pathway, especially when corroborated by declining forest cover in LULC data. If communities report stable or improving NTFP availability despite forest cover loss signals, the pathway confidence is reduced and over-harvesting or access restriction confounders should be explored."
+      "how_answer_updates_diagnosis": "Confirmed reduction in abundance or local disappearance of key NTFP species strongly confirms the forest degradation pathway, especially when corroborated by declining forest cover in LULC data. If communities report stable or improving NTFP availability despite forest cover loss signals, the pathway confidence is reduced and over-harvesting or access restriction confounders should be explored.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "abundant",
+          "label": "NTFP species are still common and easy to find",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "stable"
+          }
+        },
+        {
+          "id": "reduced",
+          "label": "Some species are harder to find than 5–10 years ago",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "rare",
+          "label": "Several species that used to be common are now rare or absent",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "trend": "worsening"
+          }
+        }
+      ]
     }
   ],
   "sources": [

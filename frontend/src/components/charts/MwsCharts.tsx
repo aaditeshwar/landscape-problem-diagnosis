@@ -331,3 +331,46 @@ export function FacilityDistanceChart({ mws }: { mws: MwsDocument }) {
     </ChartCard>
   )
 }
+
+export function ChangeDetectionStackedBar({
+  segments,
+}: {
+  segments: Array<{ key: string; label: string; ha: number; color: string }>
+}) {
+  const total = segments.reduce((sum, segment) => sum + segment.ha, 0)
+  if (total <= 0) {
+    return <p className="mt-1 text-[10px] italic text-stone-400">No transition detail</p>
+  }
+
+  return (
+    <div className="mt-1.5">
+      <div className="flex h-2.5 w-full overflow-hidden rounded-full bg-stone-100">
+        {segments.map((segment) => (
+          <div
+            key={segment.key}
+            className="h-full min-w-[2px] transition-[width] duration-300"
+            style={{
+              width: `${(segment.ha / total) * 100}%`,
+              backgroundColor: segment.color,
+            }}
+            title={`${segment.label}: ${segment.ha.toFixed(1)} ha`}
+          />
+        ))}
+      </div>
+      <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-1">
+        {segments.map((segment) => (
+          <span key={segment.key} className="inline-flex items-center gap-1 text-[10px] text-stone-600">
+            <span
+              className="inline-block h-2 w-2 shrink-0 rounded-sm"
+              style={{ backgroundColor: segment.color }}
+            />
+            <span>
+              {segment.label}{' '}
+              <span className="font-medium text-stone-800">{segment.ha.toFixed(1)} ha</span>
+            </span>
+          </span>
+        ))}
+      </div>
+    </div>
+  )
+}

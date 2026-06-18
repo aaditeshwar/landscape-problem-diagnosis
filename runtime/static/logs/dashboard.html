@@ -671,8 +671,13 @@
             ? `<div class="follow-up-action">${actionParts.join("<br/>")}</div>`
             : "";
 
+          const reasoningLabel = event.llm_skipped
+            ? "Server reasoning"
+            : event.want_llm_opinion
+              ? "Reviewer / LLM reasoning"
+              : "Pathway reasoning";
           const reasoningHtml = status.reasoning
-            ? `<div class="pathway-meta-line"><strong>LLM reasoning</strong>: ${escapeHtml(status.reasoning)}</div>`
+            ? `<div class="pathway-meta-line"><strong>${reasoningLabel}</strong>: ${escapeHtml(status.reasoning)}</div>`
             : "";
 
           return `<div class="pathway-block">
@@ -701,9 +706,65 @@
       return `<div><strong>Pathways — evidence, diagnosis status &amp; server signals</strong>${blocks}</div>`;
     }
 
+    function renderReviewerNotes(event) {
+      const llm = event.llm_response || {};
+      const commentary = Array.isArray(llm.reviewer_commentary) ? llm.reviewer_commentary : [];
+      const changeReview = llm.change_review;
+      const skipped = event.llm_skipped === true;
+      const wantLlm = event.want_llm_opinion === true;
+
+      if (skipped || !wantLlm) {
+        return "";
+      }
+      if (!commentary.length && !changeReview) {
+        return "";
+      }
+
+      const rows = commentary
+        .map((item) => {
+          const agreement = item.agreement ? ` · ${escapeHtml(item.agreement)}` : "";
+          const comment = item.pathway_comment
+            ? `<div class="pathway-meta-line">${escapeHtml(item.pathway_comment)}</div>`
+            : "";
+          return `<div class="pathway-block" style="margin-top:0.35rem;">
+            <h4>${escapeHtml(item.pathway_id || "—")}${agreement}</h4>
+            ${comment}
+          </div>`;
+        })
+        .join("");
+
+      const changeHtml =
+        changeReview && changeReview.summary
+          ? `<div class="pathway-meta-line" style="margin-top:0.5rem;"><strong>Change review</strong>: ${escapeHtml(changeReview.summary)}</div>`
+          : "";
+
+      return `<div class="reviewer-block">
+        <h4>Reviewer notes (LLM)</h4>
+        ${rows || `<div class="pathway-meta-line">No pathway commentary returned.</div>`}
+        ${changeHtml}
+      </div>`;
+    }
+
+    function renderLlmMode(event) {
+      const want = event.want_llm_opinion === true;
+      const skipped = event.llm_skipped === true;
+      const profile = event.prompt_profile || "—";
+      const modeLabel = skipped ? "Server only (LLM skipped)" : want ? "LLM reviewer" : "Server only";
+      return `<div class="llm-mode-block">
+        <h4>Diagnosis mode</h4>
+        <div class="pathway-meta-line"><strong>Mode</strong>: ${escapeHtml(modeLabel)}</div>
+        <div class="pathway-meta-line"><strong>want_llm_opinion</strong>: ${want ? "true" : "false"} · <strong>llm_skipped</strong>: ${skipped ? "true" : "false"}</div>
+        <div class="pathway-meta-line"><strong>Prompt profile</strong>: ${escapeHtml(profile)}</div>
+      </div>`;
+    }
+
     function renderFollowUpSignalUpdates(event) {
       const updates = event.follow_up_signal_updates || [];
-      const hasFollowUp = event.follow_up_variable || event.follow_up_answer || event.follow_up_question;
+      const hasFollowUp =
+        event.follow_up_variable ||
+        event.follow_up_answer ||
+        event.follow_up_choice_id ||
+        event.follow_up_question;
       if (!hasFollowUp && !updates.length) {
         return "";
       }
@@ -733,6 +794,7 @@
         <h4>Follow-up answer &amp; server signal evaluation</h4>
         ${event.follow_up_question ? `<div class="pathway-meta-line"><strong>Question</strong>: ${escapeHtml(event.follow_up_question)}</div>` : ""}
         ${event.follow_up_variable ? `<div class="pathway-meta-line"><strong>Variable</strong>: <code>${escapeHtml(event.follow_up_variable)}</code></div>` : ""}
+        ${event.follow_up_choice_id ? `<div class="pathway-meta-line"><strong>MCQ choice_id</strong>: <code>${escapeHtml(event.follow_up_choice_id)}</code></div>` : ""}
         ${event.follow_up_answer ? `<div class="pathway-meta-line"><strong>User answer</strong>: ${escapeHtml(event.follow_up_answer)}</div>` : ""}
         ${updates.length ? `<div style="margin-top:0.45rem;"><strong>Signal overlays</strong>${updateRows}</div>` : `<div class="pathway-meta-line" style="margin-top:0.35rem;">No server signal overlay recorded for this turn.</div>`}
       </div>`;
@@ -777,7 +839,7 @@
         : "";
 
       return `<div class="panel-explanation-block">
-        <h4>Panel update explanation</h4>
+        <h4>${event.llm_skipped ? "Server summary" : "Panel update / answer"}</h4>
         ${explanation ? `<p class="panel-explanation-text">${escapeHtml(explanation)}</p>` : ""}
         ${updatesHtml}
       </div>`;
@@ -786,12 +848,20 @@
     function renderSolutions(event) {
       const llm = event.llm_response || {};
       const solutions = Array.isArray(llm.solutions) ? llm.solutions.filter(Boolean) : [];
-      if (!solutions.length) {
+      const reviewNotes = String(llm.solutions_review_notes || "").trim();
+      if (!solutions.length && !reviewNotes) {
         return "";
       }
+      const notesHtml = reviewNotes
+        ? `<p class="pathway-meta-line"><strong>Reviewer notes</strong>: ${escapeHtml(reviewNotes)}</p>`
+        : "";
+      const listHtml = solutions.length
+        ? `<ul>${solutions.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul>`
+        : "";
       return `<div class="solutions-block">
         <h4>Suggested solutions</h4>
-        <ul>${solutions.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul>
+        ${notesHtml}
+        ${listHtml}
       </div>`;
     }
 
@@ -1098,6 +1168,7 @@
           <div><strong>State</strong>${event.state || "—"}</div>
           <div><strong>MWS AER</strong>${event.mws_aer_code || "—"}</div>
           <div><strong>Model</strong>${event.model || "—"}</div>
+          <div><strong>LLM mode</strong>${event.llm_skipped ? "skipped" : event.want_llm_opinion ? "reviewer" : "server"}</div>
           <div><strong>Total</strong>${fmtMs(timings.total)}</div>
           <div><strong>Status</strong>${event.status === "failed" || event.error ? `<span style="color:var(--failed)">failed</span>${event.failure_stage ? ` (${escapeHtml(formatFailureStage(event.failure_stage))})` : ""}` : "ok"}</div>
           <div><strong>Prompt</strong>${event.prompt_chars ?? (event.prompt?.length || 0)} chars</div>
@@ -1122,7 +1193,11 @@
 
         ${cards ? `<div><strong>Evidence cards</strong><div class="chip-list">${cards}</div></div>` : ""}
 
+        ${renderLlmMode(event)}
+
         ${renderMergedPathways(event)}
+
+        ${renderReviewerNotes(event)}
 
         ${renderPanelUpdateExplanation(event)}
 

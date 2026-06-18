@@ -134,7 +134,37 @@
     {
       "missing_variable": "ntfp_species_presence",
       "question_to_user": "Have community members noticed a reduction in the availability of key forest products such as seabuckthorn berries, juniper, medicinal herbs, or other plants they collect from the forest? Are people now travelling further or spending more time to collect the same amount as before?",
-      "how_answer_updates_diagnosis": "Confirmed decline in NTFP species abundance or increased collection effort strongly confirms the forest_degradation pathway. If species are declining but forest area appears stable, this shifts the diagnosis toward over-harvesting as the primary driver rather than habitat loss. If both forest area and species abundance are declining together, the forest_degradation pathway is strongly confirmed."
+      "how_answer_updates_diagnosis": "Confirmed decline in NTFP species abundance or increased collection effort strongly confirms the forest_degradation pathway. If species are declining but forest area appears stable, this shifts the diagnosis toward over-harvesting as the primary driver rather than habitat loss. If both forest area and species abundance are declining together, the forest_degradation pathway is strongly confirmed.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "abundant",
+          "label": "NTFP species are still common and easy to find",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "stable"
+          }
+        },
+        {
+          "id": "reduced",
+          "label": "Some species are harder to find than 5–10 years ago",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "rare",
+          "label": "Several species that used to be common are now rare or absent",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "trend": "worsening"
+          }
+        }
+      ]
     }
   ],
   "sources": [

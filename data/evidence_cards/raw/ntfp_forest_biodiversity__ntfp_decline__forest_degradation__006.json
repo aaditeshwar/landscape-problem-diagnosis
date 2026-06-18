@@ -154,12 +154,72 @@
     {
       "missing_variable": "ntfp_species_presence",
       "question_to_user": "Have community members noticed a reduction in the availability of key forest products such as mahua flowers, harra fruit, aonla, honey, or medicinal plants over the past 5–10 years? Are there specific species that used to be common but are now rare or absent in the local forest?",
-      "how_answer_updates_diagnosis": "Confirmed decline in multiple NTFP species strongly supports the forest degradation pathway. If decline is limited to one or two species, consider targeted over-harvesting or phenological shifts as alternative explanations. If communities report no change in species availability despite declining forest area in remote-sensing data, the remaining forest patches may be high-quality refugia and targeted protection rather than broad restoration may be the priority."
+      "how_answer_updates_diagnosis": "Confirmed decline in multiple NTFP species strongly supports the forest degradation pathway. If decline is limited to one or two species, consider targeted over-harvesting or phenological shifts as alternative explanations. If communities report no change in species availability despite declining forest area in remote-sensing data, the remaining forest patches may be high-quality refugia and targeted protection rather than broad restoration may be the priority.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "abundant",
+          "label": "NTFP species are still common and easy to find",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "stable"
+          }
+        },
+        {
+          "id": "reduced",
+          "label": "Some species are harder to find than 5–10 years ago",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "rare",
+          "label": "Several species that used to be common are now rare or absent",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "trend": "worsening"
+          }
+        }
+      ]
     },
     {
       "missing_variable": "forest_fire_frequency",
       "question_to_user": "How often do forest fires occur in or near the village forests? Have fires become more frequent or more severe in recent years? Are fires accidental, set for land clearing, or used for hunting?",
-      "how_answer_updates_diagnosis": "Frequent or intensifying fires are a major driver of forest degradation in coastal dry deciduous forests and would confirm the forest degradation pathway. Fire-driven degradation calls for fire line creation and community watch patrols as priority interventions, in addition to species replanting. If fires are absent, other degradation drivers such as encroachment or fuelwood extraction should be investigated."
+      "how_answer_updates_diagnosis": "Frequent or intensifying fires are a major driver of forest degradation in coastal dry deciduous forests and would confirm the forest degradation pathway. Fire-driven degradation calls for fire line creation and community watch patrols as priority interventions, in addition to species replanting. If fires are absent, other degradation drivers such as encroachment or fuelwood extraction should be investigated.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "rare",
+          "label": "Forest fires are rare; no increase in recent years",
+          "normalized": {
+            "band": "low",
+            "present": false,
+            "trend": "stable"
+          }
+        },
+        {
+          "id": "occasional",
+          "label": "Occasional fires; frequency or severity increasing",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "frequent",
+          "label": "Frequent or repeated fires in the same forest patches",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "worsening"
+          }
+        }
+      ]
     }
   ],
   "sources": [

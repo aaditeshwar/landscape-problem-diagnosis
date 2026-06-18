@@ -167,17 +167,100 @@
     {
       "missing_variable": "landholding_size_distribution",
       "question_to_user": "What proportion of farming households in this village own less than 1 hectare of land? Would you estimate it is less than one-third, about half, or more than two-thirds of all households?",
-      "how_answer_updates_diagnosis": "If more than two-thirds of households are marginal holders (<1 ha), the small landholding pathway is strongly confirmed and collective farming or FPO formation becomes the highest-priority recommendation. If fewer than one-third are marginal, other causal pathways (market failure, drought, soil degradation) should be weighted more heavily."
+      "how_answer_updates_diagnosis": "If more than two-thirds of households are marginal holders (<1 ha), the small landholding pathway is strongly confirmed and collective farming or FPO formation becomes the highest-priority recommendation. If fewer than one-third are marginal, other causal pathways (market failure, drought, soil degradation) should be weighted more heavily.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "minority",
+          "label": "Less than one-quarter of farming households own under 1 ha",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "about_half",
+          "label": "About half of farming households own under 1 ha",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "majority",
+          "label": "More than half (or two-thirds) of households are marginal (<1 ha)",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "household_income_inr",
       "question_to_user": "Can you estimate the average annual household income in this village, and what share comes from farming versus wage labour, NTFP collection, livestock, or government schemes like MGNREGA?",
-      "how_answer_updates_diagnosis": "If farm income constitutes more than 70% of total household income and total income is below Rs 60,000 per year, the single-source dependence and income insufficiency stress is confirmed. A high share of MGNREGA or NTFP income would indicate partial diversification already occurring, shifting recommendations toward strengthening those existing pathways rather than building new ones from scratch."
+      "how_answer_updates_diagnosis": "If farm income constitutes more than 70% of total household income and total income is below Rs 60,000 per year, the single-source dependence and income insufficiency stress is confirmed. A high share of MGNREGA or NTFP income would indicate partial diversification already occurring, shifting recommendations toward strengthening those existing pathways rather than building new ones from scratch.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "below_50k",
+          "label": "Below ₹50,000 per year from farming (or total household income)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "50k_to_100k",
+          "label": "Between ₹50,000 and ₹1,00,000 per year",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "above_100k",
+          "label": "Above ₹1,00,000 per year",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "market_price_crop",
       "question_to_user": "Do farmers in this village typically sell their produce at prices close to the government Minimum Support Price (MSP), or significantly below it? How do they usually sell — to local traders, at the APMC mandi, or through a cooperative or FPO?",
-      "how_answer_updates_diagnosis": "If farmers consistently receive prices 20-40% below MSP and sell exclusively to local traders, market exploitation of smallholders is confirmed as a key income loss mechanism. This strengthens the case for FPO formation and collective marketing as the primary intervention, and indicates that physical distance to APMC (sig_03) is actively translating into price loss."
+      "how_answer_updates_diagnosis": "If farmers consistently receive prices 20-40% below MSP and sell exclusively to local traders, market exploitation of smallholders is confirmed as a key income loss mechanism. This strengthens the case for FPO formation and collective marketing as the primary intervention, and indicates that physical distance to APMC (sig_03) is actively translating into price loss.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "near_msp",
+          "label": "Prices close to government MSP (mandi or procurement)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "below_msp",
+          "label": "Prices significantly below MSP (e.g. farm-gate or trader)",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "unable_to_sell",
+          "label": "Unable to sell at all or forced to accept very low prices",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "worsening"
+          }
+        }
+      ]
     }
   ],
   "sources": [

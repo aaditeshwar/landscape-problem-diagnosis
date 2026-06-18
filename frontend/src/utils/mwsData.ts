@@ -144,6 +144,75 @@ function changeDetectionHa(mws: MwsDocument, sheet: string, ...keys: string[]): 
   return 0
 }
 
+export interface ChangeDetectionSegment {
+  key: string
+  label: string
+  ha: number
+  color: string
+}
+
+interface ChangeSegmentSpec {
+  key: string
+  label: string
+  color: string
+}
+
+const DEGRADATION_BREAKDOWN: ChangeSegmentSpec[] = [
+  { key: 'farm_to_barren_ha', label: 'Farm → barren', color: '#78716c' },
+  { key: 'farm_to_built_up_ha', label: 'Farm → built-up', color: '#d97706' },
+  { key: 'farm_to_scrubland_ha', label: 'Farm → scrubland', color: '#a8a29e' },
+]
+
+const AFFORESTATION_BREAKDOWN: ChangeSegmentSpec[] = [
+  { key: 'barren_to_forest_ha', label: 'Barren → forest', color: '#84cc16' },
+  { key: 'built_up_to_forest_ha', label: 'Built-up → forest', color: '#65a30d' },
+  { key: 'farm_to_forest_ha', label: 'Farm → forest', color: '#15803d' },
+  { key: 'scrubland_to_forest_ha', label: 'Scrub → forest', color: '#166534' },
+]
+
+const DEFORESTATION_BREAKDOWN: ChangeSegmentSpec[] = [
+  { key: 'forest_to_barren_ha', label: 'Forest → barren', color: '#78716c' },
+  { key: 'forest_to_built_up_ha', label: 'Forest → built-up', color: '#d97706' },
+  { key: 'forest_to_farm_ha', label: 'Forest → farm', color: '#ca8a04' },
+  { key: 'forest_to_scrubland_ha', label: 'Forest → scrub', color: '#a8a29e' },
+]
+
+const URBANIZATION_BREAKDOWN: ChangeSegmentSpec[] = [
+  { key: 'barren_shrub_to_built_up_ha', label: 'Barren/shrub → built-up', color: '#78716c' },
+  { key: 'tree_farm_to_built_up_ha', label: 'Tree/farm → built-up', color: '#ca8a04' },
+  { key: 'water_to_built_up_ha', label: 'Water → built-up', color: '#0284c7' },
+]
+
+function changeDetectionBreakdown(
+  mws: MwsDocument,
+  sheet: string,
+  specs: ChangeSegmentSpec[],
+): ChangeDetectionSegment[] {
+  const row = mws.change_detection?.[sheet] ?? {}
+  return specs
+    .map((spec) => ({
+      ...spec,
+      ha: Math.max(0, Number(row[spec.key] ?? 0)),
+    }))
+    .filter((segment) => segment.ha > 0)
+}
+
+export function degradationBreakdown(mws: MwsDocument): ChangeDetectionSegment[] {
+  return changeDetectionBreakdown(mws, 'degradation', DEGRADATION_BREAKDOWN)
+}
+
+export function afforestationBreakdown(mws: MwsDocument): ChangeDetectionSegment[] {
+  return changeDetectionBreakdown(mws, 'afforestation', AFFORESTATION_BREAKDOWN)
+}
+
+export function deforestationBreakdown(mws: MwsDocument): ChangeDetectionSegment[] {
+  return changeDetectionBreakdown(mws, 'deforestation', DEFORESTATION_BREAKDOWN)
+}
+
+export function urbanizationBreakdown(mws: MwsDocument): ChangeDetectionSegment[] {
+  return changeDetectionBreakdown(mws, 'urbanization', URBANIZATION_BREAKDOWN)
+}
+
 export function landChangeTotals(mws: MwsDocument): LandChangeTotals {
   return {
     croppingDegradation: changeDetectionHa(mws, 'degradation', 'total_ha', 'total_degradation'),

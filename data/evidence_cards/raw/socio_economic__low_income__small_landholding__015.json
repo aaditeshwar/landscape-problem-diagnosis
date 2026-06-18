@@ -178,17 +178,100 @@
     {
       "missing_variable": "landholding_size_distribution",
       "question_to_user": "What is the approximate average size of agricultural land held per household in your village? Would you say most households own less than half a hectare (very small), between half and one hectare (small), or more than one hectare (medium or larger)?",
-      "how_answer_updates_diagnosis": "If most households own less than 0.5 ha, this strongly confirms the marginal landholding pathway as the primary income constraint. If holdings are 1-2 ha but income is still low, the diagnosis should shift toward market access failure, low cropping intensity, or lack of diversification as the primary pathway rather than land size alone."
+      "how_answer_updates_diagnosis": "If most households own less than 0.5 ha, this strongly confirms the marginal landholding pathway as the primary income constraint. If holdings are 1-2 ha but income is still low, the diagnosis should shift toward market access failure, low cropping intensity, or lack of diversification as the primary pathway rather than land size alone.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "minority",
+          "label": "Less than one-quarter of farming households own under 1 ha",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "about_half",
+          "label": "About half of farming households own under 1 ha",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "majority",
+          "label": "More than half (or two-thirds) of households are marginal (<1 ha)",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "household_income_inr",
       "question_to_user": "Can you estimate the average annual household income in your village from all sources — farm produce, livestock, daily wage labour, MGNREGA, remittances, and any other sources? Roughly, is it below Rs 50,000 per year, between Rs 50,000 and Rs 1,00,000, or above Rs 1,00,000?",
-      "how_answer_updates_diagnosis": "Household income below Rs 50,000/year (approximately Rs 4,200/month) for a 5-person household confirms severe income stress. The breakdown by source (farm vs non-farm) is critical: if more than 70% comes from farm alone, single-source dependence is confirmed and diversification interventions are prioritised. If wage income dominates, the land constraint may be less binding than labour market conditions."
+      "how_answer_updates_diagnosis": "Household income below Rs 50,000/year (approximately Rs 4,200/month) for a 5-person household confirms severe income stress. The breakdown by source (farm vs non-farm) is critical: if more than 70% comes from farm alone, single-source dependence is confirmed and diversification interventions are prioritised. If wage income dominates, the land constraint may be less binding than labour market conditions.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "below_50k",
+          "label": "Below ₹50,000 per year from farming (or total household income)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "50k_to_100k",
+          "label": "Between ₹50,000 and ₹1,00,000 per year",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "above_100k",
+          "label": "Above ₹1,00,000 per year",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "market_price_crop",
       "question_to_user": "For the main crops grown in your village (e.g. coconut, areca nut, paddy, spices), have farmers been receiving prices significantly below what they expected or below government support prices in recent years? If so, for which crops and by roughly what percentage?",
-      "how_answer_updates_diagnosis": "If price realisation is consistently 20-40% below MSP or expected market price, market failure is an independent income depressor compounding the small landholding constraint. This would elevate the priority of collective marketing through FPOs and direct market linkages over land consolidation or cropping intensity interventions."
+      "how_answer_updates_diagnosis": "If price realisation is consistently 20-40% below MSP or expected market price, market failure is an independent income depressor compounding the small landholding constraint. This would elevate the priority of collective marketing through FPOs and direct market linkages over land consolidation or cropping intensity interventions.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "near_msp",
+          "label": "Prices close to government MSP (mandi or procurement)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "below_msp",
+          "label": "Prices significantly below MSP (e.g. farm-gate or trader)",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "unable_to_sell",
+          "label": "Unable to sell at all or forced to accept very low prices",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "worsening"
+          }
+        }
+      ]
     }
   ],
   "sources": [

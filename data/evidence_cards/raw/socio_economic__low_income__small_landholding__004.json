@@ -167,17 +167,100 @@
     {
       "missing_variable": "landholding_size_distribution",
       "question_to_user": "Approximately what proportion of farming households in your village own less than 1 hectare of land (marginal farmers), and what proportion own between 1 and 2 hectares (small farmers)? Would you say more than half the households are in these two categories combined?",
-      "how_answer_updates_diagnosis": "If more than 50% of households are marginal or small holders (under 2 ha), this directly confirms the small landholding pathway as the primary structural driver of low income. If most households hold 2–5 ha but income is still low, the diagnosis should shift toward market access failure, input cost burden, or crop price risk as the primary pathway."
+      "how_answer_updates_diagnosis": "If more than 50% of households are marginal or small holders (under 2 ha), this directly confirms the small landholding pathway as the primary structural driver of low income. If most households hold 2–5 ha but income is still low, the diagnosis should shift toward market access failure, input cost burden, or crop price risk as the primary pathway.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "minority",
+          "label": "Less than one-quarter of farming households own under 1 ha",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "about_half",
+          "label": "About half of farming households own under 1 ha",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "majority",
+          "label": "More than half (or two-thirds) of households are marginal (<1 ha)",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "household_income_inr",
       "question_to_user": "Can you estimate the average annual household income from all sources (farm sales, livestock, MGNREGA wages, remittances, non-farm work) for a typical farming family in your village? Is it below Rs 60,000 per year, between Rs 60,000–1,20,000, or above Rs 1,20,000?",
-      "how_answer_updates_diagnosis": "Household income below Rs 60,000 per year (approximately Rs 5,000/month) for a family of five confirms severe income stress consistent with the low_income stress definition. Understanding the income source mix (what share comes from farm vs non-farm) also reveals whether diversification is already occurring or whether the household is entirely dependent on a single small farm — the latter strongly confirms this pathway."
+      "how_answer_updates_diagnosis": "Household income below Rs 60,000 per year (approximately Rs 5,000/month) for a family of five confirms severe income stress consistent with the low_income stress definition. Understanding the income source mix (what share comes from farm vs non-farm) also reveals whether diversification is already occurring or whether the household is entirely dependent on a single small farm — the latter strongly confirms this pathway.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "below_50k",
+          "label": "Below ₹50,000 per year from farming (or total household income)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "50k_to_100k",
+          "label": "Between ₹50,000 and ₹1,00,000 per year",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "above_100k",
+          "label": "Above ₹1,00,000 per year",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "market_price_crop",
       "question_to_user": "For the main crop grown in your village (e.g. bajra, mustard, cumin), what price did farmers typically receive per quintal in the last harvest season? How does this compare to the government's Minimum Support Price (MSP) for that crop?",
-      "how_answer_updates_diagnosis": "If farmers are receiving prices significantly below MSP (more than 15–20% below), this confirms that market access failure is compounding the income loss from small landholding size. If prices are at or above MSP, the income stress is more purely a function of low volume (small holding) rather than price exploitation, which changes the priority of recommended interventions toward production intensification and FPO formation for input cost reduction rather than output marketing."
+      "how_answer_updates_diagnosis": "If farmers are receiving prices significantly below MSP (more than 15–20% below), this confirms that market access failure is compounding the income loss from small landholding size. If prices are at or above MSP, the income stress is more purely a function of low volume (small holding) rather than price exploitation, which changes the priority of recommended interventions toward production intensification and FPO formation for input cost reduction rather than output marketing.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "near_msp",
+          "label": "Prices close to government MSP (mandi or procurement)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "below_msp",
+          "label": "Prices significantly below MSP (e.g. farm-gate or trader)",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "unable_to_sell",
+          "label": "Unable to sell at all or forced to accept very low prices",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "worsening"
+          }
+        }
+      ]
     }
   ],
   "sources": [

@@ -106,6 +106,16 @@ UNABLE_TO_EVALUATE_NOTE = (
 )
 
 
+def _canonical_band(band: Any) -> str | None:
+    """Map MCQ template band labels to excerpt-matcher band keys."""
+    if band is None:
+        return None
+    text = str(band).strip()
+    if text == "moderate":
+        return "mid"
+    return text
+
+
 def match_update_rule_excerpt(update_rule: str, normalized: dict[str, Any]) -> tuple[str, bool]:
     """Pick the card sentence that best matches the user's answer band or polarity.
 
@@ -119,24 +129,55 @@ def match_update_rule_excerpt(update_rule: str, normalized: dict[str, Any]) -> t
     if not sentences:
         sentences = [text]
 
-    band = normalized.get("band")
+    band = _canonical_band(normalized.get("band"))
     present = normalized.get("present")
+    trend = normalized.get("trend")
     band_keywords = {
         "low": (
             "below 10",
             "less than 10",
+            "below 25",
+            "less than 25",
             "low migration",
             "low out-migration",
             "fewer than 10",
+            "below ₹50",
+            "below rs 50",
+            "below 50,000",
+            "one-quarter",
+            "one quarter",
+            "less than one-quarter",
+            "less than one-third",
         ),
-        "mid": ("10–30", "10-30", "between 10", "10 to 30"),
+        "mid": (
+            "10–30",
+            "10-30",
+            "between 10",
+            "10 to 30",
+            "25-50",
+            "25–50",
+            "25 to 50",
+            "about half",
+            "roughly half",
+            "50,000 and",
+            "50,000–1",
+            "50,000-1",
+        ),
         "high": (
             ">30",
             "more than 30",
             "above 30",
+            "over 50",
+            "more than 50",
+            "above 50",
             "high out-migration",
             "high out migration",
             "high rates",
+            "two-thirds",
+            "more than half",
+            "above ₹1",
+            "above rs 1",
+            "above 1,00,000",
         ),
     }
 
@@ -151,15 +192,34 @@ def match_update_rule_excerpt(update_rule: str, normalized: dict[str, Any]) -> t
         for sentence in sentences:
             lower = sentence.lower()
             if str(band) == "mid" and any(
-                phrase in lower for phrase in ("10–30", "10-30", "partially confirmed", "partially")
+                phrase in lower for phrase in ("10–30", "10-30", "25-50", "25–50", "partially confirmed", "partially", "about half")
             ):
                 return sentence, True
             if str(band) == "high" and percent_lower is not None:
-                if f"{int(percent_lower)}" in lower or "more than 30" in lower or "weakened" in lower:
+                if f"{int(percent_lower)}" in lower or "more than 30" in lower or "more than 50" in lower or "weakened" in lower:
                     return sentence, True
             if str(band) == "low" and percent_upper is not None:
-                if f"{int(percent_upper)}" in lower or "less than 10" in lower or "strongly confirm" in lower:
+                if f"{int(percent_upper)}" in lower or "less than 10" in lower or "less than 25" in lower or "strongly confirm" in lower:
                     return sentence, True
+        return "", False
+
+    if trend in {"stable", "improving"}:
+        for sentence in sentences:
+            lower = sentence.lower()
+            if any(
+                phrase in lower
+                for phrase in (
+                    "does not",
+                    "unlikely",
+                    "weakened",
+                    "less likely",
+                    "unchanged",
+                    "stable",
+                    "not deepened",
+                    "no deepening",
+                )
+            ):
+                return sentence, True
         return "", False
 
     if present is True:
@@ -173,7 +233,6 @@ def match_update_rule_excerpt(update_rule: str, normalized: dict[str, Any]) -> t
                     "confirms multi",
                     "confirms groundwater",
                     "deepening",
-                    "well depth",
                     "reported increase",
                     "gone dry",
                     "dug-well",
@@ -222,7 +281,7 @@ def _band_representative_percent(normalized: dict[str, Any]) -> float | None:
         return float(upper)
     if lower is not None:
         return float(lower)
-    band = normalized.get("band")
+    band = _canonical_band(normalized.get("band"))
     if band == "low":
         return 5.0
     if band == "mid":
@@ -260,10 +319,21 @@ def infer_user_signal_result(
     update_rule: str = "",
 ) -> bool | None:
     """Map card update text + normalized answer to TRUE/FALSE when unambiguous."""
+    from services.follow_up_mcq import mcq_confirms_result
+
+    variable = str(normalized.get("variable") or "")
+    choice_id = str(normalized.get("choice_id") or "")
+    explicit = mcq_confirms_result(variable, choice_id)
+    if direction == "confirms" and explicit is not None:
+        return explicit
+
     excerpt = str(update_excerpt or "").lower()
     present = normalized.get("present")
-    band = normalized.get("band")
+    band = _canonical_band(normalized.get("band"))
     trend = normalized.get("trend")
+
+    if direction == "confirms" and trend in {"stable", "improving"}:
+        return False
 
     if present is True and direction == "confirms":
         if trend == "worsening" or any(
@@ -285,15 +355,19 @@ def infer_user_signal_result(
                 phrase in excerpt for phrase in ("trapped", "deepens severity", "acute")
             ):
                 return True
-        if present is True and not excerpt:
-            return True
 
     if present is False and direction == "confirms":
         return False
 
+    if band == "low" and direction == "confirms" and excerpt:
+        if any(phrase in excerpt for phrase in ("acute", "trapped", "deepens severity", "more acute")):
+            return True
+        if "does not strengthen" in excerpt or "weakened" in excerpt:
+            return False
+
     if band == "high" and direction == "confirms" and "strongly confirm" in excerpt:
         return True
-    if band and direction == "confirms" and update_excerpt:
+    if band == "mid" and direction == "confirms" and excerpt:
         lower = update_excerpt.lower()
         if any(
             phrase in lower
@@ -301,12 +375,25 @@ def infer_user_signal_result(
                 "does not strengthen",
                 "weakened",
                 "less likely",
-                "coping mechanisms",
-                "effective local coping",
+                "reviewed",
+                "revisited",
+                "shift",
             )
         ):
             return False
-        return True
+        if any(
+            phrase in lower
+            for phrase in (
+                "partially confirmed",
+                "partially",
+                "moderate",
+                "10–30",
+                "10-30",
+                "25-50",
+                "25–50",
+            )
+        ):
+            return True
 
     threshold_result = infer_from_update_rule_threshold(
         direction=direction,
@@ -316,7 +403,6 @@ def infer_user_signal_result(
     if threshold_result is not None:
         return threshold_result
 
-    variable = str(normalized.get("variable") or "")
     raw = str(normalized.get("raw") or "").lower()
     if variable.startswith("ntfp_collection") and direction == "confirms":
         area_access = any(

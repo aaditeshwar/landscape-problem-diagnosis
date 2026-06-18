@@ -157,12 +157,72 @@
     {
       "missing_variable": "fra_claims_filed_count",
       "question_to_user": "Have households in this village filed claims under the Forest Rights Act (FRA) for individual or community forest rights? If so, how many claims have been filed and how many have been approved or rejected?",
-      "how_answer_updates_diagnosis": "Low FRA claim filing in a high-ST village with documented forest-to-farm conversion suggests that tenure insecurity is driving encroachment — households without recognized rights may be clearing forest to establish de facto land claims. High rejection rates indicate institutional barriers to rights recognition that amplify encroachment pressure and reduce community incentive to protect forest boundaries."
+      "how_answer_updates_diagnosis": "Low FRA claim filing in a high-ST village with documented forest-to-farm conversion suggests that tenure insecurity is driving encroachment — households without recognized rights may be clearing forest to establish de facto land claims. High rejection rates indicate institutional barriers to rights recognition that amplify encroachment pressure and reduce community incentive to protect forest boundaries.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "none",
+          "label": "No FRA claims filed by community members",
+          "normalized": {
+            "present": false
+          }
+        },
+        {
+          "id": "pending",
+          "label": "Claims filed but mostly pending or rejected",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "recognized",
+          "label": "Several claims recognised (individual or community forest rights)",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "ntfp_collection_trend_qualitative",
       "question_to_user": "Can you estimate how much of key NTFPs (e.g., tendu leaf, mahua, amla, bamboo) the community collected this year compared to five years ago? Has the collection area shrunk, or are yields lower even in the same areas?",
-      "how_answer_updates_diagnosis": "If collection area has physically shrunk (consistent with encroachment) rather than yields declining within the same area (consistent with over-harvesting or degradation), this strongly confirms the encroachment pathway. Quantitative decline in collection volume alongside reduced accessible forest area confirms both the stress and its cause."
+      "how_answer_updates_diagnosis": "If collection area has physically shrunk (consistent with encroachment) rather than yields declining within the same area (consistent with over-harvesting or degradation), this strongly confirms the encroachment pathway. Quantitative decline in collection volume alongside reduced accessible forest area confirms both the stress and its cause.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "little_change",
+          "label": "Little change — decline under 25% or stable collection",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "trend": "stable",
+            "percent_upper": 25
+          }
+        },
+        {
+          "id": "moderate_decline",
+          "label": "Noticeable decline of about 25–50% in collection volume",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening",
+            "percent_lower": 25,
+            "percent_upper": 50
+          }
+        },
+        {
+          "id": "severe_decline",
+          "label": "Severe decline over 50% or access largely blocked",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "worsening",
+            "percent_lower": 50
+          }
+        }
+      ]
     }
   ],
   "sources": [

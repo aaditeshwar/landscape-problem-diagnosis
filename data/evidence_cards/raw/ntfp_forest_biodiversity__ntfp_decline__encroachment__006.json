@@ -158,12 +158,72 @@
     {
       "missing_variable": "fra_claims_filed_count",
       "question_to_user": "Have community members or households in this village filed Forest Rights Act (FRA) claims for individual or community forest rights? If yes, approximately how many claims have been filed and how many have been recognised?",
-      "how_answer_updates_diagnosis": "Low FRA claim filing in a high-ST village with declining NTFP access strongly confirms that tenure insecurity is compounding the encroachment impact. High filing but low recognition rates indicate institutional barriers rather than absence of encroachment. This information directly informs whether FRA claim support or boundary demarcation should be prioritised."
+      "how_answer_updates_diagnosis": "Low FRA claim filing in a high-ST village with declining NTFP access strongly confirms that tenure insecurity is compounding the encroachment impact. High filing but low recognition rates indicate institutional barriers rather than absence of encroachment. This information directly informs whether FRA claim support or boundary demarcation should be prioritised.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "none",
+          "label": "No FRA claims filed by community members",
+          "normalized": {
+            "present": false
+          }
+        },
+        {
+          "id": "pending",
+          "label": "Claims filed but mostly pending or rejected",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "recognized",
+          "label": "Several claims recognised (individual or community forest rights)",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "ntfp_collection_trend_qualitative",
       "question_to_user": "Over the past 5-10 years, have community members noticed a reduction in the quantity of forest produce (such as tendu leaves, mahua, honey, medicinal plants) they are able to collect? Is the reduction mainly because the forest area has shrunk, because access is blocked, or because the produce itself is less abundant within the forest?",
-      "how_answer_updates_diagnosis": "If community members report that forest area has visibly shrunk or access routes are blocked by farms or settlements, this confirms the encroachment pathway. If produce is less abundant within an unchanged forest, over-harvesting or climate stress is more likely the primary driver, and the diagnosis should shift accordingly."
+      "how_answer_updates_diagnosis": "If community members report that forest area has visibly shrunk or access routes are blocked by farms or settlements, this confirms the encroachment pathway. If produce is less abundant within an unchanged forest, over-harvesting or climate stress is more likely the primary driver, and the diagnosis should shift accordingly.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "little_change",
+          "label": "Little change — decline under 25% or stable collection",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "trend": "stable",
+            "percent_upper": 25
+          }
+        },
+        {
+          "id": "moderate_decline",
+          "label": "Noticeable decline of about 25–50% in collection volume",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening",
+            "percent_lower": 25,
+            "percent_upper": 50
+          }
+        },
+        {
+          "id": "severe_decline",
+          "label": "Severe decline over 50% or access largely blocked",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "worsening",
+            "percent_lower": 50
+          }
+        }
+      ]
     }
   ],
   "sources": [

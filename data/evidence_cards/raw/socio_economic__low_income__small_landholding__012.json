@@ -159,17 +159,100 @@
     {
       "missing_variable": "landholding_size_distribution",
       "question_to_user": "What is the typical farm size in this village? Would you say most households farm less than half an acre (0.2 ha), between half an acre and 2.5 acres (0.2–1 ha), or more than 2.5 acres (1 ha)? Are holdings split across multiple scattered plots?",
-      "how_answer_updates_diagnosis": "If the majority of households report holdings below 1 ha, especially scattered across multiple plots, this directly confirms the marginal landholding pathway. Scattered fragmented plots compound the constraint beyond what total area alone suggests, as each plot may be too small for mechanisation and requires separate travel time."
+      "how_answer_updates_diagnosis": "If the majority of households report holdings below 1 ha, especially scattered across multiple plots, this directly confirms the marginal landholding pathway. Scattered fragmented plots compound the constraint beyond what total area alone suggests, as each plot may be too small for mechanisation and requires separate travel time.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "minority",
+          "label": "Less than one-quarter of farming households own under 1 ha",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "about_half",
+          "label": "About half of farming households own under 1 ha",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "majority",
+          "label": "More than half (or two-thirds) of households are marginal (<1 ha)",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "household_income_inr",
       "question_to_user": "Can you estimate the approximate annual household income from all sources — farm sales, livestock, NTFP collection, daily wage labour, government schemes, and remittances? What share comes from farming alone versus other sources?",
-      "how_answer_updates_diagnosis": "If farm income constitutes more than 70% of total household income and total annual income is below INR 1.5 lakh, this confirms both the low income stress and the single-source livelihood dependence. A high share of non-farm income despite small landholding would suggest the household has already diversified, shifting the intervention priority toward market linkage rather than diversification promotion."
+      "how_answer_updates_diagnosis": "If farm income constitutes more than 70% of total household income and total annual income is below INR 1.5 lakh, this confirms both the low income stress and the single-source livelihood dependence. A high share of non-farm income despite small landholding would suggest the household has already diversified, shifting the intervention priority toward market linkage rather than diversification promotion.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "below_50k",
+          "label": "Below ₹50,000 per year from farming (or total household income)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "50k_to_100k",
+          "label": "Between ₹50,000 and ₹1,00,000 per year",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "above_100k",
+          "label": "Above ₹1,00,000 per year",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "market_price_crop",
       "question_to_user": "What price did farmers receive for their main crop in the last harvest season? How does this compare to the government's Minimum Support Price (MSP) or prices in the nearest town market? Do farmers feel they are getting a fair price?",
-      "how_answer_updates_diagnosis": "A large gap between farm-gate price received and MSP or APMC price confirms that market failure is amplifying the income stress from small landholdings. If price realisation is close to MSP, the income problem is more purely a function of low production volume from small holdings, pointing toward land productivity and diversification interventions rather than market linkage."
+      "how_answer_updates_diagnosis": "A large gap between farm-gate price received and MSP or APMC price confirms that market failure is amplifying the income stress from small landholdings. If price realisation is close to MSP, the income problem is more purely a function of low production volume from small holdings, pointing toward land productivity and diversification interventions rather than market linkage.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "near_msp",
+          "label": "Prices close to government MSP (mandi or procurement)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "below_msp",
+          "label": "Prices significantly below MSP (e.g. farm-gate or trader)",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "unable_to_sell",
+          "label": "Unable to sell at all or forced to accept very low prices",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "worsening"
+          }
+        }
+      ]
     }
   ],
   "sources": [

@@ -173,7 +173,7 @@
           "label": "Well depth has stayed roughly the same (within ~1 m)",
           "normalized": {
             "trend": "stable",
-            "present": true
+            "present": false
           }
         },
         {
@@ -230,7 +230,36 @@
     {
       "missing_variable": "groundwater_salinity",
       "question_to_user": "Have farmers noticed that borewell water has become brackish, leaves white or reddish deposits on fields or pipes, or causes crop damage? Are there areas where groundwater is known to be too salty or arsenic-affected for irrigation?",
-      "how_answer_updates_diagnosis": "Salinity or arsenic contamination in alluvial aquifers of the Bengal delta is a distinct pathway (geogenic contamination) that can make available groundwater unusable for irrigation even where quantity is sufficient. If salinity is reported, the diagnosis should consider a parallel causal pathway of groundwater quality stress rather than purely quantity-based depletion, and solution recommendations shift toward alternative water sources and quality treatment."
+      "how_answer_updates_diagnosis": "Salinity or arsenic contamination in alluvial aquifers of the Bengal delta is a distinct pathway (geogenic contamination) that can make available groundwater unusable for irrigation even where quantity is sufficient. If salinity is reported, the diagnosis should consider a parallel causal pathway of groundwater quality stress rather than purely quantity-based depletion, and solution recommendations shift toward alternative water sources and quality treatment.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "none",
+          "label": "No — water quality has not changed; no saltiness or deposits",
+          "normalized": {
+            "present": false,
+            "trend": "stable"
+          }
+        },
+        {
+          "id": "mild",
+          "label": "Some salinity or white deposits; still usable for some crops",
+          "normalized": {
+            "present": true,
+            "band": "moderate",
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "severe",
+          "label": "Brackish or salty water; crop damage or unsuitable for irrigation",
+          "normalized": {
+            "present": true,
+            "band": "high",
+            "trend": "worsening"
+          }
+        }
+      ]
     }
   ],
   "overall_reasoning_note": "Groundwater stress in humid alluvial plains (AER-15: Bengal and Assam Plains) presents differently from semi-arid hard rock contexts. High annual rainfall (1600–3000 mm) means that a negative groundwater balance is a strong signal of over-extraction rather than climatically driven deficit. Diagnosis should be confirmed by at least two of: elevated SOGE (sig_01), sustained negative delta_g trend (sig_02), and farmer-reported well deepening (sig_05). The alluvial aquifer confirmation (sig_03) contextualises the hydrogeological setting and informs solution selection. Low SWC investment (sig_04) amplifies depletion risk and identifies the primary intervention lever. Block-level SOGE may underestimate local stress in areas with concentrated tubewell clusters for rabi potato or vegetable cultivation. Panchayat-level groundwater governance and MGNREGA-funded recharge infrastructure (check dams, pond desilting, trench structures) are the primary recommended interventions for this context.",

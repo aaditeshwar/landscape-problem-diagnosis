@@ -11,10 +11,6 @@ from services.diagnosis_revision import (
     pathways_ruled_out_from_signal_evaluation,
 )
 
-DEFAULT_RETRIEVAL_PROBE = (
-    "agriculture water scarcity groundwater drought landscape stress micro-watershed diagnosis"
-)
-
 SOLUTIONS_CAP = 12
 
 

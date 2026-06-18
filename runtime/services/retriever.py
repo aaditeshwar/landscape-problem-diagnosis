@@ -10,17 +10,18 @@ from typing import Any
 from pymongo.database import Database
 
 from services.diagnosis_trace import RetrievalMetrics, RetrievalResult
+from services.aquifer_classification import card_aquifer_tags_for_mws
 from services.ollama_client import embed_text
 
 log = logging.getLogger(__name__)
 
 ACWADAM_TO_CARD_AQUIFER = {
+    "alluvium": "alluvium",
+    "sedimentary_soft_rock": "semi-consolidated",
     "volcanic": "hard_rock",
     "crystalline_basement": "hard_rock",
     "sedimentary_hard_rock": "hard_rock",
     "himalayan_and_sub_himalayan": "hard_rock",
-    "alluvium": "alluvium",
-    "sedimentary_soft_rock": "semi-consolidated",
 }
 
 # When an MWS AER has few dedicated cards, retrieve from physiographically adjacent AERs
@@ -68,9 +69,14 @@ def _cosine(a: list[float], b: list[float]) -> float:
     return dot / (na * nb)
 
 
-def _card_aquifer_tag(mws_doc: dict) -> str:
-    acwadam = (mws_doc.get("aquifer") or {}).get("acwadam_class", "")
-    return ACWADAM_TO_CARD_AQUIFER.get(acwadam, "hard_rock")
+def _card_aquifer_tags(mws_doc: dict) -> list[str]:
+    return card_aquifer_tags_for_mws(mws_doc)
+
+
+def _aquifer_query(aquifer_tags: list[str]) -> dict[str, Any]:
+    if len(aquifer_tags) == 1:
+        return {"aquifer_tags": aquifer_tags[0]}
+    return {"aquifer_tags": {"$in": aquifer_tags}}
 
 
 def _card_aer_tag(mws_doc: dict) -> str | None:
@@ -169,8 +175,8 @@ def _diverse_select(scored: list[tuple[float, dict]], limit: int) -> list[dict]:
     return picked
 
 
-def _card_query(aquifer_tag: str, aer_tags: list[str] | None) -> dict[str, Any]:
-    query: dict[str, Any] = {"aquifer_tags": aquifer_tag}
+def _card_query(aquifer_tags: list[str], aer_tags: list[str] | None) -> dict[str, Any]:
+    query: dict[str, Any] = _aquifer_query(aquifer_tags)
     if aer_tags:
         query["aer_tags"] = {"$in": aer_tags} if len(aer_tags) > 1 else aer_tags[0]
     return query
@@ -178,11 +184,11 @@ def _card_query(aquifer_tag: str, aer_tags: list[str] | None) -> dict[str, Any]:
 
 def _fetch_candidates(
     db: Database,
-    aquifer_tag: str,
+    aquifer_tags: list[str],
     aer_tags: list[str] | None,
 ) -> list[dict]:
     """Load evidence cards matching aquifer and (optional) AER constraints."""
-    query = _card_query(aquifer_tag, aer_tags)
+    query = _card_query(aquifer_tags, aer_tags)
     candidates = list(db.evidence_cards.find(query))
     if candidates or not aer_tags:
         return candidates
@@ -193,14 +199,14 @@ def _fetch_candidates(
     if candidates:
         log.warning(
             "No cards for aquifer=%s in AER set %s; using AER-only pool (%s cards)",
-            aquifer_tag,
+            aquifer_tags,
             aer_tags,
             len(candidates),
         )
     else:
         log.warning(
             "No evidence cards for aquifer=%s AER set %s; retrieval may return fewer than %s cards",
-            aquifer_tag,
+            aquifer_tags,
             aer_tags,
             DEFAULT_LIMIT,
         )
@@ -210,11 +216,11 @@ def _fetch_candidates(
 def _score_candidates(
     db: Database,
     query_vector: list[float],
-    aquifer_tag: str,
+    aquifer_tags: list[str],
     aer_tags: list[str] | None = None,
     mws_aer: str | None = None,
 ) -> list[tuple[float, dict]]:
-    candidates = _fetch_candidates(db, aquifer_tag, aer_tags)
+    candidates = _fetch_candidates(db, aquifer_tags, aer_tags)
     if len(candidates) < CANDIDATE_POOL and not aer_tags:
         candidates = list(db.evidence_cards.find({}))
 
@@ -233,7 +239,7 @@ def _score_candidates(
 def _vector_search_scored(
     db: Database,
     query_vector: list[float],
-    aquifer_tag: str,
+    aquifer_tags: list[str],
     pool: int,
     aer_tags: list[str] | None = None,
     mws_aer: str | None = None,
@@ -269,7 +275,7 @@ def _vector_search_scored(
         scored.sort(key=lambda item: item[0], reverse=True)
         return _apply_direct_aer_bonus(scored, mws_aer)
 
-    scored = _run(_card_query(aquifer_tag, aer_tags))
+    scored = _run(_card_query(aquifer_tags, aer_tags))
     if aer_tags and not scored:
         aer_only = {"aer_tags": {"$in": aer_tags} if len(aer_tags) > 1 else aer_tags[0]}
         log.debug("Vector search found no hits for aquifer+AER; retrying AER-only filter")
@@ -308,6 +314,53 @@ def _fetch_paper_chunks(
     return out
 
 
+def _card_scope_score(card: dict, *, mws_aer: str | None) -> tuple[int, str]:
+    """Rank cards for the same pathway: prefer direct AER match, then stable card_id."""
+    aer_tags = card.get("aer_tags") or []
+    direct_aer = 1 if mws_aer and mws_aer in aer_tags else 0
+    card_id = str(card.get("card_id") or "")
+    return (direct_aer, card_id)
+
+
+def _best_card_per_pathway(cards: list[dict], *, mws_aer: str | None) -> list[dict]:
+    """Pick one evidence card per causal pathway for MWS-scoped server diagnosis."""
+    by_pathway: dict[str, dict] = {}
+    for card in cards:
+        pathway_id = str(card.get("causal_pathway") or "").strip()
+        if not pathway_id:
+            continue
+        existing = by_pathway.get(pathway_id)
+        if existing is None or _card_scope_score(card, mws_aer=mws_aer) > _card_scope_score(
+            existing, mws_aer=mws_aer
+        ):
+            by_pathway[pathway_id] = card
+    return [by_pathway[key] for key in sorted(by_pathway)]
+
+
+def load_mws_scoped_evidence_cards(db: Database, mws_doc: dict) -> RetrievalResult:
+    """Load all MWS-relevant pathways without embedding (server-only diagnosis)."""
+    aquifer_tags = _card_aquifer_tags(mws_doc)
+    aer_tags = _aer_tags_for_retrieval(mws_doc)
+    mws_aer = _card_aer_tag(mws_doc)
+    candidates = _fetch_candidates(db, aquifer_tags, aer_tags)
+    selected = _best_card_per_pathway(candidates, mws_aer=mws_aer)
+    enriched: list[dict] = []
+    for rank, card in enumerate(selected):
+        item = _strip_embedding(dict(card))
+        item["retrieval_rank"] = rank
+        item["retrieval_score"] = None
+        item["citations"] = []
+        enriched.append(item)
+    metrics = RetrievalMetrics(embed_ms=0.0, search_ms=0.0, citations_ms=0.0)
+    log.debug(
+        "Loaded %s MWS-scoped evidence cards (no embed) for aquifer=%s AER=%s",
+        len(enriched),
+        aquifer_tags,
+        aer_tags,
+    )
+    return RetrievalResult(cards=enriched, metrics=metrics)
+
+
 def retrieve_evidence_cards(
     db: Database,
     problem_text: str,
@@ -321,14 +374,14 @@ def retrieve_evidence_cards(
     query_vector = embed_text(problem_text)
     embed_ms = (time.perf_counter() - t0) * 1000
 
-    aquifer_tag = _card_aquifer_tag(mws_doc)
+    aquifer_tags = _card_aquifer_tags(mws_doc)
     aer_tags = _aer_tags_for_retrieval(mws_doc)
     mws_aer = _card_aer_tag(mws_doc)
 
     t1 = time.perf_counter()
-    scored = _vector_search_scored(db, query_vector, aquifer_tag, CANDIDATE_POOL, aer_tags, mws_aer)
+    scored = _vector_search_scored(db, query_vector, aquifer_tags, CANDIDATE_POOL, aer_tags, mws_aer)
     if not scored:
-        scored = _score_candidates(db, query_vector, aquifer_tag, aer_tags, mws_aer)
+        scored = _score_candidates(db, query_vector, aquifer_tags, aer_tags, mws_aer)
     selected = _diverse_select(scored, limit)
     search_ms = (time.perf_counter() - t1) * 1000
 

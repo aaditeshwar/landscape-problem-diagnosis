@@ -163,17 +163,100 @@
     {
       "missing_variable": "landholding_size_distribution",
       "question_to_user": "What proportion of farming households in your village own less than 1 hectare of land? Would you say it is less than one-quarter, about half, or more than three-quarters of all farming families?",
-      "how_answer_updates_diagnosis": "If more than half of households own less than 1 ha, this directly confirms the marginal landholding pathway as the primary driver of low income. If most households own 2–5 ha but income is still low, the diagnosis should shift toward price realisation failure or input cost stress rather than landholding fragmentation."
+      "how_answer_updates_diagnosis": "If more than half of households own less than 1 ha, this directly confirms the marginal landholding pathway as the primary driver of low income. If most households own 2–5 ha but income is still low, the diagnosis should shift toward price realisation failure or input cost stress rather than landholding fragmentation.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "minority",
+          "label": "Less than one-quarter of farming households own under 1 ha",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "about_half",
+          "label": "About half of farming households own under 1 ha",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "majority",
+          "label": "More than half (or two-thirds) of households are marginal (<1 ha)",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "household_income_inr",
       "question_to_user": "Can you estimate the average annual household income from farming alone (excluding any wages, MGNREGA, or remittances) in your village? Is it roughly below ₹50,000, between ₹50,000–1,00,000, or above ₹1,00,000 per year?",
-      "how_answer_updates_diagnosis": "Farm income below ₹50,000/year for a household confirms severe income insufficiency consistent with marginal landholding stress. The breakdown by source (farm vs wage vs livestock vs transfer) is critical: if farm income is below ₹50,000 but total income exceeds ₹1,00,000 due to diversification, the stress is partially mitigated and interventions should focus on securing and expanding diversification rather than land consolidation alone."
+      "how_answer_updates_diagnosis": "Farm income below ₹50,000/year for a household confirms severe income insufficiency consistent with marginal landholding stress. The breakdown by source (farm vs wage vs livestock vs transfer) is critical: if farm income is below ₹50,000 but total income exceeds ₹1,00,000 due to diversification, the stress is partially mitigated and interventions should focus on securing and expanding diversification rather than land consolidation alone.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "below_50k",
+          "label": "Below ₹50,000 per year from farming (or total household income)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "50k_to_100k",
+          "label": "Between ₹50,000 and ₹1,00,000 per year",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "above_100k",
+          "label": "Above ₹1,00,000 per year",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "market_price_crop",
       "question_to_user": "For the main crop sold last season, did farmers receive a price close to the government MSP, significantly below MSP, or were they unable to sell at all? Who did most farmers sell to — government procurement, APMC traders, or local middlemen at the farm gate?",
-      "how_answer_updates_diagnosis": "If farmers consistently receive prices 20–30% below MSP and sell primarily to farm-gate middlemen, market failure is amplifying the income loss from small landholdings. This strengthens the case for FPO formation and collective marketing as priority interventions. If prices are near MSP but income is still low, the binding constraint is purely the small volume produced, confirming landholding size as the primary pathway."
+      "how_answer_updates_diagnosis": "If farmers consistently receive prices 20–30% below MSP and sell primarily to farm-gate middlemen, market failure is amplifying the income loss from small landholdings. This strengthens the case for FPO formation and collective marketing as priority interventions. If prices are near MSP but income is still low, the binding constraint is purely the small volume produced, confirming landholding size as the primary pathway.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "near_msp",
+          "label": "Prices close to government MSP (mandi or procurement)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "below_msp",
+          "label": "Prices significantly below MSP (e.g. farm-gate or trader)",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "unable_to_sell",
+          "label": "Unable to sell at all or forced to accept very low prices",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "worsening"
+          }
+        }
+      ]
     }
   ],
   "sources": [

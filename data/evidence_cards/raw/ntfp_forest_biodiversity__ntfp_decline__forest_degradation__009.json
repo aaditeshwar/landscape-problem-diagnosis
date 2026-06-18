@@ -138,7 +138,37 @@
     {
       "missing_variable": "ntfp_species_presence",
       "question_to_user": "Have community members noticed a reduction in the availability of key forest products such as mahua flowers, tendu leaves, aonla fruit, harra, or honey over the past 5–10 years? Are people travelling farther to collect these products, or collecting smaller quantities per trip than before?",
-      "how_answer_updates_diagnosis": "Confirmed decline in NTFP species abundance or increased collection effort strongly confirms the forest degradation pathway. If decline is reported only for one or two species while others remain abundant, over-harvesting of specific species may be a co-driver alongside forest degradation, and species-specific management interventions should be recommended alongside forest protection measures."
+      "how_answer_updates_diagnosis": "Confirmed decline in NTFP species abundance or increased collection effort strongly confirms the forest degradation pathway. If decline is reported only for one or two species while others remain abundant, over-harvesting of specific species may be a co-driver alongside forest degradation, and species-specific management interventions should be recommended alongside forest protection measures.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "abundant",
+          "label": "NTFP species are still common and easy to find",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "stable"
+          }
+        },
+        {
+          "id": "reduced",
+          "label": "Some species are harder to find than 5–10 years ago",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "rare",
+          "label": "Several species that used to be common are now rare or absent",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "trend": "worsening"
+          }
+        }
+      ]
     }
   ],
   "sources": [

@@ -151,12 +151,72 @@
     {
       "missing_variable": "ntfp_species_presence",
       "question_to_user": "Have community members noticed a reduction in the availability of key forest products such as mahua flowers, tendu leaves, achar seeds, honey, or medicinal plants over the past 5–10 years? Are there specific species that used to be common but are now hard to find?",
-      "how_answer_updates_diagnosis": "Confirmed decline in specific NTFP species strongly confirms the forest degradation pathway and helps prioritise which species to target in community plantation and assisted natural regeneration programmes. If decline is species-specific rather than broad-based, it may indicate selective over-harvesting rather than general forest degradation, shifting the diagnosis toward a harvesting management pathway."
+      "how_answer_updates_diagnosis": "Confirmed decline in specific NTFP species strongly confirms the forest degradation pathway and helps prioritise which species to target in community plantation and assisted natural regeneration programmes. If decline is species-specific rather than broad-based, it may indicate selective over-harvesting rather than general forest degradation, shifting the diagnosis toward a harvesting management pathway.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "abundant",
+          "label": "NTFP species are still common and easy to find",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "stable"
+          }
+        },
+        {
+          "id": "reduced",
+          "label": "Some species are harder to find than 5–10 years ago",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "rare",
+          "label": "Several species that used to be common are now rare or absent",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "trend": "worsening"
+          }
+        }
+      ]
     },
     {
       "missing_variable": "forest_fire_frequency",
       "question_to_user": "How often do forest fires occur in or near the village forests? Would you say fires happen every year, every few years, or rarely? Have fires become more or less frequent in recent years?",
-      "how_answer_updates_diagnosis": "Frequent forest fires in the sub-humid Chhota Nagpur Plateau are a major driver of forest degradation and NTFP loss. High fire frequency confirms the forest degradation pathway and makes fire line creation and community forest watch patrols the priority intervention. Low fire frequency shifts attention to other degradation drivers such as encroachment, illegal felling, or livestock grazing."
+      "how_answer_updates_diagnosis": "Frequent forest fires in the sub-humid Chhota Nagpur Plateau are a major driver of forest degradation and NTFP loss. High fire frequency confirms the forest degradation pathway and makes fire line creation and community forest watch patrols the priority intervention. Low fire frequency shifts attention to other degradation drivers such as encroachment, illegal felling, or livestock grazing.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "rare",
+          "label": "Forest fires are rare; no increase in recent years",
+          "normalized": {
+            "band": "low",
+            "present": false,
+            "trend": "stable"
+          }
+        },
+        {
+          "id": "occasional",
+          "label": "Occasional fires; frequency or severity increasing",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "frequent",
+          "label": "Frequent or repeated fires in the same forest patches",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "worsening"
+          }
+        }
+      ]
     }
   ],
   "sources": [

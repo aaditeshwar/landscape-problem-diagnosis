@@ -207,6 +207,25 @@ def test_user_rule_out_keeps_pathway_when_confirms_true_remain():
     assert "groundwater_stress" in confirmed
 
 
+def test_stable_well_depth_mcq_does_not_confirm_groundwater():
+    normalized = {
+        "trend": "stable",
+        "present": False,
+        "variable": "annual_well_depth_m",
+        "raw": "Well depth has stayed roughly the same (within ~1 m)",
+        "choice_id": "stable",
+    }
+
+    results = evaluate_bundle_signals(
+        {"groundwater_stress": {"evidence_card": GW_CARD}},
+        injected={"annual_well_depth_m": normalized},
+    )
+    sig = results["groundwater_stress"]["signals"][0]
+    assert sig["status"] == "user_provided"
+    assert sig["result"] is False
+    assert results["groundwater_stress"]["summary"]["confirms_true"] == 0
+
+
 def test_negative_well_answer_becomes_user_provided_false():
     injected = {
         "annual_well_depth_m": normalize_qualitative_answer(
@@ -360,6 +379,7 @@ def main() -> int:
         test_user_rule_out_removes_uncertain_groundwater,
         test_collect_pathway_interpretations_skips_unchanged_confirmed,
         test_user_rule_out_keeps_pathway_when_confirms_true_remain,
+        test_stable_well_depth_mcq_does_not_confirm_groundwater,
         test_negative_well_answer_becomes_user_provided_false,
         test_migration_about_thirty_percent_resolves_false,
         test_unparseable_answer_stays_unresolved,

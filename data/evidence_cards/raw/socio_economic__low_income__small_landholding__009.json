@@ -162,17 +162,100 @@
     {
       "missing_variable": "landholding_size_distribution",
       "question_to_user": "What is the approximate average farm size in this village? Are most farmers cultivating less than 1 acre (0.4 ha), between 1–5 acres, or more than 5 acres? What proportion of households own no land at all?",
-      "how_answer_updates_diagnosis": "If more than 60% of households cultivate less than 1 ha, this directly confirms the small landholding pathway as the primary structural driver of low income. If average holdings are above 2 ha, the diagnosis should shift toward price realisation failure, input cost inflation, or credit constraints as primary pathways."
+      "how_answer_updates_diagnosis": "If more than 60% of households cultivate less than 1 ha, this directly confirms the small landholding pathway as the primary structural driver of low income. If average holdings are above 2 ha, the diagnosis should shift toward price realisation failure, input cost inflation, or credit constraints as primary pathways.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "minority",
+          "label": "Less than one-quarter of farming households own under 1 ha",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "about_half",
+          "label": "About half of farming households own under 1 ha",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "majority",
+          "label": "More than half (or two-thirds) of households are marginal (<1 ha)",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "household_income_inr",
       "question_to_user": "Can you estimate the average annual household income in this village? What share comes from crop farming, livestock, daily wage labour, MGNREGA, remittances, or other sources? Is farming the only or main income source for most families?",
-      "how_answer_updates_diagnosis": "If farm income constitutes more than 70% of total household income and total income is below INR 60,000 per year, this confirms single-source dependence and income insufficiency. A diversified income portfolio (livestock + wage + farm) at the same land size would indicate that diversification solutions are already partially in place and the priority should shift to improving farm income per unit area rather than diversification promotion."
+      "how_answer_updates_diagnosis": "If farm income constitutes more than 70% of total household income and total income is below INR 60,000 per year, this confirms single-source dependence and income insufficiency. A diversified income portfolio (livestock + wage + farm) at the same land size would indicate that diversification solutions are already partially in place and the priority should shift to improving farm income per unit area rather than diversification promotion.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "below_50k",
+          "label": "Below ₹50,000 per year from farming (or total household income)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "50k_to_100k",
+          "label": "Between ₹50,000 and ₹1,00,000 per year",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "above_100k",
+          "label": "Above ₹1,00,000 per year",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "market_price_crop",
       "question_to_user": "What price did farmers receive for their main crop (paddy or wheat) in the last harvest season? Was this above or below the government MSP? Did farmers sell to government procurement centres, local traders, or FPOs?",
-      "how_answer_updates_diagnosis": "If price realisation is more than 20% below MSP, market failure is amplifying the income stress beyond what landholding size alone explains. This would strengthen the case for FPO formation and APMC linkage as priority interventions over land consolidation or lease-farming models."
+      "how_answer_updates_diagnosis": "If price realisation is more than 20% below MSP, market failure is amplifying the income stress beyond what landholding size alone explains. This would strengthen the case for FPO formation and APMC linkage as priority interventions over land consolidation or lease-farming models.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "near_msp",
+          "label": "Prices close to government MSP (mandi or procurement)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "below_msp",
+          "label": "Prices significantly below MSP (e.g. farm-gate or trader)",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "unable_to_sell",
+          "label": "Unable to sell at all or forced to accept very low prices",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "worsening"
+          }
+        }
+      ]
     }
   ],
   "sources": [

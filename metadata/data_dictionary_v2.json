@@ -5,8 +5,82 @@
     "primary_key": {
       "mws_level": "uid",
       "village_level": "village_id"
-    },
+    },  
     "agricultural_year_convention": "Year label = start year of the July 1 – June 30 cycle. E.g. agricultural_year 2017 covers July 1 2017 to June 30 2018.",
+    "categorical_enums": {
+      "description": "Authoritative allowed values for categorical and keyed-categorical variables. Tehsil Excel exports may not contain every value (e.g. Darwha terrain clusters 1 and 3 only); the enum lists the full CoRE Stack / pipeline vocabulary.",
+      "terrain_cluster_id": {
+        "1": "Mostly Plains",
+        "2": "Mixed Sloping, Ridge and Plain",
+        "3": "Broad Plains and Slopes",
+        "4": "Plains with Moderate Slopes and Valleys",
+        "note": "CoRE Stack assigns one of four nationwide k-means terrain clusters per MWS from [slopy, plain, ridge, valley, hill_slope] area proportions. terrain_description on the terrain sheet is the authoritative label per MWS."
+      },
+      "terrain_area_percent_keys": ["hill_slope", "plain", "ridge", "slopy", "valley"],
+      "flow_direction": {
+        "1": "NE", "2": "E", "3": "SE", "4": "S", "5": "SW", "6": "W", "7": "NW", "8": "N"
+      },
+      "stream_order": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"],
+      "acwadam_class": [
+        "alluvium",
+        "himalayan_and_sub_himalayan",
+        "volcanic",
+        "sedimentary_soft_rock",
+        "sedimentary_hard_rock",
+        "crystalline_basement"
+      ],
+      "aquifer_lithology_keys": [
+        "Alluvium", "Banded Gneissic Complex", "Basalt", "Charnockite", "Gneiss",
+        "Granite", "Intrusive", "Khondalite", "Laterite", "Limestone",
+        "Quartzite", "Sandstone", "Schist", "Shale", "None"
+      ],
+      "core_stack_aquifer_raw_class": ["Alluvium", "Hard Rock", "Hard-Rock", "None"],
+      "evidence_card_aquifer_tags": ["hard_rock", "alluvium", "semi-consolidated", "coastal"],
+      "soge_class_name": ["Safe", "Semi-critical", "Critical", "Over-exploited"],
+      "nbss_lup_aer_code": ["AER-1", "AER-2", "AER-3", "AER-4", "AER-5", "AER-6", "AER-7", "AER-8", "AER-9", "AER-10", "AER-11", "AER-12", "AER-13", "AER-14", "AER-15", "AER-16", "AER-17", "AER-18", "AER-19", "AER-20"],
+      "drought_weeks_keys": ["no_drought", "mild", "moderate", "severe"],
+      "hydrological_season_keys": ["kharif", "rabi", "zaid"],
+      "lulc_class_keys": [
+        "barrenland", "built_up", "single_kharif", "single_non_kharif", "double_crop",
+        "triple_crop", "tree_forest", "shrub_scrub", "k_water", "kr_water", "krz_water"
+      ],
+      "nrega_work_categories": [
+        "soil_water_conservation", "land_restoration", "plantations",
+        "irrigation_on_farms", "other_farm_works", "off_farm_livelihood_assets", "community_assets"
+      ],
+      "facility_distance_keys": [
+        "apmc", "bank_branch", "bank_atm", "bank_mitra", "phc", "chc", "sub_centre",
+        "district_hospital", "school_primary", "school_upper_primary", "school_secondary",
+        "school_higher_secondary", "college", "university", "csc", "pds",
+        "agri_processing", "agri_support", "cooperative", "dairy", "markets_trading",
+        "storage_warehousing"
+      ],
+      "terrain_lulc_percent_keys": [
+        "barren", "forest", "shrub_scrub", "single_kharif", "single_non_kharif",
+        "double_crop", "triple_crop"
+      ],
+      "change_detection_degradation_keys": [
+        "farm_to_barren", "farm_to_built_up", "farm_to_farm", "farm_to_scrubland",
+        "total_degradation"
+      ],
+      "change_detection_deforestation_keys": [
+        "forest_to_barren", "forest_to_built_up", "forest_to_farm", "forest_to_forest",
+        "forest_to_scrubland", "total_deforestation"
+      ],
+      "change_detection_urbanization_keys": [
+        "barren_shrub_to_built_up", "built_up_to_built_up", "tree_farm_to_built_up",
+        "water_to_built_up", "total_urbanization"
+      ],
+      "change_detection_afforestation_keys": [
+        "barren_to_forest", "built_up_to_forest", "farm_to_forest", "forest_to_forest",
+        "scrubland_to_forest", "total_afforestation"
+      ],
+      "change_detection_crop_intensity_keys": [
+        "single_to_single", "single_to_double", "single_to_triple", "double_to_single",
+        "double_to_double", "double_to_triple", "triple_to_single", "triple_to_double",
+        "triple_to_triple", "total_change"
+      ]
+    },
     "variable_types": {
       "static": "Single value per spatial unit, does not change across years",
       "time_series": "Object keyed by agricultural_year integer. E.g. {2017: 450.2, 2018: 512.1, ...}",
@@ -24,6 +98,9 @@
       },
       "basin_code": {
         "type": "static", "unit": "categorical", "description": "River basin code", "source_sheet": "mws", "source_column": "basin_code", "availability": "available"
+      },
+      "sub_basin_code": {
+        "type": "static", "unit": "categorical", "description": "River sub-basin code within the basin", "source_sheet": "mws", "source_column": "sub_basin_code", "availability": "available"
       },
       "stream_order_area_percent": {
         "type": "static", "unit": "percent per order",
@@ -52,7 +129,8 @@
       "elevation_mean_m": {"type": "static", "unit": "metres", "source_sheet": "dem", "source_column": "mean_elevation", "availability": "available"},
       "terrain_cluster_id": {
         "type": "static", "unit": "categorical",
-        "description": "Terrain cluster: 1=Mostly Plains, 3=Broad Plains and Slopes",
+        "description": "CoRE Stack terrain cluster ID (1–4). See categorical_enums.terrain_cluster_id. Paired terrain_description on the terrain sheet is authoritative per MWS.",
+        "allowed_values_ref": "categorical_enums.terrain_cluster_id",
         "source_sheet": "terrain", "source_column": "terrain_cluster_id", "availability": "available"
       },
       "terrain_area_percent": {
@@ -60,14 +138,40 @@
         "description": "Object keyed by terrain class: {hill_slope, plain, ridge, slopy, valley} → percent of MWS area",
         "source_sheet": "terrain", "source_column": "hill_slope_area_percent, plain_area_percent, ridge_area_percent, slopy_area_percent, valley_area_percent", "availability": "available"
       },
+      "terrain_lulc_slope_percent": {
+        "type": "static", "unit": "percent per LULC class on sloping terrain",
+        "description": "LULC composition on sloping parts of the MWS (terrain_lulc_slope sheet). Keys: barren, forest, shrub_scrub, single_kharif, single_non_kharif, double_crop, triple_crop → percent. Useful for slope tree cover vs barren/shrub exposure.",
+        "allowed_values_ref": "categorical_enums.terrain_lulc_percent_keys",
+        "source_sheet": "terrain_lulc_slope", "source_column": "barren_area_percent, forests_area_percent, shrub_scrubs_area_percent, single_kharif_area_percent, single_non_kharif_area_percent, double_cropping_area_percent, triple_cropping_area_percent", "availability": "available"
+      },
+      "terrain_lulc_plain_percent": {
+        "type": "static", "unit": "percent per LULC class on plain terrain",
+        "description": "LULC composition on plain parts of the MWS (terrain_lulc_plain sheet). Same keys as terrain_lulc_slope_percent.",
+        "allowed_values_ref": "categorical_enums.terrain_lulc_percent_keys",
+        "source_sheet": "terrain_lulc_plain", "source_column": "barren_area_percent, forests_area_percent, shrub_scrubs_area_percent, single_kharif_area_percent, single_non_kharif_area_percent, double_cropping_area_percent, triple_cropping_area_percent", "availability": "available"
+      },
       "aquifer_class": {
         "type": "static", "unit": "categorical (ACWADAM)",
-        "description": "Dominant aquifer class per ACWADAM classification: alluvium | himalayan_and_sub_himalayan | volcanic | sedimentary_soft_rock | sedimentary_hard_rock | crystalline_basement",
+        "description": "Dominant aquifer class per ACWADAM taxonomy, inferred at ingest from dominant principle_aq_*_percent lithology (with AER disambiguation). Stored as aquifer.acwadam_class.",
+        "allowed_values_ref": "categorical_enums.acwadam_class",
+        "source_sheet": "aquifer_vector", "source_column": "principle_aq_<LithologyName>_percent (derived)", "availability": "available"
+      },
+      "aquifer_raw_class": {
+        "type": "static", "unit": "categorical",
+        "description": "Original CoRE Stack aquifer_class column (Alluvium | Hard Rock). Retained for QA; does not drive acwadam_class.",
+        "allowed_values_ref": "categorical_enums.core_stack_aquifer_raw_class",
         "source_sheet": "aquifer_vector", "source_column": "aquifer_class", "availability": "available"
+      },
+      "aquifer_dominant_lithology": {
+        "type": "static", "unit": "categorical",
+        "description": "Lithology with highest principle_aq_*_percent (None bucket excluded). Stored as aquifer.dominant_lithology.",
+        "allowed_values_ref": "categorical_enums.aquifer_lithology_keys",
+        "availability": "derived"
       },
       "aquifer_lithology_percent": {
         "type": "static", "unit": "percent per lithology",
         "description": "Object keyed by lithology name: percent of MWS area under each aquifer lithology",
+        "allowed_values_ref": "categorical_enums.aquifer_lithology_keys",
         "source_sheet": "aquifer_vector", "source_column": "principle_aq_<LithologyName>_percent", "availability": "available"
       },
       "soge_dev_percent": {
@@ -99,26 +203,218 @@
       },
       "cd_degradation_ha": {
         "type": "static", "unit": "hectares per transition",
-        "description": "Cumulative change 2017-18 to 2024-25: {farm_to_barren, farm_to_scrubland, total_degradation} → ha",
-        "source_sheet": "change_detection_degradation", "source_column": "farm_to_barren_area_in_ha, farm_to_scrub_land_area_in_ha, total_degradation_area_in_ha", "availability": "available"
+        "description": "Cumulative land degradation 2017-18 to 2024-25. Stored as change_detection.degradation with keys farm_to_barren_ha, farm_to_built_up_ha, farm_to_farm_ha, farm_to_scrubland_ha, total_ha.",
+        "allowed_values_ref": "categorical_enums.change_detection_degradation_keys",
+        "source_sheet": "change_detection_degradation",
+        "source_column": "farm_to_barren_area_in_ha, farm_to_built_up_area_in_ha, farm_to_farm_area_in_ha, farm_to_scrub_land_area_in_ha, total_degradation_area_in_ha",
+        "availability": "available"
+      },
+      "cd_farm_to_barren_ha": {
+        "type": "static", "unit": "hectares",
+        "description": "Farm/crop area converted to barren land (2017-18 → 2024-25).",
+        "source_sheet": "change_detection_degradation", "source_column": "farm_to_barren_area_in_ha",
+        "mongo_path": "change_detection.degradation.farm_to_barren_ha", "availability": "available"
+      },
+      "cd_farm_to_built_up_ha": {
+        "type": "static", "unit": "hectares",
+        "description": "Farm/crop area converted to built-up (2017-18 → 2024-25).",
+        "source_sheet": "change_detection_degradation", "source_column": "farm_to_built_up_area_in_ha",
+        "mongo_path": "change_detection.degradation.farm_to_built_up_ha", "availability": "available"
+      },
+      "cd_farm_to_farm_ha": {
+        "type": "static", "unit": "hectares",
+        "description": "Farm/crop area remaining farm/crop (no class change; persistence area).",
+        "source_sheet": "change_detection_degradation", "source_column": "farm_to_farm_area_in_ha",
+        "mongo_path": "change_detection.degradation.farm_to_farm_ha", "availability": "available"
+      },
+      "cd_farm_to_scrubland_ha": {
+        "type": "static", "unit": "hectares",
+        "description": "Farm/crop area converted to scrubland (2017-18 → 2024-25).",
+        "source_sheet": "change_detection_degradation", "source_column": "farm_to_scrub_land_area_in_ha",
+        "mongo_path": "change_detection.degradation.farm_to_scrubland_ha", "availability": "available"
+      },
+      "cd_total_degradation_ha": {
+        "type": "static", "unit": "hectares",
+        "description": "Total degraded farm/crop area (2017-18 → 2024-25).",
+        "source_sheet": "change_detection_degradation", "source_column": "total_degradation_area_in_ha",
+        "mongo_path": "change_detection.degradation.total_ha", "availability": "available"
       },
       "cd_deforestation_ha": {
         "type": "static", "unit": "hectares per transition",
-        "description": "Cumulative change 2017-18 to 2024-25: {forest_to_farm, total_deforestation} → ha",
-        "source_sheet": "change_detection_deforestation", "source_column": "forest_to_farm_area_in_ha, total_deforestation_area_in_ha", "availability": "available"
+        "description": "Cumulative forest/tree cover loss 2017-18 to 2024-25. Stored as change_detection.deforestation.",
+        "allowed_values_ref": "categorical_enums.change_detection_deforestation_keys",
+        "source_sheet": "change_detection_deforestation",
+        "source_column": "forest_to_barren_area_in_ha, forest_to_built_up_area_in_ha, forest_to_farm_area_in_ha, forest_to_forest_area_in_ha, forest_to_scrub_land_area_in_ha, total_deforestation_area_in_ha",
+        "availability": "available"
       },
-      "cd_afforestation_ha": {
-        "type": "static", "unit": "hectares", "description": "Total area transitioning to forest/tree cover 2017-18 to 2024-25",
-        "source_sheet": "change_detection_afforestation", "source_column": "total_afforestation_area_in_ha", "availability": "available"
+      "cd_forest_to_barren_ha": {
+        "type": "static", "unit": "hectares",
+        "description": "Forest/tree cover converted to barren.",
+        "source_sheet": "change_detection_deforestation", "source_column": "forest_to_barren_area_in_ha",
+        "mongo_path": "change_detection.deforestation.forest_to_barren_ha", "availability": "available"
+      },
+      "cd_forest_to_built_up_ha": {
+        "type": "static", "unit": "hectares",
+        "description": "Forest/tree cover converted to built-up.",
+        "source_sheet": "change_detection_deforestation", "source_column": "forest_to_built_up_area_in_ha",
+        "mongo_path": "change_detection.deforestation.forest_to_built_up_ha", "availability": "available"
+      },
+      "cd_forest_to_farm_ha": {
+        "type": "static", "unit": "hectares",
+        "description": "Forest encroached for agriculture (forest → farm/crop).",
+        "source_sheet": "change_detection_deforestation", "source_column": "forest_to_farm_area_in_ha",
+        "mongo_path": "change_detection.deforestation.forest_to_farm_ha", "availability": "available"
+      },
+      "cd_deforestation_forest_to_forest_ha": {
+        "type": "static", "unit": "hectares",
+        "description": "Forest/tree cover that remained forest (persistence; deforestation sheet).",
+        "source_sheet": "change_detection_deforestation", "source_column": "forest_to_forest_area_in_ha",
+        "mongo_path": "change_detection.deforestation.forest_to_forest_ha", "availability": "available"
+      },
+      "cd_forest_to_scrubland_ha": {
+        "type": "static", "unit": "hectares",
+        "description": "Forest/tree cover converted to scrubland.",
+        "source_sheet": "change_detection_deforestation", "source_column": "forest_to_scrub_land_area_in_ha",
+        "mongo_path": "change_detection.deforestation.forest_to_scrubland_ha", "availability": "available"
+      },
+      "cd_total_deforestation_ha": {
+        "type": "static", "unit": "hectares",
+        "description": "Total deforested area (2017-18 → 2024-25).",
+        "source_sheet": "change_detection_deforestation", "source_column": "total_deforestation_area_in_ha",
+        "mongo_path": "change_detection.deforestation.total_ha", "availability": "available"
       },
       "cd_urbanization_ha": {
-        "type": "static", "unit": "hectares", "description": "Total area urbanised (to built-up) 2017-18 to 2024-25",
-        "source_sheet": "change_detection_urbanization", "source_column": "total_urbanization_area_in_ha", "availability": "available"
+        "type": "static", "unit": "hectares",
+        "description": "Total area urbanised to built-up (2017-18 → 2024-25). Alias: cd_total_urbanization_ha.",
+        "source_sheet": "change_detection_urbanization", "source_column": "total_urbanization_area_in_ha",
+        "mongo_path": "change_detection.urbanization.total_ha", "availability": "available"
+      },
+      "cd_barren_shrub_to_built_up_ha": {
+        "type": "static", "unit": "hectares",
+        "description": "Barren or shrub land converted to built-up.",
+        "source_sheet": "change_detection_urbanization", "source_column": "barren_shrub_to_built_up_area_in_ha",
+        "mongo_path": "change_detection.urbanization.barren_shrub_to_built_up_ha", "availability": "available"
+      },
+      "cd_built_up_to_built_up_ha": {
+        "type": "static", "unit": "hectares",
+        "description": "Built-up area that remained built-up (persistence).",
+        "source_sheet": "change_detection_urbanization", "source_column": "built_up_to_built_up_area_in_ha",
+        "mongo_path": "change_detection.urbanization.built_up_to_built_up_ha", "availability": "available"
+      },
+      "cd_tree_farm_to_built_up_ha": {
+        "type": "static", "unit": "hectares",
+        "description": "Tree cover or crop area converted to built-up.",
+        "source_sheet": "change_detection_urbanization", "source_column": "tree_farm_to_built_up_area_in_ha",
+        "mongo_path": "change_detection.urbanization.tree_farm_to_built_up_ha", "availability": "available"
+      },
+      "cd_water_to_built_up_ha": {
+        "type": "static", "unit": "hectares",
+        "description": "Water surface converted to built-up.",
+        "source_sheet": "change_detection_urbanization", "source_column": "water_to_built_up_area_in_ha",
+        "mongo_path": "change_detection.urbanization.water_to_built_up_ha", "availability": "available"
+      },
+      "cd_afforestation_ha": {
+        "type": "static", "unit": "hectares",
+        "description": "Total area gained as forest/tree cover (2017-18 → 2024-25). Alias: cd_total_afforestation_ha.",
+        "source_sheet": "change_detection_afforestation", "source_column": "total_afforestation_area_in_ha",
+        "mongo_path": "change_detection.afforestation.total_ha", "availability": "available"
+      },
+      "cd_barren_to_forest_ha": {
+        "type": "static", "unit": "hectares",
+        "description": "Barren land converted to forest/tree cover.",
+        "source_sheet": "change_detection_afforestation", "source_column": "barren_to_forest_area_in_ha",
+        "mongo_path": "change_detection.afforestation.barren_to_forest_ha", "availability": "available"
+      },
+      "cd_built_up_to_forest_ha": {
+        "type": "static", "unit": "hectares",
+        "description": "Built-up converted to forest/tree cover.",
+        "source_sheet": "change_detection_afforestation", "source_column": "built_up_to_forest_area_in_ha",
+        "mongo_path": "change_detection.afforestation.built_up_to_forest_ha", "availability": "available"
+      },
+      "cd_farm_to_forest_ha": {
+        "type": "static", "unit": "hectares",
+        "description": "Farm/crop converted to forest/tree cover.",
+        "source_sheet": "change_detection_afforestation", "source_column": "farm_to_forest_area_in_ha",
+        "mongo_path": "change_detection.afforestation.farm_to_forest_ha", "availability": "available"
+      },
+      "cd_afforestation_forest_to_forest_ha": {
+        "type": "static", "unit": "hectares",
+        "description": "Forest/tree cover that remained forest (persistence; afforestation sheet).",
+        "source_sheet": "change_detection_afforestation", "source_column": "forest_to_forest_area_in_ha",
+        "mongo_path": "change_detection.afforestation.forest_to_forest_ha", "availability": "available"
+      },
+      "cd_scrubland_to_forest_ha": {
+        "type": "static", "unit": "hectares",
+        "description": "Scrubland converted to forest/tree cover.",
+        "source_sheet": "change_detection_afforestation", "source_column": "scrub_land_to_forest_area_in_ha",
+        "mongo_path": "change_detection.afforestation.scrubland_to_forest_ha", "availability": "available"
       },
       "cd_crop_intensity_ha": {
         "type": "static", "unit": "hectares per transition",
-        "description": "Crop intensity transitions 2017-18 to 2024-25: {single_to_double, double_to_single, single_to_triple, double_to_triple, triple_to_double, triple_to_single} → ha",
-        "source_sheet": "change_detection_cropintensity", "source_column": "various transition columns", "availability": "available"
+        "description": "Crop intensity class transitions 2017-18 to 2024-25. Stored as change_detection.crop_intensity.",
+        "allowed_values_ref": "categorical_enums.change_detection_crop_intensity_keys",
+        "source_sheet": "change_detection_cropintensity", "source_column": "single_to_single_area_in_ha through triple_to_triple_area_in_ha, total_change_crop_intensity_area_in_ha",
+        "availability": "available"
+      },
+      "cd_single_to_single_ha": {
+        "type": "static", "unit": "hectares",
+        "description": "Single-crop area that remained single-crop.",
+        "source_sheet": "change_detection_cropintensity", "source_column": "single_to_single_area_in_ha",
+        "mongo_path": "change_detection.crop_intensity.single_to_single_ha", "availability": "available"
+      },
+      "cd_single_to_double_ha": {
+        "type": "static", "unit": "hectares",
+        "description": "Single-crop area intensified to double-crop.",
+        "source_sheet": "change_detection_cropintensity", "source_column": "single_to_double_area_in_ha",
+        "mongo_path": "change_detection.crop_intensity.single_to_double_ha", "availability": "available"
+      },
+      "cd_single_to_triple_ha": {
+        "type": "static", "unit": "hectares",
+        "description": "Single-crop area intensified to triple-crop.",
+        "source_sheet": "change_detection_cropintensity", "source_column": "single_to_triple_area_in_ha",
+        "mongo_path": "change_detection.crop_intensity.single_to_triple_ha", "availability": "available"
+      },
+      "cd_double_to_single_ha": {
+        "type": "static", "unit": "hectares",
+        "description": "Double-crop area reduced to single-crop.",
+        "source_sheet": "change_detection_cropintensity", "source_column": "double_to_single_area_in_ha",
+        "mongo_path": "change_detection.crop_intensity.double_to_single_ha", "availability": "available"
+      },
+      "cd_double_to_double_ha": {
+        "type": "static", "unit": "hectares",
+        "description": "Double-crop area that remained double-crop.",
+        "source_sheet": "change_detection_cropintensity", "source_column": "double_to_double_area_in_ha",
+        "mongo_path": "change_detection.crop_intensity.double_to_double_ha", "availability": "available"
+      },
+      "cd_double_to_triple_ha": {
+        "type": "static", "unit": "hectares",
+        "description": "Double-crop area intensified to triple-crop.",
+        "source_sheet": "change_detection_cropintensity", "source_column": "double_to_triple_area_in_ha",
+        "mongo_path": "change_detection.crop_intensity.double_to_triple_ha", "availability": "available"
+      },
+      "cd_triple_to_single_ha": {
+        "type": "static", "unit": "hectares",
+        "description": "Triple-crop area reduced to single-crop.",
+        "source_sheet": "change_detection_cropintensity", "source_column": "triple_to_single_area_in_ha",
+        "mongo_path": "change_detection.crop_intensity.triple_to_single_ha", "availability": "available"
+      },
+      "cd_triple_to_double_ha": {
+        "type": "static", "unit": "hectares",
+        "description": "Triple-crop area reduced to double-crop.",
+        "source_sheet": "change_detection_cropintensity", "source_column": "triple_to_double_area_in_ha",
+        "mongo_path": "change_detection.crop_intensity.triple_to_double_ha", "availability": "available"
+      },
+      "cd_triple_to_triple_ha": {
+        "type": "static", "unit": "hectares",
+        "description": "Triple-crop area that remained triple-crop.",
+        "source_sheet": "change_detection_cropintensity", "source_column": "triple_to_triple_area_in_ha",
+        "mongo_path": "change_detection.crop_intensity.triple_to_triple_ha", "availability": "available"
+      },
+      "cd_crop_intensity_total_change_ha": {
+        "type": "static", "unit": "hectares",
+        "description": "Net area under any crop-intensity class transition.",
+        "source_sheet": "change_detection_cropintensity", "source_column": "total_change_crop_intensity_area_in_ha",
+        "mongo_path": "change_detection.crop_intensity.total_change_ha", "availability": "available"
       },
       "precipitation_mm": {
         "type": "time_series", "unit": "mm/agricultural_year",
@@ -198,16 +494,23 @@
         "description": "Cropping intensity (total harvested area / net sown area) per agricultural_year.",
         "source_sheet": "croppingIntensity_annual", "source_column": "cropping_intensity_unit_less_<YYYY-YYYY>", "availability": "available"
       },
-      "single_crop_area_ha": {
+      "single_kharif_area_ha": {
         "type": "time_series", "unit": "hectares",
-        "description": "Area under single cropping (kharif or non-kharif) per agricultural_year.",
-        "source_sheet": "croppingIntensity_annual", "source_column": "single_crop_in_ha_<YYYY-YYYY>", "availability": "available"
+        "description": "Area under single kharif cropping per agricultural_year.",
+        "source_sheet": "croppingIntensity_annual", "source_column": "single_kharif_cropped_area_in_ha_<YYYY-YYYY>", "availability": "available"
+      },
+      "single_non_kharif_area_ha": {
+        "type": "time_series", "unit": "hectares",
+        "description": "Area under single non-kharif cropping per agricultural_year.",
+        "source_sheet": "croppingIntensity_annual", "source_column": "single_non_kharif_cropped_area_in_ha_<YYYY-YYYY>", "availability": "available"
       },
       "double_crop_area_ha": {
-        "type": "time_series", "unit": "hectares", "source_sheet": "croppingIntensity_annual", "source_column": "double_crop_in_ha_<YYYY-YYYY>", "availability": "available"
+        "type": "time_series", "unit": "hectares",
+        "source_sheet": "croppingIntensity_annual", "source_column": "doubly_cropped_area_in_ha_<YYYY-YYYY>", "availability": "available"
       },
       "triple_crop_area_ha": {
-        "type": "time_series", "unit": "hectares", "source_sheet": "croppingIntensity_annual", "source_column": "triple_crop_in_ha_<YYYY-YYYY>", "availability": "available"
+        "type": "time_series", "unit": "hectares",
+        "source_sheet": "croppingIntensity_annual", "source_column": "triply_cropped_area_in_ha_<YYYY-YYYY>", "availability": "available"
       },
       "drought_weeks": {
         "type": "time_series", "unit": "kharif weeks per drought category",
@@ -221,8 +524,18 @@
       },
       "kharif_cropped_area_ha": {
         "type": "time_series", "unit": "hectares",
-        "description": "Kharif cropped area per agricultural_year (converted from sq km in source).",
+        "description": "Kharif cropped area per agricultural_year (ha; derived at ingest as kharif_cropped_sqkm × 100).",
         "source_sheet": "croppingDrought_kharif", "source_column": "kharif_cropped_sqkm_<YYYY> × 100", "availability": "available"
+      },
+      "kharif_cropped_sqkm": {
+        "type": "time_series", "unit": "sq km",
+        "description": "Kharif cropped area per agricultural_year as reported in CoRE Stack (sq km).",
+        "source_sheet": "croppingDrought_kharif", "source_column": "kharif_cropped_sqkm_<YYYY>", "availability": "available"
+      },
+      "kharif_drought_total_weeks": {
+        "type": "time_series", "unit": "weeks",
+        "description": "Total kharif weeks in the agricultural year (typically 18). Stored as drought_kharif.total_weeks.",
+        "source_sheet": "croppingDrought_kharif", "source_column": "total_weeks_<YYYY>", "availability": "available"
       },
       "kharif_cropped_area_percent": {
         "type": "time_series", "unit": "percent of MWS area",
@@ -241,7 +554,7 @@
       },
       "nrega_mws": {
         "type": "time_series", "unit": "count per work category",
-        "description": "MGNREGA works completed in MWS per agricultural_year, keyed by category: {soil_water_conservation, land_restoration, plantations, irrigation_on_farms, other_farm_works, off_farm_livelihood_assets, community_assets}.",
+        "description": "MGNREGA works completed in MWS per calendar year 2005–2025, keyed by category: {soil_water_conservation, land_restoration, plantations, irrigation_on_farms, other_farm_works, off_farm_livelihood_assets, community_assets}.",
         "source_sheet": "nrega_annual", "source_column": "<category>_count_<YYYY>", "availability": "available"
       },
       "village_population": {
@@ -258,8 +571,9 @@
       },
       "facility_distances_km": {
         "type": "static", "unit": "km per facility type",
-        "description": "Object keyed by facility: {apmc, bank, phc, school_primary, agri_market, dairy, cold_storage, agri_processing, cooperative, csc, pds, college, university}. Road distance from village to nearest mapped facility. The cooperative key is distance to an agricultural cooperative society (PACS/FSS/marketing co-op from agri_industry_co_operatives_societies) — not a water-user association, irrigation cooperative, or watershed management group.",
-        "source_sheet": "facilities_proximity", "source_column": "various distance columns", "availability": "available"
+        "description": "Object keyed by facility type on village_data; MWS diagnosis uses minimum distance across intersecting villages (facility_distances on enriched MWS). Keys match categorical_enums.facility_distance_keys. Cooperative = agricultural co-op society (PACS/FSS/marketing), not WUA or watershed group.",
+        "allowed_values_ref": "categorical_enums.facility_distance_keys",
+        "source_sheet": "facilities_proximity", "source_column": "various *_distance columns", "availability": "available"
       },
       "dist_cooperative_km": {
         "type": "static", "unit": "km",
@@ -328,6 +642,7 @@
       "nbss_lup_aer_code": {
         "type": "static", "unit": "categorical (AER-1 to AER-20)",
         "description": "NBSS & LUP Agro-Ecological Region code for the MWS. Derived from spatial intersection with data/India_AER_NBSS_LUP.geojson at ingest.",
+        "allowed_values_ref": "categorical_enums.nbss_lup_aer_code",
         "availability": "available"
       },
       "nbss_lup_aer_name": {

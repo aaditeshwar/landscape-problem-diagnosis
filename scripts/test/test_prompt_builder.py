@@ -10,7 +10,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "runtime"))
 
 from services.reasoner import (  # noqa: E402
     _build_prompt,
+    _build_reviewer_prompt,
     _format_bundle,
+    _merge_reviewer_into_response,
+    _normalize_reviewer_response,
     _null_if_placeholder,
     _split_present_variables,
 )
@@ -152,6 +155,125 @@ def test_prompt_includes_injected_data_and_prior_questions():
     assert "(none)" not in prompt
 
 
+SAMPLE_SERVER_RESPONSE = {
+    "confirmed_pathways": [
+        {
+            "pathway_id": "agriculture/water_scarcity/groundwater_stress",
+            "confidence": "high",
+            "reasoning": "SOGE elevated.",
+        }
+    ],
+    "uncertain_pathways": [],
+    "solutions": ["Community pond repair", "Check dam construction"],
+    "panel_updates": ["annual_well_depth_m trend"],
+    "panel_update_explanation": "Groundwater stress is evident from SOGE.",
+    "follow_up_question": "What is the borewell density?",
+    "follow_up_variable": "borewell_density",
+}
+
+SAMPLE_SIGNAL_EVAL = {
+    "groundwater_stress": {
+        "summary": {"confirms_true": 1, "rules_out_true": 0, "needs_llm": 0},
+        "signals": [
+            {
+                "signal_id": "sig_01",
+                "direction": "confirms",
+                "result": True,
+                "status": "ok",
+            }
+        ],
+    }
+}
+
+
+def test_reviewer_prompt_uses_reviewer_user_query_directive_not_legacy():
+    prompt = _build_reviewer_prompt(
+        location=SAMPLE_LOCATION,
+        problem_description="Should we prioritise check dams or farm ponds?",
+        bundle=SAMPLE_BUNDLE,
+        server_response=SAMPLE_SERVER_RESPONSE,
+        signal_eval=SAMPLE_SIGNAL_EVAL,
+    )
+    assert "[ANSWER THE USER'S QUESTION — REVIEWER]" in prompt
+    assert "panel_update_explanation MUST open with a direct" in prompt
+    assert "[SERVER DIAGNOSIS].panel_updates" in prompt
+    assert "For this question:" in prompt
+    assert "Every confirmed_pathways and uncertain_pathways reasoning string MUST" not in prompt
+
+
+def test_reviewer_prompt_includes_server_diagnosis_and_signal_results():
+    prompt = _build_reviewer_prompt(
+        location=SAMPLE_LOCATION,
+        problem_description="Why is groundwater declining?",
+        bundle=SAMPLE_BUNDLE,
+        server_response=SAMPLE_SERVER_RESPONSE,
+        signal_eval=SAMPLE_SIGNAL_EVAL,
+    )
+    assert "[SERVER DIAGNOSIS — canonical" in prompt
+    assert "[REVIEWER TASK]" in prompt
+    assert "[SIGNAL EVALUATION RESULTS" in prompt
+    assert "server-computed" in prompt
+    assert "Do NOT output confirmed_pathways" in prompt
+    assert "Community pond repair" in prompt
+    assert "server owns confirmed_pathways" in prompt.lower() or "server owns" in prompt
+    assert '"change_review": null' in prompt
+    assert "sig_01" in prompt
+
+
+def test_reviewer_prompt_revision_includes_change_review_task():
+    server_with_revision = {
+        **SAMPLE_SERVER_RESPONSE,
+        "diagnosis_revision": {
+            "pathway_changes": [
+                {"pathway_id": "groundwater_stress", "from": "uncertain", "to": "confirmed"}
+            ]
+        },
+    }
+    prompt = _build_reviewer_prompt(
+        location=SAMPLE_LOCATION,
+        problem_description="Why is groundwater declining?",
+        bundle=SAMPLE_BUNDLE,
+        server_response=server_with_revision,
+        signal_eval=SAMPLE_SIGNAL_EVAL,
+        follow_up_context="borewell_density: many",
+        is_revision=True,
+    )
+    assert "[SERVER REVISION — after follow-up answer]" in prompt
+    assert "change_review" in prompt
+    assert "agrees_with_revision" in prompt
+    assert "[USER FOLLOW-UP ANSWER]" in prompt
+
+
+def test_normalize_and_merge_reviewer_preserves_server_pathways():
+    server = dict(SAMPLE_SERVER_RESPONSE)
+    reviewer_raw = {
+        "server_review": [
+            {
+                "pathway_id": "agriculture/water_scarcity/groundwater_stress",
+                "agreement": "agree",
+                "pathway_comment": "Matches the user's concern.",
+            }
+        ],
+        "change_review": None,
+        "panel_update_explanation": "Groundwater decline is the main issue here.",
+        "solutions_review": {
+            "notes": "Prioritise recharge structures.",
+            "priority_order": ["Check dam construction", "Community pond repair"],
+        },
+    }
+    reviewer = _normalize_reviewer_response(reviewer_raw)
+    merged = _merge_reviewer_into_response(server, reviewer)
+
+    assert merged["confirmed_pathways"] == server["confirmed_pathways"]
+    assert merged["uncertain_pathways"] == server["uncertain_pathways"]
+    assert len(merged["reviewer_commentary"]) == 1
+    assert merged["reviewer_commentary"][0]["agreement"] == "agree"
+    assert merged["panel_update_explanation"] == reviewer_raw["panel_update_explanation"]
+    assert merged["solutions_review_notes"] == "Prioritise recharge structures."
+    assert merged["solutions"][0] == "Check dam construction"
+    assert merged["solutions"][1] == "Community pond repair"
+
+
 def test_prompt_includes_reasoning_wording_rules():
     prompt = _build_prompt(
         location=SAMPLE_LOCATION,
@@ -171,6 +293,10 @@ def main() -> int:
     test_ollama_prompt_has_signal_results_and_json_fence()
     test_claude_prompt_reasons_signals_without_server_eval()
     test_prompt_includes_injected_data_and_prior_questions()
+    test_reviewer_prompt_uses_reviewer_user_query_directive_not_legacy()
+    test_reviewer_prompt_includes_server_diagnosis_and_signal_results()
+    test_reviewer_prompt_revision_includes_change_review_task()
+    test_normalize_and_merge_reviewer_preserves_server_pathways()
     test_prompt_includes_reasoning_wording_rules()
     print("All prompt builder tests passed.")
     return 0

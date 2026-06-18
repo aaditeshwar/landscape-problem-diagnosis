@@ -166,17 +166,100 @@
     {
       "missing_variable": "landholding_size_distribution",
       "question_to_user": "What proportion of farming households in your village own less than 1 hectare of cultivable land? Would you estimate it is less than one-third, about half, or more than two-thirds of households?",
-      "how_answer_updates_diagnosis": "If more than two-thirds of households are marginal (<1 ha), this strongly confirms the small landholding pathway as the primary income constraint. If fewer than one-third are marginal, the income stress may be driven more by market isolation, soil quality, or climate factors than by landholding size per se."
+      "how_answer_updates_diagnosis": "If more than two-thirds of households are marginal (<1 ha), this strongly confirms the small landholding pathway as the primary income constraint. If fewer than one-third are marginal, the income stress may be driven more by market isolation, soil quality, or climate factors than by landholding size per se.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "minority",
+          "label": "Less than one-quarter of farming households own under 1 ha",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "about_half",
+          "label": "About half of farming households own under 1 ha",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "majority",
+          "label": "More than half (or two-thirds) of households are marginal (<1 ha)",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "household_income_inr",
       "question_to_user": "Can you estimate the average annual household income in your village from all sources — farm produce, livestock, NTFP collection, daily wage labour, and government schemes combined? Is it roughly below Rs 60,000, between Rs 60,000-1,20,000, or above Rs 1,20,000 per year?",
-      "how_answer_updates_diagnosis": "Annual household income below Rs 60,000 (approximately Rs 5,000/month) confirms severe income insufficiency consistent with the low_income stress. The breakdown by source (farm vs non-farm) reveals whether diversification is already occurring or whether the household is entirely dependent on small-plot agriculture, which directly informs whether FPO formation or livelihood diversification should be prioritised."
+      "how_answer_updates_diagnosis": "Annual household income below Rs 60,000 (approximately Rs 5,000/month) confirms severe income insufficiency consistent with the low_income stress. The breakdown by source (farm vs non-farm) reveals whether diversification is already occurring or whether the household is entirely dependent on small-plot agriculture, which directly informs whether FPO formation or livelihood diversification should be prioritised.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "below_50k",
+          "label": "Below ₹50,000 per year from farming (or total household income)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "50k_to_100k",
+          "label": "Between ₹50,000 and ₹1,00,000 per year",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "above_100k",
+          "label": "Above ₹1,00,000 per year",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "market_price_crop",
       "question_to_user": "For your main crop, what price do you typically receive per quintal at the farm gate or local market? How does this compare to the government Minimum Support Price (MSP) for that crop, if you are aware of it?",
-      "how_answer_updates_diagnosis": "A farm-gate price significantly below MSP (more than 20% discount) confirms that market isolation and intermediary exploitation are compounding the income loss from small landholdings. This would strengthen the case for FPO formation and collective marketing as the priority intervention over land consolidation alone."
+      "how_answer_updates_diagnosis": "A farm-gate price significantly below MSP (more than 20% discount) confirms that market isolation and intermediary exploitation are compounding the income loss from small landholdings. This would strengthen the case for FPO formation and collective marketing as the priority intervention over land consolidation alone.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "near_msp",
+          "label": "Prices close to government MSP (mandi or procurement)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "below_msp",
+          "label": "Prices significantly below MSP (e.g. farm-gate or trader)",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "unable_to_sell",
+          "label": "Unable to sell at all or forced to accept very low prices",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "worsening"
+          }
+        }
+      ]
     }
   ],
   "sources": [

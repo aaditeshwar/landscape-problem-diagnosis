@@ -162,17 +162,100 @@
     {
       "missing_variable": "landholding_size_distribution",
       "question_to_user": "What is the approximate average farm size in this village or watershed? Are most farmers working on less than 1 acre (0.4 ha), between 1-5 acres, or more than 5 acres? Do most families own their land or lease it?",
-      "how_answer_updates_diagnosis": "If the majority of households report holdings below 1 ha (marginal) or 1-2 ha (small), this directly confirms the small landholding pathway. If holdings are larger but income is still low, the diagnosis should shift toward market failure, input cost, or climate stress pathways."
+      "how_answer_updates_diagnosis": "If the majority of households report holdings below 1 ha (marginal) or 1-2 ha (small), this directly confirms the small landholding pathway. If holdings are larger but income is still low, the diagnosis should shift toward market failure, input cost, or climate stress pathways.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "minority",
+          "label": "Less than one-quarter of farming households own under 1 ha",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "about_half",
+          "label": "About half of farming households own under 1 ha",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "majority",
+          "label": "More than half (or two-thirds) of households are marginal (<1 ha)",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "household_income_inr",
       "question_to_user": "Can you estimate the approximate annual household income from all sources — farm crops, livestock, daily wage labour, MGNREGA, remittances, or any other source? What share comes from farming versus other sources?",
-      "how_answer_updates_diagnosis": "If farm income is below Rs 50,000 per year and constitutes more than 70% of total household income with no diversification, this confirms both the low income stress and the single-livelihood-source vulnerability. A high share of non-farm income despite small holdings would suggest the household has already partially adapted, reducing severity."
+      "how_answer_updates_diagnosis": "If farm income is below Rs 50,000 per year and constitutes more than 70% of total household income with no diversification, this confirms both the low income stress and the single-livelihood-source vulnerability. A high share of non-farm income despite small holdings would suggest the household has already partially adapted, reducing severity.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "below_50k",
+          "label": "Below ₹50,000 per year from farming (or total household income)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "50k_to_100k",
+          "label": "Between ₹50,000 and ₹1,00,000 per year",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          }
+        },
+        {
+          "id": "above_100k",
+          "label": "Above ₹1,00,000 per year",
+          "normalized": {
+            "band": "high",
+            "present": true
+          }
+        }
+      ]
     },
     {
       "missing_variable": "market_price_crop",
       "question_to_user": "When you sell your crops, do you typically receive the government's Minimum Support Price (MSP), or do you usually get less? How far do you travel to sell your produce, and do you sell to a government mandi, a private trader, or directly to consumers?",
-      "how_answer_updates_diagnosis": "If farmers consistently receive prices well below MSP and sell to private intermediaries due to distance from APMC, this confirms that market failure amplifies the income loss from small holdings. If price realisation is close to MSP, the income constraint is more purely a function of low production volume from small land area."
+      "how_answer_updates_diagnosis": "If farmers consistently receive prices well below MSP and sell to private intermediaries due to distance from APMC, this confirms that market failure amplifies the income loss from small holdings. If price realisation is close to MSP, the income constraint is more purely a function of low production volume from small land area.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "near_msp",
+          "label": "Prices close to government MSP (mandi or procurement)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          }
+        },
+        {
+          "id": "below_msp",
+          "label": "Prices significantly below MSP (e.g. farm-gate or trader)",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          }
+        },
+        {
+          "id": "unable_to_sell",
+          "label": "Unable to sell at all or forced to accept very low prices",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "worsening"
+          }
+        }
+      ]
     }
   ],
   "sources": [

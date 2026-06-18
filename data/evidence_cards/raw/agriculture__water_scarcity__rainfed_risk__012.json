@@ -130,7 +130,38 @@
     {
       "missing_variable": "irrigated_area_ha",
       "question_to_user": "Approximately what share of your cultivated land can be irrigated during the dry season (rabi or summer)? Would you say none, less than 10%, 10–30%, or more than 30% of your fields have access to irrigation from any source (canal, pump, tank, or spring)?",
-      "how_answer_updates_diagnosis": "If farmers confirm that less than 10% of land is irrigated, this strongly confirms the rainfed_risk pathway and justifies prioritising in-situ water harvesting and farm pond interventions. If more than 30% report irrigation access, the diagnosis should be revisited to check whether the stress is driven by irrigation system failure or groundwater stress rather than structural rainfed dependence."
+      "how_answer_updates_diagnosis": "If farmers confirm that less than 10% of land is irrigated, this strongly confirms the rainfed_risk pathway and justifies prioritising in-situ water harvesting and farm pond interventions. If more than 30% report irrigation access, the diagnosis should be revisited to check whether the stress is driven by irrigation system failure or groundwater stress rather than structural rainfed dependence.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "low",
+          "label": "Less than 10% of cultivated land is irrigated",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "percent_upper": 10
+          }
+        },
+        {
+          "id": "moderate",
+          "label": "Between 10% and 30% of cultivated land is irrigated",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "percent_lower": 10,
+            "percent_upper": 30
+          }
+        },
+        {
+          "id": "high",
+          "label": "More than 30% of cultivated land is irrigated",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "percent_lower": 30
+          }
+        }
+      ]
     }
   ],
   "sources": [
