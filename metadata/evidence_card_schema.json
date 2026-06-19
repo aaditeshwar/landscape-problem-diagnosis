@@ -122,44 +122,51 @@
                   "Barren land area has increased relative to baseline cropland area",
                   "Monsoon onset is delayed by more than 2 weeks compared to historical average"
                 ]
-              },
-              "threshold_confidence": {
-                "type": "string",
-                "enum": ["high", "medium", "low", "none"],
-                "description": "Confidence in the threshold value: high = from peer-reviewed empirical study with similar context; medium = from expert guidelines or grey literature; low = extrapolated from dissimilar context; none = no quantitative threshold available"
-              },
-              "context_sensitivity": {
-                "type": "string",
-                "enum": ["global", "regional", "local"],
-                "description": "How context-sensitive the threshold is: global = applies broadly; regional = applies to similar agro-climatic zones; local = should only be used in the specific study context"
               }
             }
+          },
+          "active": {
+            "type": "boolean",
+            "default": true,
+            "description": "When false, the server signal evaluator skips this signal."
           },
           "severity": {
             "type": "string",
             "enum": ["low", "moderate", "high", "critical"],
-            "description": "Severity of the causal pathway if this signal is active, as assessed from literature"
+            "description": "Strength of this signal as pathway evidence. Used by confirmation_policy to count high/moderate confirms; not evaluated directly as an expression."
           },
           "direction": {
             "type": "string",
-            "enum": ["confirms", "suggests", "rules_out", "amplifies"],
-            "description": "confirms: strong evidence this cause is active | suggests: weak or indirect evidence | rules_out: variable value makes this cause unlikely | amplifies: strengthens another active signal when co-occurring"
+            "enum": ["confirms", "rules_out", "amplifies"],
+            "description": "Runtime role: confirms+TRUE counts toward pathway confirmation; amplifies+TRUE appears in summary only; rules_out+TRUE removes the pathway."
           },
           "explanation": {
             "type": "string",
             "description": "One to three sentence plain-language explanation of why this variable pattern indicates the causal pathway, drawing from the paper's findings."
-          },
-          "interaction_with": {
-            "type": "array",
-            "description": "Signal IDs within the same card (or across cards in the same pathway) that interact with this signal — i.e. the combination of both signals is more or less diagnostic than each alone.",
-            "items": { "type": "string" }
           }
+        }
+      }
+    },
+    "confirmation_policy": {
+      "type": "object",
+      "description": "Executable rules for pathway confirmation and confidence. When present, the server uses this instead of keyword parsing of overall_reasoning_note.",
+      "properties": {
+        "version": { "type": "integer", "enum": [1] },
+        "primary_confirm_signals": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Primary confirming signal ids referenced in card prose."
+        },
+        "confirm_when": { "type": "object" },
+        "confidence_when": {
+          "type": "array",
+          "description": "First matching rule sets pathway confidence (low/medium/high)."
         }
       }
     },
     "overall_reasoning_note": {
       "type": "string",
-      "description": "A paragraph-length note for the LLM summarising how to reason over the signals in this card collectively — which signals are sufficient alone, which need to co-occur, how to handle missing variables, and what alternative causes to rule out first."
+      "description": "Human-readable narrative for reviewers and LLM prompts. Executable confirmation logic belongs in confirmation_policy."
     },
     "confounders": {
       "type": "array",
@@ -196,7 +203,71 @@
           },
           "how_answer_updates_diagnosis": {
             "type": "string",
-            "description": "How the user's answer changes the diagnostic conclusion or confidence level"
+            "description": "Human-readable description of how the answer changes diagnosis. The server prefers choices[].effects when present."
+          },
+          "response_type": {
+            "type": "string",
+            "enum": ["mcq"],
+            "description": "When mcq, choices[] must be provided."
+          },
+          "question_mode": {
+            "type": "string",
+            "enum": ["magnitude", "presence_graded", "trend", "presence_binary"],
+            "description": "Validation profile for choices[].normalized. Required for MCQ questions."
+          },
+          "choices": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["id", "label", "normalized"],
+              "properties": {
+                "id": { "type": "string" },
+                "label": { "type": "string" },
+                "normalized": {
+                  "type": "object",
+                  "description": "Structured answer payload injected on follow-up.",
+                  "properties": {
+                    "band": {
+                      "type": "string",
+                      "enum": ["low", "moderate", "high"],
+                      "description": "Coarse magnitude when the condition is present."
+                    },
+                    "present": {
+                      "type": "boolean",
+                      "description": "Whether the condition or feature exists."
+                    },
+                    "trend": {
+                      "type": "string",
+                      "enum": ["stable", "worsening", "improving"],
+                      "description": "Direction of change when relevant."
+                    },
+                    "percent_lower": { "type": "number" },
+                    "percent_upper": { "type": "number" }
+                  }
+                },
+                "effects": {
+                  "type": "object",
+                  "description": "Deterministic signal overrides applied by the server on follow-up.",
+                  "properties": {
+                    "signals": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": ["signal_id", "result"],
+                        "properties": {
+                          "signal_id": { "type": "string" },
+                          "result": { "type": "boolean" },
+                          "pathway_hint": {
+                            "type": "string",
+                            "enum": ["supports", "weakens", "rules_out"]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }

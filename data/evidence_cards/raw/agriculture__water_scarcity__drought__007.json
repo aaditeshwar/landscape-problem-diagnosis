@@ -32,17 +32,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "drought_weeks_severe[-1] >= 3 or (drought_weeks_severe[-1] >= 1 and drought_weeks_moderate[-1] >= 4)",
-        "qualitative_description": "Three or more severe drought weeks in the latest kharif season, or a combination of at least one severe week and four or more moderate weeks, indicates a drought episode sufficient to cause significant crop water stress and yield loss.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Three or more severe drought weeks in the latest kharif season, or a combination of at least one severe week and four or more moderate weeks, indicates a drought episode sufficient to cause significant crop water stress and yield loss."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Persistent severe drought weeks during kharif directly reduce soil moisture below crop wilting thresholds. In the Chhota Nagpur plateau, where rainfed rice and pulses dominate and irrigation infrastructure is sparse, even brief severe drought spells during critical growth stages (tillering, flowering) can cause irreversible yield loss. SPI-based drought classification used in the India Drought Manual links severe drought weeks to significant agricultural production deficits.",
-      "interaction_with": [
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -52,17 +47,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "dry_spell_weeks[-1] >= 4",
-        "qualitative_description": "Four or more dry spell weeks (4-week moving window with less than 50% historical rainfall) in the latest kharif season indicate prolonged moisture deficit disrupting crop growth stages.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Four or more dry spell weeks (4-week moving window with less than 50% historical rainfall) in the latest kharif season indicate prolonged moisture deficit disrupting crop growth stages."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Dry spells of four or more consecutive weeks during kharif are particularly damaging in sub-humid plateau regions where crops rely almost entirely on in-season rainfall. In the AER-12 zone, where annual rainfall is 1200–1600 mm but highly concentrated in the monsoon, intra-seasonal dry spells can cause moisture stress equivalent to semi-arid conditions. Research on crop water management under drought confirms that unproductive water losses and dry spell duration are key determinants of yield failure in tropical residual moisture regimes.",
-      "interaction_with": [
-        "sig_01",
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -73,8 +63,6 @@
         "type": "composite",
         "expression": "drought_mild_spi_score_latest >= 26 and (drought_mild_mai_score_latest >= 26 or drought_mild_vci_score_latest >= 26)",
         "qualitative_description": "SPI at or below -1.0 (moderate to severe meteorological drought) combined with MAI below 0.5 (soil moisture inadequacy) or VCI below 0.35 (significant vegetation stress) confirms co-occurring meteorological and agricultural drought.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional",
         "variables": [
           "drought_mild_spi_score_latest",
           "drought_mild_mai_score_latest",
@@ -84,10 +72,7 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "The India Drought Manual prescribes a multi-index approach combining SPI (meteorological drought), MAI (agricultural drought via soil moisture), and VCI (vegetation stress from NDVI) to classify drought type and severity. Studies on kharif rice in eastern India show that SPI and VCI are significantly positively correlated with productivity index, with September SPI showing correlation coefficients of 0.70 with rice yield. Convergence of all three indices below threshold values provides strong confirmation of drought-driven water scarcity rather than irrigation infrastructure failure.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -99,8 +84,6 @@
         "type": "composite",
         "expression": "(seasonal_precipitation_mm[-1].get('kharif', 9999) < 0.75 * mean_annual_precipitation_mm * 0.85) or (mean_annual_precipitation_mm < 1000 and trend_annual_precipitation_mm < -10)",
         "qualitative_description": "Kharif seasonal precipitation below 75% of the long-run kharif normal, or mean annual precipitation below 1000 mm with a declining trend exceeding 10 mm/year, confirms a rainfall deficit context consistent with recurrent drought.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "seasonal_precipitation_mm",
           "precipitation_mm"
@@ -109,10 +92,7 @@
       "severity": "moderate",
       "direction": "confirms",
       "explanation": "In AER-12, annual rainfall of 1200–1600 mm is concentrated in the kharif season. Below-normal kharif rainfall years directly translate to crop water deficits because groundwater recharge in crystalline basement aquifers is insufficient to buffer irrigation demand. A declining precipitation trend amplifies drought frequency. The water-food-energy nexus analysis for India confirms that after drought years, groundwater storage drops and cannot recover even in subsequent good monsoon years, making trend analysis critical.",
-      "interaction_with": [
-        "sig_01",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -122,17 +102,12 @@
       "condition": {
         "type": "trend",
         "expression": "(monsoon_onset_date[-1] - monsoon_onset_date[0]) > 7 or monsoon_onset_date[-1] > 175",
-        "qualitative_description": "Monsoon onset delayed by more than 7 days relative to the earliest year in the record, or onset occurring after day 175 (approximately June 24), shortens the effective kharif growing season and increases early-season crop failure risk.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Monsoon onset delayed by more than 7 days relative to the earliest year in the record, or onset occurring after day 175 (approximately June 24), shortens the effective kharif growing season and increases early-season crop failure risk."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Delayed monsoon onset in the Chhota Nagpur plateau compresses the kharif sowing window, forcing farmers to sow into dry soil or delay sowing, both of which increase exposure to terminal drought at the end of the season. Crop ecology research confirms that phenological mismatch between crop water demand and soil moisture supply is a primary mechanism of drought-induced yield loss, and that delayed onset is a key trigger for this mismatch in tropical rainfed systems.",
-      "interaction_with": [
-        "sig_02",
-        "sig_04"
-      ]
+      "active": true
     }
   ],
   "confounders": [
@@ -205,5 +180,50 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 24,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_03",
+      "sig_04"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_03",
+          "sig_04"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_04"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

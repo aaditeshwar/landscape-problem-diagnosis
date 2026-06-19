@@ -30,17 +30,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "(lulc_cropland_ha[-1] / (village_total_population + 1e-9)) < 0.2",
-        "qualitative_description": "Per-capita cropland availability below 0.2 ha/person indicates extreme land scarcity relative to population, a proxy for marginal or sub-marginal average farm size.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Per-capita cropland availability below 0.2 ha/person indicates extreme land scarcity relative to population, a proxy for marginal or sub-marginal average farm size."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "In cold arid Ladakh, cultivable land is confined to narrow valley floors and glacial outwash terraces. Dividing total MWS cropland by village population gives a rough per-capita land availability figure. Values below 0.2 ha/person are consistent with average household holdings well under 1 ha, placing most households in the marginal farmer category. Shrinking average landholding size is a documented driver of insufficient farm income in India, as surplus production and creditworthiness both depend on scale.",
-      "interaction_with": [
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -50,16 +45,12 @@
       "condition": {
         "type": "trend",
         "expression": "mean_cropping_intensity <= 1.15",
-        "qualitative_description": "Mean cropping intensity at or below 1.15 indicates that most cropland supports only a single crop per year, limiting total output from already small holdings.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Mean cropping intensity at or below 1.15 indicates that most cropland supports only a single crop per year, limiting total output from already small holdings."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "In the cold arid Himalayan context, the short frost-free growing window (typically 90–120 days) constrains double-cropping. A mean cropping intensity at or below 1.15 confirms that effective production per unit land is near its minimum. For small holders, low cropping intensity compounds the income constraint because there is no second harvest to supplement the primary crop income. This aligns with findings that households solely dependent on small-scale agriculture have lower monthly incomes.",
-      "interaction_with": [
-        "sig_01"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -69,17 +60,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "dist_apmc_km > 50",
-        "qualitative_description": "Distance to nearest APMC market exceeding 50 km severely limits price discovery and marketable surplus realisation for small holders in remote Himalayan valleys.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Distance to nearest APMC market exceeding 50 km severely limits price discovery and marketable surplus realisation for small holders in remote Himalayan valleys."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Remote smallholders in Ladakh face extreme market isolation due to high-altitude terrain and seasonal road closures. Without access to regulated markets, small holders are exploited by intermediaries and cannot realise fair prices for their limited surplus. Market access is a critical determinant of whether small holders can convert even modest production into adequate income. FPO formation and collective marketing are recommended precisely to overcome this barrier.",
-      "interaction_with": [
-        "sig_01",
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -90,16 +76,12 @@
       "condition": {
         "type": "composite",
         "expression": "nrega_community_assets_count < 5 and ('livelihoods' not in organization_domains and 'watershed_management' not in organization_domains)",
-        "qualitative_description": "Fewer than 5 MGNREGA community asset works combined with absence of livelihood or watershed NGOs indicates a weak safety net and limited diversification support for small holders.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "Fewer than 5 MGNREGA community asset works combined with absence of livelihood or watershed NGOs indicates a weak safety net and limited diversification support for small holders."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "MGNREGA off-farm works provide supplementary wage income that can partially offset low farm earnings for marginal holders. A low cumulative count of community assets suggests the programme has not been leveraged effectively as a safety net. Simultaneously, the absence of NGOs working on livelihoods or watershed management means there is no institutional support for income diversification into livestock, NTFP, or skill development — pathways that studies show can raise wellbeing even when farm income remains constrained.",
-      "interaction_with": [
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -109,16 +91,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "dist_dairy_km > 30",
-        "qualitative_description": "Distance to nearest dairy infrastructure exceeding 30 km prevents small holders from accessing livestock income diversification, a key pathway out of farm-income poverty.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "Distance to nearest dairy infrastructure exceeding 30 km prevents small holders from accessing livestock income diversification, a key pathway out of farm-income poverty."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Livestock rearing (yak, sheep, goat) is a traditional livelihood in Ladakh that can supplement crop income for small holders. However, without proximity to dairy collection or processing infrastructure, milk and livestock products cannot be marketed efficiently. Studies on smallholder wellbeing in India confirm that households combining agriculture with livestock income achieve better income outcomes than those relying solely on small-scale farming.",
-      "interaction_with": [
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "variables": [
@@ -126,14 +104,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Mean household or farm income below approximately Rs 50,000/year confirms severe income insufficiency on small holdings; Rs 50,000–1,00,000 partial; above weakens landholding as the primary driver.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Mean household or farm income below approximately Rs 50,000/year confirms severe income insufficiency on small holdings; Rs 50,000–1,00,000 partial; above weakens landholding as the primary driver."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Direct income evidence distinguishes volume-poverty (small area) from market or price failure (see market_price_crop amplifier).",
-      "signal_id": "sig_06"
+      "signal_id": "sig_06",
+      "active": true
     },
     {
       "variables": [
@@ -141,14 +118,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Farm-gate price consistently well below MSP (roughly 20–40% gap) for the main crop, amplifying income loss from small land area.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Farm-gate price consistently well below MSP (roughly 20–40% gap) for the main crop, amplifying income loss from small land area."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Market price failure amplifies small_landholding stress; near-MSP prices suggest low volume rather than exploitation is the dominant constraint.",
-      "signal_id": "sig_07"
+      "signal_id": "sig_07",
+      "active": true
     },
     {
       "variables": [
@@ -156,14 +132,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "More than half of farming households own less than 1 hectare, directly confirming small-landholding-driven low income; lower marginal-holder shares weaken the pathway.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "More than half of farming households own less than 1 hectare, directly confirming small-landholding-driven low income; lower marginal-holder shares weaken the pathway."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Self-reported landholding distribution substitutes for per-capita cropland proxies when household-level evidence is available.",
-      "signal_id": "sig_08"
+      "signal_id": "sig_08",
+      "active": true
     }
   ],
   "confounders": [
@@ -189,6 +164,14 @@
           "normalized": {
             "band": "low",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_08",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -197,6 +180,14 @@
           "normalized": {
             "band": "moderate",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_08",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -205,9 +196,18 @@
           "normalized": {
             "band": "high",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_08",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     },
     {
       "missing_variable": "household_income_inr",
@@ -221,6 +221,14 @@
           "normalized": {
             "band": "low",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -237,9 +245,18 @@
           "normalized": {
             "band": "high",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": false
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     },
     {
       "missing_variable": "market_price_crop",
@@ -253,6 +270,14 @@
           "normalized": {
             "band": "low",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -262,6 +287,14 @@
             "band": "moderate",
             "present": true,
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -271,9 +304,18 @@
             "band": "high",
             "present": true,
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     }
   ],
   "sources": [
@@ -348,5 +390,44 @@
     "semantic_alias_count": 19,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
   },
-  "overall_reasoning_note": "In the cold arid Ladakh context, the small landholding pathway to low income operates through three compounding mechanisms: (1) absolute land scarcity on valley floors limits total production volume, (2) a short frost-free season prevents double-cropping and thus limits effective output per unit land, and (3) extreme market remoteness prevents realisation of fair prices for whatever surplus is produced. Diagnosis requires at least two of the three primary signals (sig_01 per-capita cropland, sig_02 low cropping intensity, sig_03 market distance) to confirm the pathway. The safety net signals (sig_04, sig_05) amplify severity but do not confirm the pathway independently. The key diagnostic question is whether low income is driven by structural land scarcity (this pathway) versus climate-induced crop failure (climate stress pathway) or market exploitation (market failure pathway) — these often co-occur in Ladakh and may require combined solutions. Prioritise asking users about actual plot sizes and income sources before finalising diagnosis."
+  "overall_reasoning_note": "In the cold arid Ladakh context, the small landholding pathway to low income operates through three compounding mechanisms: (1) absolute land scarcity on valley floors limits total production volume, (2) a short frost-free season prevents double-cropping and thus limits effective output per unit land, and (3) extreme market remoteness prevents realisation of fair prices for whatever surplus is produced. Diagnosis requires at least two of the three primary signals (sig_01 per-capita cropland, sig_02 low cropping intensity, sig_03 market distance) to confirm the pathway. The safety net signals (sig_04, sig_05) amplify severity but do not confirm the pathway independently. The key diagnostic question is whether low income is driven by structural land scarcity (this pathway) versus climate-induced crop failure (climate stress pathway) or market exploitation (market failure pathway) — these often co-occur in Ladakh and may require combined solutions. Prioritise asking users about actual plot sizes and income sources before finalising diagnosis.",
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
+  }
 }

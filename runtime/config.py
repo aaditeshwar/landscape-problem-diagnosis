@@ -33,3 +33,7 @@ CORS_ORIGINS = [
     for o in os.getenv("CORS_ORIGINS", "http://localhost:5173,http://localhost:3000").split(",")
     if o.strip()
 ]
+
+# Context cluster raster (signal editor) — see .env.example
+CLUSTER_COG_URL = os.getenv("CLUSTER_COG_URL", "").strip()
+CLUSTER_COG_VIEWER_URL = os.getenv("CLUSTER_COG_VIEWER_URL", "").strip()

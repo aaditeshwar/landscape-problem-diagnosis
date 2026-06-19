@@ -31,13 +31,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "(lulc_single_kharif_ha[-1] / (lulc_single_kharif_ha[-1] + lulc_double_crop_ha[-1] + 1e-9)) > 0.75",
-        "qualitative_description": "More than 75% of cropped area is under single kharif season only, indicating near-total dependence on monsoon rainfall with negligible irrigation-supported rabi or double cropping.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "qualitative_description": "More than 75% of cropped area is under single kharif season only, indicating near-total dependence on monsoon rainfall with negligible irrigation-supported rabi or double cropping."
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "In the Eastern Plateau and Eastern Ghats ecoregion (AER-11), dominant single-season kharif cropping is the primary structural indicator of rainfed dependence. When over three-quarters of cultivated land produces only one kharif crop, it confirms that irrigation infrastructure is insufficient to support post-monsoon cultivation. This pattern is characteristic of hard rock crystalline basement aquifers in Chhattisgarh, western Odisha and parts of Jharkhand, where shallow dug wells and tanks dry up after the monsoon, leaving rabi and zaid seasons uncultivated. The rainfed area of India occupies approximately 68% of total cultivated area and supports 40% of the human population, underscoring the systemic vulnerability embedded in single-season cropping systems."
+      "explanation": "In the Eastern Plateau and Eastern Ghats ecoregion (AER-11), dominant single-season kharif cropping is the primary structural indicator of rainfed dependence. When over three-quarters of cultivated land produces only one kharif crop, it confirms that irrigation infrastructure is insufficient to support post-monsoon cultivation. This pattern is characteristic of hard rock crystalline basement aquifers in Chhattisgarh, western Odisha and parts of Jharkhand, where shallow dug wells and tanks dry up after the monsoon, leaving rabi and zaid seasons uncultivated. The rainfed area of India occupies approximately 68% of total cultivated area and supports 40% of the human population, underscoring the systemic vulnerability embedded in single-season cropping systems.",
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -47,16 +46,12 @@
       "condition": {
         "type": "trend",
         "expression": "mean_cropping_intensity <= 1.15",
-        "qualitative_description": "Mean cropping intensity at or below 1.15 across the multi-year record indicates that the micro-watershed is effectively farming only one season per year, consistent with rainfed-only agriculture.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Mean cropping intensity at or below 1.15 across the multi-year record indicates that the micro-watershed is effectively farming only one season per year, consistent with rainfed-only agriculture."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Cropping intensity near 1.0 means that net sown area is harvested only once per year. Values above 1.5 typically indicate access to irrigation for a second or third crop. A mean cropping intensity at or below 1.15 in the sub-humid Eastern Plateau zone strongly confirms that farmers lack reliable water access beyond the kharif monsoon window. This is consistent with the characterisation of less-favoured rainfed areas in South Asia, where erratic rainfall, short growing seasons, and poor soil water retention combine to restrict cultivation to a single season.",
-      "interaction_with": [
-        "sig_01"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -68,8 +63,6 @@
         "type": "composite",
         "expression": "terrain_cluster_id == 3 and mean_annual_runoff_mm > 400",
         "qualitative_description": "Broad plains and slopes terrain (cluster 3) combined with high mean annual runoff above 400 mm indicates rapid water loss from the landscape, reducing in-field moisture availability and limiting the effective use of sub-humid rainfall for crop production.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "runoff_mm",
           "terrain_cluster_id"
@@ -78,10 +71,7 @@
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "In sloping plateau and hilly terrain typical of AER-11, high runoff coefficients mean that a substantial fraction of the 1000–1400 mm annual rainfall is lost as surface runoff before it can infiltrate or be stored for crop use. Unproductive water losses such as runoff increase under tropical residual moisture regimes with short intense rainy seasons. This amplifies rainfed risk because even in years of adequate total rainfall, the effective plant-available water is reduced by rapid drainage off hard rock crystalline basement terrain. High runoff also signals the potential for in-situ water harvesting interventions such as farm ponds and broad-bed furrows.",
-      "interaction_with": [
-        "sig_01",
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -92,17 +82,12 @@
       "condition": {
         "type": "composite",
         "expression": "canal_name is None and nrega_irrigation_count < 3",
-        "qualitative_description": "No irrigation canal intersects the micro-watershed and fewer than 3 MGNREGA irrigation works have been constructed, confirming absence of both surface irrigation infrastructure and public investment in water access.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "No irrigation canal intersects the micro-watershed and fewer than 3 MGNREGA irrigation works have been constructed, confirming absence of both surface irrigation infrastructure and public investment in water access."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "The absence of a named canal indicates that the micro-watershed lies outside the command area of any surface irrigation scheme, a common condition in the upland and plateau portions of Chhattisgarh, western Odisha and Jharkhand. Low MGNREGA irrigation work counts further confirm that public investment in small-scale irrigation infrastructure has been minimal. Together, these two indicators establish that the rainfed risk is structural rather than temporary: farmers have neither access to canal water nor locally constructed water harvesting assets to buffer against monsoon variability. This is consistent with the characterisation of less-favoured areas as having received minimum development attention.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -112,16 +97,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "mean_swb_rabi_kharif_ratio < 0.25",
-        "qualitative_description": "Mean rabi-to-kharif surface water body area ratio below 0.25 indicates that surface water storage collapses after the monsoon, leaving negligible water available for post-monsoon irrigation.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Mean rabi-to-kharif surface water body area ratio below 0.25 indicates that surface water storage collapses after the monsoon, leaving negligible water available for post-monsoon irrigation."
       },
       "severity": "moderate",
       "direction": "confirms",
       "explanation": "Surface water bodies (tanks, ponds, reservoirs) that shrink to less than one-quarter of their kharif extent by rabi season confirm that storage capacity is insufficient to support post-monsoon irrigation. In hard rock crystalline basement terrain, natural groundwater recharge is limited and tanks are the primary supplemental water source for rabi crops. Rapid drawdown of these water bodies after the monsoon is a direct indicator of the water scarcity experienced by farmers during rabi and zaid seasons, consistent with farmer-reported insufficient water for crop production outside the kharif window.",
-      "interaction_with": [
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "variables": [
@@ -129,14 +110,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Irrigated share of cultivated land is negligible (under roughly 5–10%), confirming structural rainfed dependence; meaningful irrigated area (above roughly 20%) weakens the rainfed-risk diagnosis.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Irrigated share of cultivated land is negligible (under roughly 5–10%), confirming structural rainfed dependence; meaningful irrigated area (above roughly 20%) weakens the rainfed-risk diagnosis."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "User-reported irrigated area is the most direct confirmatory variable for rainfed risk when landscape proxies are ambiguous.",
-      "signal_id": "sig_06"
+      "signal_id": "sig_06",
+      "active": true
     }
   ],
   "confounders": [
@@ -163,6 +143,14 @@
             "band": "low",
             "present": true,
             "percent_upper": 10
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -182,9 +170,18 @@
             "band": "high",
             "present": true,
             "percent_lower": 30
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": false
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     }
   ],
   "sources": [
@@ -246,5 +243,50 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 20,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_04",
+      "sig_05"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_04",
+          "sig_05"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_04",
+            "sig_05"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

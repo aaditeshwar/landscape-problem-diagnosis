@@ -31,17 +31,12 @@
       "condition": {
         "type": "trend",
         "expression": "lulc_tree_forest_ha[-1] < lulc_tree_forest_ha[0]",
-        "qualitative_description": "Forest area in the micro-watershed has declined from 2017 to 2024, indicating net loss of NTFP-bearing tree cover over the monitoring period.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Forest area in the micro-watershed has declined from 2017 to 2024, indicating net loss of NTFP-bearing tree cover over the monitoring period."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "A declining trend in forest area directly reduces the stock of NTFP-bearing trees and understory species. In the Chhota Nagpur Plateau and adjoining hilly tracts of Jharkhand, West Bengal (western), and Odisha (northern), tribal communities depend heavily on forest-sourced NTFPs — including mahua (Madhuca latifolia), tendu leaves, achar seeds, and medicinal plants — for 15–20% of household income. Any net reduction in forest cover translates to reduced NTFP availability and access for dependent communities.",
-      "interaction_with": [
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -53,8 +48,6 @@
         "type": "composite",
         "expression": "cd_total_deforestation_ha > 50 and (cd_afforestation_ha / (cd_total_deforestation_ha + 1e-9)) < 0.5",
         "qualitative_description": "Cumulative deforestation exceeds 50 ha and afforestation covers less than half the deforested area, indicating a net forest deficit with weak recovery.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "cd_total_deforestation_ha",
           "cd_afforestation_ha"
@@ -63,9 +56,7 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "When deforestation substantially outpaces afforestation, the net forest balance is negative and NTFP-bearing habitat is being permanently lost. In the AER-12 ecoregion, compensatory afforestation programmes have been critiqued for relying on industrial monoculture plantations that do not restore the multi-species understory on which NTFP collectors depend. A ratio of afforestation to deforestation below 0.5 signals that even nominal restoration efforts are insufficient to compensate for habitat loss.",
-      "interaction_with": [
-        "sig_01"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -75,17 +66,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "cd_total_deforestation_ha > 100",
-        "qualitative_description": "Total deforested area in the micro-watershed exceeds 100 ha, representing substantial cumulative habitat loss for NTFP species.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Total deforested area in the micro-watershed exceeds 100 ha, representing substantial cumulative habitat loss for NTFP species."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Cumulative deforestation above 100 ha in a micro-watershed context represents a significant fraction of the forest resource base available to forest-fringe communities. In Jharkhand's tribal economy, NTFPs contribute approximately 17% of gross annual household income; large-scale deforestation directly erodes this income source and forces communities into wage labour dependency. The threshold of 100 ha is calibrated to micro-watershed scale typical of AER-12 plateau and hilly terrain.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -95,16 +81,12 @@
       "condition": {
         "type": "qualitative",
         "expression": "'Agroforestry' not in organization_domains and 'NTFP' not in organization_domains and 'Forest' not in organization_domains",
-        "qualitative_description": "No NGO or organisation active in the micro-watershed has a domain focus on agroforestry, NTFP management, or forest governance, indicating an absence of institutional support for forest protection and NTFP recovery.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "No NGO or organisation active in the micro-watershed has a domain focus on agroforestry, NTFP management, or forest governance, indicating an absence of institutional support for forest protection and NTFP recovery."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "The presence of NGOs working on NTFP value chains, Joint Forest Management, or Community Forest Resource rights under the Forest Rights Act 2006 is associated with better forest protection outcomes and NTFP livelihood support. Absence of such organisations removes a key institutional buffer against forest degradation. In the Chhota Nagpur Plateau region, civil society organisations have played a critical role in facilitating CFR rights recognition, which is among the recommended solutions for this pathway.",
-      "interaction_with": [
-        "sig_05"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -113,13 +95,12 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Field surveys or community reports indicate reduced abundance or local disappearance of key NTFP species such as mahua (Madhuca latifolia), tendu (Diospyros melanoxylon), achar (Buchanania lanzan), or medicinal plants in the micro-watershed.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "local"
+        "qualitative_description": "Field surveys or community reports indicate reduced abundance or local disappearance of key NTFP species such as mahua (Madhuca latifolia), tendu (Diospyros melanoxylon), achar (Buchanania lanzan), or medicinal plants in the micro-watershed."
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "Direct evidence of declining NTFP species abundance is the most diagnostic indicator of forest degradation impact on NTFP availability. This variable is not available in the remote-sensing data stack and must be gathered through community surveys or participatory resource mapping. In Jharkhand's Bundu block, fuel wood species (67 species recorded) and fruit species are the most commonly harvested NTFPs; their decline would directly confirm the forest degradation pathway."
+      "explanation": "Direct evidence of declining NTFP species abundance is the most diagnostic indicator of forest degradation impact on NTFP availability. This variable is not available in the remote-sensing data stack and must be gathered through community surveys or participatory resource mapping. In Jharkhand's Bundu block, fuel wood species (67 species recorded) and fruit species are the most commonly harvested NTFPs; their decline would directly confirm the forest degradation pathway.",
+      "active": true
     },
     {
       "variables": [
@@ -127,14 +108,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Frequent or intensifying forest fires (annual or every few years, worsening trend) damaging NTFP species and suppressing regeneration.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Frequent or intensifying forest fires (annual or every few years, worsening trend) damaging NTFP species and suppressing regeneration."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Fire-driven degradation is a major NTFP loss mechanism in dry deciduous and plateau forests.",
-      "signal_id": "sig_06"
+      "signal_id": "sig_06",
+      "active": true
     }
   ],
   "confounders": [
@@ -161,6 +141,14 @@
             "band": "high",
             "present": true,
             "trend": "stable"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -179,9 +167,18 @@
             "band": "low",
             "present": true,
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     },
     {
       "missing_variable": "forest_fire_frequency",
@@ -196,6 +193,14 @@
             "band": "low",
             "present": false,
             "trend": "stable"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -205,6 +210,14 @@
             "band": "moderate",
             "present": true,
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -214,9 +227,18 @@
             "band": "high",
             "present": true,
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "presence_graded"
     }
   ],
   "sources": [
@@ -288,5 +310,50 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 25,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_03",
+      "sig_05"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_03",
+          "sig_05"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_05"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

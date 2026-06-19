@@ -30,17 +30,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "soge_dev_percent > 90 or soge_class_name in ['Critical', 'Over-exploited']",
-        "qualitative_description": "Block-level SOGE exceeds 90% or is classified Critical/Over-exploited by CGWB, indicating abstraction is at or beyond net annual recharge in the alluvial aquifer.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "global"
+        "qualitative_description": "Block-level SOGE exceeds 90% or is classified Critical/Over-exploited by CGWB, indicating abstraction is at or beyond net annual recharge in the alluvial aquifer."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "In the Indo-Gangetic alluvial aquifer system, CGWB defines Critical as 90–100% and Over-exploited as >100% of net annual recharge extracted. Unlike hard-rock aquifers where seasonal emptying masks chronic depletion, alluvial aquifers show a gradual, cumulative water-table decline when abstraction persistently exceeds recharge. Punjab and Haryana have large proportions of Over-exploited blocks driven by paddy-wheat double cropping under tube-well irrigation. A threshold of 90% is used here because alluvial aquifers, while having higher storativity than hard-rock systems, still face irreversible long-term depletion once extraction consistently exceeds recharge.",
-      "interaction_with": [
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -52,8 +47,6 @@
         "type": "composite",
         "expression": "trend_annual_delta_g_mm < 0 and mean_annual_delta_g_mm < 0",
         "qualitative_description": "Both the linear trend slope of annual groundwater balance (P - ET - Runoff) is negative and the multi-year mean is negative, confirming chronic depletion rather than a single drought year anomaly.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "trend_annual_delta_g_mm",
           "delta_g_mm"
@@ -62,10 +55,7 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "A sustained negative delta_g trend combined with a negative multi-year mean indicates that outflows (ET + runoff) persistently exceed precipitation inputs, leaving no surplus for aquifer recharge. In the sub-humid Indo-Gangetic Plain, this pattern is driven by high crop water demand from paddy cultivation in kharif and wheat in rabi, both heavily dependent on groundwater irrigation. Global analyses confirm that rapid groundwater-level declines (>0.5 m/year) are widespread in regions with extensive croplands, and that acceleration of depletion over recent decades is a key warning signal requiring urgent management response.",
-      "interaction_with": [
-        "sig_01",
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -76,16 +66,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "aquifer_class == 'alluvium' and aquifer_lithology_percent.get('alluvium', 0) > 60",
-        "qualitative_description": "Dominant alluvial aquifer with more than 60% of MWS area underlain by alluvial lithology, confirming the high-storage but over-exploited aquifer type characteristic of the Indo-Gangetic Plain.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Dominant alluvial aquifer with more than 60% of MWS area underlain by alluvial lithology, confirming the high-storage but over-exploited aquifer type characteristic of the Indo-Gangetic Plain."
       },
       "severity": "moderate",
       "direction": "confirms",
       "explanation": "Alluvial aquifers of the Indo-Gangetic Plain have high storativity compared to hard-rock systems, meaning depletion manifests as a gradual, cumulative water-table decline rather than seasonal emptying. This geological context is critical: management strategies effective in peninsular hard-rock systems (e.g., percolation tanks sized for low-storage aquifers) are not directly transferable to alluvial settings where the resource is shared across large spatial extents and depletion is driven by aggregate extraction pressure across many users. Confirming alluvial lithology dominance contextualises the SOGE and delta_g signals and guides appropriate intervention design.",
-      "interaction_with": [
-        "sig_01"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -95,16 +81,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "nrega_swc_count < 10",
-        "qualitative_description": "Fewer than 10 cumulative SWC works in the MWS over the MGNREGA record, indicating low investment in recharge infrastructure relative to the extraction pressure in an alluvial plain setting.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "Fewer than 10 cumulative SWC works in the MWS over the MGNREGA record, indicating low investment in recharge infrastructure relative to the extraction pressure in an alluvial plain setting."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Low MGNREGA-funded SWC investment means that natural recharge opportunities — check dams, trench structures, pond desilting, and drainage-line interventions — have not been systematically exploited. In alluvial plains, managed aquifer recharge through streambed structures and infiltration basins can meaningfully supplement natural recharge, but requires sustained institutional investment. The absence of such works amplifies depletion driven by over-extraction and signals an intervention opportunity. India has a long history of tank and pond-based recharge, and government investment in artificial recharge structures is projected to expand significantly, making low current SWC counts a remediable gap rather than a terminal condition.",
-      "interaction_with": [
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -113,17 +95,12 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Farmers report that they have had to deepen borewells or tubewells over the past 5–10 years, or that shallow dug wells have dried up during rabi or zaid seasons, indicating a declining static water level in the alluvial aquifer.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Farmers report that they have had to deepen borewells or tubewells over the past 5–10 years, or that shallow dug wells have dried up during rabi or zaid seasons, indicating a declining static water level in the alluvial aquifer."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Well depth increase over time is a direct proxy for declining groundwater table. In alluvial aquifers of the Indo-Gangetic Plain, this manifests as a gradual deepening of the water table rather than the seasonal emptying seen in hard-rock systems. Farmers deepening tubewells from 30–40 m to 60–80 m over a decade is a commonly reported symptom in Punjab and Haryana. This variable is not available in the framework data and must be elicited through farmer interviews.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "variables": [
@@ -131,14 +108,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Farmers report moderate-to-high borewell/tubewell density (roughly 10–50 or more than 50 within 2–3 km) in hard rock terrain, indicating localised over-extraction not captured by block-level SOGE. Very low density or widespread borewell failure may indicate aquifer limits rather than density-driven stress.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Farmers report moderate-to-high borewell/tubewell density (roughly 10–50 or more than 50 within 2–3 km) in hard rock terrain, indicating localised over-extraction not captured by block-level SOGE. Very low density or widespread borewell failure may indicate aquifer limits rather than density-driven stress."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "High local borewell density confirms extraction pressure at micro-watershed scale when paired with landscape depletion signals. Failed or unsuccessful borewells indicate hard-rock aquifer limits and may amplify stress severity without confirming high density per se.",
-      "signal_id": "sig_06"
+      "signal_id": "sig_06",
+      "active": true
     },
     {
       "variables": [
@@ -146,14 +122,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Farmers report salty/brackish well water, white crust on soil or pipes, or water unsuitable for sensitive crops — indicating salinity from deep penetration or over-extraction.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Farmers report salty/brackish well water, white crust on soil or pipes, or water unsuitable for sensitive crops — indicating salinity from deep penetration or over-extraction."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Reported salinity confirms groundwater stress as a quality-and-quantity problem; may also indicate a distinct salinity pathway requiring solution reassessment.",
-      "signal_id": "sig_07"
+      "signal_id": "sig_07",
+      "active": true
     }
   ],
   "confounders": [
@@ -179,6 +154,14 @@
           "normalized": {
             "trend": "stable",
             "present": false
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -187,6 +170,14 @@
           "normalized": {
             "trend": "worsening",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -196,9 +187,18 @@
             "trend": "worsening",
             "present": true,
             "band": "high"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "trend"
     },
     {
       "missing_variable": "borewell_density",
@@ -212,6 +212,14 @@
           "normalized": {
             "band": "low",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -220,6 +228,14 @@
           "normalized": {
             "band": "moderate",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -228,9 +244,18 @@
           "normalized": {
             "band": "high",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     },
     {
       "missing_variable": "groundwater_salinity",
@@ -244,6 +269,14 @@
           "normalized": {
             "present": false,
             "trend": "stable"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -253,6 +286,14 @@
             "present": true,
             "band": "moderate",
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -262,9 +303,18 @@
             "present": true,
             "band": "high",
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "presence_graded"
     }
   ],
   "sources": [
@@ -344,5 +394,47 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 24,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_05"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_05"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_05"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

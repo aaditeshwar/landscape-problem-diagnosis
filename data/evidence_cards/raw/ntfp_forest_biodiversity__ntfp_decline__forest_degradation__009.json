@@ -29,17 +29,12 @@
       "condition": {
         "type": "trend",
         "expression": "lulc_tree_forest_ha[-1] < lulc_tree_forest_ha[0]",
-        "qualitative_description": "Total forest/tree cover area in the micro-watershed has declined from 2017 to the latest available year, indicating net forest loss over the monitoring period.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Total forest/tree cover area in the micro-watershed has declined from 2017 to the latest available year, indicating net forest loss over the monitoring period."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "A net reduction in lulc_tree_forest_ha over the 2017–2024 period directly measures forest cover loss. In the sub-humid to humid plains of eastern UP and northern Bihar (AER-13), even modest forest patches on alluvial terrain support dense understory NTFP species. Declining forest area reduces the habitat base for NTFP-bearing trees and shrubs, directly suppressing collection yields for dependent communities. Over 50 million people in India depend on NTFPs for subsistence, making forest cover trends a primary diagnostic indicator.",
-      "interaction_with": [
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -51,8 +46,6 @@
         "type": "composite",
         "expression": "(cd_total_deforestation_ha > 50) and (cd_total_deforestation_ha > cd_afforestation_ha * 2)",
         "qualitative_description": "Cumulative deforestation exceeds 50 ha and is more than double the cumulative afforestation, indicating a strongly negative forest balance with inadequate compensatory recovery.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "cd_total_deforestation_ha",
           "cd_afforestation_ha"
@@ -61,9 +54,7 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "When deforestation substantially outpaces afforestation, the net forest balance is negative and recovery is structurally insufficient. In alluvial plains contexts, compensatory afforestation programmes have been critiqued for relying on industrial monoculture plantations that do not restore the multi-species understory required for NTFP production. A deforestation-to-afforestation ratio greater than 2:1 signals that even nominal restoration efforts are failing to offset habitat loss for NTFP-dependent communities.",
-      "interaction_with": [
-        "sig_01"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -74,8 +65,6 @@
         "type": "quantitative",
         "expression": "cd_afforestation_ha < 10",
         "qualitative_description": "Cumulative afforestation area is below 10 ha, indicating very weak forest protection and recovery investment in the micro-watershed.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local",
         "variables": [
           "cd_afforestation_ha"
         ]
@@ -83,10 +72,7 @@
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Very low afforestation investment signals the absence of active forest restoration or protection programmes. In the context of AER-13 plains, where natural regeneration potential is moderate given 1400–1800 mm rainfall, the failure to invest in afforestation suggests institutional neglect of forest governance. This amplifies the NTFP decline signal because without assisted regeneration or community plantation of indigenous NTFP-bearing species, degraded patches will not recover the species composition needed for sustainable NTFP harvesting.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -96,16 +82,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "'Agroforestry' not in organization_domains and 'Forest' not in organization_domains and 'NTFP' not in organization_domains",
-        "qualitative_description": "No NGO or organisation active in the micro-watershed works in agroforestry, forest management, or NTFP domains, indicating an absence of institutional support for NTFP-dependent communities.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "No NGO or organisation active in the micro-watershed works in agroforestry, forest management, or NTFP domains, indicating an absence of institutional support for NTFP-dependent communities."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "The presence of organisations working in NTFP, agroforestry, or forest management domains is associated with better forest governance outcomes, including community forest protection bylaws, Joint Forest Management (JFM) committees, and Forest Rights Act (FRA) claim facilitation. Their absence means that even where forest degradation is occurring, there is no institutional actor to mobilise community forest watch patrols, support CFR rights recognition, or facilitate assisted natural regeneration. This amplifies vulnerability of NTFP-dependent households.",
-      "interaction_with": [
-        "sig_01"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -114,13 +96,12 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Field surveys or community reports indicate reduced abundance or local disappearance of key NTFP species such as Madhuca indica (mahua), Diospyros melanoxylon (tendu), Terminalia chebula (harra), Emblica officinalis (aonla), or Buchanania lanzan (achar). Reduced fruiting seasons, smaller collection quantities per household, or longer travel distances to collection sites are diagnostic indicators.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "local"
+        "qualitative_description": "Field surveys or community reports indicate reduced abundance or local disappearance of key NTFP species such as Madhuca indica (mahua), Diospyros melanoxylon (tendu), Terminalia chebula (harra), Emblica officinalis (aonla), or Buchanania lanzan (achar). Reduced fruiting seasons, smaller collection quantities per household, or longer travel distances to collection sites are diagnostic indicators."
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "Direct evidence of NTFP species decline is the most diagnostic indicator of forest degradation impact on NTFP availability. Studies in India document that collection methods for most NTFP species are destructive and wild populations are declining. In tribal and forest-fringe communities of eastern UP and northern Bihar, NTFPs including mahua flower, oilseeds, fruits, and medicinal plants contribute significantly to household income. Community-reported declines in collection quantity or quality, or increased effort required to access collection sites, directly confirm the forest degradation pathway."
+      "explanation": "Direct evidence of NTFP species decline is the most diagnostic indicator of forest degradation impact on NTFP availability. Studies in India document that collection methods for most NTFP species are destructive and wild populations are declining. In tribal and forest-fringe communities of eastern UP and northern Bihar, NTFPs including mahua flower, oilseeds, fruits, and medicinal plants contribute significantly to household income. Community-reported declines in collection quantity or quality, or increased effort required to access collection sites, directly confirm the forest degradation pathway.",
+      "active": true
     }
   ],
   "overall_reasoning_note": "Diagnosis of NTFP decline via forest degradation in AER-13 alluvial plains should be confirmed by at least two of the three primary remote-sensing signals (sig_01, sig_02, sig_03) showing net forest loss and weak recovery. The absence of institutional support (sig_04) amplifies but does not independently confirm the pathway. If forest cover is stable but NTFP decline is reported, consider alternative pathways such as over-harvesting, market access failure, or tenure insecurity rather than forest degradation. The FRA/CFR rights pathway (sig_05 qualitative) is critical for ground-truthing: communities with recognised CFR rights and active JFM committees tend to show better forest condition even in degraded landscapes. Always verify whether reported NTFP decline reflects reduced forest area, reduced species density within existing forest, or reduced access due to tenure or governance changes.",
@@ -148,6 +129,14 @@
             "band": "high",
             "present": true,
             "trend": "stable"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -166,9 +155,18 @@
             "band": "low",
             "present": true,
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     }
   ],
   "sources": [
@@ -242,5 +240,47 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 25,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_05"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_05"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_05"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

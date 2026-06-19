@@ -32,13 +32,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "(mean_kharif_cropped_area_ha / (mean_kharif_cropped_area_ha + mean_double_crop_area_ha + 1e-9)) > 0.70",
-        "qualitative_description": "More than 70% of mean cropped area is under single kharif, with low double-cropped area, indicating dominant rainfed dependence and minimal irrigation access.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "qualitative_description": "More than 70% of mean cropped area is under single kharif, with low double-cropped area, indicating dominant rainfed dependence and minimal irrigation access."
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "In coastal sub-humid zones such as Tamil Nadu and Andhra Pradesh coasts, large proportions of single-kharif cropping relative to double-cropped area directly indicate that farmers rely on monsoon rainfall rather than irrigation. Rainfed areas in South Asia — covering 68% of India's cultivated area — are characterised by single-season cropping and high vulnerability to erratic monsoons. A ratio above 0.70 confirms that irrigation infrastructure is insufficient to support post-monsoon cropping."
+      "explanation": "In coastal sub-humid zones such as Tamil Nadu and Andhra Pradesh coasts, large proportions of single-kharif cropping relative to double-cropped area directly indicate that farmers rely on monsoon rainfall rather than irrigation. Rainfed areas in South Asia — covering 68% of India's cultivated area — are characterised by single-season cropping and high vulnerability to erratic monsoons. A ratio above 0.70 confirms that irrigation infrastructure is insufficient to support post-monsoon cropping.",
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -48,16 +47,12 @@
       "condition": {
         "type": "trend",
         "expression": "mean_cropping_intensity <= 1.15 and trend_cropping_intensity <= 0.0",
-        "qualitative_description": "Mean cropping intensity at or below 1.15 with a flat or declining trend confirms single-season rainfed farming with no expansion of irrigated double-cropping over time.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Mean cropping intensity at or below 1.15 with a flat or declining trend confirms single-season rainfed farming with no expansion of irrigated double-cropping over time."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Cropping intensity near 1.0 indicates that nearly all cultivated land is harvested only once per year, consistent with rainfed kharif-only systems. A value above 1.5 would indicate significant irrigation enabling rabi or zaid crops. A flat or declining trend rules out gradual irrigation expansion. In coastal alluvial plains, where groundwater is accessible, persistent low cropping intensity signals that infrastructure or economic barriers prevent irrigation uptake.",
-      "interaction_with": [
-        "sig_01"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -68,17 +63,12 @@
       "condition": {
         "type": "composite",
         "expression": "mean_swb_rabi_kharif_ratio < 0.25 and canal_name is None",
-        "qualitative_description": "Surface water bodies shrink substantially after kharif (rabi-to-kharif ratio below 0.25) and no irrigation canal is present, confirming absence of surface water storage and conveyance infrastructure for post-monsoon cropping.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Surface water bodies shrink substantially after kharif (rabi-to-kharif ratio below 0.25) and no irrigation canal is present, confirming absence of surface water storage and conveyance infrastructure for post-monsoon cropping."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Low persistence of surface water bodies into the rabi season indicates that tanks and ponds drain rapidly after the monsoon, leaving no stored water for supplemental irrigation. The absence of a named canal further confirms that farmers have no access to surface irrigation infrastructure. In coastal Odisha and Andhra Pradesh, canal irrigation networks exist in some areas; their absence in a micro-watershed is a strong indicator of rainfed dependency. Together, these signals confirm that water scarcity in rabi and dry spells is structurally driven by lack of infrastructure rather than temporary drought.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -90,8 +80,6 @@
         "type": "composite",
         "expression": "mean_annual_runoff_mm > 300 and terrain_cluster_id == 1",
         "qualitative_description": "High mean annual runoff (above 300 mm) on mostly plains terrain (cluster 1) indicates significant harvestable water that is currently lost, representing an untapped opportunity for in-situ water harvesting.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "runoff_mm",
           "terrain_cluster_id"
@@ -100,9 +88,7 @@
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "In sub-humid coastal zones receiving 900–1400 mm of rainfall (AER-18), a substantial fraction is lost as surface runoff. On plains terrain (cluster 1), this runoff is amenable to capture through farm ponds, bunds, and broad-bed furrows. High runoff relative to rainfall indicates that in-situ water harvesting could significantly reduce rainfed risk, but the current absence of such structures amplifies water scarcity during dry spells. This signal identifies both the severity of the problem and the primary intervention pathway.",
-      "interaction_with": [
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -112,17 +98,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "nrega_irrigation_count < 3",
-        "qualitative_description": "Fewer than 3 MGNREGA irrigation works recorded in the micro-watershed, indicating minimal public investment in irrigation infrastructure.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "Fewer than 3 MGNREGA irrigation works recorded in the micro-watershed, indicating minimal public investment in irrigation infrastructure."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "MGNREGA irrigation works — including farm ponds, check dams, and field channels — represent the primary public mechanism for expanding irrigation access in rainfed areas. A count below 3 over the programme period indicates that this micro-watershed has not benefited from irrigation infrastructure investment, amplifying its structural rainfed vulnerability. Low MGNREGA irrigation investment also signals an opportunity for targeted intervention rather than a terminal condition.",
-      "interaction_with": [
-        "sig_03",
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "variables": [
@@ -130,14 +111,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Irrigated share of cultivated land is negligible (under roughly 5–10%), confirming structural rainfed dependence; meaningful irrigated area (above roughly 20%) weakens the rainfed-risk diagnosis.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Irrigated share of cultivated land is negligible (under roughly 5–10%), confirming structural rainfed dependence; meaningful irrigated area (above roughly 20%) weakens the rainfed-risk diagnosis."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "User-reported irrigated area is the most direct confirmatory variable for rainfed risk when landscape proxies are ambiguous.",
-      "signal_id": "sig_06"
+      "signal_id": "sig_06",
+      "active": true
     }
   ],
   "confounders": [
@@ -164,6 +144,14 @@
             "band": "low",
             "present": true,
             "percent_upper": 10
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -183,9 +171,18 @@
             "band": "high",
             "present": true,
             "percent_lower": 30
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": false
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     }
   ],
   "sources": [
@@ -266,5 +263,47 @@
     "semantic_alias_count": 20,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
   },
-  "overall_reasoning_note": "Diagnosis of rainfed risk in coastal sub-humid plains (AER-18) should be confirmed by at least two primary signals: dominant single-kharif cropping share (sig_01), persistently low cropping intensity (sig_02), and absence of surface water persistence plus canal infrastructure (sig_03). High runoff on plains terrain (sig_04) and low MGNREGA irrigation investment (sig_05) amplify the diagnosis and identify intervention opportunities. A single signal is insufficient — low cropping intensity alone may reflect drought or salinity. The strongest confirmation is the combination of high single-kharif dominance, no canal, and low rabi surface water persistence. Always rule out coastal waterlogging and salinity as alternative explanations for low rabi cropping before finalising the rainfed risk pathway."
+  "overall_reasoning_note": "Diagnosis of rainfed risk in coastal sub-humid plains (AER-18) should be confirmed by at least two primary signals: dominant single-kharif cropping share (sig_01), persistently low cropping intensity (sig_02), and absence of surface water persistence plus canal infrastructure (sig_03). High runoff on plains terrain (sig_04) and low MGNREGA irrigation investment (sig_05) amplify the diagnosis and identify intervention opportunities. A single signal is insufficient — low cropping intensity alone may reflect drought or salinity. The strongest confirmation is the combination of high single-kharif dominance, no canal, and low rabi surface water persistence. Always rule out coastal waterlogging and salinity as alternative explanations for low rabi cropping before finalising the rainfed risk pathway.",
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_03"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_03"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
+  }
 }

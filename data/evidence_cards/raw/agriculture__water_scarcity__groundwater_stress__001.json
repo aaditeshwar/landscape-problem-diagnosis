@@ -31,17 +31,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "soge_dev_percent > 70 or soge_class_name in ['Semi-critical', 'Critical', 'Over-exploited']",
-        "qualitative_description": "Block-level SOGE exceeds 70% or CGWB classifies the block as Semi-critical, Critical, or Over-exploited, indicating extraction pressure on the aquifer.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "global"
+        "qualitative_description": "Block-level SOGE exceeds 70% or CGWB classifies the block as Semi-critical, Critical, or Over-exploited, indicating extraction pressure on the aquifer."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "CGWB defines groundwater stress classes based on extraction as a percentage of net annual recharge. In hard rock volcanic and crystalline basement aquifers of the Deccan Plateau (AER-6, AER-3), storativity is inherently low and recharge is spatially heterogeneous. Even a block-level 'Safe' classification above 60% can mask critical depletion at the micro-watershed scale. Over-exploited blocks in Marathwada and Telangana are well documented in CGWB national compilations.",
-      "interaction_with": [
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -53,8 +48,6 @@
         "type": "trend",
         "expression": "trend_annual_delta_g_mm < 0 and mean_annual_delta_g_mm < 0",
         "qualitative_description": "The linear trend in annual groundwater recharge (P - ET - Runoff) is negative and the multi-year mean is also negative, indicating chronic depletion rather than a single drought year.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "trend_annual_delta_g_mm",
           "delta_g_mm"
@@ -63,10 +56,7 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "A persistently negative delta_g trend means outflows (ET + runoff) chronically exceed precipitation, leaving no surplus for aquifer recharge. In semi-arid hard rock settings of the Deccan Plateau, even small annual deficits accumulate rapidly due to low aquifer storage. Global analyses confirm that rapid groundwater-level declines (>0.5 m/year) are widespread in dry regions with extensive croplands, and that acceleration of decline is detectable through multi-year trend analysis.",
-      "interaction_with": [
-        "sig_01",
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -77,17 +67,12 @@
       "condition": {
         "type": "composite",
         "expression": "(aquifer_class in ['volcanic', 'crystalline_basement', 'sedimentary_hard_rock']) and (aquifer_lithology_percent.get('alluvium', 0) < 20)",
-        "qualitative_description": "Dominant aquifer class is hard rock (volcanic basalt or crystalline basement) with less than 20% alluvial lithology, confirming low storativity and limited recharge capacity.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Dominant aquifer class is hard rock (volcanic basalt or crystalline basement) with less than 20% alluvial lithology, confirming low storativity and limited recharge capacity."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Hard rock aquifers of the Deccan Plateau — volcanic basalt (AER-6: Vidarbha, Marathwada, Telangana) and crystalline basement (AER-3: Karnataka, western Andhra Pradesh) — have very low storativity and depend on fractures and weathered zones for storage. Over-exploitation in these systems manifests as seasonal emptying and filling rather than gradual table decline seen in alluvial aquifers. Low alluvial fraction confirms that natural recharge buffering is minimal, making the system highly vulnerable to extraction pressure.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -97,16 +82,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "nrega_swc_count < 5",
-        "qualitative_description": "Fewer than 5 cumulative MGNREGA soil and water conservation works recorded in the micro-watershed, indicating underinvestment in recharge infrastructure.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "Fewer than 5 cumulative MGNREGA soil and water conservation works recorded in the micro-watershed, indicating underinvestment in recharge infrastructure."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Low historical SWC investment means that natural recharge opportunities — check dams, percolation ponds, farm bunds, trench structures — have not been exploited. India has a long tradition of tank and pond-based managed aquifer recharge; more than 500,000 tanks and ponds have historically been used to detain monsoon runoff and replenish aquifers. Low MGNREGA SWC counts signal an opportunity for intervention rather than a terminal condition, and directly inform the recommended solutions (trench and check-dam construction, community pond desilting).",
-      "interaction_with": [
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -115,13 +96,12 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Farmers report that borewell or dug-well depth has increased over recent years, or that shallow dug wells have gone dry during rabi or zaid seasons, indicating a declining static water level in the hard rock aquifer.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Farmers report that borewell or dug-well depth has increased over recent years, or that shallow dug wells have gone dry during rabi or zaid seasons, indicating a declining static water level in the hard rock aquifer."
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "Deepening well depth is a direct proxy for declining groundwater table. In hard rock aquifers where storage is limited to weathered and fractured zones typically 10–30 m deep, even modest annual declines can cause shallow dug wells to fail. This variable is not available in the framework data and must be elicited from farmers or field surveys. Farmer-reported well deepening or seasonal well failure is a strong qualitative confirmation of the groundwater stress pathway."
+      "explanation": "Deepening well depth is a direct proxy for declining groundwater table. In hard rock aquifers where storage is limited to weathered and fractured zones typically 10–30 m deep, even modest annual declines can cause shallow dug wells to fail. This variable is not available in the framework data and must be elicited from farmers or field surveys. Farmer-reported well deepening or seasonal well failure is a strong qualitative confirmation of the groundwater stress pathway.",
+      "active": true
     },
     {
       "variables": [
@@ -129,14 +109,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Farmers report moderate-to-high borewell/tubewell density (roughly 10–50 or more than 50 within 2–3 km) in hard rock terrain, indicating localised over-extraction not captured by block-level SOGE. Very low density or widespread borewell failure may indicate aquifer limits rather than density-driven stress.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Farmers report moderate-to-high borewell/tubewell density (roughly 10–50 or more than 50 within 2–3 km) in hard rock terrain, indicating localised over-extraction not captured by block-level SOGE. Very low density or widespread borewell failure may indicate aquifer limits rather than density-driven stress."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "High local borewell density confirms extraction pressure at micro-watershed scale when paired with landscape depletion signals. Failed or unsuccessful borewells indicate hard-rock aquifer limits and may amplify stress severity without confirming high density per se.",
-      "signal_id": "sig_06"
+      "signal_id": "sig_06",
+      "active": true
     },
     {
       "variables": [
@@ -144,14 +123,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Farmers report salty/brackish well water, white crust on soil or pipes, or water unsuitable for sensitive crops — indicating salinity from deep penetration or over-extraction.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Farmers report salty/brackish well water, white crust on soil or pipes, or water unsuitable for sensitive crops — indicating salinity from deep penetration or over-extraction."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Reported salinity confirms groundwater stress as a quality-and-quantity problem; may also indicate a distinct salinity pathway requiring solution reassessment.",
-      "signal_id": "sig_07"
+      "signal_id": "sig_07",
+      "active": true
     }
   ],
   "overall_reasoning_note": "Groundwater stress in hard rock aquifers of the Deccan Plateau should be confirmed by at least two of the three primary signals: elevated SOGE (sig_01), chronic negative delta_g trend (sig_02), or farmer-reported well deepening (sig_05). Hard rock aquifer class (sig_03) is a structural amplifier — it does not confirm stress on its own but raises the severity of any extraction signal. Low MGNREGA SWC investment (sig_04) amplifies depletion risk and identifies intervention opportunities. If SOGE is Safe but delta_g trend is persistently negative, prioritise the water balance signal — block-level SOGE masks micro-watershed heterogeneity in fractured hard rock terrain. Always ask the user about borewell density and recent well failure before finalising diagnosis.",
@@ -178,6 +156,14 @@
           "normalized": {
             "trend": "stable",
             "present": false
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -186,6 +172,14 @@
           "normalized": {
             "trend": "worsening",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -195,9 +189,18 @@
             "trend": "worsening",
             "present": true,
             "band": "high"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "trend"
     },
     {
       "missing_variable": "borewell_density",
@@ -211,6 +214,14 @@
           "normalized": {
             "band": "low",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -219,6 +230,14 @@
           "normalized": {
             "band": "moderate",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -227,9 +246,18 @@
           "normalized": {
             "band": "high",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     },
     {
       "missing_variable": "groundwater_salinity",
@@ -243,6 +271,14 @@
           "normalized": {
             "present": false,
             "trend": "stable"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -252,6 +288,14 @@
             "present": true,
             "band": "moderate",
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -261,9 +305,18 @@
             "present": true,
             "band": "high",
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "presence_graded"
     }
   ],
   "sources": [
@@ -338,5 +391,47 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 24,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_05"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_05"
+        ],
+        "min": 2
+      },
+      "amplifiers_do_not_confirm": true
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_05"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

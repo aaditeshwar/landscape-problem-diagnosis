@@ -30,17 +30,12 @@
       "condition": {
         "type": "trend",
         "expression": "lulc_tree_forest_ha[-1] < lulc_tree_forest_ha[0]",
-        "qualitative_description": "Total forest/tree cover area in the micro-watershed is lower in the most recent year (2024) than in the baseline year (2017), indicating net forest loss over the monitoring period.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Total forest/tree cover area in the micro-watershed is lower in the most recent year (2024) than in the baseline year (2017), indicating net forest loss over the monitoring period."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "A declining trend in lulc_tree_forest_ha directly measures the loss of forest cover that supports NTFP-bearing trees and understory species. In semi-arid Deccan Plateau landscapes (AER-6), forest patches are already fragmented and sparse; even modest area losses can disproportionately reduce NTFP availability for dependent communities. Forest cover loss is the primary structural driver of NTFP decline under this pathway.",
-      "interaction_with": [
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -52,8 +47,6 @@
         "type": "composite",
         "expression": "cd_total_deforestation_ha > 0 and (cd_afforestation_ha == 0 or (cd_total_deforestation_ha / (cd_afforestation_ha + 1e-9)) > 2.0)",
         "qualitative_description": "Cumulative deforestation exceeds zero and is more than double cumulative afforestation, indicating a net forest deficit with weak recovery capacity.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "cd_total_deforestation_ha",
           "cd_afforestation_ha"
@@ -62,9 +55,7 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "When deforestation substantially outpaces afforestation, the forest landscape is in net decline and natural regeneration is insufficient to compensate for habitat loss. In the Vidarbha-Marathwada-Telangana belt, compensatory afforestation programmes have been documented to rely heavily on monoculture plantations that do not restore NTFP species diversity, meaning even where afforestation occurs it may not restore NTFP-bearing species. A deforestation-to-afforestation ratio above 2:1 signals structural degradation of the NTFP resource base.",
-      "interaction_with": [
-        "sig_01"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -74,17 +65,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "cd_total_deforestation_ha > 50",
-        "qualitative_description": "More than 50 hectares of cumulative deforestation recorded in the micro-watershed, representing a significant absolute loss of forest habitat.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "More than 50 hectares of cumulative deforestation recorded in the micro-watershed, representing a significant absolute loss of forest habitat."
       },
       "severity": "moderate",
       "direction": "confirms",
       "explanation": "An absolute threshold of 50 ha cumulative deforestation is meaningful at the micro-watershed scale in semi-arid Deccan landscapes where total forest patches may cover only a few hundred hectares. Loss of this magnitude reduces the spatial extent of NTFP-bearing species such as Madhuca indica (mahua), Terminalia chebula (harra), and Buchanania lanzan (achar) — all documented NTFP species in Central and Peninsular India — and fragments the habitat needed for their regeneration. Over 50 million people in India depend directly on NTFPs for subsistence, making even localised forest loss consequential for community livelihoods.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -94,17 +80,12 @@
       "condition": {
         "type": "qualitative",
         "expression": "'Agroforestry' not in organization_domains and 'Forest' not in organization_domains and 'NTFP' not in organization_domains",
-        "qualitative_description": "No NGO or organisation active in the micro-watershed has a domain focus on agroforestry, forest management, or NTFP support, indicating an absence of institutional support for forest protection and NTFP recovery.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "No NGO or organisation active in the micro-watershed has a domain focus on agroforestry, forest management, or NTFP support, indicating an absence of institutional support for forest protection and NTFP recovery."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "The presence of organisations working in agroforestry, NTFP value chains, or forest governance (including Joint Forest Management and Community Forest Resource rights under FRA) is associated with better forest protection outcomes and NTFP livelihood support. Absence of such organisations in the micro-watershed means communities lack facilitation for forming forest protection committees, accessing CFR rights, or adopting sustainable harvesting practices. This amplifies the degradation signal but does not confirm it independently.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -113,18 +94,12 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Field surveys or community reports indicate reduced abundance, fruiting failure, or local disappearance of key NTFP species such as mahua (Madhuca indica), tendu (Diospyros melanoxylon), harra (Terminalia chebula), or achar (Buchanania lanzan) compared to 5-10 years ago.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "local"
+        "qualitative_description": "Field surveys or community reports indicate reduced abundance, fruiting failure, or local disappearance of key NTFP species such as mahua (Madhuca indica), tendu (Diospyros melanoxylon), harra (Terminalia chebula), or achar (Buchanania lanzan) compared to 5-10 years ago."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Direct evidence of NTFP species decline is the most diagnostic indicator of this pathway. Declining wild populations of key NTFP species — documented as a concern in India due to destructive collection methods and habitat loss — would confirm that forest degradation is translating into reduced NTFP availability. This variable is not available in the current data framework and must be gathered through community interviews or field surveys.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     }
   ],
   "overall_reasoning_note": "Diagnosis of forest degradation as the driver of NTFP decline should be confirmed by at least two of the three primary remote-sensing signals (sig_01, sig_02, sig_03). A declining forest area trend (sig_01) combined with a high deforestation-to-afforestation ratio (sig_02) provides strong confirmation. The absence of institutional support (sig_04) amplifies risk but is not diagnostic on its own. Community-reported NTFP species decline (sig_05) is the most direct confirmation but requires field elicitation. In semi-arid Deccan landscapes, forest patches are already at the ecological margin; even small absolute losses can cross thresholds beyond which natural regeneration is severely impaired. Recommended interventions should prioritise community-based forest protection (JFM/CFR under FRA), indigenous NTFP species plantation, and assisted natural regeneration rather than monoculture compensatory afforestation, which has been documented to fail in restoring NTFP diversity.",
@@ -152,6 +127,14 @@
             "band": "high",
             "present": true,
             "trend": "stable"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -170,9 +153,18 @@
             "band": "low",
             "present": true,
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     }
   ],
   "sources": [
@@ -259,5 +251,50 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 25,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_03",
+      "sig_05"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_03",
+          "sig_05"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_05"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

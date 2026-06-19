@@ -31,13 +31,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "cd_forest_to_farm_ha > 50",
-        "qualitative_description": "More than 50 ha of forest has been converted to farmland in the micro-watershed, indicating measurable encroachment pressure on forest extent.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "More than 50 ha of forest has been converted to farmland in the micro-watershed, indicating measurable encroachment pressure on forest extent."
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "Forest-to-farm conversion is the most direct indicator of encroachment. In the humid and perhumid West Coast ecoregion (AER-19), even modest conversion of 50+ ha can significantly reduce NTFP availability because high-value species such as wild pepper, cardamom, and medicinal plants are concentrated in interior forest patches. Geospatial studies in Uttara Kannada (Central Western Ghats) document a decline in interior forest from 64% to 26% between 1979 and 2013, driven substantially by cropland and plantation expansion at forest fringes, directly reducing NTFP-bearing habitat."
+      "explanation": "Forest-to-farm conversion is the most direct indicator of encroachment. In the humid and perhumid West Coast ecoregion (AER-19), even modest conversion of 50+ ha can significantly reduce NTFP availability because high-value species such as wild pepper, cardamom, and medicinal plants are concentrated in interior forest patches. Geospatial studies in Uttara Kannada (Central Western Ghats) document a decline in interior forest from 64% to 26% between 1979 and 2013, driven substantially by cropland and plantation expansion at forest fringes, directly reducing NTFP-bearing habitat.",
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -47,17 +46,12 @@
       "condition": {
         "type": "trend",
         "expression": "cd_forest_to_farm_ha > 20",
-        "qualitative_description": "Forest-to-farm conversion exceeds 20 ha, and when assessed over multiple periods shows a continuing or accelerating trend of forest loss at the landscape scale.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Forest-to-farm conversion exceeds 20 ha, and when assessed over multiple periods shows a continuing or accelerating trend of forest loss at the landscape scale."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "A sustained trend of forest-to-farm conversion, even at lower absolute levels, signals progressive encroachment that cumulatively fragments NTFP-bearing habitat. Forest fragmentation research in the Western Ghats demonstrates that interior forest loss accelerates non-linearly once patch sizes fall below critical thresholds, reducing both species diversity and community access corridors for NTFP collection.",
-      "interaction_with": [
-        "sig_01",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -68,8 +62,6 @@
         "type": "quantitative",
         "expression": "cd_urbanization_ha > 30",
         "qualitative_description": "More than 30 ha of new settlement or built-up area has expanded into or adjacent to forest zones, indicating settlement-driven encroachment pressure.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "cd_urbanization_ha"
         ]
@@ -77,9 +69,7 @@
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Settlement expansion into forest fringes in Kerala, Goa, and Konkan Maharashtra is a documented driver of forest boundary erosion. Urbanization not only directly converts forest land but also increases access pressure on remaining forest, facilitating informal encroachment by fringe households. Forest canopy density studies in river basins show that unscientific urbanization is a primary driver of forest fragmentation and canopy loss.",
-      "interaction_with": [
-        "sig_01"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -89,17 +79,12 @@
       "condition": {
         "type": "composite",
         "expression": "(village_st_percent > 25) and (cd_forest_to_farm_ha > 20)",
-        "qualitative_description": "Villages with more than 25% Scheduled Tribe population combined with measurable forest-to-farm conversion may indicate unresolved Forest Rights Act tenure disputes or displacement of forest-dependent communities.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "Villages with more than 25% Scheduled Tribe population combined with measurable forest-to-farm conversion may indicate unresolved Forest Rights Act tenure disputes or displacement of forest-dependent communities."
       },
       "severity": "moderate",
       "direction": "confirms",
       "explanation": "High ST population share in villages adjacent to encroached forest areas is a proxy for communities whose customary NTFP access rights may be contested or unrecognised. Research on protected area relocations in India documents that illegal displacement of indigenous communities and forest dwellers, in contravention of FRA provisions, directly reduces NTFP access for dependent households. Where FRA community forest rights remain unfiled or rejected, encroachment by outsiders goes unchallenged, accelerating forest loss.",
-      "interaction_with": [
-        "sig_01",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -111,8 +96,6 @@
         "type": "composite",
         "expression": "(cd_forest_to_farm_ha + cd_urbanization_ha) > 100",
         "qualitative_description": "Combined forest-to-farm and urbanization conversion exceeds 100 ha, indicating that cumulative land use change has substantially reduced forest extent available for NTFP collection.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "cd_forest_to_farm_ha",
           "cd_urbanization_ha"
@@ -121,11 +104,7 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "The combined footprint of agricultural encroachment and settlement expansion provides a composite measure of total forest loss pressure. In the West Coast humid ecoregion, where alluvial plains meet forested hilly terrain, both pathways operate simultaneously — lowland plains are converted to paddy or horticulture while hillside forests face settlement pressure. A combined conversion exceeding 100 ha in a micro-watershed is likely to have materially reduced NTFP-bearing forest area and community access routes.",
-      "interaction_with": [
-        "sig_01",
-        "sig_03",
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "variables": [
@@ -133,14 +112,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Many pending or rejected FRA claims with reported NTFP decline and forest conversion indicate tenure insecurity confirming encroachment vulnerability; high recognition weakens encroachment as primary driver.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Many pending or rejected FRA claims with reported NTFP decline and forest conversion indicate tenure insecurity confirming encroachment vulnerability; high recognition weakens encroachment as primary driver."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Unresolved forest rights alongside measurable conversion corroborates encroachment as a tenure and access driver of NTFP decline.",
-      "signal_id": "sig_06"
+      "signal_id": "sig_06",
+      "active": true
     },
     {
       "variables": [
@@ -148,14 +126,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Collectors report NTFP decline attributed to shrinking forest area or blocked/restricted access (not merely lower density inside intact forest). Decline greater than 25–50% increases severity.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Collectors report NTFP decline attributed to shrinking forest area or blocked/restricted access (not merely lower density inside intact forest). Decline greater than 25–50% increases severity."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Access- or area-attributed NTFP decline distinguishes encroachment from degradation or over-harvesting within intact forest.",
-      "signal_id": "sig_07"
+      "signal_id": "sig_07",
+      "active": true
     }
   ],
   "confounders": [
@@ -180,6 +157,14 @@
           "label": "No FRA claims filed by community members",
           "normalized": {
             "present": false
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -188,6 +173,14 @@
           "normalized": {
             "band": "moderate",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -196,9 +189,18 @@
           "normalized": {
             "band": "high",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": false
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "presence_graded"
     },
     {
       "missing_variable": "ntfp_collection_trend_qualitative",
@@ -214,6 +216,14 @@
             "present": true,
             "trend": "stable",
             "percent_upper": 25
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -225,6 +235,14 @@
             "trend": "worsening",
             "percent_lower": 25,
             "percent_upper": 50
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -235,9 +253,18 @@
             "present": true,
             "trend": "worsening",
             "percent_lower": 50
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     }
   ],
   "sources": [
@@ -301,5 +328,56 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 17,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_04",
+      "sig_05",
+      "sig_06",
+      "sig_07"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_04",
+          "sig_05",
+          "sig_06",
+          "sig_07"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_04",
+            "sig_05",
+            "sig_06",
+            "sig_07"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

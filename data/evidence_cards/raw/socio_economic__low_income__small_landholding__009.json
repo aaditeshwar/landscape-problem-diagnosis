@@ -30,17 +30,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "(lulc_cropland_ha[-1] / (village_total_population + 1e-9)) < 0.2",
-        "qualitative_description": "Per-capita cropland availability below 0.2 ha per person is a strong proxy for marginal or sub-marginal average farm size, consistent with the dominance of holdings under 1 ha.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Per-capita cropland availability below 0.2 ha per person is a strong proxy for marginal or sub-marginal average farm size, consistent with the dominance of holdings under 1 ha."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "In eastern UP and northern Bihar, average household size is approximately 5 persons. A ratio below 0.2 ha/person implies average farm size below 1 ha per household, placing most households in the marginal category. Shrinking average landholding size is explicitly identified as a pressing constraint on food production and farmer income in the Indo-Gangetic plains context. Small and marginal holders lack the surplus production needed to generate investible income or creditworthiness.",
-      "interaction_with": [
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -50,16 +45,12 @@
       "condition": {
         "type": "trend",
         "expression": "mean_cropping_intensity <= 1.3",
-        "qualitative_description": "Mean cropping intensity at or below 1.3 indicates that double-cropping is not widespread, meaning small holders are not compensating for limited land area through intensification.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Mean cropping intensity at or below 1.3 indicates that double-cropping is not widespread, meaning small holders are not compensating for limited land area through intensification."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "In the alluvial plains of eastern UP and Bihar, irrigation from shallow alluvial aquifers should theoretically support cropping intensities above 1.5. When intensity remains at or below 1.3, small holders are failing to exploit the second season, compounding the income constraint imposed by limited land area. Low cropping intensity on small holdings is a double disadvantage: less land and less production per unit land per year.",
-      "interaction_with": [
-        "sig_01"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -69,16 +60,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "dist_apmc_km > 20",
-        "qualitative_description": "Distance to the nearest APMC market above 20 km indicates that small holders face high transaction costs and are likely dependent on local intermediaries who capture a large share of the price margin.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Distance to the nearest APMC market above 20 km indicates that small holders face high transaction costs and are likely dependent on local intermediaries who capture a large share of the price margin."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Small holders with limited marketable surplus are disproportionately harmed by market remoteness because they cannot afford transport costs and lack bargaining power with local traders. FPO formation is specifically recommended to overcome this market access barrier for small and marginal farmers. Remote smallholders in eastern UP and Bihar routinely receive prices well below MSP due to intermediary exploitation.",
-      "interaction_with": [
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -90,18 +77,12 @@
       "condition": {
         "type": "composite",
         "expression": "dist_dairy_km > 15 and 'livelihoods' not in organization_domains and nrega_community_assets_count < 10",
-        "qualitative_description": "Absence of nearby dairy infrastructure, no NGO presence in livelihoods domain, and low MGNREGA community asset creation together indicate that diversification pathways are structurally absent for small holders.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "Absence of nearby dairy infrastructure, no NGO presence in livelihoods domain, and low MGNREGA community asset creation together indicate that diversification pathways are structurally absent for small holders."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Households solely dependent on small-scale agriculture have lower monthly income and wellbeing than those with diversified livelihoods. Livestock income through dairy is a primary diversification route for marginal farmers in the Indo-Gangetic plains. When dairy infrastructure is remote, no livelihood-focused NGO is present, and MGNREGA has generated few community assets, the household is structurally locked into single-source farm income from an uneconomically small holding. This composite signal confirms the low-income stress pathway.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -114,7 +95,8 @@
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "Direct measurement of landholding size distribution is the most reliable confirmation of this pathway. The proportion of marginal (<1 ha) and small (1–2 ha) holders determines the structural income ceiling for the village economy. Without this variable, the proxy signals (sig_01 through sig_04) must be used collectively. National data for Bihar and eastern UP show marginal holders at over 75% of all holdings, making this the default prior for these geographies."
+      "explanation": "Direct measurement of landholding size distribution is the most reliable confirmation of this pathway. The proportion of marginal (<1 ha) and small (1–2 ha) holders determines the structural income ceiling for the village economy. Without this variable, the proxy signals (sig_01 through sig_04) must be used collectively. National data for Bihar and eastern UP show marginal holders at over 75% of all holdings, making this the default prior for these geographies.",
+      "active": true
     },
     {
       "variables": [
@@ -122,14 +104,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Mean household or farm income below approximately Rs 50,000/year confirms severe income insufficiency on small holdings; Rs 50,000–1,00,000 partial; above weakens landholding as the primary driver.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Mean household or farm income below approximately Rs 50,000/year confirms severe income insufficiency on small holdings; Rs 50,000–1,00,000 partial; above weakens landholding as the primary driver."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Direct income evidence distinguishes volume-poverty (small area) from market or price failure (see market_price_crop amplifier).",
-      "signal_id": "sig_06"
+      "signal_id": "sig_06",
+      "active": true
     },
     {
       "variables": [
@@ -137,14 +118,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Farm-gate price consistently well below MSP (roughly 20–40% gap) for the main crop, amplifying income loss from small land area.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Farm-gate price consistently well below MSP (roughly 20–40% gap) for the main crop, amplifying income loss from small land area."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Market price failure amplifies small_landholding stress; near-MSP prices suggest low volume rather than exploitation is the dominant constraint.",
-      "signal_id": "sig_07"
+      "signal_id": "sig_07",
+      "active": true
     }
   ],
   "overall_reasoning_note": "Diagnosis of low income driven by small landholding requires at least two of the three primary signals to be active: low per-capita cropland ratio (sig_01), low cropping intensity (sig_02), or the composite diversification absence signal (sig_04). Market remoteness (sig_03) amplifies but does not independently confirm. In the alluvial plains of eastern UP and Bihar, the prior probability of marginal landholding dominance is high; the diagnostic burden is therefore to rule out alternative pathways (drought, soil degradation, credit failure as primary cause) rather than to establish the landholding constraint from scratch. If cropping intensity is high (>1.5) despite small holdings, the income stress may be driven more by price realisation failure or input cost inflation than by land area alone — check market_price_crop and dist_apmc_km. MGNREGA asset count below 10 in a village with high population density is a secondary confirmation that the safety net is inadequate relative to need.",
@@ -171,6 +151,14 @@
           "normalized": {
             "band": "low",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -179,6 +167,14 @@
           "normalized": {
             "band": "moderate",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -187,9 +183,18 @@
           "normalized": {
             "band": "high",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     },
     {
       "missing_variable": "household_income_inr",
@@ -203,6 +208,14 @@
           "normalized": {
             "band": "low",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -219,9 +232,18 @@
           "normalized": {
             "band": "high",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": false
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     },
     {
       "missing_variable": "market_price_crop",
@@ -235,6 +257,14 @@
           "normalized": {
             "band": "low",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -244,6 +274,14 @@
             "band": "moderate",
             "present": true,
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -253,9 +291,18 @@
             "band": "high",
             "present": true,
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     }
   ],
   "sources": [
@@ -332,5 +379,44 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 19,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_04"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_04"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_04"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

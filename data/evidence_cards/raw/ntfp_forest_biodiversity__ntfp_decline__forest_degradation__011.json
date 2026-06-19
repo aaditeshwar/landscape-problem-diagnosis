@@ -31,17 +31,12 @@
       "condition": {
         "type": "trend",
         "expression": "lulc_tree_forest_ha[-1] < lulc_tree_forest_ha[0]",
-        "qualitative_description": "Forest cover area (ha) in the micro-watershed is lower in the most recent year than in the earliest year of the 2017–2024 record, indicating net forest loss over the period.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Forest cover area (ha) in the micro-watershed is lower in the most recent year than in the earliest year of the 2017–2024 record, indicating net forest loss over the period."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "A declining trend in forest cover area directly reduces the stock of NTFP-bearing trees and understory species. In sub-humid hilly terrain of Himachal Pradesh and Uttarakhand, forests support a wide range of NTFPs including medicinal plants, resins, fruits and fodder species. Net loss of forest area over the 2017–2024 window is the primary structural signal confirming the forest degradation pathway as the driver of NTFP decline.",
-      "interaction_with": [
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -53,8 +48,6 @@
         "type": "composite",
         "expression": "cd_total_deforestation_ha > 0 and (cd_afforestation_ha < cd_total_deforestation_ha)",
         "qualitative_description": "Cumulative deforestation exceeds cumulative afforestation, indicating a net forest deficit with weak recovery. The larger the gap, the more severe the degradation pressure on NTFP-bearing habitat.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional",
         "variables": [
           "cd_total_deforestation_ha",
           "cd_afforestation_ha"
@@ -63,10 +56,7 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "When total deforested area exceeds total afforested area, the forest landscape is in net deficit. In the context of NTFP dependence, this imbalance means that the habitat supporting collection species is shrinking faster than it is being restored. Compensatory afforestation programmes in India have been criticised for relying on industrial monoculture plantations that do not replicate the biodiversity of natural forests and therefore do not restore NTFP availability even when headline hectare targets are met.",
-      "interaction_with": [
-        "sig_01",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -76,17 +66,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "cd_total_deforestation_ha > 50",
-        "qualitative_description": "More than 50 ha of cumulative deforestation recorded in the micro-watershed, indicating substantial habitat loss for NTFP species.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "More than 50 ha of cumulative deforestation recorded in the micro-watershed, indicating substantial habitat loss for NTFP species."
       },
       "severity": "moderate",
       "direction": "confirms",
       "explanation": "A threshold of 50 ha of cumulative deforestation in a micro-watershed context represents a meaningful loss of NTFP-bearing habitat, particularly in hilly terrain where forest patches are fragmented and species assemblages are sensitive to area reduction. In sub-humid zones of the western Himalayas, even moderate deforestation can eliminate locally endemic NTFP species or disrupt the understory light conditions required for medicinal plant regeneration.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -96,16 +81,12 @@
       "condition": {
         "type": "qualitative",
         "expression": "'Agroforestry' not in organization_domains and 'NTFP' not in organization_domains and 'Forest' not in organization_domains",
-        "qualitative_description": "No NGO or organisation active in the micro-watershed has a domain focus on agroforestry, NTFP management, or forest governance, indicating an absence of institutional support for NTFP recovery and community forest protection.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "No NGO or organisation active in the micro-watershed has a domain focus on agroforestry, NTFP management, or forest governance, indicating an absence of institutional support for NTFP recovery and community forest protection."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "The presence of organisations working in NTFP, agroforestry, or forest governance domains is associated with better outcomes for community-based forest protection, Joint Forest Management (JFM), and Community Forest Resource (CFR) rights recognition under the Forest Rights Act. Where such organisations are absent, communities dependent on NTFPs lack facilitation support for legal rights recognition, sustainable harvesting standards, and market linkages, amplifying the livelihood impact of forest degradation.",
-      "interaction_with": [
-        "sig_05"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -114,13 +95,12 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Field surveys or community reports indicate reduced abundance, local disappearance, or declining regeneration of key NTFP species such as medicinal plants, resin-producing trees, wild fruits, or fodder species in the micro-watershed.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "local"
+        "qualitative_description": "Field surveys or community reports indicate reduced abundance, local disappearance, or declining regeneration of key NTFP species such as medicinal plants, resin-producing trees, wild fruits, or fodder species in the micro-watershed."
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "Direct evidence of NTFP species decline is the most diagnostic indicator of the forest degradation pathway. In India, over 50 million people depend on NTFPs for subsistence, and wild populations of many commercially harvested species are declining due to destructive collection methods compounded by habitat loss. Community-reported reductions in species abundance or collection yields, when corroborated by remote sensing signals of forest cover loss, strongly confirm this pathway."
+      "explanation": "Direct evidence of NTFP species decline is the most diagnostic indicator of the forest degradation pathway. In India, over 50 million people depend on NTFPs for subsistence, and wild populations of many commercially harvested species are declining due to destructive collection methods compounded by habitat loss. Community-reported reductions in species abundance or collection yields, when corroborated by remote sensing signals of forest cover loss, strongly confirm this pathway.",
+      "active": true
     }
   ],
   "confounders": [
@@ -147,6 +127,14 @@
             "band": "high",
             "present": true,
             "trend": "stable"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -165,9 +153,18 @@
             "band": "low",
             "present": true,
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     }
   ],
   "sources": [
@@ -239,5 +236,47 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 25,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_03"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_03"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

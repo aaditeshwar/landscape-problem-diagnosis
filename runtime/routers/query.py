@@ -9,6 +9,7 @@ from db import get_db
 from logging_setup import log_diagnosis_event
 from services.assembler import assemble_variable_bundle, location_context
 from services.diagnosis_revision import prior_diagnosis_from_session
+from services.diagnosis_snapshot import build_snapshot_id, snapshot_fields, turn_metrics_from_session
 from services.diagnosis_trace import DiagnosisRequestTrace
 from services.llm_client import model_for_turn
 from services.mws_enrich import enrich_mws_doc
@@ -308,8 +309,8 @@ def _card_ids(cards: list[dict]) -> list[str]:
     return [str(c.get("card_id")) for c in cards if c.get("card_id")]
 
 
-def _emit_diagnosis_log(trace: DiagnosisRequestTrace) -> None:
-    log_diagnosis_event(trace.to_log_event())
+def _emit_diagnosis_log(trace: DiagnosisRequestTrace) -> int:
+    return log_diagnosis_event(trace.to_log_event())
 
 
 def _run_query(
@@ -480,6 +481,8 @@ def _run_query(
         "total": round(total_ms, 2),
     }
 
+    follow_up_count, turn_no = turn_metrics_from_session(session, is_follow_up=False)
+
     trace = DiagnosisRequestTrace(
         event="diagnosis_query",
         session_id=session_id,
@@ -501,9 +504,12 @@ def _run_query(
         follow_up_variable=llm_response.get("follow_up_variable"),
         want_llm_opinion=want_llm_opinion,
         llm_skipped=llm_skipped,
+        follow_up_count=follow_up_count,
+        turn_no=turn_no,
+        diagnosis_snapshot_id=build_snapshot_id(session_id, follow_up_count),
         **_mws_trace_fields(mws_doc, tehsil_ref),
     )
-    _emit_diagnosis_log(trace)
+    log_index = _emit_diagnosis_log(trace)
 
     append_turn(
         db,
@@ -523,6 +529,12 @@ def _run_query(
         "signal_evaluation": summarize_evaluation_for_log(diagnosis.signal_evaluation or {}),
         "want_llm_opinion": want_llm_opinion,
         "llm_skipped": llm_skipped,
+        **snapshot_fields(
+            session_id,
+            follow_up_count=follow_up_count,
+            turn_no=turn_no,
+            log_index=log_index,
+        ),
     }
 
 
@@ -831,6 +843,8 @@ def diagnosis_answer(body: AnswerRequest):
         "total": round(total_ms, 2),
     }
 
+    follow_up_count, turn_no = turn_metrics_from_session(session, is_follow_up=True)
+
     trace = DiagnosisRequestTrace(
         event="diagnosis_follow_up",
         session_id=body.session_id,
@@ -855,9 +869,12 @@ def diagnosis_answer(body: AnswerRequest):
         follow_up_signal_updates=llm_response.get("follow_up_signal_updates") or signal_updates,
         want_llm_opinion=want_llm_opinion,
         llm_skipped=llm_skipped,
+        follow_up_count=follow_up_count,
+        turn_no=turn_no,
+        diagnosis_snapshot_id=build_snapshot_id(body.session_id, follow_up_count),
         **_mws_trace_fields(mws_doc, session_tehsil_ref),
     )
-    _emit_diagnosis_log(trace)
+    log_index = _emit_diagnosis_log(trace)
 
     append_turn(
         db,
@@ -878,4 +895,10 @@ def diagnosis_answer(body: AnswerRequest):
         "signal_evaluation": summarize_evaluation_for_log(diagnosis.signal_evaluation or {}),
         "want_llm_opinion": want_llm_opinion,
         "llm_skipped": llm_skipped,
+        **snapshot_fields(
+            body.session_id,
+            follow_up_count=follow_up_count,
+            turn_no=turn_no,
+            log_index=log_index,
+        ),
     }

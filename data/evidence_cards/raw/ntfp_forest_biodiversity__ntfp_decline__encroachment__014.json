@@ -30,8 +30,6 @@
         "type": "trend",
         "expression": "cd_forest_to_farm_ha > 30",
         "qualitative_description": "Cumulative forest-to-farm conversion area has increased over the observation period, indicating active encroachment of forest land for agriculture.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional",
         "variables": [
           "cd_forest_to_farm_ha"
         ]
@@ -39,10 +37,7 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "A positive trend in forest-to-farm conversion hectares is the most direct indicator of encroachment. In semi-arid Malwa and Gujarat plains, smallholder expansion into forest fringes is documented as a primary driver of forest loss. Even modest annual conversion rates compound over time to significantly reduce NTFP-bearing forest extent and community access corridors. Forest fragmentation studies confirm that interior forest loss accelerates as edge-to-area ratios increase with encroachment.",
-      "interaction_with": [
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -53,8 +48,6 @@
         "type": "trend",
         "expression": "cd_urbanization_ha > 50",
         "qualitative_description": "Total urbanization area has grown by more than 50 ha over the observation period, suggesting settlement expansion that may be encroaching on forest margins.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "cd_urbanization_ha"
         ]
@@ -62,9 +55,7 @@
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Settlement expansion into forest margins reduces community access to NTFP collection zones and can formalize previously informal encroachments. In semi-arid Gujarat and Malwa plateau regions, peri-urban growth along forest fringes has been associated with displacement of forest-dependent communities. A threshold of 50 ha increase is used as a conservative signal given the spatial scale of typical micro-watershed units in this AER.",
-      "interaction_with": [
-        "sig_01"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -75,8 +66,6 @@
         "type": "composite",
         "expression": "(village_st_percent > 25) and (cd_forest_to_farm_ha > 30)",
         "qualitative_description": "Village has a high Scheduled Tribe population (>25%) coinciding with measurable forest-to-farm conversion, suggesting that encroachment may be displacing or restricting access for forest-dependent tribal communities.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local",
         "variables": [
           "village_st_percent",
           "cd_forest_to_farm_ha"
@@ -85,10 +74,7 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "High ST population share combined with active forest-to-farm conversion is a strong composite indicator of encroachment-driven NTFP decline. Scheduled Tribe communities in Madhya Pradesh and Gujarat are disproportionately dependent on NTFPs for subsistence and income. Where forest conversion is occurring alongside high ST presence, Forest Rights Act (FRA) claims may be unresolved or contested, leaving communities without legal protection of their access rights. Research on protected area conflicts in India documents how absence of tenure recognition exacerbates displacement of indigenous forest dwellers.",
-      "interaction_with": [
-        "sig_01",
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -98,16 +84,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "village_st_percent > 40",
-        "qualitative_description": "Villages with ST population exceeding 40% are likely to have significant NTFP dependency, making any forest loss disproportionately impactful on livelihoods.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Villages with ST population exceeding 40% are likely to have significant NTFP dependency, making any forest loss disproportionately impactful on livelihoods."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "In AER-5 (Central Malwa Highlands and Gujarat Plains), tribal communities with high forest dependency face compounded vulnerability when encroachment reduces forest extent. A village ST share above 40% signals that NTFP decline will have severe livelihood consequences even if the absolute area of forest converted is modest. This threshold aligns with the Forest Rights Act's focus on communities with historical forest dependence. Collective tenure rights frameworks globally recognize that communities managing over 50% of land customarily often hold formal legal title to only a fraction, creating governance gaps that enable encroachment.",
-      "interaction_with": [
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "variables": [
@@ -115,14 +97,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Many pending or rejected FRA claims with reported NTFP decline and forest conversion indicate tenure insecurity confirming encroachment vulnerability; high recognition weakens encroachment as primary driver.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Many pending or rejected FRA claims with reported NTFP decline and forest conversion indicate tenure insecurity confirming encroachment vulnerability; high recognition weakens encroachment as primary driver."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Unresolved forest rights alongside measurable conversion corroborates encroachment as a tenure and access driver of NTFP decline.",
-      "signal_id": "sig_05"
+      "signal_id": "sig_05",
+      "active": true
     },
     {
       "variables": [
@@ -130,14 +111,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Collectors report NTFP decline attributed to shrinking forest area or blocked/restricted access (not merely lower density inside intact forest). Decline greater than 25–50% increases severity.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Collectors report NTFP decline attributed to shrinking forest area or blocked/restricted access (not merely lower density inside intact forest). Decline greater than 25–50% increases severity."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Access- or area-attributed NTFP decline distinguishes encroachment from degradation or over-harvesting within intact forest.",
-      "signal_id": "sig_06"
+      "signal_id": "sig_06",
+      "active": true
     }
   ],
   "confounders": [
@@ -162,6 +142,14 @@
           "label": "No FRA claims filed by community members",
           "normalized": {
             "present": false
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -170,6 +158,14 @@
           "normalized": {
             "band": "moderate",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -178,9 +174,18 @@
           "normalized": {
             "band": "high",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "presence_graded"
     },
     {
       "missing_variable": "ntfp_collection_trend_qualitative",
@@ -196,6 +201,14 @@
             "present": true,
             "trend": "stable",
             "percent_upper": 25
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -207,6 +220,14 @@
             "trend": "worsening",
             "percent_lower": 25,
             "percent_upper": 50
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -217,9 +238,18 @@
             "present": true,
             "trend": "worsening",
             "percent_lower": 50
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     }
   ],
   "sources": [
@@ -287,5 +317,50 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 17,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_03",
+      "sig_05",
+      "sig_06"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_03",
+          "sig_05",
+          "sig_06"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_03",
+            "sig_05",
+            "sig_06"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

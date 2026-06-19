@@ -30,13 +30,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "(mean_kharif_cropped_area_ha / (mean_kharif_cropped_area_ha + mean_double_crop_area_ha + 1e-9)) > 0.75",
-        "qualitative_description": "More than 75% of cropped area is under single kharif season over the multi-year mean, indicating dominant rainfed dependence with negligible irrigated double-cropping.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "qualitative_description": "More than 75% of cropped area is under single kharif season over the multi-year mean, indicating dominant rainfed dependence with negligible irrigated double-cropping."
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "In perhumid hill states such as Sikkim and Arunachal Pradesh, the dominance of single kharif cropping relative to double-cropped area is a direct indicator of rainfed dependence. Despite high annual rainfall (2000–5000 mm in AER-16), steep terrain and hard rock aquifers limit water retention and irrigation infrastructure, confining most cultivation to the monsoon window. A ratio above 0.75 confirms that farmers cannot sustain a second crop without reliable irrigation access."
+      "explanation": "In perhumid hill states such as Sikkim and Arunachal Pradesh, the dominance of single kharif cropping relative to double-cropped area is a direct indicator of rainfed dependence. Despite high annual rainfall (2000–5000 mm in AER-16), steep terrain and hard rock aquifers limit water retention and irrigation infrastructure, confining most cultivation to the monsoon window. A ratio above 0.75 confirms that farmers cannot sustain a second crop without reliable irrigation access.",
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -46,16 +45,12 @@
       "condition": {
         "type": "trend",
         "expression": "mean_cropping_intensity <= 1.15",
-        "qualitative_description": "Mean cropping intensity at or below 1.15 over the available record indicates near-single-season farming, consistent with rainfed systems lacking post-monsoon irrigation.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Mean cropping intensity at or below 1.15 over the available record indicates near-single-season farming, consistent with rainfed systems lacking post-monsoon irrigation."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Cropping intensity close to 1.0 implies that almost all cultivated land is harvested only once per year, which is the hallmark of rainfed single-kharif systems. In the Eastern Himalayan hill states, even where rainfall is abundant during the monsoon, the absence of irrigation infrastructure prevents rabi or zaid cultivation. A mean cropping intensity at or below 1.15 across multiple years confirms structural rainfed dependence rather than a transient drought effect.",
-      "interaction_with": [
-        "sig_01"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -67,8 +62,6 @@
         "type": "composite",
         "expression": "mean_annual_runoff_mm > 600 and terrain_cluster_id == 3",
         "qualitative_description": "High mean annual runoff (>600 mm) combined with broad plains and slopes terrain (cluster 3) indicates rapid water loss from sloping fields, reducing in-field moisture availability despite high rainfall.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "runoff_mm",
           "terrain_cluster_id"
@@ -77,10 +70,7 @@
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "In hilly perhumid zones, high rainfall is paradoxically associated with high runoff losses on sloping terrain. Hard rock aquifers in the Eastern Himalayas have low storativity, so water that runs off is not recharged into accessible groundwater. Terrain cluster 3 (broad plains and slopes) combined with high runoff confirms that in-situ water harvesting potential is being lost, amplifying the effective water scarcity experienced by farmers during dry spells within the kharif season and in post-monsoon periods. This finding aligns with the observation that highest unproductive water losses occur under tropical regimes with intense rainy seasons followed by dry periods.",
-      "interaction_with": [
-        "sig_01",
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -91,16 +81,12 @@
       "condition": {
         "type": "composite",
         "expression": "nrega_irrigation_count < 3 and canal_name is None",
-        "qualitative_description": "Fewer than 3 MGNREGA irrigation works recorded and no canal infrastructure present, confirming minimal irrigation investment in the micro-watershed.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Fewer than 3 MGNREGA irrigation works recorded and no canal infrastructure present, confirming minimal irrigation investment in the micro-watershed."
       },
       "severity": "moderate",
       "direction": "confirms",
       "explanation": "The absence of canal irrigation and low MGNREGA irrigation work counts together confirm that the micro-watershed has received minimal irrigation infrastructure investment. In the NE hill states, canal irrigation is rare due to terrain constraints, and MGNREGA works represent the primary public investment channel for small-scale water harvesting. A count below 3 indicates that even this safety net has not been effectively deployed, leaving farmers entirely dependent on rainfall. This is consistent with the characterisation of less-favoured rainfed areas as having had minimum development attention.",
-      "interaction_with": [
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -113,7 +99,8 @@
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "Direct irrigated area statistics are not available for the NE hill states at micro-watershed scale. However, the combination of low double-crop area, low cropping intensity, absence of canals, and low MGNREGA irrigation counts provides strong convergent evidence that net irrigated area is negligible. Farmers in these areas report water insufficiency particularly for rabi and zaid seasons, consistent with near-zero irrigation access."
+      "explanation": "Direct irrigated area statistics are not available for the NE hill states at micro-watershed scale. However, the combination of low double-crop area, low cropping intensity, absence of canals, and low MGNREGA irrigation counts provides strong convergent evidence that net irrigated area is negligible. Farmers in these areas report water insufficiency particularly for rabi and zaid seasons, consistent with near-zero irrigation access.",
+      "active": true
     }
   ],
   "confounders": [
@@ -140,6 +127,14 @@
             "band": "low",
             "present": true,
             "percent_upper": 10
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -159,9 +154,18 @@
             "band": "high",
             "present": true,
             "percent_lower": 30
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     }
   ],
   "sources": [
@@ -211,5 +215,50 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 20,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_04",
+      "sig_05"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_04",
+          "sig_05"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_04",
+            "sig_05"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

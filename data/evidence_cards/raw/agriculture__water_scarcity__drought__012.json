@@ -30,17 +30,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "drought_weeks_severe[-1] >= 2 or drought_weeks_moderate[-1] >= 4",
-        "qualitative_description": "Two or more severe drought weeks, or four or more moderate drought weeks in the latest kharif season, indicate meaningful crop-season water deficit even in a perhumid zone.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Two or more severe drought weeks, or four or more moderate drought weeks in the latest kharif season, indicate meaningful crop-season water deficit even in a perhumid zone."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "In perhumid NE hill states, drought is episodic rather than chronic, but even short severe drought spells during critical crop growth stages (tillering, flowering) can cause significant yield loss. SPI-based drought week counts directly reflect meteorological deficit periods. Two or more severe weeks in a kharif season are sufficient to trigger agricultural drought stress in rain-fed hill farming systems where there is no supplemental irrigation buffer.",
-      "interaction_with": [
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -50,17 +45,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "dry_spell_weeks[-1] >= 3",
-        "qualitative_description": "Three or more dry spell weeks (4-week moving window with <50% historical rainfall) in the latest kharif season indicate prolonged moisture stress periods that disrupt crop growth stages.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Three or more dry spell weeks (4-week moving window with <50% historical rainfall) in the latest kharif season indicate prolonged moisture stress periods that disrupt crop growth stages."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Dry spells in perhumid hill zones are particularly damaging because farmers do not maintain irrigation infrastructure, relying entirely on in-season rainfall. A 4-week moving window with less than 50% of historical rainfall captures intra-seasonal dry spells that interrupt crop water supply at vulnerable growth stages. Three or more such weeks in a kharif season represent a significant departure from the normally reliable rainfall of AER-16 and are strongly associated with crop failure in rain-fed terraced fields.",
-      "interaction_with": [
-        "sig_01",
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -71,8 +61,6 @@
         "type": "composite",
         "expression": "drought_mild_spi_score_latest >= 26 or drought_mild_mai_score_latest >= 26 or drought_mild_vci_score_latest >= 26",
         "qualitative_description": "SPI below -1.0 (moderate meteorological drought), MAI below 0.5 (soil moisture inadequacy), or VCI below 40 (moderate vegetation stress) in kharif season confirms drought causality per India Drought Manual classification.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "global",
         "variables": [
           "drought_mild_spi_score_latest",
           "drought_mild_mai_score_latest",
@@ -82,10 +70,7 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "The India Drought Manual uses SPI, MAI, and VCI together to classify drought type and severity. SPI < -1.0 indicates meteorological drought; MAI < 0.5 indicates soil moisture inadequacy (agricultural drought); VCI < 40 indicates moderate-to-severe vegetation stress. In perhumid AER-16 zones, any single threshold breach is noteworthy given the normally high rainfall baseline of 2000-5000mm. The composite nature of this signal distinguishes true drought from localised crop management failures.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -97,8 +82,6 @@
         "type": "composite",
         "expression": "seasonal_precipitation_mm[-1].get('kharif', 9999) < 0.75 * mean_annual_precipitation_mm or (mean_annual_precipitation_mm < 1800 and trend_annual_precipitation_mm < -20)",
         "qualitative_description": "Kharif seasonal precipitation below 75% of the long-run annual mean, or a declining precipitation trend exceeding 20mm/year combined with mean annual rainfall below 1800mm, signals structural drought risk in this perhumid zone.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "seasonal_precipitation_mm",
           "precipitation_mm"
@@ -107,10 +90,7 @@
       "severity": "moderate",
       "direction": "confirms",
       "explanation": "AER-16 normally receives 2000-5000mm annually, so a kharif season receiving less than 75% of the long-run annual mean represents a substantial deficit. In hilly hard-rock terrain, rapid runoff means that even moderate rainfall deficits translate quickly into soil moisture stress because lateral drainage is fast and groundwater recharge in fractured hard-rock aquifers is spatially heterogeneous. A declining precipitation trend alongside below-normal mean annual rainfall suggests a structural shift rather than a single anomalous year.",
-      "interaction_with": [
-        "sig_01",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -120,17 +100,12 @@
       "condition": {
         "type": "trend",
         "expression": "monsoon_onset_date[-1] > monsoon_onset_date[0] + 7",
-        "qualitative_description": "Monsoon onset in the latest year is more than 7 days later than the earliest year in the record, indicating a systematic delay that shortens the effective kharif growing season.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Monsoon onset in the latest year is more than 7 days later than the earliest year in the record, indicating a systematic delay that shortens the effective kharif growing season."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Delayed monsoon onset shortens the effective kharif season and increases the probability of terminal drought stress before crop maturity. In NE hill states, transplanting of rice and sowing of maize are tightly coupled to monsoon onset; a delay of more than one week forces either late planting (increasing exposure to post-monsoon dry spells) or abandonment of the season. This signal amplifies the drought pathway but does not confirm it independently.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     }
   ],
   "confounders": [
@@ -205,5 +180,50 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 24,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_03",
+      "sig_04"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_03",
+          "sig_04"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_04"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

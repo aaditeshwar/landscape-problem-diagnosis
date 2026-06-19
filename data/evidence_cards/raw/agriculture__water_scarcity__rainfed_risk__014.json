@@ -30,17 +30,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "(lulc_single_kharif_ha[-1] / (lulc_single_kharif_ha[-1] + lulc_double_crop_ha[-1] + 1e-9)) > 0.75",
-        "qualitative_description": "More than 75% of cropped area is under single kharif season only, indicating overwhelming rainfed dependence with minimal irrigation enabling a second crop.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "qualitative_description": "More than 75% of cropped area is under single kharif season only, indicating overwhelming rainfed dependence with minimal irrigation enabling a second crop."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "In semi-arid zones such as the Malwa Highlands and Gujarat Plains (AER-5), where annual rainfall is 500–740 mm concentrated in the kharif season, a high ratio of single-kharif to total cropped area is the primary structural indicator of rainfed dependence. Farmers cannot sustain rabi or zaid crops without supplemental irrigation. This pattern is characteristic of less-favoured rainfed areas in South Asia, which occupy 116 million ha of arid/semi-arid tropical systems and support large rural populations with minimal irrigation infrastructure.",
-      "interaction_with": [
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -50,17 +45,12 @@
       "condition": {
         "type": "trend",
         "expression": "mean_cropping_intensity <= 1.15",
-        "qualitative_description": "Mean cropping intensity at or below 1.15 across the multi-year record confirms that the vast majority of net sown area is harvested only once per year, consistent with single-season rainfed farming.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Mean cropping intensity at or below 1.15 across the multi-year record confirms that the vast majority of net sown area is harvested only once per year, consistent with single-season rainfed farming."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Cropping intensity near 1.0 indicates a single harvest per net sown area per year, the hallmark of rainfed kharif-only systems. Values above 1.5 would indicate significant irrigation enabling double or triple cropping. In the Malwa and Gujarat plains context, volcanic hard-rock aquifers have limited storativity, and without surface irrigation canals or groundwater access, farmers are structurally constrained to one season. This aligns with documented patterns in South Asian semi-arid rainfed areas where agricultural diversification is constrained by water availability.",
-      "interaction_with": [
-        "sig_01",
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -71,17 +61,12 @@
       "condition": {
         "type": "composite",
         "expression": "canal_name is None and nrega_irrigation_count < 3",
-        "qualitative_description": "No irrigation canal intersects the micro-watershed AND fewer than 3 MGNREGA irrigation works have been constructed, confirming absence of both formal surface irrigation and community-level irrigation investment.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "No irrigation canal intersects the micro-watershed AND fewer than 3 MGNREGA irrigation works have been constructed, confirming absence of both formal surface irrigation and community-level irrigation investment."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "The absence of a named canal indicates no access to command-area surface irrigation, which is the primary alternative to rainfall in semi-arid plains. Low MGNREGA irrigation work counts further confirm that community-level investment in water storage and distribution infrastructure has been minimal. Together these two indicators establish the structural deficit in irrigation infrastructure that makes agriculture vulnerable to erratic monsoons. In less-favoured rainfed areas of South Asia, minimum development attention and an unfinished agenda for irrigation infrastructure are well-documented drivers of persistent water insecurity.",
-      "interaction_with": [
-        "sig_01",
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -93,8 +78,6 @@
         "type": "composite",
         "expression": "mean_annual_runoff_mm > 80 and terrain_cluster_id == 3",
         "qualitative_description": "Mean annual runoff exceeds 80 mm on broad plains and slopes (terrain cluster 3), indicating significant water loss from the landscape that could otherwise be harvested for supplemental irrigation.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "runoff_mm",
           "terrain_cluster_id"
@@ -103,9 +86,7 @@
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "High runoff on sloping terrain (cluster 3: broad plains and slopes) means that a substantial fraction of monsoon rainfall is lost as surface flow rather than being retained in-field or recharged to shallow aquifers. This amplifies rainfed risk by reducing effective moisture availability during the kharif season and eliminating any natural carry-over storage for rabi. The Malwa plateau and Gujarat plains are characterised by volcanic basalt terrain with low infiltration rates, making runoff management through in-situ water harvesting (farm ponds, broad-bed furrows, bunds) a critical intervention opportunity. Unproductive water losses via runoff are highest under tropical seasonal rainfall regimes, as documented in crop water management literature.",
-      "interaction_with": [
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -115,17 +96,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "mean_swb_rabi_kharif_ratio < 0.25",
-        "qualitative_description": "Surface water body area in rabi season is less than 25% of kharif season area on average, indicating that surface water storage does not persist into the post-monsoon period and cannot support rabi irrigation.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Surface water body area in rabi season is less than 25% of kharif season area on average, indicating that surface water storage does not persist into the post-monsoon period and cannot support rabi irrigation."
       },
       "severity": "moderate",
       "direction": "confirms",
       "explanation": "A low rabi-to-kharif ratio of surface water body area confirms that tanks, ponds, and reservoirs in the watershed dry out rapidly after the monsoon, leaving no surface water resource for supplemental irrigation in the rabi season. This is consistent with the semi-arid rainfall regime of AER-5 (500–740 mm, concentrated in June–September) and the hard-rock volcanic aquifer setting where natural storage is limited. Farmers in such systems are therefore entirely dependent on in-season rainfall for kharif crops and have no viable water source for rabi cultivation without investment in water harvesting infrastructure.",
-      "interaction_with": [
-        "sig_03",
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "variables": [
@@ -133,14 +109,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Irrigated share of cultivated land is negligible (under roughly 5–10%), confirming structural rainfed dependence; meaningful irrigated area (above roughly 20%) weakens the rainfed-risk diagnosis.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Irrigated share of cultivated land is negligible (under roughly 5–10%), confirming structural rainfed dependence; meaningful irrigated area (above roughly 20%) weakens the rainfed-risk diagnosis."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "User-reported irrigated area is the most direct confirmatory variable for rainfed risk when landscape proxies are ambiguous.",
-      "signal_id": "sig_06"
+      "signal_id": "sig_06",
+      "active": true
     }
   ],
   "confounders": [
@@ -167,6 +142,14 @@
             "band": "low",
             "present": true,
             "percent_upper": 10
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -186,9 +169,18 @@
             "band": "high",
             "present": true,
             "percent_lower": 30
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": false
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     }
   ],
   "sources": [
@@ -252,5 +244,50 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 20,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_03",
+      "sig_05"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_03",
+          "sig_05"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_05"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

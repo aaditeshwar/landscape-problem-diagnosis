@@ -162,11 +162,18 @@ def log_startup_config() -> None:
     log.info("Diagnosis structured log: %s", _DIAGNOSIS_LOG_PATH)
 
 
-def log_diagnosis_event(event: dict[str, Any]) -> None:
-    """Append one structured diagnosis event to diagnosis.jsonl and log a summary."""
+def log_diagnosis_event(event: dict[str, Any]) -> int:
+    """Append one structured diagnosis event to diagnosis.jsonl and log a summary.
+
+    Returns the zero-based index of the new event in diagnosis.jsonl.
+    """
     payload = {"timestamp": _utc_now_iso(), **event}
     log_dir = configure_logging()
     jsonl_path = _DIAGNOSIS_LOG_PATH or (log_dir / "diagnosis.jsonl")
+    log_index = 0
+    if jsonl_path.is_file():
+        with jsonl_path.open(encoding="utf-8") as handle:
+            log_index = sum(1 for line in handle if line.strip())
     with jsonl_path.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(payload, ensure_ascii=False, default=str))
         handle.write("\n")
@@ -181,3 +188,4 @@ def log_diagnosis_event(event: dict[str, Any]) -> None:
     if payload.get("error"):
         summary += f" error={str(payload.get('error'))[:160]}"
     logging.getLogger("diagnosis").info(summary)
+    return log_index

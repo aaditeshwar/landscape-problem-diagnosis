@@ -32,13 +32,12 @@
       "condition": {
         "type": "trend",
         "expression": "trend_swb_total_area_ha < -5 and swb_count < 3",
-        "qualitative_description": "Total surface water body area is declining at more than 5 ha/year and fewer than 3 distinct SWBs exist in the MWS, indicating shrinking storage infrastructure.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Total surface water body area is declining at more than 5 ha/year and fewer than 3 distinct SWBs exist in the MWS, indicating shrinking storage infrastructure."
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "In the Chhota Nagpur Plateau (AER-12), surface water bodies — tanks, ponds, and small reservoirs — are the primary irrigation source for rabi and zaid seasons. A declining trend in total SWB area combined with low SWB count indicates that storage infrastructure is contracting, either through siltation, encroachment, or neglect. This directly constrains the volume of water available for post-kharif irrigation. Dashora et al. (2019) demonstrated that siltation of check dams in hard-rock terrain reduces storage capacity and infiltration rates over time, with one 5-year-old check dam in Gujarat found completely silted at 40 cm/year accumulation."
+      "explanation": "In the Chhota Nagpur Plateau (AER-12), surface water bodies — tanks, ponds, and small reservoirs — are the primary irrigation source for rabi and zaid seasons. A declining trend in total SWB area combined with low SWB count indicates that storage infrastructure is contracting, either through siltation, encroachment, or neglect. This directly constrains the volume of water available for post-kharif irrigation. Dashora et al. (2019) demonstrated that siltation of check dams in hard-rock terrain reduces storage capacity and infiltration rates over time, with one 5-year-old check dam in Gujarat found completely silted at 40 cm/year accumulation.",
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -48,16 +47,12 @@
       "condition": {
         "type": "trend",
         "expression": "mean_swb_rabi_kharif_ratio < 0.4 and trend_swb_rabi_kharif_ratio < 0",
-        "qualitative_description": "The ratio of rabi-season SWB area to kharif-season SWB area is below 0.4 and declining, indicating that water bodies dry out rapidly after the monsoon and cannot sustain rabi irrigation.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "The ratio of rabi-season SWB area to kharif-season SWB area is below 0.4 and declining, indicating that water bodies dry out rapidly after the monsoon and cannot sustain rabi irrigation."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "A low and declining rabi-to-kharif SWB area ratio reveals that surface water bodies lose most of their storage between the monsoon and the rabi season. This is a direct indicator of irrigation failure for rabi crops. Rapid drying can result from siltation reducing effective storage depth, poor bund design, or high seepage losses in hard-rock terrain. Dashora et al. (2019) showed that siltation reduces both storage capacity and infiltration recharge, compounding the problem by reducing groundwater recharge that could otherwise sustain wells through the dry season.",
-      "interaction_with": [
-        "sig_01"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -67,17 +62,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "nrega_swc_count < 5",
-        "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA in the MWS, indicating low historical investment in water harvesting infrastructure.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA in the MWS, indicating low historical investment in water harvesting infrastructure."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Low MGNREGA investment in SWC and irrigation structures means that natural opportunities for water harvesting — tank desilting, check dams, farm bunds — have not been exploited. In the Chhota Nagpur Plateau, where rainfall is 1200–1600 mm but highly concentrated in the kharif season, capturing and storing monsoon runoff is critical for rabi irrigation. Dashora et al. (2019) found a benefit-to-cost ratio of 4.1 for check dams in hard-rock terrain, demonstrating that such investments are economically attractive but require active maintenance including desilting.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -88,17 +78,12 @@
       "condition": {
         "type": "composite",
         "expression": "river_name is None and dist_cooperative_km > 15",
-        "qualitative_description": "No named river passes through or adjacent to the MWS, and the nearest agricultural cooperative is more than 15 km away, indicating limited access to both surface diversion potential and institutional credit for irrigation investment.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "No named river passes through or adjacent to the MWS, and the nearest agricultural cooperative is more than 15 km away, indicating limited access to both surface diversion potential and institutional credit for irrigation investment."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "The absence of a perennial or seasonal river eliminates the possibility of diversion or lift irrigation from flowing water, making farmers entirely dependent on stored rainwater in tanks and ponds. High distance to cooperatives limits access to institutional credit for pump purchase, pipeline installation, or micro-irrigation adoption. Together these structural barriers amplify the irrigation challenge by reducing both the water source options and the financial capacity to invest in alternatives.",
-      "interaction_with": [
-        "sig_01",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -107,13 +92,12 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Farmers report that open wells or borewells have become unreliable or dry by the rabi season, or that pumping costs have increased due to greater lift depth, making groundwater-based irrigation unaffordable for marginal farmers.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "Farmers report that open wells or borewells have become unreliable or dry by the rabi season, or that pumping costs have increased due to greater lift depth, making groundwater-based irrigation unaffordable for marginal farmers."
       },
       "severity": "moderate",
       "direction": "confirms",
-      "explanation": "In hard-rock crystalline basement aquifers (AER-12), groundwater storage is confined to shallow weathered zones and fractures, typically 10–30 m deep. When surface water storage infrastructure fails to recharge these aquifers adequately, wells dry out by the rabi season. High lifting costs from deeper wells disproportionately disadvantage marginal and small farmers who cannot afford diesel or electricity for pumping. This variable is not available in the framework data and must be elicited from farmers directly."
+      "explanation": "In hard-rock crystalline basement aquifers (AER-12), groundwater storage is confined to shallow weathered zones and fractures, typically 10–30 m deep. When surface water storage infrastructure fails to recharge these aquifers adequately, wells dry out by the rabi season. High lifting costs from deeper wells disproportionately disadvantage marginal and small farmers who cannot afford diesel or electricity for pumping. This variable is not available in the framework data and must be elicited from farmers directly.",
+      "active": true
     }
   ],
   "overall_reasoning_note": "Irrigation infrastructure failure in the Chhota Nagpur Plateau (AER-12) is primarily a surface water storage problem. The region receives 1200–1600 mm of rainfall but almost entirely in the kharif season; rabi and zaid irrigation depend on water stored in tanks, ponds, and check dams. Diagnosis should be confirmed by at least two of: declining SWB area trend (sig_01), low rabi-to-kharif SWB ratio (sig_02), or farmer-reported well failure (sig_05). Low MGNREGA investment (sig_03) and absence of river access combined with poor cooperative proximity (sig_04) are amplifying signals that explain why the infrastructure gap persists. The hard-rock aquifer context means groundwater cannot easily substitute for surface storage failures. Recommended interventions should prioritise tank desilting through MGNREGA, community-managed storage repair, and micro-irrigation to stretch available water further.",
@@ -140,6 +124,14 @@
           "normalized": {
             "trend": "stable",
             "present": false
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -148,6 +140,14 @@
           "normalized": {
             "trend": "worsening",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -157,9 +157,18 @@
             "trend": "worsening",
             "present": true,
             "band": "high"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "trend"
     }
   ],
   "sources": [
@@ -220,5 +229,47 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 20,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_05"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_05"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_05"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

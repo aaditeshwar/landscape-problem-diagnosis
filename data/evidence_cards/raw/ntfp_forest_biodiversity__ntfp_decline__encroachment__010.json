@@ -30,17 +30,12 @@
       "condition": {
         "type": "trend",
         "expression": "cd_forest_to_farm_ha > 50",
-        "qualitative_description": "Cumulative forest-to-farm conversion has increased by more than 50 ha over the available record, indicating active encroachment of forest land for agriculture.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Cumulative forest-to-farm conversion has increased by more than 50 ha over the available record, indicating active encroachment of forest land for agriculture."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Forest-to-farm transition is the most direct measurable indicator of encroachment. In the humid and perhumid plains of West Bengal, Assam, and eastern Bihar (AER-15), alluvial soils adjacent to forest fringes are highly productive, creating strong incentives for agricultural expansion into forest land. A net increase of 50 ha or more over the observation period represents a meaningful reduction in forest extent that would directly curtail NTFP collection areas accessible to dependent communities. Forest fragmentation studies in comparable humid forest landscapes document that even moderate conversion rates lead to disproportionate loss of interior forest habitat and associated NTFP species.",
-      "interaction_with": [
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -51,8 +46,6 @@
         "type": "trend",
         "expression": "cd_urbanization_ha > 20",
         "qualitative_description": "Total urbanized or settled area has expanded by more than 20 ha over the record period, suggesting settlement encroachment into or adjacent to forest land.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "cd_urbanization_ha"
         ]
@@ -60,9 +53,7 @@
       "severity": "moderate",
       "direction": "confirms",
       "explanation": "Settlement expansion into forest fringes is a secondary encroachment pathway distinct from direct agricultural conversion. In the Bengal and Assam plains, population pressure and in-migration can drive informal settlement growth at forest margins, restricting community access routes to NTFP collection zones even where the forest canopy itself remains nominally intact. A 20 ha increase in urbanized area over the observation window is a conservative threshold for plains contexts where settlement footprints are typically small but access-blocking effects are disproportionate.",
-      "interaction_with": [
-        "sig_01"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -72,17 +63,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "village_st_percent > 25",
-        "qualitative_description": "Scheduled Tribe population exceeds 25% of village population, indicating high dependence on forest resources and elevated vulnerability to encroachment-driven access loss.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Scheduled Tribe population exceeds 25% of village population, indicating high dependence on forest resources and elevated vulnerability to encroachment-driven access loss."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "High ST population share is a structural vulnerability indicator: communities with greater proportions of Scheduled Tribe members typically have deeper historical dependence on NTFP collection for subsistence and income. In the context of encroachment, high ST presence also signals that Forest Rights Act (FRA) claims may be pending or unrecognised, leaving communities without legal recourse to defend access. Research on protected area conflicts in India documents that displacement and access restriction disproportionately affect indigenous and forest-dwelling communities whose tenure rights remain unrecognised under FRA.",
-      "interaction_with": [
-        "sig_01",
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -93,17 +79,12 @@
       "condition": {
         "type": "composite",
         "expression": "cd_forest_to_farm_ha > 30 and village_st_percent > 25",
-        "qualitative_description": "Moderate-to-high forest-to-farm conversion co-occurs with a high ST population share, indicating that encroachment is likely displacing forest-dependent tribal communities from NTFP collection areas.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Moderate-to-high forest-to-farm conversion co-occurs with a high ST population share, indicating that encroachment is likely displacing forest-dependent tribal communities from NTFP collection areas."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "The combination of measurable forest-to-farm conversion and a high proportion of ST residents creates a compound risk: forest land is being lost at the same time that the communities most dependent on it lack formal tenure protections. This composite signal is particularly diagnostic in AER-15 contexts where alluvial plains forests are under simultaneous pressure from agricultural expansion and where FRA implementation has been uneven. Studies on violent relocation from protected areas in India highlight that the absence of recognised community forest rights under FRA is a primary mechanism through which encroachment translates into NTFP access loss for tribal communities.",
-      "interaction_with": [
-        "sig_01",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "variables": [
@@ -111,14 +92,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Many pending or rejected FRA claims with reported NTFP decline and forest conversion indicate tenure insecurity confirming encroachment vulnerability; high recognition weakens encroachment as primary driver.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Many pending or rejected FRA claims with reported NTFP decline and forest conversion indicate tenure insecurity confirming encroachment vulnerability; high recognition weakens encroachment as primary driver."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Unresolved forest rights alongside measurable conversion corroborates encroachment as a tenure and access driver of NTFP decline.",
-      "signal_id": "sig_05"
+      "signal_id": "sig_05",
+      "active": true
     },
     {
       "variables": [
@@ -126,14 +106,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Absent or disputed forest boundary demarcation (no pillars/signage, active boundary disputes) is a precondition for encroachment; clear demarcation with no disputes weakens the pathway.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Absent or disputed forest boundary demarcation (no pillars/signage, active boundary disputes) is a precondition for encroachment; clear demarcation with no disputes weakens the pathway."
       },
       "severity": "moderate",
       "direction": "confirms",
       "explanation": "Boundary ambiguity enables encroachment and restricts communities' ability to defend forest access.",
-      "signal_id": "sig_06"
+      "signal_id": "sig_06",
+      "active": true
     }
   ],
   "overall_reasoning_note": "Diagnosis of encroachment as the primary driver of NTFP decline should be anchored on sig_01 (forest-to-farm conversion trend) as the core confirmatory signal. Sig_02 (urbanization expansion) and sig_03 (high ST population) serve as amplifying and contextualising signals. The composite sig_04 is the strongest combined indicator when both land conversion and community vulnerability are present simultaneously. In the humid and perhumid plains of AER-15, forest-to-farm conversion is the dominant encroachment pathway given the high agricultural value of alluvial soils; settlement encroachment (sig_02) is secondary but should not be dismissed in peri-urban forest fringes near Kolkata, Guwahati, or Patna. If sig_01 shows minimal conversion but NTFP decline is still reported, consider alternative pathways such as over-harvesting, forest degradation without conversion, or market access disruption before confirming encroachment. FRA claim status and boundary demarcation gaps are critical contextual factors that cannot be fully captured by available variables and should be explored through missing variable questions.",
@@ -159,6 +138,14 @@
           "label": "No FRA claims filed by community members",
           "normalized": {
             "present": false
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -167,6 +154,14 @@
           "normalized": {
             "band": "moderate",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -175,9 +170,18 @@
           "normalized": {
             "band": "high",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "presence_graded"
     },
     {
       "missing_variable": "forest_boundary_demarcation_status",
@@ -191,6 +195,14 @@
           "normalized": {
             "present": false,
             "trend": "stable"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -199,6 +211,14 @@
           "normalized": {
             "band": "moderate",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -208,9 +228,18 @@
             "band": "high",
             "present": true,
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "presence_graded"
     }
   ],
   "sources": [
@@ -271,5 +300,54 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 17,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_04"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 1,
+      "required_any": [
+        [
+          "sig_01"
+        ],
+        [
+          "sig_04"
+        ]
+      ],
+      "amplifiers_do_not_confirm": true
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_04"
+          ],
+          "min": 2
+        }
+      },
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_04"
+          ],
+          "min": 1
+        },
+        "min_high_severity_confirms": 1
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

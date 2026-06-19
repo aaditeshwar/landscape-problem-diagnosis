@@ -5,9 +5,13 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from services.confirmation_policy import (
+    card_from_bundle,
+    pathway_confidence_level,
+    pathway_is_confirmed,
+)
 from services.diagnosis_revision import (
     _humanize_pathway,
-    _min_confirms_required_from_note,
     pathways_ruled_out_from_signal_evaluation,
 )
 
@@ -22,20 +26,19 @@ def _pathway_evidence_note(bundle: dict[str, dict] | None, pathway_id: str) -> s
     return str(card.get("overall_reasoning_note") or data.get("overall_reasoning_note") or "")
 
 
-def _location_context(location: dict[str, Any] | None) -> str:
+def _location_context(location: dict[str, Any] | None, *, include_villages: bool = False) -> str:
     if not location:
         return ""
     uid = str(location.get("uid") or "").strip()
-    villages = location.get("village_names") or []
-    if isinstance(villages, list):
-        village_text = ", ".join(str(v) for v in villages if v)
-    else:
-        village_text = ""
     parts: list[str] = []
     if uid:
         parts.append(f"MWS {uid}")
-    if village_text:
-        parts.append(f"villages {village_text}")
+    if include_villages:
+        villages = location.get("village_names") or []
+        if isinstance(villages, list):
+            village_text = ", ".join(str(v) for v in villages if v)
+            if village_text:
+                parts.append(f"villages {village_text}")
     return " · ".join(parts)
 
 
@@ -95,16 +98,14 @@ def _pathway_should_omit(
     return False
 
 
-def _confidence_from_confirms(pathway_id: str, confirms_true: int, bundle: dict[str, dict] | None) -> str:
-    if confirms_true <= 0:
-        return "low"
-    note = _pathway_evidence_note(bundle, pathway_id)
-    min_required = _min_confirms_required_from_note(note)
-    if confirms_true == 1:
-        return "medium"
-    if confirms_true >= min_required:
-        return "high"
-    return "medium"
+def _confidence_from_evaluation(
+    pathway_id: str,
+    pathway_eval: dict[str, Any],
+    bundle: dict[str, dict] | None,
+) -> str:
+    card = card_from_bundle(bundle, pathway_id)
+    note = pathway_eval.get("evidence_note") or _pathway_evidence_note(bundle, pathway_id)
+    return pathway_confidence_level(pathway_eval, card, evidence_note=str(note))
 
 
 def _truncate_note(note: str, limit: int = 220) -> str:
@@ -202,12 +203,14 @@ def pathway_status_from_evaluation(
 
         confirms_true = int(summary.get("confirms_true") or 0)
         bundle_data = bundle.get(pathway_id) or {}
+        card = card_from_bundle(bundle, pathway_id)
+        note = pathway_eval.get("evidence_note") or _pathway_evidence_note(bundle, pathway_id)
         missing = set(bundle_data.get("missing_variables") or [])
         present = set((bundle_data.get("present_variables") or {}).keys()) | set(injected.keys())
         outstanding_missing = missing - present
 
-        if confirms_true >= 1:
-            confidence = _confidence_from_confirms(pathway_id, confirms_true, bundle)
+        if pathway_is_confirmed(pathway_eval, card, evidence_note=str(note)):
+            confidence = _confidence_from_evaluation(pathway_id, pathway_eval, bundle)
             confirmed.append(
                 {
                     "pathway_id": pathway_id,

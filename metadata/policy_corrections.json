@@ -1,0 +1,387 @@
+{
+  "_comment": "Override confirmation_policy for cards grouped by policy fingerprint (from review_unique_policies.csv).",
+  "758bb14fc8d6bbf1": {
+    "primary_confirm_signals": ["sig_01", "sig_02", "sig_03", "sig_04"],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": { "signals": ["sig_01", "sig_02", "sig_03", "sig_04"], "min": 2 }
+    },
+    "confidence_when": [
+      { "level": "high", "min_from_set": { "signals": ["sig_01", "sig_02", "sig_03", "sig_04"], "min": 2 }, "min_high_severity_confirms": 2 },
+      { "level": "medium", "min_confirms_true": 1 },
+      { "level": "low", "default": true }
+    ]
+  },
+  "514cea203f3ea5b0": {
+    "primary_confirm_signals": ["sig_01", "sig_02", "sig_03"],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": { "signals": ["sig_01", "sig_02", "sig_03"], "min": 2 }
+    },
+    "confidence_when": [
+      { "level": "high", "min_from_set": { "signals": ["sig_01", "sig_02", "sig_03"], "min": 2 }, "min_high_severity_confirms": 2 },
+      { "level": "medium", "min_confirms_true": 1 },
+      { "level": "low", "default": true }
+    ]
+  },
+  "6b4cc36f5057475d": {
+    "primary_confirm_signals": ["sig_01", "sig_02", "sig_05"],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": { "signals": ["sig_01", "sig_02", "sig_05"], "min": 2 }
+    },
+    "confidence_when": [
+      { "level": "high", "min_from_set": { "signals": ["sig_01", "sig_02", "sig_05"], "min": 2 }, "min_high_severity_confirms": 2 },
+      { "level": "medium", "min_confirms_true": 1 },
+      { "level": "low", "default": true }
+    ]
+  },
+  "e8dc01684602bd98": {
+    "primary_confirm_signals": ["sig_01", "sig_02", "sig_03"],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": { "signals": ["sig_01", "sig_02", "sig_03"], "min": 2 }
+    },
+    "confidence_when": [
+      { "level": "high", "min_from_set": { "signals": ["sig_01", "sig_02", "sig_03"], "min": 2 }, "min_high_severity_confirms": 2 },
+      { "level": "medium", "min_confirms_true": 1 },
+      { "level": "low", "default": true }
+    ]
+  },
+  "539b4853797aafb1": {
+    "primary_confirm_signals": ["sig_01", "sig_02", "sig_04"],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": { "signals": ["sig_01", "sig_02", "sig_04"], "min": 2 }
+    },
+    "confidence_when": [
+      { "level": "high", "min_from_set": { "signals": ["sig_01", "sig_02", "sig_04"], "min": 2 }, "min_high_severity_confirms": 2 },
+      { "level": "medium", "min_confirms_true": 1 },
+      { "level": "low", "default": true }
+    ]
+  },
+  "891d2f836d063a2a": {
+    "primary_confirm_signals": ["sig_01", "sig_02", "sig_03"],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": { "signals": ["sig_01", "sig_02", "sig_03"], "min": 2 }
+    },
+    "confidence_when": [
+      { "level": "high", "min_from_set": { "signals": ["sig_01", "sig_02", "sig_03"], "min": 2 }, "min_high_severity_confirms": 2 },
+      { "level": "medium", "min_confirms_true": 1 },
+      { "level": "low", "default": true }
+    ]
+  },
+  "7203d24bf55d2cc9": {
+    "primary_confirm_signals": ["sig_01", "sig_05"],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "required_all": ["sig_01"],
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": { "signals": ["sig_01", "sig_05"], "min": 2 }
+    },
+    "confidence_when": [
+      { "level": "high", "min_from_set": { "signals": ["sig_01", "sig_05"], "min": 2 }, "min_high_severity_confirms": 2 },
+      { "level": "medium", "min_confirms_true": 1 },
+      { "level": "low", "default": true }
+    ]
+  },
+  "5e7b2cca017d1bdb": {
+    "primary_confirm_signals": ["sig_01", "sig_02", "sig_04", "sig_05"],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": { "signals": ["sig_01", "sig_02", "sig_04", "sig_05"], "min": 2 }
+    },
+    "confidence_when": [
+      { "level": "high", "min_from_set": { "signals": ["sig_01", "sig_02", "sig_04", "sig_05"], "min": 2 }, "min_high_severity_confirms": 2 },
+      { "level": "medium", "min_confirms_true": 1 },
+      { "level": "low", "default": true }
+    ]
+  },
+  "6803055bd44bd95e": {
+    "primary_confirm_signals": ["sig_01", "sig_02", "sig_03", "sig_05"],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": { "signals": ["sig_01", "sig_02", "sig_03", "sig_05"], "min": 2 }
+    },
+    "confidence_when": [
+      { "level": "high", "min_from_set": { "signals": ["sig_01", "sig_02", "sig_03", "sig_05"], "min": 2 }, "min_high_severity_confirms": 2 },
+      { "level": "medium", "min_confirms_true": 1 },
+      { "level": "low", "default": true }
+    ]
+  },
+  "6078765eee9d5c67": {
+    "primary_confirm_signals": ["sig_01", "sig_02", "sig_04", "sig_05"],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": { "signals": ["sig_01", "sig_02", "sig_04", "sig_05"], "min": 2 }
+    },
+    "confidence_when": [
+      { "level": "high", "min_from_set": { "signals": ["sig_01", "sig_02", "sig_04", "sig_05"], "min": 2 }, "min_high_severity_confirms": 2 },
+      { "level": "medium", "min_confirms_true": 1 },
+      { "level": "low", "default": true }
+    ]
+  },
+  "cdd74db78c08c69f": {
+    "primary_confirm_signals": ["sig_01", "sig_02", "sig_03", "sig_05"],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": { "signals": ["sig_01", "sig_02", "sig_03", "sig_05"], "min": 2 }
+    },
+    "confidence_when": [
+      { "level": "high", "min_from_set": { "signals": ["sig_01", "sig_02", "sig_03", "sig_05"], "min": 2 }, "min_high_severity_confirms": 2 },
+      { "level": "medium", "min_confirms_true": 1 },
+      { "level": "low", "default": true }
+    ]
+  },
+  "f6ed3f98aa2dd75e": {
+    "primary_confirm_signals": ["sig_01", "sig_02"],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": { "signals": ["sig_01", "sig_02"], "min": 2 }
+    },
+    "confidence_when": [
+      { "level": "high", "min_from_set": { "signals": ["sig_01", "sig_02"], "min": 2 }, "min_high_severity_confirms": 2 },
+      { "level": "medium", "min_confirms_true": 1 },
+      { "level": "low", "default": true }
+    ]
+  },
+  "045266b712bf5319": {
+    "primary_confirm_signals": ["sig_01", "sig_02", "sig_05"],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": { "signals": ["sig_01", "sig_02", "sig_05"], "min": 2 }
+    },
+    "confidence_when": [
+      { "level": "high", "min_from_set": { "signals": ["sig_01", "sig_02", "sig_05"], "min": 2 }, "min_high_severity_confirms": 2 },
+      { "level": "medium", "min_confirms_true": 1 },
+      { "level": "low", "default": true }
+    ]
+  },
+  "9cae31a0b8d701ad": {
+    "primary_confirm_signals": ["sig_01", "sig_02", "sig_06"],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": { "signals": ["sig_01", "sig_02", "sig_06"], "min": 2 }
+    },
+    "confidence_when": [
+      { "level": "high", "min_from_set": { "signals": ["sig_01", "sig_02", "sig_06"], "min": 2 }, "min_high_severity_confirms": 2 },
+      { "level": "medium", "min_confirms_true": 1 },
+      { "level": "low", "default": true }
+    ]
+  },
+  "7058dec595e400a6": {
+    "primary_confirm_signals": ["sig_01", "sig_02", "sig_05", "sig_06"],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": { "signals": ["sig_01", "sig_02", "sig_05", "sig_06"], "min": 2 }
+    },
+    "confidence_when": [
+      { "level": "high", "min_from_set": { "signals": ["sig_01", "sig_02", "sig_05", "sig_06"], "min": 2 }, "min_high_severity_confirms": 2 },
+      { "level": "medium", "min_confirms_true": 1 },
+      { "level": "low", "default": true }
+    ]
+  },
+  "1893d4cba2de282a": {
+    "primary_confirm_signals": ["sig_01", "sig_02", "sig_04"],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": { "signals": ["sig_01", "sig_02", "sig_04"], "min": 2 }
+    },
+    "confidence_when": [
+      { "level": "high", "min_from_set": { "signals": ["sig_01", "sig_02", "sig_04"], "min": 2 }, "min_high_severity_confirms": 2 },
+      { "level": "medium", "min_confirms_true": 1 },
+      { "level": "low", "default": true }
+    ]
+  },
+  "b3a16ce03ca2017f": {
+    "primary_confirm_signals": ["sig_01", "sig_03", "sig_04"],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "required_all": ["sig_01"],
+      "required_any": [["sig_03"], ["sig_04"]],
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": { "signals": ["sig_01", "sig_03", "sig_04"], "min": 2 }
+    },
+    "confidence_when": [
+      { "level": "high", "min_from_set": { "signals": ["sig_01", "sig_03", "sig_04"], "min": 2 }, "min_high_severity_confirms": 2 },
+      { "level": "medium", "min_confirms_true": 1 },
+      { "level": "low", "default": true }
+    ]
+  },
+  "9f3ae20f0f54b7c8": {
+    "primary_confirm_signals": ["sig_01", "sig_02", "sig_05"],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": { "signals": ["sig_01", "sig_02", "sig_05"], "min": 2 }
+    },
+    "confidence_when": [
+      { "level": "high", "min_from_set": { "signals": ["sig_01", "sig_02", "sig_05"], "min": 2 }, "min_high_severity_confirms": 2 },
+      { "level": "medium", "min_confirms_true": 1 },
+      { "level": "low", "default": true }
+    ]
+  },
+  "9b0276448d48e4a4": {
+    "primary_confirm_signals": ["sig_01", "sig_04"],
+    "confirm_when": {
+      "min_confirms_true": 1,
+      "required_any": [["sig_01"], ["sig_04"]],
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": { "signals": ["sig_01", "sig_04"], "min": 1 }
+    },
+    "confidence_when": [
+      { "level": "high", "min_from_set": { "signals": ["sig_01", "sig_04"], "min": 2 }, "min_high_severity_confirms": 1 },
+      { "level": "medium", "min_confirms_true": 1 },
+      { "level": "low", "default": true }
+    ]
+  },
+  "1105430c8b5be6df": {
+    "primary_confirm_signals": ["sig_01", "sig_03", "sig_05", "sig_06"],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": { "signals": ["sig_01", "sig_03", "sig_05", "sig_06"], "min": 2 }
+    },
+    "confidence_when": [
+      { "level": "high", "min_from_set": { "signals": ["sig_01", "sig_03", "sig_05", "sig_06"], "min": 2 }, "min_high_severity_confirms": 2 },
+      { "level": "medium", "min_confirms_true": 1 },
+      { "level": "low", "default": true }
+    ]
+  },
+  "f8775f4def3a75aa": {
+    "primary_confirm_signals": ["sig_01", "sig_02", "sig_04", "sig_05", "sig_06", "sig_07"],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": { "signals": ["sig_01", "sig_02", "sig_04", "sig_05", "sig_06", "sig_07"], "min": 2 }
+    },
+    "confidence_when": [
+      { "level": "high", "min_from_set": { "signals": ["sig_01", "sig_02", "sig_04", "sig_05", "sig_06", "sig_07"], "min": 2 }, "min_high_severity_confirms": 2 },
+      { "level": "medium", "min_confirms_true": 1 },
+      { "level": "low", "default": true }
+    ]
+  },
+  "bcf9ecea2b9f1039": {
+    "primary_confirm_signals": ["sig_01", "sig_03", "sig_04", "sig_05", "sig_06"],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": { "signals": ["sig_01", "sig_03", "sig_04", "sig_05", "sig_06"], "min": 2 }
+    },
+    "confidence_when": [
+      { "level": "high", "min_from_set": { "signals": ["sig_01", "sig_03", "sig_04", "sig_05", "sig_06"], "min": 2 }, "min_high_severity_confirms": 2 },
+      { "level": "medium", "min_confirms_true": 1 },
+      { "level": "low", "default": true }
+    ]
+  },
+  "2dbc650b1490ddc7": {
+    "primary_confirm_signals": ["sig_01", "sig_03", "sig_05", "sig_06", "sig_07"],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": { "signals": ["sig_01", "sig_03", "sig_05", "sig_06", "sig_07"], "min": 2 }
+    },
+    "confidence_when": [
+      { "level": "high", "min_from_set": { "signals": ["sig_01", "sig_03", "sig_05", "sig_06", "sig_07"], "min": 2 }, "min_high_severity_confirms": 2 },
+      { "level": "medium", "min_confirms_true": 1 },
+      { "level": "low", "default": true }
+    ]
+  },
+  "165dde27b2d7007e": {
+    "primary_confirm_signals": ["sig_01", "sig_02", "sig_05", "sig_07"],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": { "signals": ["sig_01", "sig_02", "sig_05", "sig_07"], "min": 2 }
+    },
+    "confidence_when": [
+      { "level": "high", "min_from_set": { "signals": ["sig_01", "sig_02", "sig_05", "sig_07"], "min": 2 }, "min_high_severity_confirms": 2 },
+      { "level": "medium", "min_confirms_true": 1 },
+      { "level": "low", "default": true }
+    ]
+  },
+  "579f0295a41c238a": {
+    "primary_confirm_signals": ["sig_01", "sig_06", "sig_08"],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": { "signals": ["sig_01", "sig_06", "sig_08"], "min": 2 }
+    },
+    "confidence_when": [
+      { "level": "high", "min_from_set": { "signals": ["sig_01", "sig_06", "sig_08"], "min": 2 }, "min_high_severity_confirms": 2 },
+      { "level": "medium", "min_confirms_true": 1 },
+      { "level": "low", "default": true }
+    ]
+  },
+  "by_card_id": {
+    "agriculture__water_scarcity__rainfed_risk__011": {
+      "primary_confirm_signals": ["sig_01", "sig_02", "sig_03", "sig_05"],
+      "confirm_when": {
+        "min_confirms_true": 2,
+        "amplifiers_do_not_confirm": true,
+        "min_from_set": { "signals": ["sig_01", "sig_02", "sig_03", "sig_05"], "min": 2 }
+      },
+      "confidence_when": [
+        { "level": "high", "min_from_set": { "signals": ["sig_01", "sig_02", "sig_03", "sig_05"], "min": 2 }, "min_high_severity_confirms": 2 },
+        { "level": "medium", "min_confirms_true": 1 },
+        { "level": "low", "default": true }
+      ]
+    },
+    "agriculture__water_scarcity__rainfed_risk__014": {
+      "primary_confirm_signals": ["sig_01", "sig_02", "sig_03", "sig_05"],
+      "confirm_when": {
+        "min_confirms_true": 2,
+        "amplifiers_do_not_confirm": true,
+        "min_from_set": { "signals": ["sig_01", "sig_02", "sig_03", "sig_05"], "min": 2 }
+      },
+      "confidence_when": [
+        { "level": "high", "min_from_set": { "signals": ["sig_01", "sig_02", "sig_03", "sig_05"], "min": 2 }, "min_high_severity_confirms": 2 },
+        { "level": "medium", "min_confirms_true": 1 },
+        { "level": "low", "default": true }
+      ]
+    },
+    "agriculture__water_scarcity__rainfed_risk__017": {
+      "primary_confirm_signals": ["sig_01", "sig_02", "sig_03", "sig_05"],
+      "confirm_when": {
+        "min_confirms_true": 2,
+        "amplifiers_do_not_confirm": true,
+        "min_from_set": { "signals": ["sig_01", "sig_02", "sig_03", "sig_05"], "min": 2 }
+      },
+      "confidence_when": [
+        { "level": "high", "min_from_set": { "signals": ["sig_01", "sig_02", "sig_03", "sig_05"], "min": 2 }, "min_high_severity_confirms": 2 },
+        { "level": "medium", "min_confirms_true": 1 },
+        { "level": "low", "default": true }
+      ]
+    },
+    "socio_economic__low_income__small_landholding__012": {
+      "primary_confirm_signals": ["sig_01", "sig_05"],
+      "confirm_when": {
+        "min_confirms_true": 2,
+        "required_all": ["sig_01"],
+        "amplifiers_do_not_confirm": true,
+        "min_from_set": { "signals": ["sig_01", "sig_05"], "min": 2 }
+      },
+      "confidence_when": [
+        { "level": "high", "min_from_set": { "signals": ["sig_01", "sig_05"], "min": 2 }, "min_high_severity_confirms": 2 },
+        { "level": "medium", "min_confirms_true": 1 },
+        { "level": "low", "default": true }
+      ]
+    }
+  }
+}

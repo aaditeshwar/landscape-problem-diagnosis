@@ -429,29 +429,21 @@ def _pathway_evidence_note(bundle: dict[str, dict] | None, pathway_id: str) -> s
     return str(card.get("overall_reasoning_note") or data.get("overall_reasoning_note") or "")
 
 
-def _min_confirms_required(pathway_id: str, bundle: dict[str, dict] | None) -> int:
-    """Minimum confirms+TRUE count required before a pathway may stay confirmed."""
-    note = _pathway_evidence_note(bundle, pathway_id).lower()
-    if "no single signal is sufficient" in note:
-        return 2
-    if "at least three" in note or "at least 3" in note:
-        return 3
-    if "at least two" in note or "at least 2" in note:
-        return 2
-    if "plus one of" in note or "and one of" in note:
-        return 2
-    return 2
-
-
 def apply_signal_confidence_guard(
     response: dict[str, Any],
     *,
     signal_eval: dict[str, dict[str, Any]] | None = None,
     bundle: dict[str, dict] | None = None,
 ) -> dict[str, Any]:
-    """Cap confidence from signal counts; demote only when confirms_true is zero."""
+    """Cap confidence from policy or signal counts; demote when confirmation rules fail."""
     if not signal_eval:
         return response
+
+    from services.confirmation_policy import (
+        card_from_bundle,
+        pathway_confidence_level,
+        pathway_is_confirmed,
+    )
 
     out = dict(response)
     kept_confirmed: list[dict[str, Any]] = []
@@ -470,22 +462,23 @@ def apply_signal_confidence_guard(
         pathway_id = str(item.get("pathway_id") or "").strip()
         if not pathway_id:
             continue
-        summary = (signal_eval.get(pathway_id) or {}).get("summary") or {}
+        pathway_eval = signal_eval.get(pathway_id) or {}
+        summary = pathway_eval.get("summary") or {}
         confirms_true = int(summary.get("confirms_true") or 0)
-        min_required = _min_confirms_required(pathway_id, bundle)
+        card = card_from_bundle(bundle, pathway_id)
+        note = _pathway_evidence_note(bundle, pathway_id)
 
-        if confirms_true == 0:
+        if confirms_true == 0 or not pathway_is_confirmed(
+            pathway_eval,
+            card,
+            evidence_note=note,
+        ):
             item["confidence"] = "low"
             demoted.append(item)
             continue
 
-        if confirms_true == 1:
-            item["confidence"] = _cap_confidence_level(item.get("confidence"), "medium")
-            kept_confirmed.append(item)
-            continue
-
-        max_level = "high" if confirms_true >= min_required else "medium"
-        item["confidence"] = _cap_confidence_level(item.get("confidence"), max_level)
+        cap = pathway_confidence_level(pathway_eval, card, evidence_note=note)
+        item["confidence"] = _cap_confidence_level(item.get("confidence"), cap)
         kept_confirmed.append(item)
 
     for item in demoted:

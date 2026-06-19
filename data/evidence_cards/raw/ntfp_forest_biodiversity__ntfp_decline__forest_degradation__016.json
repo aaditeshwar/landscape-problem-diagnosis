@@ -29,17 +29,12 @@
       "condition": {
         "type": "trend",
         "expression": "lulc_tree_forest_ha[-1] < lulc_tree_forest_ha[0]",
-        "qualitative_description": "Forest area in the micro-watershed has declined from the earliest to the latest available year (2017–2024), indicating net loss of NTFP-bearing tree cover.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Forest area in the micro-watershed has declined from the earliest to the latest available year (2017–2024), indicating net loss of NTFP-bearing tree cover."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "A net reduction in forest area over the monitoring period directly reduces the habitat and resource base for NTFP-bearing trees and understory species. In the cold arid Himalayan zone (Ladakh, AER-1), sparse natural forest patches are highly sensitive to disturbance; even small absolute losses represent disproportionate ecological impact given the low baseline cover and extremely slow regeneration rates under <150 mm annual rainfall. Declining forest area is the primary structural driver of NTFP decline in this pathway.",
-      "interaction_with": [
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -51,8 +46,6 @@
         "type": "composite",
         "expression": "cd_total_deforestation_ha > 0 and (cd_afforestation_ha == 0 or cd_total_deforestation_ha > cd_afforestation_ha)",
         "qualitative_description": "Cumulative deforestation exceeds afforestation, or afforestation is absent entirely, indicating a net forest deficit with no compensatory recovery.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional",
         "variables": [
           "cd_total_deforestation_ha",
           "cd_afforestation_ha"
@@ -61,10 +54,7 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "When total deforested area exceeds total afforested area, the landscape is in a net forest deficit. In the cold arid Himalayan ecoregion, natural regeneration is extremely slow due to harsh climate, shallow soils, and low precipitation; afforestation without active community management rarely succeeds. The absence of compensatory planting signals weak institutional forest protection, consistent with findings on the need for community-based forest governance under India's Forest Rights Act to sustain NTFP-bearing landscapes.",
-      "interaction_with": [
-        "sig_01",
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -74,16 +64,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "cd_total_deforestation_ha > 10",
-        "qualitative_description": "Total deforested area exceeds 10 ha, representing a meaningful absolute loss of forest habitat in a landscape where baseline forest cover is already sparse.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Total deforested area exceeds 10 ha, representing a meaningful absolute loss of forest habitat in a landscape where baseline forest cover is already sparse."
       },
       "severity": "moderate",
       "direction": "confirms",
       "explanation": "In the cold arid Himalayan zone, forest patches are small and fragmented. A loss of even 10 ha can eliminate key NTFP-bearing microhabitats such as riparian willow groves, juniper stands, or seabuckthorn thickets that are critical for dependent communities. NTFP availability is highly sensitive to patch-level forest loss because species richness and abundance are concentrated in these remnant patches. Certification and sustainable harvest frameworks for NTFPs in India emphasise that declining wild populations result from destructive collection compounded by habitat loss.",
-      "interaction_with": [
-        "sig_01"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -93,16 +79,12 @@
       "condition": {
         "type": "qualitative",
         "expression": "'Agroforestry' not in organization_domains and 'Forest management' not in organization_domains and 'NTFP' not in organization_domains",
-        "qualitative_description": "No NGO or organisation active in the micro-watershed has a domain focus on agroforestry, forest management, or NTFP support, indicating an absence of institutional support for forest protection and NTFP recovery.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "No NGO or organisation active in the micro-watershed has a domain focus on agroforestry, forest management, or NTFP support, indicating an absence of institutional support for forest protection and NTFP recovery."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "The absence of organisations working on agroforestry, forest management, or NTFP value chains means communities lack technical and institutional support for forest protection, assisted regeneration, or sustainable harvest practices. In remote cold arid zones like Ladakh, where state forest department capacity is limited, NGO presence is often the primary channel for implementing Joint Forest Management, Community Forest Resource rights under FRA, or community plantation programmes. Lack of such support amplifies the risk that forest degradation will continue unchecked.",
-      "interaction_with": [
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -111,13 +93,12 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Field surveys or community reports indicate reduced abundance, distribution, or seasonal availability of key NTFP species such as seabuckthorn (Hippophae rhamnoides), juniper (Juniperus spp.), or medicinal herbs in the micro-watershed.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "local"
+        "qualitative_description": "Field surveys or community reports indicate reduced abundance, distribution, or seasonal availability of key NTFP species such as seabuckthorn (Hippophae rhamnoides), juniper (Juniperus spp.), or medicinal herbs in the micro-watershed."
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "Direct evidence of declining NTFP species presence or abundance is the most diagnostic indicator of this pathway. In the cold arid Himalayan zone, key NTFPs include seabuckthorn berries, juniper resin, and high-altitude medicinal plants. Community-reported declines in collection quantities or access distances are reliable proxies for habitat degradation. Studies on NTFP dependence in India confirm that livelihood losses track closely with ecological degradation of forest resources, and that win-lose outcomes emerge when ecological costs of harvest compound with habitat loss."
+      "explanation": "Direct evidence of declining NTFP species presence or abundance is the most diagnostic indicator of this pathway. In the cold arid Himalayan zone, key NTFPs include seabuckthorn berries, juniper resin, and high-altitude medicinal plants. Community-reported declines in collection quantities or access distances are reliable proxies for habitat degradation. Studies on NTFP dependence in India confirm that livelihood losses track closely with ecological degradation of forest resources, and that win-lose outcomes emerge when ecological costs of harvest compound with habitat loss.",
+      "active": true
     }
   ],
   "confounders": [
@@ -144,6 +125,14 @@
             "band": "high",
             "present": true,
             "trend": "stable"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -162,9 +151,18 @@
             "band": "low",
             "present": true,
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     }
   ],
   "sources": [
@@ -237,5 +235,47 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 25,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_03"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_03"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

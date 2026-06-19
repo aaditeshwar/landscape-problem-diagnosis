@@ -32,17 +32,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "(lulc_cropland_ha[-1] / (village_total_population + 1e-9)) < 0.2",
-        "qualitative_description": "Per-capita cropland availability below 0.2 ha per person (roughly 1 ha per 5-person household) indicates severe land constraint typical of marginal and small farm categories.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Per-capita cropland availability below 0.2 ha per person (roughly 1 ha per 5-person household) indicates severe land constraint typical of marginal and small farm categories."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Dividing total MWS cropland by village population provides a proxy for average farm size per household. In coastal Tamil Nadu, Andhra Pradesh, and Odisha, average landholding sizes are well below 1 ha for a large share of households. When per-capita cropland falls below 0.2 ha, the household is likely operating a sub-marginal holding that cannot generate marketable surplus, limiting both income and creditworthiness. Gulati et al. (2021) note that shrinking average landholding size in India is a pressing constraint on food production and farmer income.",
-      "interaction_with": [
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -54,17 +49,12 @@
       "condition": {
         "type": "composite",
         "expression": "mean_cropping_intensity <= 1.15 and (lulc_cropland_ha[-1] / (village_total_population + 1e-9)) < 0.2",
-        "qualitative_description": "Low cropping intensity (<=1.15) combined with small per-capita cropland means the effective productive area per household is doubly constrained — neither land area nor seasonal utilisation compensates for fragmentation.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Low cropping intensity (<=1.15) combined with small per-capita cropland means the effective productive area per household is doubly constrained — neither land area nor seasonal utilisation compensates for fragmentation."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Cropping intensity below 1.15 indicates that most land is cultivated only once per year (predominantly kharif), with little rabi or summer cropping. For small holders, low cropping intensity compounds the income constraint because the limited land base is not being used to its seasonal potential. In sub-humid coastal plains with alluvial soils and 900–1400 mm rainfall, a cropping intensity of 1.15 or below suggests either water access failure, capital constraints, or labour shortages — all of which disproportionately affect marginal and small farmers. Households solely dependent on small-scale single-season agriculture in Tamil Nadu were found to have lower monthly income despite higher food sufficiency (Olsson et al., 2016).",
-      "interaction_with": [
-        "sig_01",
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -75,17 +65,12 @@
       "condition": {
         "type": "composite",
         "expression": "dist_apmc_km > 20 and dist_dairy_km > 15",
-        "qualitative_description": "Village is more than 20 km from the nearest APMC and more than 15 km from the nearest dairy collection centre, indicating that small holders face both crop market access barriers and limited livestock income diversification options.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Village is more than 20 km from the nearest APMC and more than 15 km from the nearest dairy collection centre, indicating that small holders face both crop market access barriers and limited livestock income diversification options."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Small holders with limited marketable surplus are especially vulnerable to intermediary exploitation when distant from regulated markets. APMC distance above 20 km means farmers cannot easily access price discovery or competitive bidding, and are likely to sell at farm gate to traders at below-MSP prices. Simultaneously, dairy infrastructure distance above 15 km forecloses the most accessible livestock income diversification pathway. FPO literature (Sharma et al., 2018; Singh & Singh, 2014) identifies market access and forward linkages as the primary tangible benefit of collective organisation for small holders. Fan and Rue (2021) identify limited access to markets and information as a key soft constraint inhibiting smallholder profitability.",
-      "interaction_with": [
-        "sig_01",
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -96,17 +81,12 @@
       "condition": {
         "type": "composite",
         "expression": "nrega_community_assets_count < 10 and 'livelihoods' not in organization_domains and 'fisheries' not in organization_domains",
-        "qualitative_description": "Fewer than 10 cumulative MGNREGA community asset works and no NGO presence in livelihoods or fisheries domains indicates a weak safety net and limited diversification support for small holders in this coastal context.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "Fewer than 10 cumulative MGNREGA community asset works and no NGO presence in livelihoods or fisheries domains indicates a weak safety net and limited diversification support for small holders in this coastal context."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "MGNREGA community assets (common land development, water harvesting, rural connectivity) provide supplementary off-farm income and productive infrastructure that partially compensate for small landholding constraints. A low cumulative count signals that this safety net has not been effectively deployed. In coastal zones, NGO presence in fisheries or livelihoods domains can enable diversification into aquaculture, NTFP collection, or skill-based non-farm employment. Absence of both signals a household trapped in single-source farm income with no institutional support for diversification. Olsson et al. (2016) found that households engaged in off-farm employment alongside agriculture had better wellbeing and higher income than those solely dependent on small-scale farming.",
-      "interaction_with": [
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -119,7 +99,8 @@
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "Direct landholding size distribution data is the most reliable confirmation of this pathway. The variable is not available in the MWS data system but can be sourced from the Agricultural Census of India (block or district level) or from rapid household surveys. Fragmented, small landholdings limit surplus production, mechanisation access, and formal credit eligibility — all of which are documented drivers of persistent low income among Indian smallholders (Gulati et al., 2021; Fan & Rue, 2021)."
+      "explanation": "Direct landholding size distribution data is the most reliable confirmation of this pathway. The variable is not available in the MWS data system but can be sourced from the Agricultural Census of India (block or district level) or from rapid household surveys. Fragmented, small landholdings limit surplus production, mechanisation access, and formal credit eligibility — all of which are documented drivers of persistent low income among Indian smallholders (Gulati et al., 2021; Fan & Rue, 2021).",
+      "active": true
     },
     {
       "variables": [
@@ -127,14 +108,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Mean household or farm income below approximately Rs 50,000/year confirms severe income insufficiency on small holdings; Rs 50,000–1,00,000 partial; above weakens landholding as the primary driver.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Mean household or farm income below approximately Rs 50,000/year confirms severe income insufficiency on small holdings; Rs 50,000–1,00,000 partial; above weakens landholding as the primary driver."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Direct income evidence distinguishes volume-poverty (small area) from market or price failure (see market_price_crop amplifier).",
-      "signal_id": "sig_06"
+      "signal_id": "sig_06",
+      "active": true
     },
     {
       "variables": [
@@ -142,14 +122,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Farm-gate price consistently well below MSP (roughly 20–40% gap) for the main crop, amplifying income loss from small land area.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Farm-gate price consistently well below MSP (roughly 20–40% gap) for the main crop, amplifying income loss from small land area."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Market price failure amplifies small_landholding stress; near-MSP prices suggest low volume rather than exploitation is the dominant constraint.",
-      "signal_id": "sig_07"
+      "signal_id": "sig_07",
+      "active": true
     }
   ],
   "confounders": [
@@ -175,6 +154,14 @@
           "normalized": {
             "band": "low",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -183,6 +170,14 @@
           "normalized": {
             "band": "moderate",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -191,9 +186,18 @@
           "normalized": {
             "band": "high",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     },
     {
       "missing_variable": "household_income_inr",
@@ -207,6 +211,14 @@
           "normalized": {
             "band": "low",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -223,9 +235,18 @@
           "normalized": {
             "band": "high",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": false
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     },
     {
       "missing_variable": "market_price_crop",
@@ -239,6 +260,14 @@
           "normalized": {
             "band": "low",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -248,6 +277,14 @@
             "band": "moderate",
             "present": true,
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -257,9 +294,18 @@
             "band": "high",
             "present": true,
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     }
   ],
   "sources": [
@@ -335,5 +381,44 @@
     "semantic_alias_count": 19,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
   },
-  "overall_reasoning_note": "Diagnosis of low income driven by small landholding in coastal sub-humid plains should be confirmed by at least two of the three primary signals: low per-capita cropland (sig_01), low cropping intensity combined with small land base (sig_02), or poor market and dairy infrastructure access (sig_03). The MGNREGA and NGO signal (sig_04) amplifies the diagnosis but does not confirm it independently. The qualitative landholding distribution signal (sig_05) is the most direct confirmation but requires external data. Distinguish this pathway from drought-induced income failure by checking whether low cropping intensity persists across both drought and non-drought years. Distinguish from pure market failure by checking whether production volumes are themselves insufficient before prices are considered. In coastal Odisha, Andhra Pradesh, and Tamil Nadu, the AER-18 context with alluvial soils and 900–1400 mm rainfall means that water is not the binding constraint — the primary barriers are land fragmentation, market distance, and absence of collective institutions. Priority interventions are FPO formation for collective marketing, lease-land or cooperative farming models, and diversification into coastal fisheries or livestock supported by dairy infrastructure access."
+  "overall_reasoning_note": "Diagnosis of low income driven by small landholding in coastal sub-humid plains should be confirmed by at least two of the three primary signals: low per-capita cropland (sig_01), low cropping intensity combined with small land base (sig_02), or poor market and dairy infrastructure access (sig_03). The MGNREGA and NGO signal (sig_04) amplifies the diagnosis but does not confirm it independently. The qualitative landholding distribution signal (sig_05) is the most direct confirmation but requires external data. Distinguish this pathway from drought-induced income failure by checking whether low cropping intensity persists across both drought and non-drought years. Distinguish from pure market failure by checking whether production volumes are themselves insufficient before prices are considered. In coastal Odisha, Andhra Pradesh, and Tamil Nadu, the AER-18 context with alluvial soils and 900–1400 mm rainfall means that water is not the binding constraint — the primary barriers are land fragmentation, market distance, and absence of collective institutions. Priority interventions are FPO formation for collective marketing, lease-land or cooperative farming models, and diversification into coastal fisheries or livestock supported by dairy infrastructure access.",
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
+  }
 }

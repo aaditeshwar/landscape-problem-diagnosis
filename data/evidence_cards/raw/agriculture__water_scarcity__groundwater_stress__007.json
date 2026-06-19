@@ -32,17 +32,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "soge_dev_percent > 70 or soge_class_name in ['Semi-critical', 'Critical', 'Over-exploited']",
-        "qualitative_description": "Block-level SOGE exceeds 70% or CGWB classification is Semi-critical or worse, indicating extraction pressure on a low-storativity crystalline basement aquifer.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Block-level SOGE exceeds 70% or CGWB classification is Semi-critical or worse, indicating extraction pressure on a low-storativity crystalline basement aquifer."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "In the Chhota Nagpur Plateau, aquifers are hosted in crystalline basement (granite-gneiss) with very low storativity confined to weathered and fractured zones typically 10–30 m deep. Even a block-level SOGE of 70–90% (Semi-critical) can mask severe localised depletion because recharge is spatially heterogeneous across the plateau surface. CGWB defines Safe as <70%, Semi-critical as 70–90%, Critical as 90–100%, and Over-exploited as >100% of net annual recharge. In hard rock terrain, seasonal emptying and refilling dynamics mean that extraction stress manifests rapidly even at moderate SOGE values.",
-      "interaction_with": [
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -54,8 +49,6 @@
         "type": "trend",
         "expression": "trend_annual_delta_g_mm < 0 and mean_annual_delta_g_mm < 0",
         "qualitative_description": "Both the linear trend and the multi-year mean of annual groundwater recharge (P - ET - Runoff) are negative, indicating chronic depletion rather than a single drought year anomaly.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "trend_annual_delta_g_mm",
           "delta_g_mm"
@@ -64,10 +57,7 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "A negative trend in annual delta_g combined with a negative multi-year mean confirms that outflows (ET + runoff) persistently exceed precipitation inputs, leaving no surplus for aquifer recharge. In the sub-humid to humid Chhota Nagpur Plateau, annual rainfall of 1200–1600 mm is generally sufficient for recharge, so a chronic negative delta_g is a strong indicator of extraction-driven depletion rather than purely meteorological deficit. This is consistent with global evidence that rapid groundwater-level declines (>0.5 m/year) are accelerating in cropland-intensive regions.",
-      "interaction_with": [
-        "sig_01",
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -78,16 +68,12 @@
       "condition": {
         "type": "composite",
         "expression": "aquifer_class == 'crystalline_basement' and aquifer_lithology_percent.get('alluvium', 0) < 20",
-        "qualitative_description": "Dominant aquifer class is crystalline basement with less than 20% alluvial lithology, confirming low recharge capacity and high vulnerability to depletion.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Dominant aquifer class is crystalline basement with less than 20% alluvial lithology, confirming low recharge capacity and high vulnerability to depletion."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Crystalline basement aquifers (granite, gneiss, schist) characteristic of the Chhota Nagpur Plateau have very low primary porosity and depend entirely on secondary fracture and weathered zone storage. Unlike alluvial aquifers of the Indo-Gangetic Plain, these hard rock systems cannot buffer extraction over multiple seasons — depletion manifests as seasonal emptying with incomplete monsoon refilling. A low alluvial fraction (<20%) confirms that the MWS lacks the buffering capacity of mixed lithology systems. This structural vulnerability means that even moderate extraction rates can cause wells to fail during rabi and zaid seasons.",
-      "interaction_with": [
-        "sig_01"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -97,16 +83,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "nrega_swc_count < 10",
-        "qualitative_description": "Fewer than 10 cumulative SWC works recorded under MGNREGA in the MWS, indicating underinvestment in recharge infrastructure relative to the plateau terrain's runoff generation potential.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "Fewer than 10 cumulative SWC works recorded under MGNREGA in the MWS, indicating underinvestment in recharge infrastructure relative to the plateau terrain's runoff generation potential."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "The Chhota Nagpur Plateau generates high surface runoff due to shallow soils over impermeable crystalline rock and steep terrain. Without adequate SWC infrastructure (check dams, gabions, percolation ponds, farm bunds), monsoon runoff exits the watershed rapidly without contributing to groundwater recharge. India has historically invested in percolation tanks and streambed structures for artificial recharge, and MGNREGA-funded SWC works are the primary delivery mechanism in tribal plateau districts. A low cumulative SWC count signals a missed recharge opportunity that amplifies extraction-driven depletion. This also identifies a clear intervention pathway.",
-      "interaction_with": [
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -120,10 +102,7 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "Well deepening is a reliable proxy for groundwater table decline in Indian hard rock settings. In crystalline basement aquifers of the Chhota Nagpur Plateau, the saturated weathered zone is typically only 10–25 m thick; a decline of even 3–5 m can render shallow dug wells non-functional for rabi irrigation. Farmer-reported well deepening, especially when corroborated by SOGE and delta_g signals, strongly confirms the groundwater stress pathway. This variable is not available in the framework data and must be elicited through field inquiry.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "variables": [
@@ -131,14 +110,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Farmers report moderate-to-high borewell/tubewell density (roughly 10–50 or more than 50 within 2–3 km) in hard rock terrain, indicating localised over-extraction not captured by block-level SOGE. Very low density or widespread borewell failure may indicate aquifer limits rather than density-driven stress.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Farmers report moderate-to-high borewell/tubewell density (roughly 10–50 or more than 50 within 2–3 km) in hard rock terrain, indicating localised over-extraction not captured by block-level SOGE. Very low density or widespread borewell failure may indicate aquifer limits rather than density-driven stress."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "High local borewell density confirms extraction pressure at micro-watershed scale when paired with landscape depletion signals. Failed or unsuccessful borewells indicate hard-rock aquifer limits and may amplify stress severity without confirming high density per se.",
-      "signal_id": "sig_06"
+      "signal_id": "sig_06",
+      "active": true
     },
     {
       "variables": [
@@ -146,14 +124,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Farmers report salty/brackish well water, white crust on soil or pipes, or water unsuitable for sensitive crops — indicating salinity from deep penetration or over-extraction.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Farmers report salty/brackish well water, white crust on soil or pipes, or water unsuitable for sensitive crops — indicating salinity from deep penetration or over-extraction."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Reported salinity confirms groundwater stress as a quality-and-quantity problem; may also indicate a distinct salinity pathway requiring solution reassessment.",
-      "signal_id": "sig_07"
+      "signal_id": "sig_07",
+      "active": true
     }
   ],
   "overall_reasoning_note": "Groundwater stress in the Chhota Nagpur crystalline basement context should be confirmed by at least two of the three primary signals: elevated SOGE (sig_01), chronic negative delta_g trend (sig_02), or farmer-reported well deepening (sig_05). The aquifer lithology signal (sig_03) is a structural amplifier that raises prior probability of stress but does not confirm it independently. Low SWC investment (sig_04) amplifies depletion and identifies intervention opportunity. A key distinction from semi-arid hard rock contexts (e.g., Deccan Plateau) is that the Chhota Nagpur region receives 1200–1600 mm annual rainfall — if delta_g is chronically negative despite this rainfall, extraction pressure is the dominant driver rather than meteorological deficit alone. Block-level SOGE may understate local stress in hilly plateau terrain where recharge zones are spatially restricted to valley bottoms and lineament zones. Always cross-check with farmer reports on seasonal well failure patterns, particularly for rabi and zaid crop water availability.",
@@ -180,6 +157,14 @@
           "normalized": {
             "trend": "stable",
             "present": false
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -188,6 +173,14 @@
           "normalized": {
             "trend": "worsening",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -197,9 +190,18 @@
             "trend": "worsening",
             "present": true,
             "band": "high"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "trend"
     },
     {
       "missing_variable": "borewell_density",
@@ -213,6 +215,14 @@
           "normalized": {
             "band": "low",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -221,6 +231,14 @@
           "normalized": {
             "band": "moderate",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -229,9 +247,18 @@
           "normalized": {
             "band": "high",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     },
     {
       "missing_variable": "groundwater_salinity",
@@ -245,6 +272,14 @@
           "normalized": {
             "present": false,
             "trend": "stable"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -254,6 +289,14 @@
             "present": true,
             "band": "moderate",
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -263,9 +306,18 @@
             "present": true,
             "band": "high",
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "presence_graded"
     }
   ],
   "sources": [
@@ -351,5 +403,47 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 24,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_05"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_05"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_05"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

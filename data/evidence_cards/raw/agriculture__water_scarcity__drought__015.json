@@ -32,17 +32,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "drought_weeks_severe[-1] >= 2 or drought_weeks_moderate[-1] >= 4",
-        "qualitative_description": "Two or more severe drought weeks, or four or more moderate drought weeks in the latest kharif season, indicate meaningful crop-season water deficit even in a normally humid zone.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Two or more severe drought weeks, or four or more moderate drought weeks in the latest kharif season, indicate meaningful crop-season water deficit even in a normally humid zone."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "In humid and perhumid zones such as the West Coast (AER-19), crops are calibrated to high and reliable rainfall. Even brief severe drought spells during critical growth stages (tillering, flowering) can cause disproportionate yield loss. SPI-based drought weeks are a standard India Drought Manual metric; two severe weeks in kharif are sufficient to trigger crop failure in rice-dominant systems. Moderate drought weeks accumulating to four or more indicate a prolonged soil moisture deficit that exceeds the buffering capacity of alluvial soils.",
-      "interaction_with": [
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -52,17 +47,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "dry_spell_weeks[-1] >= 3",
-        "qualitative_description": "Three or more dry spell weeks (4-week moving window with <50% historical rainfall) in the latest kharif season indicate a prolonged intra-seasonal break that disrupts crop water supply.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Three or more dry spell weeks (4-week moving window with <50% historical rainfall) in the latest kharif season indicate a prolonged intra-seasonal break that disrupts crop water supply."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Intra-seasonal dry spells are a primary mechanism of agricultural drought in humid zones where annual totals may appear adequate but temporal distribution is erratic. In Kerala and Konkan, monsoon breaks exceeding 3 weeks during kharif coincide with documented paddy crop failures. The 4-week moving window criterion aligns with India Meteorological Department dry spell definitions used in district-level drought declarations.",
-      "interaction_with": [
-        "sig_01",
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -73,8 +63,6 @@
         "type": "composite",
         "expression": "drought_mild_spi_score_latest >= 26 or drought_mild_mai_score_latest >= 26 or drought_mild_vci_score_latest >= 26",
         "qualitative_description": "SPI below -1.0 (moderate meteorological drought), MAI below 0.5 (soil moisture inadequacy), or VCI below 35 (significant vegetation stress) in kharif season confirms drought causality.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "global",
         "variables": [
           "drought_mild_spi_score_latest",
           "drought_mild_mai_score_latest",
@@ -84,10 +72,7 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "The India Drought Manual prescribes a composite drought classification using SPI for meteorological drought, MAI for agricultural drought, and VCI for vegetation response. SPI < -1.0 denotes moderate to severe meteorological drought. MAI < 0.5 indicates soil moisture is less than half of crop demand, directly causing water stress. VCI < 35 captures satellite-observed vegetation stress correlated with productivity loss. Studies on kharif rice in India show SPI and VCI are significantly correlated with productivity index, explaining 69–76% of yield variability.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -99,8 +84,6 @@
         "type": "trend",
         "expression": "(seasonal_precipitation_mm[-1].get('kharif', 9999) < 0.75 * mean_annual_precipitation_mm * 0.85) or (trend_annual_precipitation_mm < -20)",
         "qualitative_description": "Kharif seasonal precipitation in the latest year below 75% of the long-run kharif normal, or a declining trend in annual precipitation exceeding 20 mm/year, confirms a structural rainfall deficit underpinning drought.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "seasonal_precipitation_mm",
           "precipitation_mm"
@@ -109,9 +92,7 @@
       "severity": "moderate",
       "direction": "confirms",
       "explanation": "In AER-19 (West Coast perhumid zone), annual rainfall ranges 2000–5000 mm, almost entirely concentrated in kharif. A kharif seasonal total falling below 75% of the long-run normal represents a severe departure from the climatological baseline and is consistent with meteorological drought. A declining trend in annual precipitation of more than 20 mm/year over the 8-year record signals a structural shift in rainfall availability that amplifies drought risk in subsequent seasons.",
-      "interaction_with": [
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -121,17 +102,12 @@
       "condition": {
         "type": "trend",
         "expression": "monsoon_onset_date[-1] > monsoon_onset_date[0]",
-        "qualitative_description": "Monsoon onset in the latest year is later than in the earliest year of the record, indicating a trend toward delayed onset that shortens the effective kharif growing season.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Monsoon onset in the latest year is later than in the earliest year of the record, indicating a trend toward delayed onset that shortens the effective kharif growing season."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Delayed monsoon onset in Kerala and the Konkan coast shortens the effective kharif season, compressing the window for transplanting and early vegetative growth of paddy. Even in perhumid zones, a delayed onset by 2–3 weeks can push flowering into a drier period, increasing the probability of terminal drought stress. This signal amplifies the drought pathway but does not confirm it independently, as onset variability is high year to year.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     }
   ],
   "confounders": [
@@ -208,5 +184,50 @@
     "semantic_alias_count": 24,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
   },
-  "overall_reasoning_note": "In the humid and perhumid West Coast zone (AER-19), drought is paradoxical — annual rainfall is among the highest in India (2000–5000 mm) yet intra-seasonal dry spells and delayed monsoon onset can cause acute crop water stress. Diagnosis should require at least two confirming signals: preferably a combination of drought_weeks_severe or dry_spell_weeks (sig_01/sig_02) with either the composite drought_causality_json indicators (sig_03) or a significant seasonal precipitation deficit (sig_04). A single signal may reflect data noise or a brief weather anomaly. Monsoon onset delay (sig_05) is an amplifying rather than confirming signal. Always distinguish from irrigation infrastructure failure before attributing scarcity to meteorological drought. Recommended interventions — check dam repair, pre-monsoon water harvesting, and drought-tolerant kharif varieties — are most appropriate when sig_01 and sig_02 are both active, confirming that the deficit is rainfall-driven rather than infrastructure-driven."
+  "overall_reasoning_note": "In the humid and perhumid West Coast zone (AER-19), drought is paradoxical — annual rainfall is among the highest in India (2000–5000 mm) yet intra-seasonal dry spells and delayed monsoon onset can cause acute crop water stress. Diagnosis should require at least two confirming signals: preferably a combination of drought_weeks_severe or dry_spell_weeks (sig_01/sig_02) with either the composite drought_causality_json indicators (sig_03) or a significant seasonal precipitation deficit (sig_04). A single signal may reflect data noise or a brief weather anomaly. Monsoon onset delay (sig_05) is an amplifying rather than confirming signal. Always distinguish from irrigation infrastructure failure before attributing scarcity to meteorological drought. Recommended interventions — check dam repair, pre-monsoon water harvesting, and drought-tolerant kharif varieties — are most appropriate when sig_01 and sig_02 are both active, confirming that the deficit is rainfall-driven rather than infrastructure-driven.",
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_03",
+      "sig_04"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_03",
+          "sig_04"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_04"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
+  }
 }

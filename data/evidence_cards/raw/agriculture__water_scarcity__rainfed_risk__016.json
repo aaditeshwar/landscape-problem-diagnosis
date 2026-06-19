@@ -31,13 +31,12 @@
       "condition": {
         "type": "composite",
         "expression": "mean_cropping_intensity <= 1.15 and (mean_kharif_cropped_area_ha / (mean_double_crop_area_ha + mean_kharif_cropped_area_ha + 1e-9)) > 0.80",
-        "qualitative_description": "Mean cropping intensity at or below 1.15 combined with over 80% of cropped area under single kharif season indicates near-total rainfed dependence with no meaningful rabi or irrigated double-cropping.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Mean cropping intensity at or below 1.15 combined with over 80% of cropped area under single kharif season indicates near-total rainfed dependence with no meaningful rabi or irrigated double-cropping."
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "In cold arid zones such as Ladakh (AER-1, <150 mm annual rainfall), the growing season is extremely short and confined to a single summer flush. A cropping intensity near 1.0 and dominance of single-kharif area over double-cropped area confirms that agriculture is entirely dependent on seasonal snowmelt and the brief monsoon pulse, with no irrigation infrastructure enabling a second crop. This pattern is consistent with the characterisation of arid/semi-arid rainfed systems in South Asia as occupying 116 million ha and supporting large populations under chronic water stress (Devendra & Thomas 2002)."
+      "explanation": "In cold arid zones such as Ladakh (AER-1, <150 mm annual rainfall), the growing season is extremely short and confined to a single summer flush. A cropping intensity near 1.0 and dominance of single-kharif area over double-cropped area confirms that agriculture is entirely dependent on seasonal snowmelt and the brief monsoon pulse, with no irrigation infrastructure enabling a second crop. This pattern is consistent with the characterisation of arid/semi-arid rainfed systems in South Asia as occupying 116 million ha and supporting large populations under chronic water stress (Devendra & Thomas 2002).",
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -48,17 +47,12 @@
       "condition": {
         "type": "composite",
         "expression": "canal_name is None and nrega_irrigation_count < 3",
-        "qualitative_description": "No irrigation canal intersects the micro-watershed and fewer than 3 MGNREGA irrigation works have been recorded, confirming absence of surface irrigation infrastructure.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "local"
+        "qualitative_description": "No irrigation canal intersects the micro-watershed and fewer than 3 MGNREGA irrigation works have been recorded, confirming absence of surface irrigation infrastructure."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "The absence of a named canal combined with negligible MGNREGA irrigation investment directly confirms that no surface water delivery system exists to supplement rainfall. In the Western Himalayan cold arid ecoregion, traditional irrigation channels (kuls) are the primary water source; their absence or non-registration in canal datasets signals that even traditional infrastructure is inadequate or absent. Low MGNREGA irrigation works count further indicates that public investment in water infrastructure has not compensated for natural scarcity.",
-      "interaction_with": [
-        "sig_01",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -70,8 +64,6 @@
         "type": "composite",
         "expression": "terrain_cluster_id == 3 and mean_annual_runoff_mm > 40",
         "qualitative_description": "Broad plains and slopes terrain (cluster 3) combined with mean annual runoff exceeding 40 mm indicates that a significant fraction of the scarce precipitation is lost as surface runoff rather than infiltrating to support crops.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "runoff_mm",
           "terrain_cluster_id"
@@ -80,10 +72,7 @@
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "In hilly and valley terrain of cold arid zones, steep gradients accelerate runoff loss from the limited precipitation events. Even where annual rainfall is below 150 mm, intense snowmelt pulses can generate disproportionate runoff. High runoff relative to total precipitation means in-situ soil moisture recharge is minimal, amplifying crop water stress. This also signals an opportunity for in-situ water harvesting interventions such as farm ponds and contour bunds, consistent with management recommendations for water-limited environments (Daryanto et al. 2016).",
-      "interaction_with": [
-        "sig_01",
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -93,16 +82,12 @@
       "condition": {
         "type": "trend",
         "expression": "mean_swb_rabi_kharif_ratio < 0.15",
-        "qualitative_description": "Mean ratio of surface water body area in rabi to kharif season below 0.15 indicates that surface water storage does not persist into the post-monsoon period, confirming absence of stored water for rabi irrigation.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Mean ratio of surface water body area in rabi to kharif season below 0.15 indicates that surface water storage does not persist into the post-monsoon period, confirming absence of stored water for rabi irrigation."
       },
       "severity": "moderate",
       "direction": "confirms",
       "explanation": "In cold arid zones, surface water bodies (glacial meltwater pools, seasonal streams) shrink dramatically after the summer season. A very low rabi-to-kharif SWB area ratio confirms that no meaningful surface water storage persists to support post-monsoon cropping. This directly explains why rabi and zaid seasons are absent or negligible, as farmers report insufficient water outside the brief kharif window. The lack of persistent surface water also limits the feasibility of gravity-fed irrigation from natural sources.",
-      "interaction_with": [
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "variables": [
@@ -110,14 +95,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Irrigated share of cultivated land is negligible (under roughly 5–10%), confirming structural rainfed dependence; meaningful irrigated area (above roughly 20%) weakens the rainfed-risk diagnosis.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Irrigated share of cultivated land is negligible (under roughly 5–10%), confirming structural rainfed dependence; meaningful irrigated area (above roughly 20%) weakens the rainfed-risk diagnosis."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "User-reported irrigated area is the most direct confirmatory variable for rainfed risk when landscape proxies are ambiguous.",
-      "signal_id": "sig_05"
+      "signal_id": "sig_05",
+      "active": true
     }
   ],
   "confounders": [
@@ -144,6 +128,14 @@
             "band": "low",
             "present": true,
             "percent_upper": 10
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -163,9 +155,18 @@
             "band": "high",
             "present": true,
             "percent_lower": 30
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     }
   ],
   "sources": [
@@ -234,5 +235,50 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 20,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_04",
+      "sig_05"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_04",
+          "sig_05"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_04",
+            "sig_05"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

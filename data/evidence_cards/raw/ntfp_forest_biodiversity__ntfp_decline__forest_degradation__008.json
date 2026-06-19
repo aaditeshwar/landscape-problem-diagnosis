@@ -30,17 +30,12 @@
       "condition": {
         "type": "trend",
         "expression": "lulc_tree_forest_ha[-1] < lulc_tree_forest_ha[0]",
-        "qualitative_description": "Total forest area in the micro-watershed has declined from 2017 to the latest available year, indicating net loss of NTFP-bearing tree cover.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Total forest area in the micro-watershed has declined from 2017 to the latest available year, indicating net loss of NTFP-bearing tree cover."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "A declining trend in forest area directly reduces the stock of NTFP-bearing trees and understory species. In the sub-humid eastern plateau zone (AER-11), sal (Shorea robusta), mahua (Madhuca indica), tendu (Diospyros melanoxylon), and achar (Buchanania lanzan) are the primary NTFP species — all dependent on intact forest cover. Loss of even 5–10% of forest area can disproportionately reduce NTFP availability if degradation targets productive forest patches near settlements.",
-      "interaction_with": [
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -52,8 +47,6 @@
         "type": "composite",
         "expression": "cd_total_deforestation_ha > 50 and (cd_afforestation_ha / (cd_total_deforestation_ha + 1e-9)) < 0.5",
         "qualitative_description": "Cumulative deforestation exceeds 50 ha and afforestation has replaced less than half the lost area, indicating a net forest deficit with weak recovery.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "cd_total_deforestation_ha",
           "cd_afforestation_ha"
@@ -62,10 +55,7 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "When deforestation substantially outpaces afforestation, the forest landscape enters a net deficit that cannot sustain historical NTFP yields. Compensatory afforestation programmes in Odisha have been found to rely heavily on industrial monoculture plantations that do not replicate the multi-species understory structure required for NTFP production, meaning even nominal afforestation figures may overstate ecological recovery relevant to NTFP communities.",
-      "interaction_with": [
-        "sig_01",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -75,17 +65,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "cd_total_deforestation_ha > 100",
-        "qualitative_description": "Cumulative deforestation in the micro-watershed exceeds 100 ha, representing a substantial absolute loss of forest habitat.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Cumulative deforestation in the micro-watershed exceeds 100 ha, representing a substantial absolute loss of forest habitat."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "In the eastern plateau and Eastern Ghats zone, forest-dependent tribal communities typically rely on NTFPs across a radius of 5–15 km from their villages. A cumulative loss exceeding 100 ha within a micro-watershed meaningfully contracts the effective collection area, reducing both quantity and diversity of available NTFPs. Studies in Jharkhand document that NTFP income constitutes approximately 17% of gross household income for tribal families, making even moderate forest loss economically significant.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -95,17 +80,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "'Agroforestry' not in organization_domains and 'Watershed management' not in organization_domains and 'Forest rights' not in organization_domains",
-        "qualitative_description": "No NGO or organisation active in the micro-watershed works in agroforestry, watershed management, or forest rights domains, indicating absence of institutional support for forest protection and NTFP governance.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "No NGO or organisation active in the micro-watershed works in agroforestry, watershed management, or forest rights domains, indicating absence of institutional support for forest protection and NTFP governance."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Institutional presence in agroforestry, watershed management, or forest rights domains is associated with community forest protection activities such as Joint Forest Management (JFM) committees, Community Forest Resource (CFR) rights under the Forest Rights Act, and fire line maintenance. Absence of such organisations removes a key buffer against forest degradation and reduces the likelihood that NTFP-dependent communities have formalised access rights or protection mechanisms.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -114,13 +94,12 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Field surveys or community reports indicate reduced abundance, fruiting failure, or local disappearance of key NTFP species such as mahua (Madhuca indica), tendu (Diospyros melanoxylon), sal (Shorea robusta), or achar (Buchanania lanzan) compared to 5–10 years ago.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "local"
+        "qualitative_description": "Field surveys or community reports indicate reduced abundance, fruiting failure, or local disappearance of key NTFP species such as mahua (Madhuca indica), tendu (Diospyros melanoxylon), sal (Shorea robusta), or achar (Buchanania lanzan) compared to 5–10 years ago."
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "Direct evidence of NTFP species decline is the most diagnostic indicator of forest degradation impact on NTFP availability. In the eastern plateau zone, collection methods for many NTFP species are reported to be destructive, and wild populations are declining as a result of both over-harvesting and habitat loss. Community recall of species abundance trends is a validated proxy where formal survey data are unavailable."
+      "explanation": "Direct evidence of NTFP species decline is the most diagnostic indicator of forest degradation impact on NTFP availability. In the eastern plateau zone, collection methods for many NTFP species are reported to be destructive, and wild populations are declining as a result of both over-harvesting and habitat loss. Community recall of species abundance trends is a validated proxy where formal survey data are unavailable.",
+      "active": true
     },
     {
       "variables": [
@@ -128,14 +107,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Absence of active VSS/JFM/CFR governance and forest patrols amplifies degradation risk; recognised CFR rights with enforcement weaken ongoing active degradation.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Absence of active VSS/JFM/CFR governance and forest patrols amplifies degradation risk; recognised CFR rights with enforcement weaken ongoing active degradation."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Institutional gap amplifies degradation severity; active community forest governance suggests legacy rather than ongoing degradation.",
-      "signal_id": "sig_06"
+      "signal_id": "sig_06",
+      "active": true
     }
   ],
   "confounders": [
@@ -162,6 +140,14 @@
             "band": "high",
             "present": true,
             "trend": "stable"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -180,9 +166,18 @@
             "band": "low",
             "present": true,
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     },
     {
       "missing_variable": "community_forest_governance_status",
@@ -196,6 +191,14 @@
           "normalized": {
             "band": "high",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -211,9 +214,18 @@
           "label": "No functioning forest governance institution in the village",
           "normalized": {
             "present": false
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "presence_graded"
     }
   ],
   "sources": [
@@ -285,5 +297,50 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 25,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_03",
+      "sig_05"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_03",
+          "sig_05"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_05"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

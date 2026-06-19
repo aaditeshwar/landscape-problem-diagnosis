@@ -32,13 +32,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "(lulc_single_kharif_ha[-1] / (lulc_single_kharif_ha[-1] + lulc_double_crop_ha[-1] + 1e-9)) > 0.75",
-        "qualitative_description": "More than 75% of cropped area is under single kharif season only, indicating near-total dependence on monsoon rainfall with negligible irrigation-supported double cropping.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "qualitative_description": "More than 75% of cropped area is under single kharif season only, indicating near-total dependence on monsoon rainfall with negligible irrigation-supported double cropping."
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "In humid and perhumid West Coast zones such as Kerala and Konkan Maharashtra, high annual rainfall (2000–5000 mm) is concentrated in the southwest monsoon. Despite this abundance, the absence of storage infrastructure means that post-monsoon rabi and zaid seasons remain unirrigated. A dominance of single kharif area over double-cropped area directly confirms rainfed dependence. Even in high-rainfall AER-19 contexts, erratic onset or withdrawal of the monsoon creates dry spells that expose single-season rainfed farmers to significant crop water stress, consistent with findings on tropical residual moisture regimes where unproductive losses via runoff are highest (Bodner et al. 2015)."
+      "explanation": "In humid and perhumid West Coast zones such as Kerala and Konkan Maharashtra, high annual rainfall (2000–5000 mm) is concentrated in the southwest monsoon. Despite this abundance, the absence of storage infrastructure means that post-monsoon rabi and zaid seasons remain unirrigated. A dominance of single kharif area over double-cropped area directly confirms rainfed dependence. Even in high-rainfall AER-19 contexts, erratic onset or withdrawal of the monsoon creates dry spells that expose single-season rainfed farmers to significant crop water stress, consistent with findings on tropical residual moisture regimes where unproductive losses via runoff are highest (Bodner et al. 2015).",
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -48,16 +47,12 @@
       "condition": {
         "type": "trend",
         "expression": "mean_cropping_intensity <= 1.15",
-        "qualitative_description": "Mean cropping intensity at or below 1.15 across the multi-year record indicates that the vast majority of net sown area is harvested only once per year, consistent with single-season rainfed farming.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Mean cropping intensity at or below 1.15 across the multi-year record indicates that the vast majority of net sown area is harvested only once per year, consistent with single-season rainfed farming."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Cropping intensity near 1.0 is a robust proxy for rainfed single-season agriculture. In alluvial plains of the West Coast, where soils can support a second crop if water is available, a persistently low cropping intensity confirms that irrigation infrastructure is absent or inadequate. Intensities above 1.5 would indicate meaningful irrigation access enabling rabi or zaid cultivation. The threshold of 1.15 allows for minor double-cropped patches while still flagging the watershed as predominantly rainfed. This aligns with the characterisation of less-favoured rainfed areas in South and Southeast Asia where single-season farming dominates despite biophysical potential for more (Devendra and Thomas 2002).",
-      "interaction_with": [
-        "sig_01"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -69,8 +64,6 @@
         "type": "composite",
         "expression": "mean_annual_runoff_mm > 1200 and terrain_cluster_id == 3",
         "qualitative_description": "High mean annual runoff (>1200 mm) combined with broad plains and slopes terrain (cluster 3) indicates rapid lateral drainage of rainfall, reducing in-field moisture retention and limiting water availability between rain events.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "runoff_mm",
           "terrain_cluster_id"
@@ -79,10 +72,7 @@
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "In the perhumid West Coast ecoregion, total annual rainfall is high but its agronomic utility is reduced by rapid runoff on sloping terrain. Broad plains and slopes (terrain cluster 3) accelerate surface drainage into streams, leaving limited soil moisture storage for crops during inter-monsoon dry spells. High runoff relative to rainfall is a diagnostic indicator of potential for in-situ water harvesting interventions such as farm ponds and contour bunds. This dynamic is consistent with the finding that unproductive water losses via runoff are highest under tropical residual moisture regimes with short intense rainy seasons (Bodner et al. 2015). The combination of high runoff and sloping terrain amplifies rainfed risk even in nominally high-rainfall zones.",
-      "interaction_with": [
-        "sig_01",
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -93,17 +83,12 @@
       "condition": {
         "type": "composite",
         "expression": "canal_name is None and nrega_irrigation_count < 3",
-        "qualitative_description": "No irrigation canal intersects the micro-watershed and fewer than 3 MGNREGA irrigation works have been constructed, confirming absence of both formal surface irrigation and community-level irrigation investment.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "No irrigation canal intersects the micro-watershed and fewer than 3 MGNREGA irrigation works have been constructed, confirming absence of both formal surface irrigation and community-level irrigation investment."
       },
       "severity": "moderate",
       "direction": "confirms",
       "explanation": "The absence of a named canal indicates no access to formal surface irrigation schemes, which are the primary alternative to rainfall in West Coast alluvial plains. Low MGNREGA irrigation work counts further confirm that community-level investment in water storage and conveyance infrastructure has been minimal. Together, these two indicators establish that the watershed lacks both top-down and bottom-up irrigation development, leaving farmers entirely dependent on direct rainfall. This is consistent with the characterisation of less-favoured rainfed areas as having received minimum development attention (Devendra and Thomas 2002).",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -113,16 +98,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "mean_swb_rabi_kharif_ratio < 0.15",
-        "qualitative_description": "Mean ratio of surface water body area in rabi season to kharif season below 0.15 indicates that surface water bodies largely dry up after the monsoon, confirming limited post-monsoon water storage for supplemental irrigation.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "Mean ratio of surface water body area in rabi season to kharif season below 0.15 indicates that surface water bodies largely dry up after the monsoon, confirming limited post-monsoon water storage for supplemental irrigation."
       },
       "severity": "moderate",
       "direction": "confirms",
       "explanation": "Surface water body persistence into the rabi season is a proxy for available water storage that could support post-monsoon supplemental irrigation. A low rabi-to-kharif SWB area ratio indicates that tanks, ponds, and wetlands shrink dramatically after the monsoon, leaving no reliable surface water source for rabi crops. In the West Coast alluvial context, where lateral drainage is rapid, this confirms that even the high monsoon rainfall is not being captured for year-round use. This signal is particularly relevant for identifying opportunities for farm pond construction and tank rehabilitation as recommended interventions.",
-      "interaction_with": [
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "variables": [
@@ -130,14 +111,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Irrigated share of cultivated land is negligible (under roughly 5–10%), confirming structural rainfed dependence; meaningful irrigated area (above roughly 20%) weakens the rainfed-risk diagnosis.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Irrigated share of cultivated land is negligible (under roughly 5–10%), confirming structural rainfed dependence; meaningful irrigated area (above roughly 20%) weakens the rainfed-risk diagnosis."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "User-reported irrigated area is the most direct confirmatory variable for rainfed risk when landscape proxies are ambiguous.",
-      "signal_id": "sig_06"
+      "signal_id": "sig_06",
+      "active": true
     }
   ],
   "confounders": [
@@ -164,6 +144,14 @@
             "band": "low",
             "present": true,
             "percent_upper": 10
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -183,9 +171,18 @@
             "band": "high",
             "present": true,
             "percent_lower": 30
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": false
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     }
   ],
   "sources": [
@@ -237,5 +234,50 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 20,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_04",
+      "sig_05"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_04",
+          "sig_05"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_04",
+            "sig_05"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

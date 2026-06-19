@@ -152,6 +152,10 @@ export interface ChangeReview {
 
 export interface DiagnosisResponse {
   session_id: string
+  diagnosis_snapshot_id?: string
+  follow_up_count?: number
+  turn_no?: number
+  log_index?: number | null
   mws_aer_code?: string | null
   retrieval_aer_tags?: string[]
   confirmed_pathways: PathwayResult[]
@@ -176,9 +180,11 @@ export interface DiagnosisResponse {
 export interface FollowUpExchange {
   question: string
   answer: string
-  actions: string[]
-  explanation?: string | null
   variable?: string
+  mcq?: FollowUpMcq | null
+  /** @deprecated retained for diagnosis panel only */
+  actions?: string[]
+  explanation?: string | null
   revision?: DiagnosisRevision | null
   signalUpdates?: FollowUpSignalUpdate[]
   signalEvaluation?: SignalEvaluation | null
@@ -284,4 +290,63 @@ export interface MwsDocument {
   }
   facility_distance_table?: Array<{ facility: string; distance_km: number }>
   nrega_mws?: Record<string, Record<string, number>>
+}
+
+export interface FeedbackSectionDraft {
+  server_agreement?: string | null
+  llm_agreement?: string | null
+  free_text?: string | null
+  linked_card_id?: string | null
+  linked_cluster_suffix?: string | null
+}
+
+export interface FeedbackDocument {
+  diagnosis_snapshot_id: string
+  session_id: string
+  follow_up_count: number
+  turn_no?: number | null
+  log_index?: number | null
+  reviewer: { name: string; email: string }
+  mws_uid: string
+  updated_at: string
+  sections: Record<string, FeedbackSectionDraft>
+}
+
+export interface RetrievedEvidenceCard {
+  card_id: string
+  pathway_id: string
+  cluster_suffix?: string | null
+  production_system?: string
+  observed_stress?: string
+  causal_pathway?: string
+}
+
+export interface FeedbackContext {
+  session_id: string
+  diagnosis_snapshot_id: string
+  follow_up_count: number
+  turn_no?: number | null
+  log_index?: number | null
+  mws_uid: string
+  mws_doc: MwsDocument
+  want_llm_opinion: boolean
+  llm_skipped: boolean
+  follow_up_history: FollowUpExchange[]
+  server_diagnosis: {
+    confirmed_pathways: PathwayResult[]
+    uncertain_pathways: PathwayResult[]
+    summary?: string | null
+    solutions: string[]
+    signal_evaluation?: SignalEvaluation | null
+    pathway_notes: Record<string, string>
+    panel_updates: string[]
+    panel_update_explanation?: string | null
+  }
+  llm_diagnosis?: {
+    reviewer_commentary?: ReviewerPathwayComment[]
+    change_review?: ChangeReview | null
+    solutions_review_notes?: string | null
+  } | null
+  retrieved_cards: RetrievedEvidenceCard[]
+  context_clusters: Record<string, unknown>
 }

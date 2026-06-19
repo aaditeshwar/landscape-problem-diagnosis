@@ -31,17 +31,12 @@
       "condition": {
         "type": "trend",
         "expression": "cd_forest_to_farm_ha > 50",
-        "qualitative_description": "Cumulative forest-to-farm conversion has increased by more than 50 ha over the available record, indicating active encroachment of forest land for agriculture.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Cumulative forest-to-farm conversion has increased by more than 50 ha over the available record, indicating active encroachment of forest land for agriculture."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Forest-to-farm transition is the most direct measurable indicator of encroachment. In hilly sub-humid zones of Uttarakhand and Himachal Pradesh, even modest conversion on steep slopes fragments contiguous forest patches, reducing interior forest area and NTFP availability. Studies on forest fragmentation in comparable Western Ghats landscapes document that interior forest cover can decline from over 60% to under 30% within decades of active land-use conversion, with cascading effects on NTFP species composition and abundance.",
-      "interaction_with": [
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -52,8 +47,6 @@
         "type": "trend",
         "expression": "cd_urbanization_ha > 20",
         "qualitative_description": "Settlement footprint has expanded by more than 20 ha over the record period, indicating encroachment pressure from habitation expansion into forest fringes.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "cd_urbanization_ha"
         ]
@@ -61,9 +54,7 @@
       "severity": "moderate",
       "direction": "confirms",
       "explanation": "Urbanization and settlement expansion into forest fringes in hilly terrain reduces community access corridors to NTFP collection areas and fragments habitat. In Himalayan foothills, population-driven settlement expansion along forest edges is a documented driver of forest boundary erosion. Increased built-up area adjacent to forest land also signals reduced enforcement of forest boundaries and potential tenure conflicts that restrict NTFP collector access.",
-      "interaction_with": [
-        "sig_01"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -74,8 +65,6 @@
         "type": "quantitative",
         "expression": "village_st_percent > 25 and cd_forest_to_farm_ha > 30",
         "qualitative_description": "Village has a significant Scheduled Tribe population (>25%) coinciding with measurable forest-to-farm conversion, suggesting forest rights disputes or displacement of traditional NTFP collectors.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local",
         "variables": [
           "village_st_percent",
           "cd_forest_to_farm_ha"
@@ -84,10 +73,7 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "High ST population share in villages adjacent to encroached forest areas is a social indicator of potential Forest Rights Act (FRA) tenure conflicts. Research on protected area displacement in India documents that indigenous and forest-dwelling communities are disproportionately affected by encroachment-driven access restrictions, often without legal recognition of their customary rights. Where encroachment by outsiders or settlement expansion occurs alongside a large ST population, NTFP decline is likely compounded by both physical forest loss and restricted access due to tenure insecurity.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -99,8 +85,6 @@
         "type": "composite",
         "expression": "cd_forest_to_farm_ha > 30 and cd_urbanization_ha > 10 and terrain_cluster_id != 1",
         "qualitative_description": "Both forest-to-farm conversion and settlement expansion are occurring simultaneously in non-plains terrain, indicating compound encroachment pressure on hilly forest landscapes.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "cd_forest_to_farm_ha",
           "cd_urbanization_ha",
@@ -110,11 +94,7 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "Simultaneous agricultural and settlement encroachment in hilly terrain (terrain_cluster_id not equal to 1, i.e., not mostly plains) represents compound pressure on forest extent. In sub-humid Himalayan foothills, this dual encroachment pattern is particularly damaging because hilly forest patches are already fragmented by topography; additional conversion reduces patch connectivity and eliminates NTFP-rich edge and interior habitats. Geospatial analyses of comparable landscapes show that combined cropland and built-up expansion can reduce interior forest cover by 30-40 percentage points over two to three decades.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     }
   ],
   "overall_reasoning_note": "Diagnosis of encroachment-driven NTFP decline should be confirmed by at least two signals: a measurable increase in forest-to-farm conversion (sig_01) is the primary indicator, ideally corroborated by settlement expansion (sig_02) or social vulnerability indicators (sig_03). The composite signal (sig_04) provides the strongest confirmation when both land-use change types co-occur in hilly terrain. A high ST population share alone (sig_03) does not confirm encroachment but raises the prior probability of tenure-related access restriction. Always verify whether observed forest loss reflects encroachment versus legal land-use change or plantation conversion before recommending FRA-based interventions. In AER-14 landscapes (Himachal Pradesh, Uttarakhand, Jammu division), forest-to-farm conversion on slopes is particularly consequential because steep terrain limits alternative agricultural expansion, making forest land a target for marginal farming.",
@@ -189,5 +169,47 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 17,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_04"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_04"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_04"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

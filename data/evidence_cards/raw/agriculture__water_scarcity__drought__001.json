@@ -31,13 +31,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "drought_weeks_severe[-1] >= 3 or (drought_weeks_severe[-1] >= 1 and drought_weeks_moderate[-1] >= 4)",
-        "qualitative_description": "Three or more severe drought weeks in the latest kharif season, or at least one severe week combined with four or more moderate weeks, indicates a drought episode sufficient to cause significant crop water stress and yield loss.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Three or more severe drought weeks in the latest kharif season, or at least one severe week combined with four or more moderate weeks, indicates a drought episode sufficient to cause significant crop water stress and yield loss."
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "Persistent severe drought weeks during kharif directly reduce soil moisture below crop wilting thresholds. In semi-arid Deccan Plateau settings (AER-6), where rainfed cotton and soybean dominate, even brief severe drought spells during critical growth stages (flowering, grain fill) cause irreversible yield loss. The India Drought Manual uses SPI-based weekly classification to define severe drought; three or more such weeks in a season constitutes a declared agricultural drought in most state protocols."
+      "explanation": "Persistent severe drought weeks during kharif directly reduce soil moisture below crop wilting thresholds. In semi-arid Deccan Plateau settings (AER-6), where rainfed cotton and soybean dominate, even brief severe drought spells during critical growth stages (flowering, grain fill) cause irreversible yield loss. The India Drought Manual uses SPI-based weekly classification to define severe drought; three or more such weeks in a season constitutes a declared agricultural drought in most state protocols.",
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -47,17 +46,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "dry_spell_weeks[-1] >= 4",
-        "qualitative_description": "Four or more dry spell weeks (4-week moving window with <50% historical rainfall) in the latest kharif season indicate prolonged moisture deficit disrupting crop growth stages.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Four or more dry spell weeks (4-week moving window with <50% historical rainfall) in the latest kharif season indicate prolonged moisture deficit disrupting crop growth stages."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Dry spells of four or more consecutive weeks during kharif are a primary mechanism of agricultural drought in semi-arid India. In Vidarbha and Marathwada, intra-seasonal dry spells frequently interrupt monsoon rainfall, causing soil moisture depletion in shallow Vertisols and Alfisols. Research on crop water management under drought confirms that unproductive water losses and soil moisture deficits during critical phenological windows are the dominant yield-limiting factors in rainfed systems.",
-      "interaction_with": [
-        "sig_01",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -68,8 +62,6 @@
         "type": "composite",
         "expression": "drought_mild_spi_score_latest >= 26 and drought_mild_vci_score_latest >= 26",
         "qualitative_description": "SPI at or below -1.0 (moderate to severe meteorological drought) combined with VCI below 40 (moderate vegetation stress) confirms co-occurrence of meteorological and agricultural drought in the same kharif season.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional",
         "variables": [
           "drought_mild_spi_score_latest",
           "drought_mild_vci_score_latest"
@@ -78,10 +70,7 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "The India Drought Manual prescribes a composite drought classification using SPI for meteorological drought, MAI for soil moisture adequacy, and VCI for vegetation condition. Studies on kharif rice in Indian districts show that SPI and VCI are both significantly positively correlated with crop productivity index, with combined use explaining 69–76% of yield variability. An SPI ≤ -1.0 with VCI < 40 in the same season provides strong confirmation that rainfall deficit has translated into crop-level water stress, distinguishing true drought from localised irrigation failure.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -93,8 +82,6 @@
         "type": "composite",
         "expression": "(seasonal_precipitation_mm[-1].get('kharif', 9999) < 0.75 * mean_annual_precipitation_mm) or (mean_annual_precipitation_mm < 700 and trend_annual_precipitation_mm < -5)",
         "qualitative_description": "Kharif seasonal rainfall below 75% of the long-run annual mean, or a declining multi-year precipitation trend below 700 mm/year, confirms structural rainfall deficit underpinning drought risk.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "seasonal_precipitation_mm",
           "precipitation_mm"
@@ -103,10 +90,7 @@
       "severity": "moderate",
       "direction": "confirms",
       "explanation": "In AER-6 (Deccan Plateau, semi-arid), mean annual rainfall ranges from 500–960 mm with high inter-annual variability. Below-normal kharif rainfall (less than 75% of the long-run mean) is the primary trigger for agricultural drought in rainfed systems. A declining precipitation trend alongside a low baseline (<700 mm) signals increasing structural drought risk. Water-food-energy nexus analyses for India confirm that after drought years, groundwater storage drops and cannot recover even in subsequent good monsoon years, amplifying multi-year drought impacts.",
-      "interaction_with": [
-        "sig_01",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -116,17 +100,12 @@
       "condition": {
         "type": "trend",
         "expression": "(monsoon_onset_date[-1] - monsoon_onset_date[0]) > 7",
-        "qualitative_description": "Monsoon onset in the latest year is more than 7 days later than the earliest year in the record, indicating a trend toward delayed onset that shortens the effective kharif growing season.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Monsoon onset in the latest year is more than 7 days later than the earliest year in the record, indicating a trend toward delayed onset that shortens the effective kharif growing season."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Delayed monsoon onset in semi-arid Deccan regions shortens the effective kharif season, compressing the window for sowing and early crop establishment. A delay of more than one week relative to historical norms forces farmers to sow into drier soils or miss optimal sowing windows entirely, increasing vulnerability to subsequent dry spells. Crop ecology research confirms that synchronisation between crop water demand and soil moisture supply is critical, and delayed onset disrupts this synchronisation for rainfed cotton and soybean.",
-      "interaction_with": [
-        "sig_02",
-        "sig_04"
-      ]
+      "active": true
     }
   ],
   "confounders": [
@@ -202,5 +181,47 @@
     "semantic_alias_count": 24,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
   },
-  "overall_reasoning_note": "Drought as a causal pathway for water scarcity in semi-arid Deccan agriculture should be confirmed by at least two of the three primary signals: persistent severe or moderate drought weeks (sig_01), extended dry spells (sig_02), or composite SPI+VCI confirmation (sig_03). Seasonal and annual precipitation signals (sig_04) provide structural context, while delayed monsoon onset (sig_05) amplifies but does not independently confirm drought. A single signal may reflect data noise or spatial mismatch. The key distinction from groundwater stress is that drought signals are grounded in rainfall deficit metrics — if SPI is near zero and drought weeks are low but water scarcity persists, redirect diagnosis toward groundwater depletion. Always verify whether reported water scarcity is in kharif (rainfed, drought-driven) or rabi/zaid (irrigation-dependent, potentially infrastructure-driven) before finalising the pathway."
+  "overall_reasoning_note": "Drought as a causal pathway for water scarcity in semi-arid Deccan agriculture should be confirmed by at least two of the three primary signals: persistent severe or moderate drought weeks (sig_01), extended dry spells (sig_02), or composite SPI+VCI confirmation (sig_03). Seasonal and annual precipitation signals (sig_04) provide structural context, while delayed monsoon onset (sig_05) amplifies but does not independently confirm drought. A single signal may reflect data noise or spatial mismatch. The key distinction from groundwater stress is that drought signals are grounded in rainfall deficit metrics — if SPI is near zero and drought weeks are low but water scarcity persists, redirect diagnosis toward groundwater depletion. Always verify whether reported water scarcity is in kharif (rainfed, drought-driven) or rabi/zaid (irrigation-dependent, potentially infrastructure-driven) before finalising the pathway.",
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_03"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_03"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
+  }
 }

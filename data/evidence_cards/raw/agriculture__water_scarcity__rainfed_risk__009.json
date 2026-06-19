@@ -30,17 +30,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "(lulc_single_kharif_ha[-1] / (lulc_single_kharif_ha[-1] + lulc_double_crop_ha[-1] + 1e-9)) > 0.70",
-        "qualitative_description": "More than 70% of cropped area is under single kharif cultivation, indicating that the majority of farmland lacks irrigation access for a second season.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "qualitative_description": "More than 70% of cropped area is under single kharif cultivation, indicating that the majority of farmland lacks irrigation access for a second season."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "In the eastern Indo-Gangetic plains (AER-13), alluvial soils and 1400–1800 mm annual rainfall should theoretically support double cropping, yet where irrigation infrastructure is absent, farmers can only cultivate during the kharif monsoon season. A ratio above 0.70 for single-kharif area relative to total cropped area is a strong indicator that the micro-watershed is predominantly rainfed. This aligns with the characterisation of less-favoured rainfed areas in South Asia where single-season cropping dominates despite adequate rainfall potential (doi__10.5713_ajas.2011.r.09).",
-      "interaction_with": [
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -50,17 +45,12 @@
       "condition": {
         "type": "trend",
         "expression": "mean_cropping_intensity <= 1.15",
-        "qualitative_description": "Mean cropping intensity at or below 1.15 across the multi-year record indicates near-single-season farming, consistent with rainfed dependence and absence of rabi irrigation.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Mean cropping intensity at or below 1.15 across the multi-year record indicates near-single-season farming, consistent with rainfed dependence and absence of rabi irrigation."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Cropping intensity close to 1.0 implies that most land is harvested only once per year, which in the sub-humid eastern plains context means kharif-only rainfed farming. A value of 1.15 or below is consistent with very limited supplemental irrigation. Higher values (>1.5) would indicate widespread rabi or zaid cultivation enabled by irrigation. The eastern UP and northern Bihar plains have historically lagged in irrigation coverage relative to western UP, leaving large tracts dependent on monsoon rainfall alone.",
-      "interaction_with": [
-        "sig_01",
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -71,17 +61,12 @@
       "condition": {
         "type": "composite",
         "expression": "canal_name is None and nrega_irrigation_count < 3",
-        "qualitative_description": "No canal irrigation infrastructure intersects the micro-watershed AND fewer than 3 MGNREGA irrigation works have been recorded, confirming absence of both formal surface irrigation and community-level irrigation investment.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "No canal irrigation infrastructure intersects the micro-watershed AND fewer than 3 MGNREGA irrigation works have been recorded, confirming absence of both formal surface irrigation and community-level irrigation investment."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "The absence of a named canal indicates that the micro-watershed is not served by any surface irrigation scheme. Combined with fewer than 3 MGNREGA irrigation works, this confirms that neither formal nor community-level irrigation infrastructure exists to buffer against monsoon variability. In the eastern Indo-Gangetic plains, canal networks such as the Sarda Sahayak and Gandak systems serve some areas, but large tracts remain unconnected. Low MGNREGA irrigation investment further signals that the gap has not been addressed through public works programmes.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -93,8 +78,6 @@
         "type": "composite",
         "expression": "mean_annual_runoff_mm > 300 and terrain_cluster_id == 1",
         "qualitative_description": "High mean annual runoff (>300 mm) on mostly plains terrain (cluster 1) indicates substantial harvestable water that is currently lost as surface runoff, representing an unrealised in-situ water harvesting opportunity.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "runoff_mm",
           "terrain_cluster_id"
@@ -103,9 +86,7 @@
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "In the humid eastern plains receiving 1400–1800 mm of rainfall, a significant fraction is lost as runoff rather than being retained for crop use. Plains terrain (cluster 1) is amenable to in-situ water harvesting structures such as farm ponds and field bunds. High runoff on flat terrain confirms that the rainfed risk is not due to absolute rainfall deficit but to lack of water retention infrastructure. This signal amplifies the rainfed risk diagnosis by identifying a tractable intervention pathway — in-situ harvesting — consistent with management recommendations for water-limited environments (doi__10.1007_s13593-015-0283-4).",
-      "interaction_with": [
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -115,17 +96,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "mean_swb_rabi_kharif_ratio < 0.25",
-        "qualitative_description": "Mean rabi-to-kharif surface water body area ratio below 0.25 indicates that surface water bodies largely dry up after the monsoon, confirming limited post-monsoon water storage for rabi irrigation.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Mean rabi-to-kharif surface water body area ratio below 0.25 indicates that surface water bodies largely dry up after the monsoon, confirming limited post-monsoon water storage for rabi irrigation."
       },
       "severity": "moderate",
       "direction": "confirms",
       "explanation": "A low rabi-to-kharif SWB ratio means that ponds, tanks, and other surface water bodies that fill during the monsoon do not retain sufficient water into the rabi season to support post-monsoon irrigation. This is consistent with rainfed dependence: even where surface water bodies exist, they are seasonal and cannot sustain a second crop. In the alluvial eastern plains, shallow ponds can lose water rapidly through seepage and evaporation unless lined or deepened, further limiting their utility for rabi irrigation.",
-      "interaction_with": [
-        "sig_03",
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "variables": [
@@ -133,14 +109,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Irrigated share of cultivated land is negligible (under roughly 5–10%), confirming structural rainfed dependence; meaningful irrigated area (above roughly 20%) weakens the rainfed-risk diagnosis.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Irrigated share of cultivated land is negligible (under roughly 5–10%), confirming structural rainfed dependence; meaningful irrigated area (above roughly 20%) weakens the rainfed-risk diagnosis."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "User-reported irrigated area is the most direct confirmatory variable for rainfed risk when landscape proxies are ambiguous.",
-      "signal_id": "sig_06"
+      "signal_id": "sig_06",
+      "active": true
     }
   ],
   "confounders": [
@@ -167,6 +142,14 @@
             "band": "low",
             "present": true,
             "percent_upper": 10
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -186,9 +169,18 @@
             "band": "high",
             "present": true,
             "percent_lower": 30
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": false
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     }
   ],
   "sources": [
@@ -252,5 +244,47 @@
     "semantic_alias_count": 20,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
   },
-  "overall_reasoning_note": "Diagnosis of rainfed risk in the eastern Indo-Gangetic plains (AER-13) should be confirmed by at least two of the three primary signals: high single-kharif area ratio (sig_01), low mean cropping intensity (sig_02), and absence of canal plus low MGNREGA irrigation investment (sig_03). The runoff and SWB signals (sig_04, sig_05) amplify the diagnosis and identify intervention opportunities but should not be used as primary confirmatory signals in isolation. In this sub-humid to humid zone, the rainfed risk is not driven by absolute rainfall deficit — annual rainfall of 1400–1800 mm is sufficient for multiple crops — but by the absence of infrastructure to retain and redistribute water across seasons. This distinguishes the pathway from arid-zone rainfed risk where rainfall itself is the binding constraint. Always verify with the user whether tubewell irrigation is present before finalising diagnosis, as alluvial aquifers in this region are shallow and accessible, and groundwater-irrigated rabi farming may not be fully captured in LULC classifications."
+  "overall_reasoning_note": "Diagnosis of rainfed risk in the eastern Indo-Gangetic plains (AER-13) should be confirmed by at least two of the three primary signals: high single-kharif area ratio (sig_01), low mean cropping intensity (sig_02), and absence of canal plus low MGNREGA irrigation investment (sig_03). The runoff and SWB signals (sig_04, sig_05) amplify the diagnosis and identify intervention opportunities but should not be used as primary confirmatory signals in isolation. In this sub-humid to humid zone, the rainfed risk is not driven by absolute rainfall deficit — annual rainfall of 1400–1800 mm is sufficient for multiple crops — but by the absence of infrastructure to retain and redistribute water across seasons. This distinguishes the pathway from arid-zone rainfed risk where rainfall itself is the binding constraint. Always verify with the user whether tubewell irrigation is present before finalising diagnosis, as alluvial aquifers in this region are shallow and accessible, and groundwater-irrigated rabi farming may not be fully captured in LULC classifications.",
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_03"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_03"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
+  }
 }

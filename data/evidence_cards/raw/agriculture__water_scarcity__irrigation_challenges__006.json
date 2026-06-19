@@ -32,13 +32,12 @@
       "condition": {
         "type": "trend",
         "expression": "trend_swb_total_area_ha < -5 and swb_count < 3",
-        "qualitative_description": "Total surface water body area is declining at more than 5 ha/year and fewer than 3 distinct water bodies exist in the MWS, indicating shrinking storage infrastructure.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Total surface water body area is declining at more than 5 ha/year and fewer than 3 distinct water bodies exist in the MWS, indicating shrinking storage infrastructure."
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "In coastal alluvial plains of Tamil Nadu, Andhra Pradesh and Odisha, irrigation tanks and ponds are the primary surface water storage mechanism. A declining trend in total SWB area combined with a low count of water bodies signals that existing structures are silting up, breaching, or drying faster than they are being maintained or replaced. Siltation is a well-documented cause of reduced storage capacity and infiltration in surface water structures; Dashora et al. (2019) showed that a 5-year-old check dam in Gujarat had filled completely with silt at 40 cm/year, and that manual desilting increased recharge by 84%. The same dynamic applies to coastal tanks where siltation reduces both storage and rabi-season water availability."
+      "explanation": "In coastal alluvial plains of Tamil Nadu, Andhra Pradesh and Odisha, irrigation tanks and ponds are the primary surface water storage mechanism. A declining trend in total SWB area combined with a low count of water bodies signals that existing structures are silting up, breaching, or drying faster than they are being maintained or replaced. Siltation is a well-documented cause of reduced storage capacity and infiltration in surface water structures; Dashora et al. (2019) showed that a 5-year-old check dam in Gujarat had filled completely with silt at 40 cm/year, and that manual desilting increased recharge by 84%. The same dynamic applies to coastal tanks where siltation reduces both storage and rabi-season water availability.",
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -48,13 +47,12 @@
       "condition": {
         "type": "trend",
         "expression": "mean_swb_rabi_kharif_ratio < 0.35",
-        "qualitative_description": "The mean ratio of SWB rabi area to kharif area is below 0.35, indicating that water bodies dry out rapidly after the monsoon and cannot sustain rabi or zaid season irrigation.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "The mean ratio of SWB rabi area to kharif area is below 0.35, indicating that water bodies dry out rapidly after the monsoon and cannot sustain rabi or zaid season irrigation."
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "A low rabi-to-kharif SWB area ratio reveals that surface water bodies lose most of their storage between the kharif and rabi seasons. In coastal alluvial plains receiving 900–1400 mm of rainfall (AER-18), tanks should retain sufficient water into the rabi season if properly maintained. Rapid post-monsoon drying is a diagnostic indicator of siltation reducing storage capacity, poor bund integrity, or excessive seepage — all manifestations of irrigation infrastructure failure. This directly constrains rabi and zaid cropping, which are the seasons most frequently cited by farmers as water-deficient."
+      "explanation": "A low rabi-to-kharif SWB area ratio reveals that surface water bodies lose most of their storage between the kharif and rabi seasons. In coastal alluvial plains receiving 900–1400 mm of rainfall (AER-18), tanks should retain sufficient water into the rabi season if properly maintained. Rapid post-monsoon drying is a diagnostic indicator of siltation reducing storage capacity, poor bund integrity, or excessive seepage — all manifestations of irrigation infrastructure failure. This directly constrains rabi and zaid cropping, which are the seasons most frequently cited by farmers as water-deficient.",
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -64,17 +62,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "nrega_swc_count < 5",
-        "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA, indicating historically low investment in water harvesting maintenance.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA, indicating historically low investment in water harvesting maintenance."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "MGNREGA is the primary public mechanism for tank desilting, bund repair, and construction of new water harvesting structures in coastal India. A low cumulative count of SWC works signals that existing tanks and ponds have not received systematic maintenance, amplifying the risk of siltation-driven storage loss. Dashora et al. (2019) documented that maintenance costs averaging 2.9% of capital costs per year are essential for check dams to sustain recharge performance, and that neglecting desilting leads to progressive capacity loss. Low NREGA investment in a sub-humid coastal zone where rainfall is adequate (900–1400 mm) points to infrastructure neglect rather than climatic water deficit as the primary driver.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -85,17 +78,12 @@
       "condition": {
         "type": "composite",
         "expression": "dist_cooperative_km > 10 and river_name is None",
-        "qualitative_description": "The nearest agricultural cooperative is more than 10 km away and no named river passes through or adjacent to the MWS, indicating limited access to institutional credit for irrigation investment and absence of surface diversion potential.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "The nearest agricultural cooperative is more than 10 km away and no named river passes through or adjacent to the MWS, indicating limited access to institutional credit for irrigation investment and absence of surface diversion potential."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Access to institutional credit through cooperatives (PACS) enables farmers to invest in micro-irrigation equipment, pump sets, and pipeline infrastructure. Where cooperatives are distant, marginal farmers cannot finance irrigation improvements even when water is physically available. The absence of a named river further limits options for low-cost gravity diversion or lift irrigation from perennial surface flows, making farmers entirely dependent on degraded tank infrastructure. Together these conditions amplify the impact of infrastructure insufficiency by removing both the financial and hydrological fallback options.",
-      "interaction_with": [
-        "sig_01",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -104,13 +92,12 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Farmers report that open wells or shallow borewells have become unreliable or dry during rabi and zaid seasons, or that pumping costs have increased due to falling water tables — suggesting that groundwater fallback for irrigation is also constrained.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "Farmers report that open wells or shallow borewells have become unreliable or dry during rabi and zaid seasons, or that pumping costs have increased due to falling water tables — suggesting that groundwater fallback for irrigation is also constrained."
       },
       "severity": "moderate",
       "direction": "amplifies",
-      "explanation": "In coastal alluvial plains, shallow groundwater is often the fallback when tank irrigation fails. If well depth data were available, increasing depth over years would confirm that the groundwater buffer is also under stress. Without this data, user-reported well unreliability or increased lifting costs during dry seasons is a key qualitative indicator that the irrigation challenge is compounded — surface storage is degraded and groundwater backup is also insufficient or costly. This is particularly relevant for marginal farmers who cannot afford deep borewells or solar pumps."
+      "explanation": "In coastal alluvial plains, shallow groundwater is often the fallback when tank irrigation fails. If well depth data were available, increasing depth over years would confirm that the groundwater buffer is also under stress. Without this data, user-reported well unreliability or increased lifting costs during dry seasons is a key qualitative indicator that the irrigation challenge is compounded — surface storage is degraded and groundwater backup is also insufficient or costly. This is particularly relevant for marginal farmers who cannot afford deep borewells or solar pumps.",
+      "active": true
     }
   ],
   "confounders": [
@@ -136,6 +123,14 @@
           "normalized": {
             "trend": "stable",
             "present": false
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -144,6 +139,14 @@
           "normalized": {
             "trend": "worsening",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -153,9 +156,18 @@
             "trend": "worsening",
             "present": true,
             "band": "high"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "trend"
     }
   ],
   "sources": [
@@ -219,5 +231,44 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 20,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

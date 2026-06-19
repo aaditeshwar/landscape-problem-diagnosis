@@ -30,16 +30,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "(lulc_cropland_ha[-1] / (village_total_population + 1e-9)) < 0.4",
-        "qualitative_description": "Per-capita cropland availability below 0.4 ha/person is a proxy for marginal or sub-marginal average farm size, consistent with fragmented landholding structures in Bundelkhand and Malwa.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Per-capita cropland availability below 0.4 ha/person is a proxy for marginal or sub-marginal average farm size, consistent with fragmented landholding structures in Bundelkhand and Malwa."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Dividing total MWS cropland by village population gives a rough per-capita land availability index. In India, the average operational holding for marginal farmers is below 1 ha; a per-capita cropland ratio below 0.4 ha/person (assuming ~2.5 working members per household) implies average holdings well under 1 ha. Shrinking average landholding size is documented as a structural constraint on farmer income in India, particularly in states like Madhya Pradesh and Uttar Pradesh where population pressure on agricultural land is high.",
-      "interaction_with": [
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -49,17 +45,12 @@
       "condition": {
         "type": "trend",
         "expression": "mean_cropping_intensity <= 1.15",
-        "qualitative_description": "Mean cropping intensity at or below 1.15 indicates that most cropland is harvested only once per year, meaning small holders cannot compensate for limited area through intensification.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Mean cropping intensity at or below 1.15 indicates that most cropland is harvested only once per year, meaning small holders cannot compensate for limited area through intensification."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Low cropping intensity compounds the income constraint of small landholdings: a farmer with 0.5 ha harvested once per year generates far less surplus than one who double-crops the same area. In sub-humid Bundelkhand and Malwa, rabi cropping is constrained by moisture availability and irrigation access. When cropping intensity remains near 1.0–1.15, the effective productive area per household is insufficient to generate marketable surplus, trapping households in subsistence. Households solely dependent on small-scale agriculture have been found to have lower monthly income despite higher food sufficiency.",
-      "interaction_with": [
-        "sig_01",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -69,16 +60,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "dist_apmc_km > 30",
-        "qualitative_description": "Distance to nearest APMC market exceeding 30 km severely limits price discovery and market access for small holders, who lack transport capital and are forced to sell to local intermediaries at below-MSP prices.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Distance to nearest APMC market exceeding 30 km severely limits price discovery and market access for small holders, who lack transport capital and are forced to sell to local intermediaries at below-MSP prices."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Small holders near APMCs can access competitive price discovery and reduce transaction costs; those more than 30 km away are structurally dependent on village-level traders who extract a price discount. This market access barrier is a well-documented amplifier of income loss for marginal and small farmers. FPO formation is recommended precisely to overcome this collective action problem by enabling bulk transport and direct market linkage.",
-      "interaction_with": [
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -90,17 +77,12 @@
       "condition": {
         "type": "composite",
         "expression": "dist_dairy_km > 20 and ('livelihoods' not in organization_domains and 'fisheries' not in organization_domains) and nrega_community_assets_count < 10",
-        "qualitative_description": "Absence of nearby dairy infrastructure, lack of NGO support for livelihood diversification, and low MGNREGA community asset creation collectively indicate that small holders have no viable off-farm or livestock income supplement.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Absence of nearby dairy infrastructure, lack of NGO support for livelihood diversification, and low MGNREGA community asset creation collectively indicate that small holders have no viable off-farm or livestock income supplement."
       },
       "severity": "high",
       "direction": "amplifies",
       "explanation": "Income diversification through livestock (especially dairy), NTFP, and wage employment is the primary coping strategy for small holders globally and in India. When dairy collection infrastructure is distant (>20 km), no NGO is active in livelihoods or fisheries domains, and MGNREGA has generated fewer than 10 community assets, the household has no meaningful diversification buffer. This triple absence confirms dependence on a single, insufficient farm income source. FPOs and diversification into livestock and NTFP are recommended solutions precisely because they address this structural gap.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "variables": [
@@ -108,14 +90,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Mean household or farm income below approximately Rs 50,000/year confirms severe income insufficiency on small holdings; Rs 50,000–1,00,000 partial; above weakens landholding as the primary driver.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Mean household or farm income below approximately Rs 50,000/year confirms severe income insufficiency on small holdings; Rs 50,000–1,00,000 partial; above weakens landholding as the primary driver."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Direct income evidence distinguishes volume-poverty (small area) from market or price failure (see market_price_crop amplifier).",
-      "signal_id": "sig_05"
+      "signal_id": "sig_05",
+      "active": true
     },
     {
       "variables": [
@@ -123,14 +104,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Farm-gate price consistently well below MSP (roughly 20–40% gap) for the main crop, amplifying income loss from small land area.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Farm-gate price consistently well below MSP (roughly 20–40% gap) for the main crop, amplifying income loss from small land area."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Market price failure amplifies small_landholding stress; near-MSP prices suggest low volume rather than exploitation is the dominant constraint.",
-      "signal_id": "sig_06"
+      "signal_id": "sig_06",
+      "active": true
     },
     {
       "variables": [
@@ -138,14 +118,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "More than half of farming households own less than 1 hectare, directly confirming small-landholding-driven low income; lower marginal-holder shares weaken the pathway.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "More than half of farming households own less than 1 hectare, directly confirming small-landholding-driven low income; lower marginal-holder shares weaken the pathway."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Self-reported landholding distribution substitutes for per-capita cropland proxies when household-level evidence is available.",
-      "signal_id": "sig_07"
+      "signal_id": "sig_07",
+      "active": true
     }
   ],
   "confounders": [
@@ -171,6 +150,14 @@
           "normalized": {
             "band": "low",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -179,6 +166,14 @@
           "normalized": {
             "band": "moderate",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -187,9 +182,18 @@
           "normalized": {
             "band": "high",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     },
     {
       "missing_variable": "household_income_inr",
@@ -203,6 +207,14 @@
           "normalized": {
             "band": "low",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -219,9 +231,18 @@
           "normalized": {
             "band": "high",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     },
     {
       "missing_variable": "market_price_crop",
@@ -235,6 +256,14 @@
           "normalized": {
             "band": "low",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -244,6 +273,14 @@
             "band": "moderate",
             "present": true,
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -253,9 +290,18 @@
             "band": "high",
             "present": true,
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     }
   ],
   "sources": [
@@ -334,5 +380,44 @@
     "semantic_alias_count": 19,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
   },
-  "overall_reasoning_note": "Diagnosis of low income driven by small landholding requires convergence of at least two primary signals: low per-capita cropland (sig_01) and low cropping intensity (sig_02). These confirm that the productive base is structurally insufficient for surplus generation. Market remoteness (sig_03) and absence of diversification infrastructure (sig_04) are amplifying signals — they worsen income outcomes but do not independently confirm the landholding pathway. If per-capita cropland is adequate but income is still low, shift diagnostic focus to market failure, drought, or soil degradation pathways. The AER-10 context (Central Highlands, Malwa-Bundelkhand) is characterised by plateau and slope terrain with semi-consolidated aquifers, sub-humid rainfall, and historically high proportions of marginal and small farmers — making this pathway structurally plausible even before field data are collected. Priority interventions are FPO formation for collective marketing and Kisan Credit Card access for investment capital."
+  "overall_reasoning_note": "Diagnosis of low income driven by small landholding requires convergence of at least two primary signals: low per-capita cropland (sig_01) and low cropping intensity (sig_02). These confirm that the productive base is structurally insufficient for surplus generation. Market remoteness (sig_03) and absence of diversification infrastructure (sig_04) are amplifying signals — they worsen income outcomes but do not independently confirm the landholding pathway. If per-capita cropland is adequate but income is still low, shift diagnostic focus to market failure, drought, or soil degradation pathways. The AER-10 context (Central Highlands, Malwa-Bundelkhand) is characterised by plateau and slope terrain with semi-consolidated aquifers, sub-humid rainfall, and historically high proportions of marginal and small farmers — making this pathway structurally plausible even before field data are collected. Priority interventions are FPO formation for collective marketing and Kisan Credit Card access for investment capital.",
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
+  }
 }

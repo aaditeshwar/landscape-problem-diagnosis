@@ -29,17 +29,12 @@
       "condition": {
         "type": "trend",
         "expression": "lulc_tree_forest_ha[-1] < lulc_tree_forest_ha[0]",
-        "qualitative_description": "Total forest area in the latest year is lower than the earliest year in the 2017–2024 record, indicating net forest cover loss over the period.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Total forest area in the latest year is lower than the earliest year in the 2017–2024 record, indicating net forest cover loss over the period."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "A decline in lulc_tree_forest_ha over the monitoring period directly measures forest cover loss, which reduces the canopy and understory habitat that supports NTFP-bearing species. In the humid and perhumid island ecosystems of Andaman & Nicobar and Lakshadweep, even modest forest loss can disproportionately affect endemic NTFP species with restricted ranges. Forest degradation is the primary structural driver of NTFP decline as it removes the biological substrate on which collection depends.",
-      "interaction_with": [
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -51,8 +46,6 @@
         "type": "composite",
         "expression": "cd_total_deforestation_ha > 0 and (cd_afforestation_ha < cd_total_deforestation_ha)",
         "qualitative_description": "Cumulative deforestation exceeds cumulative afforestation, indicating a net negative forest balance with insufficient recovery to offset habitat loss.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional",
         "variables": [
           "cd_total_deforestation_ha",
           "cd_afforestation_ha"
@@ -61,9 +54,7 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "When total deforested area exceeds total afforested area, the forest system is in net deficit. In island ecosystems, natural regeneration is slow and afforestation programmes often use non-native species that do not support traditional NTFP collection. The imbalance confirms that forest degradation is structural and ongoing rather than episodic, directly reducing the availability of NTFP-bearing trees and understory species that dependent communities rely upon.",
-      "interaction_with": [
-        "sig_01"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -73,17 +64,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "cd_total_deforestation_ha > 50",
-        "qualitative_description": "Cumulative deforestation exceeds 50 ha, representing a meaningful threshold of habitat loss in small island micro-watersheds where total forest extent is limited.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Cumulative deforestation exceeds 50 ha, representing a meaningful threshold of habitat loss in small island micro-watersheds where total forest extent is limited."
       },
       "severity": "moderate",
       "direction": "confirms",
       "explanation": "In island contexts such as Andaman & Nicobar and Lakshadweep, micro-watersheds are small and total forest area is limited. A loss of 50 ha or more represents a significant proportion of the local forest estate and can eliminate entire patches of NTFP-bearing habitat. Studies on NTFP dependence in India document that forest fringe communities lose access to subsistence and commercial NTFPs when forest patches are fragmented or cleared, shifting communities from a win-win to a lose-lose livelihood trajectory.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -93,17 +79,12 @@
       "condition": {
         "type": "qualitative",
         "expression": "'Agroforestry' not in organization_domains and 'NTFP' not in organization_domains and 'Forest' not in organization_domains",
-        "qualitative_description": "No NGO or organisation active in the micro-watershed has a domain focus on agroforestry, NTFP management, or forest governance, indicating weak institutional support for forest protection and NTFP recovery.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "No NGO or organisation active in the micro-watershed has a domain focus on agroforestry, NTFP management, or forest governance, indicating weak institutional support for forest protection and NTFP recovery."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "The absence of organisations working in NTFP, agroforestry, or forest domains means there is no active institutional actor facilitating community forest protection, Joint Forest Management, or Community Forest Resource rights under the Forest Rights Act. Research on NTFP governance in India highlights that community-based institutions and NGO support are critical for transitioning from extractive to sustainable NTFP management. Without such support, forest degradation is likely to continue unchecked.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -112,13 +93,12 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Direct field surveys or community reports indicate reduced abundance, local disappearance, or declining harvest of key NTFP species such as medicinal plants, fruits, resins, or honey-producing trees in the forest area.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Direct field surveys or community reports indicate reduced abundance, local disappearance, or declining harvest of key NTFP species such as medicinal plants, fruits, resins, or honey-producing trees in the forest area."
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "Direct evidence of NTFP species decline is the most diagnostic indicator of forest degradation impact on NTFP availability. India hosts over 46,000 plant species and NTFPs contribute substantially to tribal and forest-fringe livelihoods; declining species presence confirms that forest degradation has crossed a threshold affecting biological productivity. This variable is not available in the current data system and must be gathered through community surveys or field assessments."
+      "explanation": "Direct evidence of NTFP species decline is the most diagnostic indicator of forest degradation impact on NTFP availability. India hosts over 46,000 plant species and NTFPs contribute substantially to tribal and forest-fringe livelihoods; declining species presence confirms that forest degradation has crossed a threshold affecting biological productivity. This variable is not available in the current data system and must be gathered through community surveys or field assessments.",
+      "active": true
     }
   ],
   "confounders": [
@@ -145,6 +125,14 @@
             "band": "high",
             "present": true,
             "trend": "stable"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -163,9 +151,18 @@
             "band": "low",
             "present": true,
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     }
   ],
   "sources": [
@@ -247,5 +244,50 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 25,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_03",
+      "sig_05"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_03",
+          "sig_05"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_05"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

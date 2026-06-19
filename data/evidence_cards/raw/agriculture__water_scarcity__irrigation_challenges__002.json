@@ -31,13 +31,12 @@
       "condition": {
         "type": "trend",
         "expression": "trend_swb_total_area_ha < -5 and swb_count < 3",
-        "qualitative_description": "Surface water body total area is declining at more than 5 ha/year and fewer than 3 distinct water bodies exist in the MWS, indicating shrinking storage infrastructure.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Surface water body total area is declining at more than 5 ha/year and fewer than 3 distinct water bodies exist in the MWS, indicating shrinking storage infrastructure."
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "A declining trend in total SWB area combined with a low count of water bodies signals that existing surface storage infrastructure is contracting — through siltation, structural failure, or encroachment — rather than expanding. In semi-arid hard rock plateau terrain, surface tanks and check dams are the primary irrigation buffer between monsoon and rabi seasons; their loss directly translates to insufficient water for post-kharif cropping."
+      "explanation": "A declining trend in total SWB area combined with a low count of water bodies signals that existing surface storage infrastructure is contracting — through siltation, structural failure, or encroachment — rather than expanding. In semi-arid hard rock plateau terrain, surface tanks and check dams are the primary irrigation buffer between monsoon and rabi seasons; their loss directly translates to insufficient water for post-kharif cropping.",
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -47,13 +46,12 @@
       "condition": {
         "type": "trend",
         "expression": "mean_swb_rabi_kharif_ratio < 0.35",
-        "qualitative_description": "The mean ratio of SWB rabi area to kharif area is below 0.35, indicating that water bodies dry out rapidly after the monsoon and cannot sustain rabi irrigation.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "The mean ratio of SWB rabi area to kharif area is below 0.35, indicating that water bodies dry out rapidly after the monsoon and cannot sustain rabi irrigation."
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "A low rabi-to-kharif SWB area ratio reveals that surface water bodies lose most of their storage quickly after the monsoon ends, leaving little water available for rabi and zaid seasons. This pattern is consistent with siltation reducing effective storage capacity — a well-documented problem in hard rock terrain tanks where silt accumulation reduces infiltration and holding volume over time. Dashora et al. (2019) demonstrated that a 5-year-old check dam in Gujarat had filled completely with silt at 40 cm/year, eliminating its recharge and storage function entirely."
+      "explanation": "A low rabi-to-kharif SWB area ratio reveals that surface water bodies lose most of their storage quickly after the monsoon ends, leaving little water available for rabi and zaid seasons. This pattern is consistent with siltation reducing effective storage capacity — a well-documented problem in hard rock terrain tanks where silt accumulation reduces infiltration and holding volume over time. Dashora et al. (2019) demonstrated that a 5-year-old check dam in Gujarat had filled completely with silt at 40 cm/year, eliminating its recharge and storage function entirely.",
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -63,17 +61,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "nrega_swc_count < 5",
-        "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA for the MWS, indicating historically low investment in water harvesting infrastructure.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA for the MWS, indicating historically low investment in water harvesting infrastructure."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Low MGNREGA SWC investment means that opportunities to rehabilitate tanks, construct check dams, or build percolation ponds have not been taken up. In semi-arid Deccan plateau contexts, MGNREGA-funded tank desilting and check dam construction are the primary public mechanisms for restoring irrigation water availability. Dashora et al. (2019) showed that manual desilting of a check dam increased recharge by 84% in the following year, with a benefit-cost ratio of 4.1 across four structures — underscoring the high returns from maintenance investment that low NREGA counts suggest is absent.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -84,13 +77,12 @@
       "condition": {
         "type": "composite",
         "expression": "river_name is None and dist_cooperative_km > 15",
-        "qualitative_description": "No named river passes through or adjacent to the MWS, and the nearest agricultural cooperative is more than 15 km away, indicating both absence of surface diversion potential and limited institutional access to credit for irrigation investment.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "No named river passes through or adjacent to the MWS, and the nearest agricultural cooperative is more than 15 km away, indicating both absence of surface diversion potential and limited institutional access to credit for irrigation investment."
       },
       "severity": "moderate",
       "direction": "amplifies",
-      "explanation": "The absence of a perennial or seasonal river eliminates the possibility of diversion or lift irrigation from a flowing source, making the MWS entirely dependent on tank and groundwater storage. Combined with poor cooperative access — which limits farmers' ability to obtain institutional credit for pump sets, drip systems, or tank repair — this composite signal indicates structural isolation from both natural and financial irrigation resources. In interior Karnataka and Andhra Pradesh, cooperative proximity is a key determinant of whether smallholders can invest in micro-irrigation or solar pumps."
+      "explanation": "The absence of a perennial or seasonal river eliminates the possibility of diversion or lift irrigation from a flowing source, making the MWS entirely dependent on tank and groundwater storage. Combined with poor cooperative access — which limits farmers' ability to obtain institutional credit for pump sets, drip systems, or tank repair — this composite signal indicates structural isolation from both natural and financial irrigation resources. In interior Karnataka and Andhra Pradesh, cooperative proximity is a key determinant of whether smallholders can invest in micro-irrigation or solar pumps.",
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -99,13 +91,12 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Farmers report that wells or borewells have become deeper over recent years, or that pumping costs have increased substantially, suggesting declining water tables that raise the cost of groundwater-based irrigation beyond the reach of marginal farmers.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "Farmers report that wells or borewells have become deeper over recent years, or that pumping costs have increased substantially, suggesting declining water tables that raise the cost of groundwater-based irrigation beyond the reach of marginal farmers."
       },
       "severity": "moderate",
       "direction": "amplifies",
-      "explanation": "In hard rock aquifers of the Deccan plateau, groundwater is stored in shallow weathered and fractured zones typically 10–30 m deep. As water tables decline due to over-extraction or reduced recharge from degraded surface storage, well depths increase and lifting costs rise disproportionately. This disadvantages marginal and small farmers who cannot afford deeper borewells or higher energy costs, effectively excluding them from groundwater-based irrigation even when aquifer water remains accessible to wealthier farmers with deeper infrastructure."
+      "explanation": "In hard rock aquifers of the Deccan plateau, groundwater is stored in shallow weathered and fractured zones typically 10–30 m deep. As water tables decline due to over-extraction or reduced recharge from degraded surface storage, well depths increase and lifting costs rise disproportionately. This disadvantages marginal and small farmers who cannot afford deeper borewells or higher energy costs, effectively excluding them from groundwater-based irrigation even when aquifer water remains accessible to wealthier farmers with deeper infrastructure.",
+      "active": true
     }
   ],
   "overall_reasoning_note": "Irrigation infrastructure failure in semi-arid hard rock plateau contexts is confirmed when at least two of the primary signals align: declining SWB area trend (sig_01), rapid post-monsoon drying of water bodies (sig_02), and low MGNREGA investment history (sig_03). The composite signal (sig_04) and qualitative well depth signal (sig_05) amplify the diagnosis but do not confirm it independently. The most actionable entry point is sig_03 — low NREGA SWC count combined with declining SWB area strongly justifies tank desilting and check dam rehabilitation as priority interventions, given documented benefit-cost ratios above 4:1 in comparable hard rock settings. Always verify whether the SWB area decline is driven by siltation (reversible through desilting) versus structural failure or encroachment (requiring different interventions) before recommending solutions.",
@@ -132,6 +123,14 @@
           "normalized": {
             "trend": "stable",
             "present": false
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -140,6 +139,14 @@
           "normalized": {
             "trend": "worsening",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -149,9 +156,18 @@
             "trend": "worsening",
             "present": true,
             "band": "high"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "trend"
     }
   ],
   "sources": [
@@ -208,5 +224,44 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 20,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

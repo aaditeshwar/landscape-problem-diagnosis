@@ -32,17 +32,12 @@
       "condition": {
         "type": "trend",
         "expression": "trend_swb_total_area_ha < -5 and swb_count < 3",
-        "qualitative_description": "Surface water body total area is declining at more than 5 ha/year and fewer than 3 distinct water bodies exist in the MWS, indicating both contraction of existing storage and an absolute infrastructure gap.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Surface water body total area is declining at more than 5 ha/year and fewer than 3 distinct water bodies exist in the MWS, indicating both contraction of existing storage and an absolute infrastructure gap."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "In arid and semi-arid alluvial plains of Rajasthan and Kachchh, surface water bodies (tanks, ponds, check dams) are the primary irrigation buffer between monsoon seasons. A declining trend in total SWB area combined with a low count of structures signals that storage infrastructure is either silting up, falling into disrepair, or was never adequately built. Dashora et al. (2019) documented that a 5-year-old check dam in Gujarat had filled completely with silt at 40 cm/year, eliminating storage capacity entirely, and that siltation reduces both storage volume and infiltration rates — directly impairing the irrigation water supply that farmers depend on for rabi and zaid seasons.",
-      "interaction_with": [
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -52,16 +47,12 @@
       "condition": {
         "type": "trend",
         "expression": "mean_swb_rabi_kharif_ratio < 0.25",
-        "qualitative_description": "The mean ratio of SWB rabi area to kharif area is below 0.25, indicating that surface water bodies dry out rapidly after the monsoon and cannot sustain irrigation into the rabi season.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "The mean ratio of SWB rabi area to kharif area is below 0.25, indicating that surface water bodies dry out rapidly after the monsoon and cannot sustain irrigation into the rabi season."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "A low rabi-to-kharif SWB area ratio reveals that water bodies lose most of their storage within the kharif season and cannot carry water into rabi. This is a direct indicator of seasonal irrigation failure — the core stress described by farmers in arid zones. Dashora et al. (2019) showed that check dam spill accounted for 57–87% of inflow in wetter years, meaning poorly maintained or under-capacity structures lose water rapidly rather than retaining it for dry-season use. In arid alluvial plains where mean annual precipitation is below 400 mm (AER-2), this rapid drying is especially damaging to rabi crop water availability.",
-      "interaction_with": [
-        "sig_01"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -71,17 +62,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "nrega_swc_count < 5",
-        "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA for the MWS, indicating historically low investment in water harvesting infrastructure.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA for the MWS, indicating historically low investment in water harvesting infrastructure."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Low MGNREGA SWC investment means that opportunities to build or rehabilitate check dams, farm ponds, and percolation structures have not been taken up. Dashora et al. (2019) demonstrated a benefit-to-cost ratio of 4.1 for check dams in Rajasthan, confirming that such structures are economically attractive — their absence therefore represents a missed intervention rather than an inherent resource constraint. In the arid belt of Rajasthan and Kachchh, where natural recharge is limited to brief monsoon pulses, the absence of engineered storage amplifies seasonal water scarcity for rabi and zaid crops.",
-      "interaction_with": [
-        "sig_01",
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -92,16 +78,12 @@
       "condition": {
         "type": "composite",
         "expression": "dist_cooperative_km > 15 and river_name is None",
-        "qualitative_description": "The nearest agricultural cooperative is more than 15 km away and no named river passes through or adjacent to the MWS, indicating both limited access to institutional credit for irrigation investment and absence of surface flow for diversion or lift irrigation.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "The nearest agricultural cooperative is more than 15 km away and no named river passes through or adjacent to the MWS, indicating both limited access to institutional credit for irrigation investment and absence of surface flow for diversion or lift irrigation."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Access to institutional credit through cooperatives (PACS) enables farmers to invest in micro-irrigation equipment, solar pumps, and tank repair. Remote MWSs with no cooperative access face higher barriers to adopting efficiency-improving technologies. The absence of a named river further eliminates the option of canal diversion or lift irrigation from perennial surface flows, leaving farmers entirely dependent on degraded local storage infrastructure. Together these structural factors compound the irrigation challenge in arid alluvial plains.",
-      "interaction_with": [
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -110,13 +92,12 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Farmers report that well or borewell depth has increased noticeably over recent years, or that pumping costs have risen substantially, suggesting declining groundwater levels that increase the cost and difficulty of lift irrigation — particularly for marginal farmers.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "Farmers report that well or borewell depth has increased noticeably over recent years, or that pumping costs have risen substantially, suggesting declining groundwater levels that increase the cost and difficulty of lift irrigation — particularly for marginal farmers."
       },
       "severity": "moderate",
       "direction": "amplifies",
-      "explanation": "In alluvial aquifers of arid Rajasthan and Haryana, groundwater is often the fallback when surface storage fails. However, if water tables are declining — as indicated by increasing well depth — the cost of lifting groundwater rises, disadvantaging marginal and small farmers who cannot afford deeper borewells or higher energy costs. Dashora et al. (2019) noted that check dam recharge directly raised groundwater levels in proximal wells, confirming the link between surface storage infrastructure and groundwater availability for lift irrigation. Where surface infrastructure is degraded and groundwater is deepening, both irrigation pathways are simultaneously compromised."
+      "explanation": "In alluvial aquifers of arid Rajasthan and Haryana, groundwater is often the fallback when surface storage fails. However, if water tables are declining — as indicated by increasing well depth — the cost of lifting groundwater rises, disadvantaging marginal and small farmers who cannot afford deeper borewells or higher energy costs. Dashora et al. (2019) noted that check dam recharge directly raised groundwater levels in proximal wells, confirming the link between surface storage infrastructure and groundwater availability for lift irrigation. Where surface infrastructure is degraded and groundwater is deepening, both irrigation pathways are simultaneously compromised.",
+      "active": true
     }
   ],
   "confounders": [
@@ -142,6 +123,14 @@
           "normalized": {
             "trend": "stable",
             "present": false
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -150,6 +139,14 @@
           "normalized": {
             "trend": "worsening",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -159,9 +156,18 @@
             "trend": "worsening",
             "present": true,
             "band": "high"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "trend"
     }
   ],
   "sources": [
@@ -218,5 +224,44 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 20,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

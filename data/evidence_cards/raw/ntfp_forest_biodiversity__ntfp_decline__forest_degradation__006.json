@@ -31,17 +31,12 @@
       "condition": {
         "type": "trend",
         "expression": "lulc_tree_forest_ha[-1] < lulc_tree_forest_ha[0]",
-        "qualitative_description": "Forest area in the micro-watershed has declined from 2017 to 2024, indicating net loss of NTFP-bearing tree cover over the monitoring period.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Forest area in the micro-watershed has declined from 2017 to 2024, indicating net loss of NTFP-bearing tree cover over the monitoring period."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "A declining trend in forest area directly reduces the stock of NTFP-bearing trees and understory species. In coastal sub-humid zones of Tamil Nadu, Andhra Pradesh, and Odisha, coastal forests and mangrove-adjacent dry deciduous patches are particularly vulnerable to agricultural encroachment and fuelwood extraction. Over 50 million people in India depend on NTFPs for subsistence, making forest cover loss a primary driver of NTFP decline for forest-fringe communities.",
-      "interaction_with": [
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -51,17 +46,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "cd_total_deforestation_ha > 50",
-        "qualitative_description": "Cumulative deforested area exceeds 50 ha, indicating substantial habitat loss for NTFP species within the micro-watershed.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Cumulative deforested area exceeds 50 ha, indicating substantial habitat loss for NTFP species within the micro-watershed."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Cumulative deforestation quantifies the irreversible loss of forest habitat. In coastal alluvial plains, deforestation is often driven by conversion to aquaculture ponds, agricultural expansion, or infrastructure development. Each hectare lost removes multiple NTFP species from the landscape. The 50 ha threshold is indicative for micro-watershed scale; even smaller losses in species-rich coastal forests can disproportionately reduce NTFP availability for dependent communities.",
-      "interaction_with": [
-        "sig_01",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -73,8 +63,6 @@
         "type": "composite",
         "expression": "cd_total_deforestation_ha > cd_afforestation_ha and (cd_total_deforestation_ha - cd_afforestation_ha) > 20",
         "qualitative_description": "Net forest loss (deforestation minus afforestation) exceeds 20 ha, indicating that restoration efforts are insufficient to compensate for habitat destruction.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "cd_total_deforestation_ha",
           "cd_afforestation_ha"
@@ -83,10 +71,7 @@
       "severity": "moderate",
       "direction": "confirms",
       "explanation": "When afforestation lags significantly behind deforestation, the net forest balance is negative and NTFP-bearing species cannot recover. Compensatory afforestation programmes in Odisha and coastal states have been critiqued for relying on industrial monoculture plantations that do not restore the multi-species understory required for NTFP production. A net loss of more than 20 ha at micro-watershed scale signals that governance and restoration mechanisms are failing to protect NTFP resources.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -95,13 +80,12 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Field surveys or community reports indicate reduced abundance or local disappearance of key NTFP species such as Madhuca indica (mahua), Terminalia chebula (harra), Emblica officinalis (aonla), or Buchanania lanzan (achar) that are characteristic of coastal dry deciduous forests in Tamil Nadu, Andhra Pradesh, and Odisha.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "local"
+        "qualitative_description": "Field surveys or community reports indicate reduced abundance or local disappearance of key NTFP species such as Madhuca indica (mahua), Terminalia chebula (harra), Emblica officinalis (aonla), or Buchanania lanzan (achar) that are characteristic of coastal dry deciduous forests in Tamil Nadu, Andhra Pradesh, and Odisha."
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "Direct evidence of NTFP species decline is the most diagnostic indicator of forest degradation impact on NTFP availability. Species such as mahua, harra, and aonla are documented as critical livelihood resources for tribal and forest-fringe communities across India. Their local disappearance or reduced fruiting directly translates to income loss, as NTFPs can constitute 17% or more of gross annual household income in forest-dependent communities. This variable is not available in the remote-sensing framework and must be gathered through community surveys."
+      "explanation": "Direct evidence of NTFP species decline is the most diagnostic indicator of forest degradation impact on NTFP availability. Species such as mahua, harra, and aonla are documented as critical livelihood resources for tribal and forest-fringe communities across India. Their local disappearance or reduced fruiting directly translates to income loss, as NTFPs can constitute 17% or more of gross annual household income in forest-dependent communities. This variable is not available in the remote-sensing framework and must be gathered through community surveys.",
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -111,17 +95,12 @@
       "condition": {
         "type": "qualitative",
         "expression": "'Agroforestry' not in organization_domains and 'NTFP' not in organization_domains and 'Forest' not in organization_domains",
-        "qualitative_description": "No NGO or organisation active in the micro-watershed has a mandate in agroforestry, NTFP management, or forest governance, indicating an absence of institutional support for NTFP-dependent communities.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "No NGO or organisation active in the micro-watershed has a mandate in agroforestry, NTFP management, or forest governance, indicating an absence of institutional support for NTFP-dependent communities."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "The absence of organisations working on NTFP or agroforestry domains means that communities lack access to technical support for sustainable harvesting, certification, Joint Forest Management facilitation, or Community Forest Resource rights under the Forest Rights Act. NGO presence in these domains has been associated with better NTFP governance outcomes and reduced ecological cost of harvesting. Absence amplifies the risk that forest degradation will continue unchecked and that NTFP decline will persist.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "variables": [
@@ -129,14 +108,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Frequent or intensifying forest fires (annual or every few years, worsening trend) damaging NTFP species and suppressing regeneration.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Frequent or intensifying forest fires (annual or every few years, worsening trend) damaging NTFP species and suppressing regeneration."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Fire-driven degradation is a major NTFP loss mechanism in dry deciduous and plateau forests.",
-      "signal_id": "sig_06"
+      "signal_id": "sig_06",
+      "active": true
     }
   ],
   "overall_reasoning_note": "Diagnosis of forest degradation as the driver of NTFP decline in coastal sub-humid plains should be confirmed by at least two of the three remote-sensing signals (sig_01, sig_02, sig_03). A declining forest area trend combined with net deforestation exceeding afforestation provides strong evidence. The absence of NTFP species presence data (sig_04) is a critical gap — community interviews should be prioritised to ground-truth remote-sensing findings. Institutional absence (sig_05) amplifies but does not confirm the pathway. In coastal alluvial plains, distinguish forest degradation from seasonal flooding or salinity intrusion as alternative stressors on NTFP species. The Forest Rights Act CFR pathway is the primary policy lever for communities in this context.",
@@ -164,6 +142,14 @@
             "band": "high",
             "present": true,
             "trend": "stable"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_04",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -182,9 +168,18 @@
             "band": "low",
             "present": true,
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_04",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     },
     {
       "missing_variable": "forest_fire_frequency",
@@ -199,6 +194,14 @@
             "band": "low",
             "present": false,
             "trend": "stable"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -208,6 +211,14 @@
             "band": "moderate",
             "present": true,
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -217,9 +228,18 @@
             "band": "high",
             "present": true,
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "presence_graded"
     }
   ],
   "sources": [
@@ -301,5 +321,50 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 25,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_03",
+      "sig_04"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_03",
+          "sig_04"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_04"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

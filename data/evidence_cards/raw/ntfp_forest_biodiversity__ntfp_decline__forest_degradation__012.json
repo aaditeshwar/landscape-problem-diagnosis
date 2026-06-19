@@ -29,17 +29,12 @@
       "condition": {
         "type": "trend",
         "expression": "lulc_tree_forest_ha[-1] < lulc_tree_forest_ha[0]",
-        "qualitative_description": "Forest area in the micro-watershed has declined from the earliest to the latest available year (2017–2024), indicating net loss of NTFP-bearing habitat.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Forest area in the micro-watershed has declined from the earliest to the latest available year (2017–2024), indicating net loss of NTFP-bearing habitat."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "A declining trend in forest cover directly reduces the stock of NTFP-bearing trees and understory species. In perhumid hilly zones of the Eastern Himalayas, even modest forest loss can disproportionately affect NTFP availability because species richness is concentrated in intact canopy and mid-elevation forest patches. Forest fringe communities in NE India depend heavily on these forests for subsistence NTFPs including medicinal plants, bamboo, and wild fruits.",
-      "interaction_with": [
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -51,8 +46,6 @@
         "type": "composite",
         "expression": "cd_total_deforestation_ha > 0 and (cd_afforestation_ha < cd_total_deforestation_ha * 0.5)",
         "qualitative_description": "Cumulative deforestation exceeds afforestation by more than a factor of two, indicating that forest recovery is not keeping pace with habitat loss.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "cd_total_deforestation_ha",
           "cd_afforestation_ha"
@@ -61,10 +54,7 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "When afforestation efforts replace less than half of deforested area, net forest cover continues to decline. In the Eastern Himalayas, compensatory afforestation programmes have been criticised for relying on monoculture plantations that do not restore the multi-species understory on which NTFP-dependent communities rely. A large deforestation-to-afforestation gap confirms that forest degradation is the operative pathway driving NTFP decline.",
-      "interaction_with": [
-        "sig_01",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -74,17 +64,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "cd_total_deforestation_ha > 50",
-        "qualitative_description": "Total deforested area exceeds 50 ha, representing a substantial absolute loss of NTFP habitat within the micro-watershed.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Total deforested area exceeds 50 ha, representing a substantial absolute loss of NTFP habitat within the micro-watershed."
       },
       "severity": "moderate",
       "direction": "confirms",
       "explanation": "Absolute deforestation above 50 ha in a micro-watershed context represents meaningful habitat loss for NTFP species. In hilly terrain with hard rock aquifers, deforested slopes also lose the moisture-retaining capacity that supports shade-tolerant NTFP understory species. This threshold is conservative for perhumid zones where forest patches are typically larger, but even small losses in high-biodiversity NE hill states can eliminate locally endemic NTFP species.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -94,16 +79,12 @@
       "condition": {
         "type": "qualitative",
         "expression": "'Agroforestry' not in organization_domains and 'NTFP' not in organization_domains and 'Forestry' not in organization_domains",
-        "qualitative_description": "No NGO or organisation active in the micro-watershed works in agroforestry, NTFP, or forestry domains, indicating an absence of institutional support for forest protection and NTFP management.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "No NGO or organisation active in the micro-watershed works in agroforestry, NTFP, or forestry domains, indicating an absence of institutional support for forest protection and NTFP management."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "The presence of organisations working in NTFP or agroforestry domains is associated with community forest protection initiatives, Joint Forest Management, and Forest Rights Act (FRA) CFR rights facilitation. Their absence means communities lack external support for forest governance, amplifying the risk that degradation continues unchecked. In NE hill states, NGO facilitation has been critical for operationalising Community Forest Resource rights under FRA.",
-      "interaction_with": [
-        "sig_01"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -112,13 +93,12 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Field surveys or community reports indicate reduced abundance, smaller collection areas, or disappearance of key NTFP species (e.g. bamboo, medicinal plants, wild fruits) compared to 5–10 years ago.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "local"
+        "qualitative_description": "Field surveys or community reports indicate reduced abundance, smaller collection areas, or disappearance of key NTFP species (e.g. bamboo, medicinal plants, wild fruits) compared to 5–10 years ago."
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "Direct evidence of NTFP species decline is the most diagnostic indicator of forest degradation impact on NTFP availability. In India, over 50 million people depend on NTFPs for subsistence, and declining species abundance directly translates to livelihood loss. Collection methods for many NTFP species are destructive, and without forest cover to support regeneration, wild populations decline rapidly. This variable is not available in the remote sensing dataset and must be gathered through community surveys."
+      "explanation": "Direct evidence of NTFP species decline is the most diagnostic indicator of forest degradation impact on NTFP availability. In India, over 50 million people depend on NTFPs for subsistence, and declining species abundance directly translates to livelihood loss. Collection methods for many NTFP species are destructive, and without forest cover to support regeneration, wild populations decline rapidly. This variable is not available in the remote sensing dataset and must be gathered through community surveys.",
+      "active": true
     }
   ],
   "confounders": [
@@ -145,6 +125,14 @@
             "band": "high",
             "present": true,
             "trend": "stable"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -163,9 +151,18 @@
             "band": "low",
             "present": true,
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     }
   ],
   "sources": [
@@ -247,5 +244,47 @@
     "semantic_alias_count": 25,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
   },
-  "overall_reasoning_note": "Diagnosis of forest degradation as the driver of NTFP decline in perhumid NE hill states should be confirmed by at least two of the three remote-sensing signals: declining lulc_tree_forest_ha trend, large deforestation-afforestation gap, or substantial absolute deforestation. A single signal may reflect data noise or spatial mismatch between micro-watershed boundaries and forest classification units. The absence of NTFP/forestry-domain organisations (sig_04) amplifies risk but does not confirm degradation on its own. The most diagnostic evidence — direct NTFP species presence surveys (sig_05) — is not available in the dataset and must be gathered through community consultation. When forest cover appears stable but NTFP decline is reported, investigate over-harvesting and plantation monoculture as alternative pathways before confirming forest degradation. In AER-16 Eastern Himalayan contexts, high baseline forest cover means even small percentage losses can represent large absolute habitat losses for endemic NTFP species."
+  "overall_reasoning_note": "Diagnosis of forest degradation as the driver of NTFP decline in perhumid NE hill states should be confirmed by at least two of the three remote-sensing signals: declining lulc_tree_forest_ha trend, large deforestation-afforestation gap, or substantial absolute deforestation. A single signal may reflect data noise or spatial mismatch between micro-watershed boundaries and forest classification units. The absence of NTFP/forestry-domain organisations (sig_04) amplifies risk but does not confirm degradation on its own. The most diagnostic evidence — direct NTFP species presence surveys (sig_05) — is not available in the dataset and must be gathered through community consultation. When forest cover appears stable but NTFP decline is reported, investigate over-harvesting and plantation monoculture as alternative pathways before confirming forest degradation. In AER-16 Eastern Himalayan contexts, high baseline forest cover means even small percentage losses can represent large absolute habitat losses for endemic NTFP species.",
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_03"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_03"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
+  }
 }

@@ -30,16 +30,15 @@
       "condition": {
         "type": "quantitative",
         "expression": "drought_weeks_severe[-1] >= 3 or drought_weeks_moderate[-1] >= 6",
-        "qualitative_description": "Three or more severe drought weeks, or six or more moderate drought weeks in the latest kharif season, indicate significant meteorological drought stress even in a normally humid island ecoregion.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Three or more severe drought weeks, or six or more moderate drought weeks in the latest kharif season, indicate significant meteorological drought stress even in a normally humid island ecoregion."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "In the humid to perhumid island ecoregion of Andaman & Nicobar and Lakshadweep (AER-20, 1600–3000 mm annual rainfall), crops are calibrated to near-continuous moisture availability. Even a few weeks of severe drought can cause acute crop water stress because farmers do not maintain supplemental irrigation infrastructure suited to prolonged dry spells. SPI-based drought classification confirms meteorological drought when precipitation falls well below the long-term mean for the island stations. Persistent severe drought weeks directly cause kharif crop failure as documented in drought assessment studies using SPI for kharif rice.",
       "sources_cited": [
         "Mishra2022"
-      ]
+      ],
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -49,9 +48,7 @@
       "condition": {
         "type": "quantitative",
         "expression": "dry_spell_weeks[-1] >= 4",
-        "qualitative_description": "Four or more dry spell weeks (4-week moving window with <50% historical rainfall) in the latest kharif season indicate a prolonged moisture deficit disrupting critical crop growth stages.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Four or more dry spell weeks (4-week moving window with <50% historical rainfall) in the latest kharif season indicate a prolonged moisture deficit disrupting critical crop growth stages."
       },
       "severity": "high",
       "direction": "confirms",
@@ -59,7 +56,8 @@
       "sources_cited": [
         "Dreccer2015",
         "Mishra2022"
-      ]
+      ],
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -70,8 +68,6 @@
         "type": "composite",
         "expression": "(drought_mild_spi_score_latest >= 26 or drought_severe_moderate_spi_score_latest >= 26) and (drought_mild_mai_score_latest >= 26 or drought_severe_moderate_path_score_latest >= 2) and drought_mild_vci_score_latest >= 26",
         "qualitative_description": "Concurrent SPI indicating dry conditions, low MAI indicating soil moisture deficit, and VCI below 40 indicating vegetation stress together confirm meteorological drought has translated into agricultural drought.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "global",
         "variables": [
           "drought_mild_vci_score_latest",
           "drought_mild_spi_score_latest",
@@ -85,7 +81,8 @@
       "explanation": "The India Drought Manual classifies drought using a composite of SPI (meteorological), MAI (soil moisture adequacy), and VCI (vegetation condition). When all three indices simultaneously indicate stress, the drought is confirmed as both meteorological and agricultural in nature. Studies on kharif rice in India show SPI and VCI are significantly positively correlated with productivity index, with combined regression models explaining 69–76% of yield variability. A VCI below 40 is the standard threshold for moderate-to-severe vegetation stress.",
       "sources_cited": [
         "Mishra2022"
-      ]
+      ],
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -97,8 +94,6 @@
         "type": "trend",
         "expression": "mean_annual_precipitation_mm < 1600 or (seasonal_precipitation_mm[-1].get('kharif', 9999) < 0.6 * (sum(v.get('kharif', 0) for v in list(seasonal_precipitation_mm.values())) / max(len(seasonal_precipitation_mm), 1)))",
         "qualitative_description": "Mean annual precipitation below the AER-20 lower bound of 1600 mm, or kharif seasonal precipitation in the latest year below 60% of the multi-year kharif mean, confirms a below-normal rainfall year consistent with meteorological drought.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "seasonal_precipitation_mm",
           "precipitation_mm"
@@ -110,7 +105,8 @@
       "sources_cited": [
         "Biemans2017",
         "Dreccer2015"
-      ]
+      ],
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -120,16 +116,15 @@
       "condition": {
         "type": "trend",
         "expression": "monsoon_onset_date[-1] > monsoon_onset_date[0] + 10",
-        "qualitative_description": "Monsoon onset in the latest year is more than 10 days later than the earliest recorded onset, indicating a delayed monsoon that shortens the effective kharif season.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Monsoon onset in the latest year is more than 10 days later than the earliest recorded onset, indicating a delayed monsoon that shortens the effective kharif season."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Delayed monsoon onset shortens the effective kharif growing season and increases the risk of terminal drought stress at critical crop growth stages. In island ecoregions where farmers plant in synchrony with monsoon arrival, a delay of more than 10 days can push flowering and grain filling into drier post-monsoon periods. Crop ecology literature confirms that sites with a climatic dry season require phenological adaptation, and delayed onset is a key trigger for crop failure in tropical humid systems.",
       "sources_cited": [
         "Dreccer2015"
-      ]
+      ],
+      "active": true
     }
   ],
   "confounders": [
@@ -207,5 +202,50 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 24,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_03",
+      "sig_04"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_03",
+          "sig_04"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_04"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

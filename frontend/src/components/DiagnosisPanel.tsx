@@ -4,6 +4,7 @@ import type { FollowUpTarget } from '../utils/followUp'
 import { followUpPromptLabel } from '../utils/followUp'
 import { formatPathwayAerContext, formatPathwayHierarchy } from '../utils/pathwayLabels'
 import { formatPanelUpdateActionList } from '../utils/panelUpdates'
+import { GiveFeedbackLink } from './feedback/GiveFeedbackLink'
 import { SignalRichText } from './SignalRichText'
 
 interface Props {
@@ -101,6 +102,7 @@ export function DiagnosisPanel({
     Boolean(diagnosis?.reviewer_commentary?.length) &&
     (diagnosis?.want_llm_opinion ?? wantLlmOpinion) &&
     diagnosis?.llm_skipped !== true
+  const canGiveFeedback = Boolean(diagnosis?.diagnosis_snapshot_id)
 
   useEffect(() => {
     if (prevLoadingRef.current && !loading) {
@@ -253,9 +255,6 @@ export function DiagnosisPanel({
             {browsingDuringRun || browsingWhileFrozen
               ? ` · map viewing ${mapBrowseLabel}`
               : ''}
-            {!(browsingDuringRun || browsingWhileFrozen) && villageNames.length > 0
-              ? ` · Villages: ${villageNames.join(', ')}`
-              : ''}
           </p>
           <section ref={confirmedPathwaysRef}>
             <h3 className="text-sm font-semibold text-emerald-800">Confirmed pathways</h3>
@@ -277,6 +276,14 @@ export function DiagnosisPanel({
                         />
                       </p>
                     )}
+                    <div className="mt-2 flex justify-end">
+                      <GiveFeedbackLink
+                        snapshotId={diagnosis.diagnosis_snapshot_id}
+                        focus="pathway"
+                        pathwayId={p.pathway_id}
+                        disabled={!canGiveFeedback}
+                      />
+                    </div>
                   </li>
                 ))}
               </ul>
@@ -304,13 +311,14 @@ export function DiagnosisPanel({
                         />
                       </p>
                     )}
-                    {p.missing_variable_questions && p.missing_variable_questions.length > 0 ? (
-                      <ul className="mt-2 list-disc space-y-1 pl-5 text-xs text-stone-600">
-                        {p.missing_variable_questions.map((q) => (
-                          <li key={`${p.pathway_id}-${q.variable}`}>{q.question}</li>
-                        ))}
-                      </ul>
-                    ) : null}
+                    <div className="mt-2 flex justify-end">
+                      <GiveFeedbackLink
+                        snapshotId={diagnosis.diagnosis_snapshot_id}
+                        focus="pathway"
+                        pathwayId={p.pathway_id}
+                        disabled={!canGiveFeedback}
+                      />
+                    </div>
                   </li>
                 ))}
               </ul>
@@ -349,7 +357,14 @@ export function DiagnosisPanel({
           ) : null}
           {diagnosis.panel_update_explanation?.trim() ? (
             <section className="rounded-lg border border-sky-200 bg-sky-50/60 px-3 py-2">
-              <h3 className="text-sm font-semibold text-sky-900">{summaryHeading}</h3>
+              <div className="flex items-start justify-between gap-2">
+                <h3 className="text-sm font-semibold text-sky-900">{summaryHeading}</h3>
+                <GiveFeedbackLink
+                  snapshotId={diagnosis.diagnosis_snapshot_id}
+                  focus="summary"
+                  disabled={!canGiveFeedback}
+                />
+              </div>
               <p className="mt-1 text-sm text-stone-800">
                 <SignalRichText
                   text={diagnosis.panel_update_explanation}
@@ -361,7 +376,14 @@ export function DiagnosisPanel({
 
           {diagnosis.solutions.length > 0 && (
             <section>
-              <h3 className="text-sm font-semibold text-stone-800">Suggested solutions</h3>
+              <div className="flex items-start justify-between gap-2">
+                <h3 className="text-sm font-semibold text-stone-800">Suggested solutions</h3>
+                <GiveFeedbackLink
+                  snapshotId={diagnosis.diagnosis_snapshot_id}
+                  focus="solutions"
+                  disabled={!canGiveFeedback}
+                />
+              </div>
               {diagnosis.solutions_review_notes ? (
                 <p className="mt-1 text-xs text-stone-600">{diagnosis.solutions_review_notes}</p>
               ) : null}
@@ -462,9 +484,9 @@ export function DiagnosisPanel({
                     </div>
                   ) : null}
                   <div className="mt-2 text-xs font-medium uppercase tracking-wide text-sky-700">Action taken</div>
-                  {entry.actions.length > 0 ? (
+                  {(entry.actions?.length ?? 0) > 0 ? (
                     <ul className="mt-1 list-disc space-y-1 pl-5 text-sm text-sky-900">
-                      {formatPanelUpdateActionList(entry.actions).map((label) => (
+                      {formatPanelUpdateActionList(entry.actions ?? []).map((label) => (
                         <li key={label}>{label}</li>
                       ))}
                     </ul>

@@ -30,15 +30,14 @@
         "type": "trend",
         "expression": "cd_forest_to_farm_ha > 50",
         "qualitative_description": "Forest-to-farm conversion area has increased over the available record, indicating progressive encroachment of forest land for agriculture.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional",
         "variables": [
           "cd_forest_to_farm_ha"
         ]
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "A positive trend in forest-to-farm conversion directly measures encroachment of forest land for agricultural use. In the sub-humid plains of Punjab, Haryana, and western Uttar Pradesh (AER-9), residual forest patches on alluvial plains face intense pressure from agricultural expansion. Increasing cd_forest_to_farm_ha over time is the most direct indicator that forest extent is shrinking due to encroachment, reducing the resource base for NTFP-dependent communities."
+      "explanation": "A positive trend in forest-to-farm conversion directly measures encroachment of forest land for agricultural use. In the sub-humid plains of Punjab, Haryana, and western Uttar Pradesh (AER-9), residual forest patches on alluvial plains face intense pressure from agricultural expansion. Increasing cd_forest_to_farm_ha over time is the most direct indicator that forest extent is shrinking due to encroachment, reducing the resource base for NTFP-dependent communities.",
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -48,16 +47,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "cd_forest_to_farm_ha > 50",
-        "qualitative_description": "Latest year forest-to-farm conversion exceeds 50 ha, indicating substantial ongoing encroachment pressure on remaining forest patches.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Latest year forest-to-farm conversion exceeds 50 ha, indicating substantial ongoing encroachment pressure on remaining forest patches."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "In the plains context of AER-9, where forest cover is already sparse and fragmented, even modest absolute conversion figures represent a high proportion of remaining forest. A threshold of 50 ha in the latest year signals active, ongoing encroachment rather than historical legacy conversion. Forest fragmentation research documents how conversion of contiguous forest to cropland reduces interior forest area disproportionately, degrading NTFP habitat quality beyond what the raw area figure suggests.",
-      "interaction_with": [
-        "sig_01"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -68,8 +63,6 @@
         "type": "trend",
         "expression": "cd_urbanization_ha > 20",
         "qualitative_description": "Total urbanized area has grown by more than 20 ha over the record period, indicating settlement expansion that may be encroaching on forest fringes.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "cd_urbanization_ha"
         ]
@@ -77,10 +70,7 @@
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Settlement expansion into forest fringes is a secondary encroachment pathway alongside agricultural conversion. In the rapidly urbanizing plains of Punjab, Haryana, and western Uttar Pradesh, peri-urban growth can sever community access corridors to forest patches even where formal forest land is not legally converted. Increasing cd_total_urbanization_ha amplifies the encroachment signal from sig_01 and compounds the reduction in NTFP access for dependent communities.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -90,17 +80,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "village_st_percent > 10",
-        "qualitative_description": "Scheduled Tribe population exceeds 10% of village population, indicating a community with historically high NTFP dependence and potential forest rights claims under FRA.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Scheduled Tribe population exceeds 10% of village population, indicating a community with historically high NTFP dependence and potential forest rights claims under FRA."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "A significant ST population in villages adjacent to encroached forest areas signals that NTFP decline has disproportionate livelihood consequences. Research on Forest Rights Act implementation documents that indigenous and forest-dwelling communities face illegal displacement and denial of tenure rights when encroachment conflicts arise, even where FRA provides legal protections. High village_st_percent combined with forest-to-farm conversion trends indicates both elevated vulnerability and the likelihood that formal forest rights claims have not been settled, leaving communities without legal recourse to resist encroachment.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -112,8 +97,6 @@
         "type": "composite",
         "expression": "(cd_forest_to_farm_ha > 50) and (village_st_percent > 10) and (cd_urbanization_ha > 20)",
         "qualitative_description": "Simultaneous forest-to-farm conversion trend, significant ST population, and urbanization growth together constitute a high-confidence composite signal for encroachment-driven NTFP decline.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional",
         "variables": [
           "cd_forest_to_farm_ha",
           "village_st_percent",
@@ -123,12 +106,7 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "The convergence of measurable forest-to-farm conversion, a vulnerable ST community with NTFP dependence, and expanding settlement pressure constitutes a robust composite indicator for the encroachment pathway. This combination distinguishes active encroachment from other causes of NTFP decline such as over-harvesting or climate variability. The Forest Rights Act framework provides the primary policy lever in such situations, but its effectiveness depends on prior demarcation of forest boundaries and active claim filing support for affected communities.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02",
-        "sig_03",
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "variables": [
@@ -136,14 +114,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Many pending or rejected FRA claims with reported NTFP decline and forest conversion indicate tenure insecurity confirming encroachment vulnerability; high recognition weakens encroachment as primary driver.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Many pending or rejected FRA claims with reported NTFP decline and forest conversion indicate tenure insecurity confirming encroachment vulnerability; high recognition weakens encroachment as primary driver."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Unresolved forest rights alongside measurable conversion corroborates encroachment as a tenure and access driver of NTFP decline.",
-      "signal_id": "sig_06"
+      "signal_id": "sig_06",
+      "active": true
     },
     {
       "variables": [
@@ -151,14 +128,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Collectors report NTFP decline attributed to shrinking forest area or blocked/restricted access (not merely lower density inside intact forest). Decline greater than 25–50% increases severity.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Collectors report NTFP decline attributed to shrinking forest area or blocked/restricted access (not merely lower density inside intact forest). Decline greater than 25–50% increases severity."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Access- or area-attributed NTFP decline distinguishes encroachment from degradation or over-harvesting within intact forest.",
-      "signal_id": "sig_07"
+      "signal_id": "sig_07",
+      "active": true
     }
   ],
   "confounders": [
@@ -186,6 +162,14 @@
             "present": true,
             "trend": "stable",
             "percent_upper": 25
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -197,6 +181,14 @@
             "trend": "worsening",
             "percent_lower": 25,
             "percent_upper": 50
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -207,9 +199,18 @@
             "present": true,
             "trend": "worsening",
             "percent_lower": 50
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     },
     {
       "missing_variable": "fra_claims_filed_count",
@@ -222,6 +223,14 @@
           "label": "No FRA claims filed by community members",
           "normalized": {
             "present": false
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -230,6 +239,14 @@
           "normalized": {
             "band": "moderate",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -238,9 +255,18 @@
           "normalized": {
             "band": "high",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": false
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "presence_graded"
     }
   ],
   "sources": [
@@ -303,5 +329,47 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 17,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_05"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_05"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_05"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

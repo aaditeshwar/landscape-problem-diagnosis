@@ -32,17 +32,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "(lulc_cropland_ha[-1] / (village_total_population + 1e-9)) < 0.2",
-        "qualitative_description": "Per-capita cropland availability below 0.2 ha per person (approximately 1 ha per household of 5) indicates predominantly marginal or sub-marginal landholding sizes.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Per-capita cropland availability below 0.2 ha per person (approximately 1 ha per household of 5) indicates predominantly marginal or sub-marginal landholding sizes."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "In the Chhota Nagpur Plateau and Eastern Ghats region, average landholding sizes are already among the smallest in India due to tribal land fragmentation and inheritance subdivision. A per-capita cropland ratio below 0.2 ha/person is a proxy for marginal holdings (<1 ha per household), which severely limits marketable surplus. Shrinking average landholding size is explicitly identified as a pressing constraint on food production and farmer income in India.",
-      "interaction_with": [
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -53,17 +48,12 @@
       "condition": {
         "type": "trend",
         "expression": "mean_cropping_intensity <= 1.15 and cropping_intensity[-1] <= 1.2",
-        "qualitative_description": "Mean cropping intensity at or below 1.15 and latest year value at or below 1.2 indicates that small holders are not compensating for limited land area through double-cropping, compounding income constraints.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Mean cropping intensity at or below 1.15 and latest year value at or below 1.2 indicates that small holders are not compensating for limited land area through double-cropping, compounding income constraints."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Low cropping intensity on small holdings means effective production per household is doubly constrained — by both land area and underutilisation of the growing season. In the sub-humid Jharkhand-Odisha belt, where rainfall supports at least one rabi crop in irrigated areas, a cropping intensity near 1.0 signals that small holders lack irrigation access or capital to cultivate a second season, directly suppressing annual income. Households solely dependent on single-season small-scale agriculture show lower monthly income despite higher food sufficiency.",
-      "interaction_with": [
-        "sig_01",
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -74,17 +64,12 @@
       "condition": {
         "type": "composite",
         "expression": "dist_apmc_km > 30 and dist_dairy_km > 20",
-        "qualitative_description": "APMC market more than 30 km away and dairy collection centre more than 20 km away together indicate that small holders face high transaction costs for both crop and livestock income streams, with no viable diversification outlet nearby.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "APMC market more than 30 km away and dairy collection centre more than 20 km away together indicate that small holders face high transaction costs for both crop and livestock income streams, with no viable diversification outlet nearby."
       },
       "severity": "high",
       "direction": "amplifies",
       "explanation": "Remote smallholders in hilly plateau terrain are exploited by intermediaries when formal market infrastructure is distant. FPOs and collective marketing are identified as the primary institutional remedy precisely because individual small holders cannot bear transport costs or negotiate fair prices. Simultaneously, the absence of nearby dairy infrastructure forecloses the most accessible livestock income diversification pathway. Studies on FPOs confirm that market access, bargaining power, and economy of scale are the most prominent benefits for small farmers.",
-      "interaction_with": [
-        "sig_01",
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -95,17 +80,12 @@
       "condition": {
         "type": "composite",
         "expression": "('livelihoods' not in organization_domains and 'fisheries' not in organization_domains) and nrega_community_assets_count < 10",
-        "qualitative_description": "No NGO presence in livelihoods or fisheries domains combined with fewer than 10 cumulative MGNREGA community asset works indicates a weak institutional safety net and limited diversification support for small holders.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "No NGO presence in livelihoods or fisheries domains combined with fewer than 10 cumulative MGNREGA community asset works indicates a weak institutional safety net and limited diversification support for small holders."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "NGO presence in livelihoods, NTFP, or fisheries domains signals that diversification pathways are being actively promoted, which can partially offset income constraints from small landholdings. Conversely, their absence leaves households with no institutional bridge to non-farm income. Low MGNREGA community asset counts indicate that off-farm wage employment and productive infrastructure (ponds, roads, land levelling) have not been built up, removing the supplementary income buffer that is critical for marginal farmers in lean seasons. FPOs and extension organisations are identified as key interfaces between small farmers and external markets.",
-      "interaction_with": [
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "variables": [
@@ -113,14 +93,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Mean household or farm income below approximately Rs 50,000/year confirms severe income insufficiency on small holdings; Rs 50,000–1,00,000 partial; above weakens landholding as the primary driver.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Mean household or farm income below approximately Rs 50,000/year confirms severe income insufficiency on small holdings; Rs 50,000–1,00,000 partial; above weakens landholding as the primary driver."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Direct income evidence distinguishes volume-poverty (small area) from market or price failure (see market_price_crop amplifier).",
-      "signal_id": "sig_05"
+      "signal_id": "sig_05",
+      "active": true
     },
     {
       "variables": [
@@ -128,14 +107,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Farm-gate price consistently well below MSP (roughly 20–40% gap) for the main crop, amplifying income loss from small land area.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Farm-gate price consistently well below MSP (roughly 20–40% gap) for the main crop, amplifying income loss from small land area."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Market price failure amplifies small_landholding stress; near-MSP prices suggest low volume rather than exploitation is the dominant constraint.",
-      "signal_id": "sig_06"
+      "signal_id": "sig_06",
+      "active": true
     },
     {
       "variables": [
@@ -143,14 +121,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "More than half of farming households own less than 1 hectare, directly confirming small-landholding-driven low income; lower marginal-holder shares weaken the pathway.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "More than half of farming households own less than 1 hectare, directly confirming small-landholding-driven low income; lower marginal-holder shares weaken the pathway."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Self-reported landholding distribution substitutes for per-capita cropland proxies when household-level evidence is available.",
-      "signal_id": "sig_07"
+      "signal_id": "sig_07",
+      "active": true
     }
   ],
   "confounders": [
@@ -176,6 +153,14 @@
           "normalized": {
             "band": "low",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -184,6 +169,14 @@
           "normalized": {
             "band": "moderate",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -192,9 +185,18 @@
           "normalized": {
             "band": "high",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     },
     {
       "missing_variable": "household_income_inr",
@@ -208,6 +210,14 @@
           "normalized": {
             "band": "low",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -224,9 +234,18 @@
           "normalized": {
             "band": "high",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     },
     {
       "missing_variable": "market_price_crop",
@@ -240,6 +259,14 @@
           "normalized": {
             "band": "low",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -249,6 +276,14 @@
             "band": "moderate",
             "present": true,
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -258,9 +293,18 @@
             "band": "high",
             "present": true,
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     }
   ],
   "sources": [
@@ -335,5 +379,50 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 19,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_05",
+      "sig_07"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_05",
+          "sig_07"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_05",
+            "sig_07"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

@@ -31,13 +31,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "soge_dev_percent > 70 or soge_class_name in ['Semi-critical', 'Critical', 'Over-exploited']",
-        "qualitative_description": "Block-level SOGE exceeds 70% or is classified Semi-critical or worse, indicating extraction pressure relative to recharge even in a high-rainfall zone.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Block-level SOGE exceeds 70% or is classified Semi-critical or worse, indicating extraction pressure relative to recharge even in a high-rainfall zone."
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "In the perhumid North-Eastern Hills, high annual rainfall (2000–12000 mm) normally ensures abundant recharge, so an elevated SOGE value is a strong signal of localised over-extraction or structurally limited aquifer storage in semi-consolidated sedimentary soft-rock formations. Block-level SOGE may understate micro-watershed stress in steep hilly terrain where recharge zones are spatially restricted. CGWB thresholds define Safe <70%, Semi-critical 70–90%, Critical 90–100%, Over-exploited >100%."
+      "explanation": "In the perhumid North-Eastern Hills, high annual rainfall (2000–12000 mm) normally ensures abundant recharge, so an elevated SOGE value is a strong signal of localised over-extraction or structurally limited aquifer storage in semi-consolidated sedimentary soft-rock formations. Block-level SOGE may understate micro-watershed stress in steep hilly terrain where recharge zones are spatially restricted. CGWB thresholds define Safe <70%, Semi-critical 70–90%, Critical 90–100%, Over-exploited >100%.",
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -49,8 +48,6 @@
         "type": "trend",
         "expression": "trend_annual_delta_g_mm < 0 and mean_annual_delta_g_mm < 0",
         "qualitative_description": "Both the linear trend and the multi-year mean of annual groundwater balance (P - ET - Runoff) are negative, indicating that recharge is chronically insufficient despite high rainfall.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "trend_annual_delta_g_mm",
           "delta_g_mm"
@@ -59,10 +56,7 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "A negative trend in delta_g alongside a negative mean value across the observation period signals that outflows (ET + runoff) persistently exceed precipitation inputs available for recharge. In hilly perhumid terrain, rapid surface runoff on steep slopes can route most rainfall to streams before infiltration occurs, leaving groundwater recharge lower than raw precipitation figures suggest. Sustained negative delta_g in this context confirms structural recharge limitation rather than extraction pressure alone, consistent with findings on aquifer depletion dynamics globally.",
-      "interaction_with": [
-        "sig_01",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -73,16 +67,12 @@
       "condition": {
         "type": "composite",
         "expression": "aquifer_class == 'sedimentary_soft_rock' and aquifer_lithology_percent.get('alluvium', 0) < 20",
-        "qualitative_description": "Aquifer is classified as sedimentary soft rock with less than 20% alluvial lithology, indicating limited storage capacity and poor lateral recharge connectivity in hilly terrain.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Aquifer is classified as sedimentary soft rock with less than 20% alluvial lithology, indicating limited storage capacity and poor lateral recharge connectivity in hilly terrain."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Semi-consolidated sedimentary soft-rock aquifers in the North-Eastern Hills (AER-17) have moderate storativity but are highly heterogeneous in hilly terrain. Low alluvial fraction means fewer high-permeability zones for lateral recharge transmission. Steep slopes accelerate runoff, reducing infiltration opportunity. This lithological context amplifies any extraction-driven stress because recovery after drawdown is slower than in alluvial systems. GIS-based groundwater potential studies confirm that geology and slope are primary determinants of recharge capacity in hilly Indian settings.",
-      "interaction_with": [
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -92,16 +82,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "nrega_swc_count < 5",
-        "qualitative_description": "Fewer than 5 cumulative SWC works recorded under MGNREGA in the micro-watershed, indicating underinvestment in recharge infrastructure despite high runoff potential.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "Fewer than 5 cumulative SWC works recorded under MGNREGA in the micro-watershed, indicating underinvestment in recharge infrastructure despite high runoff potential."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "In perhumid hilly terrain, high-intensity monsoon rainfall generates substantial surface runoff that could be intercepted for groundwater recharge through check dams, trenches, and gabion structures. Low MGNREGA SWC investment means this recharge opportunity has not been exploited, amplifying any depletion signal. India's managed aquifer recharge literature documents that more than 500,000 tanks and ponds have historically been used to detain monsoon runoff for recharge, and government investment in percolation structures has been substantial in drought-prone areas — the absence of such works in a high-rainfall zone is therefore anomalous and diagnostically significant.",
-      "interaction_with": [
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -110,13 +96,12 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Farmers report that wells or springs have dried up seasonally or that they have had to deepen wells or shift to deeper sources in recent years, particularly during the dry rabi or pre-monsoon period.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "Farmers report that wells or springs have dried up seasonally or that they have had to deepen wells or shift to deeper sources in recent years, particularly during the dry rabi or pre-monsoon period."
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "Well depth trend data are not available in the framework for this context. However, farmer-reported well deepening or spring failure is a direct field indicator of declining groundwater table. In semi-consolidated hilly aquifers, springs fed by shallow perched water tables are particularly vulnerable to seasonal depletion and can fail even in high-rainfall years if recharge zones are degraded or extraction is concentrated. This qualitative signal should be elicited through the missing variable question below."
+      "explanation": "Well depth trend data are not available in the framework for this context. However, farmer-reported well deepening or spring failure is a direct field indicator of declining groundwater table. In semi-consolidated hilly aquifers, springs fed by shallow perched water tables are particularly vulnerable to seasonal depletion and can fail even in high-rainfall years if recharge zones are degraded or extraction is concentrated. This qualitative signal should be elicited through the missing variable question below.",
+      "active": true
     },
     {
       "variables": [
@@ -124,14 +109,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Farmers report moderate-to-high borewell/tubewell density (roughly 10–50 or more than 50 within 2–3 km) in hard rock terrain, indicating localised over-extraction not captured by block-level SOGE. Very low density or widespread borewell failure may indicate aquifer limits rather than density-driven stress.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Farmers report moderate-to-high borewell/tubewell density (roughly 10–50 or more than 50 within 2–3 km) in hard rock terrain, indicating localised over-extraction not captured by block-level SOGE. Very low density or widespread borewell failure may indicate aquifer limits rather than density-driven stress."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "High local borewell density confirms extraction pressure at micro-watershed scale when paired with landscape depletion signals. Failed or unsuccessful borewells indicate hard-rock aquifer limits and may amplify stress severity without confirming high density per se.",
-      "signal_id": "sig_06"
+      "signal_id": "sig_06",
+      "active": true
     },
     {
       "variables": [
@@ -139,14 +123,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Farmers report salty/brackish well water, white crust on soil or pipes, or water unsuitable for sensitive crops — indicating salinity from deep penetration or over-extraction.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Farmers report salty/brackish well water, white crust on soil or pipes, or water unsuitable for sensitive crops — indicating salinity from deep penetration or over-extraction."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Reported salinity confirms groundwater stress as a quality-and-quantity problem; may also indicate a distinct salinity pathway requiring solution reassessment.",
-      "signal_id": "sig_07"
+      "signal_id": "sig_07",
+      "active": true
     }
   ],
   "overall_reasoning_note": "Groundwater stress in the perhumid North-Eastern Hills is paradoxical given very high annual rainfall, and requires at least two confirming signals before diagnosis is finalised. The primary mechanism is not rainfall deficit but rather rapid runoff on steep hilly terrain limiting infiltration, combined with localised extraction from semi-consolidated aquifers with heterogeneous storage. Elevated SOGE (sig_01) and chronic negative delta_g trend (sig_02) are the strongest confirming signals. Lithological context (sig_03) and low SWC investment (sig_04) are amplifying signals. If SOGE is Safe but delta_g trend is negative and farmers report spring or well failure, prioritise the water balance and field evidence over the block-level SOGE, which may mask micro-watershed heterogeneity in hilly terrain. Solutions should focus on in-situ recharge enhancement (trenches, check dams, gabions) rather than demand restriction alone, given the high rainfall endowment.",
@@ -173,6 +156,14 @@
           "normalized": {
             "trend": "stable",
             "present": false
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -181,6 +172,14 @@
           "normalized": {
             "trend": "worsening",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -190,9 +189,18 @@
             "trend": "worsening",
             "present": true,
             "band": "high"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "trend"
     },
     {
       "missing_variable": "borewell_density",
@@ -206,6 +214,14 @@
           "normalized": {
             "band": "low",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -214,6 +230,14 @@
           "normalized": {
             "band": "moderate",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -222,9 +246,18 @@
           "normalized": {
             "band": "high",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     },
     {
       "missing_variable": "groundwater_salinity",
@@ -238,6 +271,14 @@
           "normalized": {
             "present": false,
             "trend": "stable"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -247,6 +288,14 @@
             "present": true,
             "band": "moderate",
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -256,9 +305,18 @@
             "present": true,
             "band": "high",
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "presence_graded"
     }
   ],
   "sources": [
@@ -354,5 +412,44 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 24,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

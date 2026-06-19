@@ -30,17 +30,12 @@
       "condition": {
         "type": "trend",
         "expression": "trend_swb_total_area_ha < -2 or (swb_count < 3 and mean_swb_total_area_ha < 5)",
-        "qualitative_description": "Declining SWB total area (slope < -2 ha/year) or very few small water bodies relative to watershed size indicates inadequate surface storage infrastructure in hilly terrain.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Declining SWB total area (slope < -2 ha/year) or very few small water bodies relative to watershed size indicates inadequate surface storage infrastructure in hilly terrain."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "In perhumid hill states, rainfall is abundant but highly seasonal and spatially variable. Declining surface water body area over time signals that existing storage structures are silting up, falling into disrepair, or were never adequate. A low count of SWBs relative to watershed area indicates an infrastructure gap that prevents capture of monsoon runoff for rabi and dry-spell use. This mirrors findings from hard-rock terrain studies where check dam siltation progressively reduces storage capacity at ~40 cm/year if unmanaged.",
-      "interaction_with": [
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -50,16 +45,12 @@
       "condition": {
         "type": "trend",
         "expression": "mean_swb_rabi_kharif_ratio < 0.4",
-        "qualitative_description": "Mean rabi-to-kharif SWB area ratio below 0.4 indicates rapid post-monsoon drying of water bodies, confirming poor storage persistence into the rabi season.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Mean rabi-to-kharif SWB area ratio below 0.4 indicates rapid post-monsoon drying of water bodies, confirming poor storage persistence into the rabi season."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "A low rabi/kharif SWB area ratio means that water bodies that are full during the monsoon dry out rapidly, leaving little surface water available for rabi irrigation or dry-spell supplementation during kharif. In hilly hard-rock terrain, this rapid drying reflects both siltation-reduced capacity and the absence of groundwater connectivity that would sustain base flows. Dashora et al. (2019) demonstrated that siltation reduces check dam storage and infiltration rates, directly undermining the persistence of water availability for agriculture.",
-      "interaction_with": [
-        "sig_01"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -69,17 +60,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "nrega_swc_count < 5",
-        "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA indicates historically low investment in water harvesting infrastructure.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA indicates historically low investment in water harvesting infrastructure."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Low MGNREGA SWC investment in hilly NE states indicates that opportunities to build or rehabilitate small water harvesting structures — check dams, diversion weirs, farm ponds — have not been utilised. This amplifies irrigation challenges because the natural runoff from high rainfall cannot be captured and stored for dry-season use. Conversely, a high nrega_swc_count that has not translated into improved SWB area (sig_01) may indicate poor construction quality or lack of maintenance, particularly desilting.",
-      "interaction_with": [
-        "sig_01",
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -90,16 +76,12 @@
       "condition": {
         "type": "composite",
         "expression": "river_name is None and dist_cooperative_km > 15",
-        "qualitative_description": "No named river passing through or adjacent to the MWS, combined with distant cooperative access (>15 km), indicates both limited surface diversion potential and poor institutional access to credit for irrigation investment.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "No named river passing through or adjacent to the MWS, combined with distant cooperative access (>15 km), indicates both limited surface diversion potential and poor institutional access to credit for irrigation investment."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "In hilly NE terrain, the absence of a perennial river eliminates the option of gravity-fed diversion or lift irrigation from a reliable surface source. When this is combined with poor cooperative access — limiting farmers' ability to obtain credit for pump sets, pipes, or micro-irrigation equipment — the irrigation challenge becomes structural rather than merely infrastructural. Marginal and small farmers in remote hill areas face compounded barriers: no nearby water source and no affordable financing pathway for irrigation investment.",
-      "interaction_with": [
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -108,13 +90,12 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "If farmers report that wells or springs have dried up seasonally or that lifting water requires increasingly deep or distant sources, this confirms that groundwater-fed irrigation is unreliable in the hard-rock hilly terrain of NE states, where aquifer storage is limited to shallow weathered zones.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "If farmers report that wells or springs have dried up seasonally or that lifting water requires increasingly deep or distant sources, this confirms that groundwater-fed irrigation is unreliable in the hard-rock hilly terrain of NE states, where aquifer storage is limited to shallow weathered zones."
       },
       "severity": "moderate",
       "direction": "confirms",
-      "explanation": "Well depth data is not available from the framework for this context. However, in hard-rock hilly aquifers of the Eastern Himalayas, groundwater storage is confined to shallow fractured and weathered zones. Seasonal spring and well failure is commonly reported in Sikkim and Arunachal Pradesh, particularly in the pre-monsoon period. This makes groundwater-based irrigation unreliable as a fallback when surface storage infrastructure is inadequate, compounding the irrigation challenge pathway."
+      "explanation": "Well depth data is not available from the framework for this context. However, in hard-rock hilly aquifers of the Eastern Himalayas, groundwater storage is confined to shallow fractured and weathered zones. Seasonal spring and well failure is commonly reported in Sikkim and Arunachal Pradesh, particularly in the pre-monsoon period. This makes groundwater-based irrigation unreliable as a fallback when surface storage infrastructure is inadequate, compounding the irrigation challenge pathway.",
+      "active": true
     }
   ],
   "confounders": [
@@ -140,6 +121,14 @@
           "normalized": {
             "trend": "stable",
             "present": false
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -148,6 +137,14 @@
           "normalized": {
             "trend": "worsening",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -157,9 +154,18 @@
             "trend": "worsening",
             "present": true,
             "band": "high"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "trend"
     }
   ],
   "sources": [
@@ -219,5 +225,47 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 20,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_05"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_05"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_05"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

@@ -472,16 +472,29 @@ def _apply_user_answer_overlay(
 
     from services.diagnosis_revision import UNABLE_TO_EVALUATE_NOTE
 
+    from services.follow_up_effects import effect_result_for_signal
+
     update_rule = card_update_rule_for_variable(card, variable)
     update_excerpt, excerpt_matched = match_update_rule_excerpt(update_rule, normalized)
     direction = str(signal.get("direction") or "")
-    inference_source = update_excerpt if excerpt_matched else ""
-    user_result = infer_user_signal_result(
-        direction=direction,
-        normalized=normalized,
-        update_excerpt=inference_source,
-        update_rule=update_rule,
+    signal_id = str(signal.get("signal_id") or "")
+    choice_id = str(normalized.get("choice_id") or "")
+    user_result = effect_result_for_signal(
+        card,
+        variable=variable,
+        choice_id=choice_id,
+        signal_id=signal_id,
     )
+    inference_source = update_excerpt if excerpt_matched else ""
+    if user_result is None:
+        user_result = infer_user_signal_result(
+            direction=direction,
+            normalized=normalized,
+            update_excerpt=inference_source,
+            update_rule=update_rule,
+        )
+    elif excerpt_matched:
+        inference_source = update_excerpt
 
     overlay: dict[str, Any] = {
         "answered_variable": variable,
@@ -545,6 +558,8 @@ def evaluate_pathway_signals(
 
     for signal in card.get("diagnostic_signals") or []:
         if not isinstance(signal, dict):
+            continue
+        if signal.get("active") is False:
             continue
         condition = signal.get("condition") or {}
         raw_expr = str(condition.get("expression") or "").strip()

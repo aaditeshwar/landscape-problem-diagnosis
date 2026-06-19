@@ -30,13 +30,12 @@
       "condition": {
         "type": "trend",
         "expression": "lulc_tree_forest_ha[-1] < lulc_tree_forest_ha[0]",
-        "qualitative_description": "Forest area in the micro-watershed has declined from 2017 to 2024, indicating net loss of NTFP-bearing tree cover over the monitoring period.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Forest area in the micro-watershed has declined from 2017 to 2024, indicating net loss of NTFP-bearing tree cover over the monitoring period."
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "A declining trend in forest area directly reduces the stock of NTFP-bearing trees and understory species. In the humid and perhumid plains of West Bengal, Assam and eastern Bihar, forests support a rich diversity of NTFPs including sal (Shorea robusta) resin, mahua (Madhuca indica) flowers, and medicinal plants. Loss of even a fraction of this cover disproportionately affects forest-fringe communities for whom NTFPs constitute 15-20% of household income. The LULC time series from 2017-2024 provides a direct measure of this trajectory."
+      "explanation": "A declining trend in forest area directly reduces the stock of NTFP-bearing trees and understory species. In the humid and perhumid plains of West Bengal, Assam and eastern Bihar, forests support a rich diversity of NTFPs including sal (Shorea robusta) resin, mahua (Madhuca indica) flowers, and medicinal plants. Loss of even a fraction of this cover disproportionately affects forest-fringe communities for whom NTFPs constitute 15-20% of household income. The LULC time series from 2017-2024 provides a direct measure of this trajectory.",
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -48,8 +47,6 @@
         "type": "composite",
         "expression": "cd_total_deforestation_ha > 0 and (cd_afforestation_ha < cd_total_deforestation_ha)",
         "qualitative_description": "Cumulative deforestation exceeds cumulative afforestation, indicating a net negative forest balance and weak recovery capacity in the watershed.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional",
         "variables": [
           "cd_total_deforestation_ha",
           "cd_afforestation_ha"
@@ -58,9 +55,7 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "When total deforested area exceeds afforested area, the forest ecosystem is in net deficit. In alluvial plains of eastern India, deforestation is often driven by agricultural encroachment, fuelwood extraction, and infrastructure development. Low afforestation relative to deforestation signals inadequate compensatory or protective measures. Studies on compensatory afforestation in eastern India show that plantation-based restoration often fails to replicate the biodiversity and NTFP productivity of natural forests, meaning even where afforestation occurs, NTFP availability may not recover proportionally.",
-      "interaction_with": [
-        "sig_01"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -70,17 +65,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "(lulc_tree_forest_ha[-1] - lulc_tree_forest_ha[0]) / (lulc_tree_forest_ha[0] + 1e-9) < -0.10",
-        "qualitative_description": "Forest area has declined by more than 10% relative to the 2017 baseline, indicating substantial habitat loss for NTFP species.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Forest area has declined by more than 10% relative to the 2017 baseline, indicating substantial habitat loss for NTFP species."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "A greater than 10% decline in forest cover over 7 years represents a significant structural loss of NTFP habitat. Research on NTFP dependence in India documents that forest-fringe communities in humid tropical zones rely on a diverse portfolio of species whose abundance is sensitive to canopy cover and understory integrity. A 10% threshold is conservative given that edge effects and fragmentation can degrade NTFP productivity in areas far larger than the directly cleared patches. In the Bengal-Assam plains, where forest patches are already fragmented, even modest area losses can trigger disproportionate declines in NTFP yield.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -90,17 +80,12 @@
       "condition": {
         "type": "qualitative",
         "expression": "'Agroforestry' not in organization_domains and 'Forest' not in organization_domains and 'NTFP' not in organization_domains",
-        "qualitative_description": "No NGOs or organisations with NTFP, agroforestry, or forest management mandates are active in the micro-watershed, indicating absence of institutional support for forest protection and NTFP governance.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "No NGOs or organisations with NTFP, agroforestry, or forest management mandates are active in the micro-watershed, indicating absence of institutional support for forest protection and NTFP governance."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "The presence of organisations working in NTFP, agroforestry, or forest management domains is associated with better forest governance outcomes, including community forest protection committees, Joint Forest Management (JFM) arrangements, and Forest Rights Act (FRA) claim processing. Where such organisations are absent, communities lack technical and legal support to assert Community Forest Resource (CFR) rights under FRA, leaving forests more vulnerable to degradation. The FRA provides a legal framework for at least 150 million forest-dwelling people to secure rights over approximately 40 million hectares, but implementation requires active civil society facilitation.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -109,13 +94,12 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Field surveys or community reports indicate declining abundance or local disappearance of key NTFP species such as sal (Shorea robusta), mahua (Madhuca indica), tendu (Diospyros melanoxylon), or medicinal plants in the micro-watershed.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "local"
+        "qualitative_description": "Field surveys or community reports indicate declining abundance or local disappearance of key NTFP species such as sal (Shorea robusta), mahua (Madhuca indica), tendu (Diospyros melanoxylon), or medicinal plants in the micro-watershed."
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "Direct observation of NTFP species abundance is the most diagnostic indicator of forest degradation impact on NTFP availability. Declining populations of key species such as sal, mahua, or medicinal plants directly confirm that forest degradation is translating into reduced NTFP supply. In India, over 50 million people depend directly on NTFPs for subsistence, and declining species presence signals a shift from a sustainable 'win-win' to a 'lose-lose' trajectory where both livelihoods and ecological resources erode simultaneously. This variable is not available in the remote sensing data stack and must be assessed through community surveys or field verification."
+      "explanation": "Direct observation of NTFP species abundance is the most diagnostic indicator of forest degradation impact on NTFP availability. Declining populations of key species such as sal, mahua, or medicinal plants directly confirm that forest degradation is translating into reduced NTFP supply. In India, over 50 million people depend directly on NTFPs for subsistence, and declining species presence signals a shift from a sustainable 'win-win' to a 'lose-lose' trajectory where both livelihoods and ecological resources erode simultaneously. This variable is not available in the remote sensing data stack and must be assessed through community surveys or field verification.",
+      "active": true
     },
     {
       "variables": [
@@ -123,14 +107,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Absence of active VSS/JFM/CFR governance and forest patrols amplifies degradation risk; recognised CFR rights with enforcement weaken ongoing active degradation.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Absence of active VSS/JFM/CFR governance and forest patrols amplifies degradation risk; recognised CFR rights with enforcement weaken ongoing active degradation."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Institutional gap amplifies degradation severity; active community forest governance suggests legacy rather than ongoing degradation.",
-      "signal_id": "sig_06"
+      "signal_id": "sig_06",
+      "active": true
     }
   ],
   "overall_reasoning_note": "Diagnosis of forest degradation as the driver of NTFP decline in the humid plains of West Bengal, Assam and eastern Bihar should be confirmed by at least two of the three primary remote-sensing signals: declining forest area trend (sig_01), net negative deforestation-afforestation balance (sig_02), and greater than 10% forest cover loss (sig_03). These signals are mutually reinforcing and should be interpreted together. The absence of NTFP-focused organisations (sig_04) amplifies vulnerability but does not independently confirm the pathway. The most diagnostic confirmation would come from field-based NTFP species surveys (sig_05), which should be prioritised as a missing variable. In alluvial plains, forest patches are often small and fragmented, meaning LULC data may undercount degradation if canopy thinning occurs without complete clearing — community testimony on collection trends is therefore essential. Where forest area is stable but NTFP yields are declining, consider alternative pathways such as over-harvesting pressure or market-driven collection intensity rather than physical forest loss.",
@@ -158,6 +141,14 @@
             "band": "high",
             "present": true,
             "trend": "stable"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -176,9 +167,18 @@
             "band": "low",
             "present": true,
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     },
     {
       "missing_variable": "community_forest_governance_status",
@@ -192,6 +192,14 @@
           "normalized": {
             "band": "high",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -207,9 +215,18 @@
           "label": "No functioning forest governance institution in the village",
           "normalized": {
             "present": false
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "presence_graded"
     }
   ],
   "sources": [
@@ -302,5 +319,47 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 25,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_03"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_03"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

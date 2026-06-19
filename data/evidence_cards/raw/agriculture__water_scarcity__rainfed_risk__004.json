@@ -32,17 +32,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "(lulc_single_kharif_ha[-1] / (lulc_single_kharif_ha[-1] + lulc_double_crop_ha[-1] + 1e-9)) > 0.75",
-        "qualitative_description": "More than 75% of cropped area is under single kharif season only, indicating near-total dependence on monsoon rainfall with negligible irrigation access for a second crop.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "qualitative_description": "More than 75% of cropped area is under single kharif season only, indicating near-total dependence on monsoon rainfall with negligible irrigation access for a second crop."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "In arid and semi-arid AEZs such as AER-2 (Kachchh, western Rajasthan, <400mm rainfall) and AER-4 (eastern Rajasthan, Haryana arid belt, 400–740mm), the dominance of single kharif cropping is the primary land-use signature of rainfed dependence. Where irrigation infrastructure is absent or minimal, farmers cannot sustain a rabi or zaid crop, leaving the majority of net sown area idle for 6–8 months. A ratio above 0.75 confirms structural rainfed vulnerability rather than a transient drought response. This aligns with the documented pattern in South Asian less-favoured arid/semi-arid areas where erratic monsoons directly determine whether any crop is harvested at all.",
-      "interaction_with": [
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -52,17 +47,12 @@
       "condition": {
         "type": "trend",
         "expression": "mean_cropping_intensity <= 1.15",
-        "qualitative_description": "Mean cropping intensity at or below 1.15 over the multi-year record indicates that on average fewer than 15% of net sown area supports a second crop, consistent with near-complete rainfed single-season farming.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Mean cropping intensity at or below 1.15 over the multi-year record indicates that on average fewer than 15% of net sown area supports a second crop, consistent with near-complete rainfed single-season farming."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Cropping intensity is a direct aggregate measure of irrigation access: a value of 1.0 means every parcel is cropped exactly once per year (pure rainfed kharif); values approaching 2.0 indicate full double-cropping enabled by irrigation. In AER-2 and AER-4 contexts with alluvial aquifers but limited canal or groundwater infrastructure, mean cropping intensity persistently at or below 1.15 confirms that irrigation supplements are negligible. This is consistent with the characterisation of South Asian arid/semi-arid rainfed systems as 'less favoured areas' where minimal development attention has left irrigation infrastructure underdeveloped.",
-      "interaction_with": [
-        "sig_01",
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -73,16 +63,12 @@
       "condition": {
         "type": "composite",
         "expression": "canal_name is None and nrega_irrigation_count < 3",
-        "qualitative_description": "No irrigation canal intersects the micro-watershed AND fewer than 3 MGNREGA irrigation works have been constructed, jointly confirming absence of both surface water conveyance and public investment in irrigation infrastructure.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "No irrigation canal intersects the micro-watershed AND fewer than 3 MGNREGA irrigation works have been constructed, jointly confirming absence of both surface water conveyance and public investment in irrigation infrastructure."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "The co-absence of canal infrastructure and low MGNREGA irrigation investment is a strong structural indicator of rainfed dependency. In Rajasthan and Kachchh, canal networks (e.g., Indira Gandhi Canal command area) are spatially limited; micro-watersheds outside command areas have no surface water delivery. MGNREGA irrigation works (farm ponds, check dams, field channels) represent the primary public investment pathway for improving water access in rainfed areas — fewer than 3 such works over the programme record indicates that even this safety-net investment has not materialised, leaving farmers entirely exposed to monsoon variability.",
-      "interaction_with": [
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -94,8 +80,6 @@
         "type": "composite",
         "expression": "mean_annual_runoff_mm > 60 and terrain_cluster_id == 3",
         "qualitative_description": "Mean annual runoff exceeds 60mm and terrain is classified as broad plains and slopes (cluster 3), indicating significant water loss potential that could be captured through in-situ harvesting but currently is not.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "runoff_mm",
           "terrain_cluster_id"
@@ -104,10 +88,7 @@
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "In arid and semi-arid systems, high runoff relative to low total rainfall represents a critical unproductive water loss. On sloping terrain (cluster 3), runoff velocities are higher and infiltration opportunity is reduced, exacerbating in-season moisture deficits. Where mean annual runoff exceeds 60mm in a <400mm rainfall regime, more than 15% of precipitation is lost as surface flow — water that could otherwise recharge soil moisture or be harvested in farm ponds and bunds. This signal identifies both the severity of the rainfed risk and the opportunity for in-situ water harvesting interventions such as broad-bed furrows, contour bunds, and farm ponds, which are the primary recommended solutions for this pathway.",
-      "interaction_with": [
-        "sig_01",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -120,7 +101,8 @@
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "Net irrigated area is the most direct quantitative measure of irrigation access and rainfed risk. Its absence from the dataset means the diagnosis must rely on proxy indicators (lulc_double_crop_ha, cropping_intensity, canal_name, nrega_irrigation_count). Where district-level data are available from the Agricultural Census or state irrigation statistics, a net irrigated fraction below 15% of net sown area in an arid zone would be definitive confirmation of structural rainfed vulnerability."
+      "explanation": "Net irrigated area is the most direct quantitative measure of irrigation access and rainfed risk. Its absence from the dataset means the diagnosis must rely on proxy indicators (lulc_double_crop_ha, cropping_intensity, canal_name, nrega_irrigation_count). Where district-level data are available from the Agricultural Census or state irrigation statistics, a net irrigated fraction below 15% of net sown area in an arid zone would be definitive confirmation of structural rainfed vulnerability.",
+      "active": true
     }
   ],
   "confounders": [
@@ -147,6 +129,14 @@
             "band": "low",
             "present": true,
             "percent_upper": 10
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -166,9 +156,18 @@
             "band": "high",
             "present": true,
             "percent_lower": 30
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     }
   ],
   "sources": [
@@ -231,5 +230,47 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 20,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_03"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_03"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

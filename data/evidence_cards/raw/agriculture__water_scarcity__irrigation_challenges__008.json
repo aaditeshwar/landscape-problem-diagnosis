@@ -31,17 +31,12 @@
       "condition": {
         "type": "trend",
         "expression": "trend_swb_total_area_ha < -5 or (swb_total_area_ha[-1] < mean_swb_total_area_ha * 0.85)",
-        "qualitative_description": "Surface water body area is declining at more than 5 ha/year, or the latest year area is below 85% of the multi-year mean, indicating siltation, structural failure, or reduced catchment inflows.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Surface water body area is declining at more than 5 ha/year, or the latest year area is below 85% of the multi-year mean, indicating siltation, structural failure, or reduced catchment inflows."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "In sub-humid hard-rock plateau terrain (AER-11), surface tanks and ponds are the primary irrigation source for rabi and zaid seasons. A declining trend in total SWB area signals either progressive siltation reducing storage capacity or structural deterioration. Dashora et al. (2019) demonstrated that siltation in hard-rock check dams in Rajasthan reduced infiltration and storage capacity substantially — a 5-year-old check dam in Gujarat had filled completely with silt at 40 cm/year accumulation. Similar dynamics apply to tanks in Chhattisgarh and Odisha (western), where maintenance investment is low.",
-      "interaction_with": [
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -52,17 +47,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "mean_swb_rabi_kharif_ratio < 0.35",
-        "qualitative_description": "The rabi-to-kharif SWB area ratio is below 0.35, meaning water bodies lose more than 65% of their kharif-season area by rabi, indicating rapid post-monsoon drying and insufficient carry-over storage for the second season.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "The rabi-to-kharif SWB area ratio is below 0.35, meaning water bodies lose more than 65% of their kharif-season area by rabi, indicating rapid post-monsoon drying and insufficient carry-over storage for the second season."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "A low rabi/kharif SWB ratio reveals that tanks and ponds fill during the monsoon but drain rapidly, leaving insufficient water for rabi irrigation. This is a hallmark of siltation (reduced storage volume) or poor tank design in hard-rock plateau settings. In AER-11 (Chhattisgarh, Odisha western), where crystalline basement aquifers have low storativity, surface storage is critical for bridging the dry season. Rapid drying of SWBs directly causes the farmer-reported water scarcity in rabi and zaid seasons.",
-      "interaction_with": [
-        "sig_01",
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -72,17 +62,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "nrega_swc_count < 10",
-        "qualitative_description": "Fewer than 10 cumulative soil and water conservation or irrigation works recorded under MGNREGA for the micro-watershed, indicating historically low investment in water harvesting infrastructure.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "Fewer than 10 cumulative soil and water conservation or irrigation works recorded under MGNREGA for the micro-watershed, indicating historically low investment in water harvesting infrastructure."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Low MGNREGA SWC investment means that existing tanks have not been desilted, new check dams have not been constructed, and farm bunds have not been strengthened. Dashora et al. (2019) showed that manual desilting of check dams increased recharge by 84% in the following year, with a benefit-cost ratio of 4.1 across four structures. The absence of such works in MGNREGA records indicates a missed opportunity to restore storage capacity and amplifies the irrigation failure signal from sig_01 and sig_02.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -93,16 +78,12 @@
       "condition": {
         "type": "composite",
         "expression": "(swb_count < 3) and (dist_cooperative_km > 15)",
-        "qualitative_description": "Fewer than 3 surface water bodies in the MWS combined with cooperative distance exceeding 15 km, indicating both a structural infrastructure gap and limited access to institutional credit for irrigation investment.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "Fewer than 3 surface water bodies in the MWS combined with cooperative distance exceeding 15 km, indicating both a structural infrastructure gap and limited access to institutional credit for irrigation investment."
       },
       "severity": "moderate",
       "direction": "confirms",
       "explanation": "A low count of surface water bodies relative to MWS area signals an absolute infrastructure gap rather than merely degraded infrastructure. When combined with poor access to agricultural cooperatives (PACS), farmers cannot easily obtain credit for pump installation, micro-irrigation equipment, or tank repair contributions. In hilly and plateau terrain of Jharkhand and Odisha (western), remoteness compounds the infrastructure deficit, making solar pump adoption and micro-irrigation promotion particularly relevant interventions.",
-      "interaction_with": [
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -115,7 +96,8 @@
       },
       "severity": "moderate",
       "direction": "confirms",
-      "explanation": "Well depth data are not available in the framework for this MWS. However, in hard-rock plateau terrain with low SWB carry-over (sig_02), groundwater recharge from tank seepage is a critical secondary source. When tanks dry rapidly, this recharge pathway is lost, causing well yields to decline in rabi. Dashora et al. (2019) documented that check dam recharge in hard-rock Rajasthan directly sustained nearby well levels, with groundwater peaks correlating with check dam storage periods. The same mechanism applies to tanks in AER-11."
+      "explanation": "Well depth data are not available in the framework for this MWS. However, in hard-rock plateau terrain with low SWB carry-over (sig_02), groundwater recharge from tank seepage is a critical secondary source. When tanks dry rapidly, this recharge pathway is lost, causing well yields to decline in rabi. Dashora et al. (2019) documented that check dam recharge in hard-rock Rajasthan directly sustained nearby well levels, with groundwater peaks correlating with check dam storage periods. The same mechanism applies to tanks in AER-11.",
+      "active": true
     }
   ],
   "overall_reasoning_note": "Diagnosis of irrigation infrastructure failure in AER-11 sub-humid hard-rock plateau terrain should be anchored by at least two of the three primary signals: declining SWB area trend (sig_01), low rabi/kharif SWB ratio (sig_02), or very low SWB count with poor cooperative access (sig_04). Low MGNREGA SWC investment (sig_03) amplifies but does not independently confirm the pathway. The qualitative well depth signal (sig_05) should be elicited from the user when available variables are ambiguous. If SWB area is stable but the rabi/kharif ratio is very low, prioritise tank desilting and repair as the primary intervention. If SWB count is low, community-managed new storage structures and solar lift irrigation are more appropriate. Always distinguish from the groundwater stress pathway by checking whether SWB infrastructure is present but degraded versus absent entirely.",
@@ -142,6 +124,14 @@
           "normalized": {
             "trend": "stable",
             "present": false
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -150,6 +140,14 @@
           "normalized": {
             "trend": "worsening",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -159,9 +157,18 @@
             "trend": "worsening",
             "present": true,
             "band": "high"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "trend"
     }
   ],
   "sources": [
@@ -232,5 +239,47 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 20,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_04"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_04"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_04"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

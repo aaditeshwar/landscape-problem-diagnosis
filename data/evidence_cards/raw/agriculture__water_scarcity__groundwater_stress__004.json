@@ -32,17 +32,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "soge_dev_percent > 90 or soge_class_name in ['Critical', 'Over-exploited']",
-        "qualitative_description": "Block-level groundwater extraction exceeds 90% of net annual recharge, or CGWB classifies the block as Critical or Over-exploited — thresholds particularly significant in arid alluvial settings where recharge is episodic and low.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Block-level groundwater extraction exceeds 90% of net annual recharge, or CGWB classifies the block as Critical or Over-exploited — thresholds particularly significant in arid alluvial settings where recharge is episodic and low."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "CGWB defines Critical (90–100%) and Over-exploited (>100%) classes based on extraction as a share of net annual recharge. In arid alluvial aquifers of Rajasthan and Kachchh, annual recharge is severely constrained by low rainfall (<400 mm in AER-2), making even moderate extraction rates unsustainable. Unlike hard-rock aquifers, alluvial systems can sustain higher abstraction temporarily due to larger storage, but chronic over-extraction leads to progressive water table decline that is difficult to reverse. CGWB data confirm widespread Over-exploited blocks across western Rajasthan and Haryana's arid belt.",
-      "interaction_with": [
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -54,8 +49,6 @@
         "type": "trend",
         "expression": "trend_annual_delta_g_mm < -2 and mean_annual_delta_g_mm < 0",
         "qualitative_description": "The linear trend in annual groundwater balance (P - ET - Runoff) is declining at more than 2 mm/year and the multi-year mean is negative, confirming chronic depletion exceeding recharge in the arid zone.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "trend_annual_delta_g_mm",
           "delta_g_mm"
@@ -64,10 +57,7 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "A sustained negative trend in delta_g combined with a negative multi-year mean indicates that outflows (ET + runoff) persistently exceed precipitation, leaving no surplus for groundwater recharge. In arid alluvial plains receiving less than 400 mm annual rainfall (AER-2), even small negative balances accumulate rapidly. Global analysis of groundwater monitoring wells confirms that rapid groundwater-level declines (>0.5 m/year) are most prevalent in dry regions with extensive croplands, and that declines have accelerated in 30% of regional aquifers over the past four decades. The 2 mm/year threshold is conservative for arid zones where any negative trend is ecologically significant.",
-      "interaction_with": [
-        "sig_01",
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -78,17 +68,12 @@
       "condition": {
         "type": "composite",
         "expression": "aquifer_class == 'alluvium' and mean_annual_precipitation_mm < 450",
-        "qualitative_description": "Alluvial aquifer confirmed with mean annual precipitation below 450 mm, indicating that despite high storage capacity, recharge is severely limited by aridity — a combination that amplifies depletion risk from irrigation extraction.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Alluvial aquifer confirmed with mean annual precipitation below 450 mm, indicating that despite high storage capacity, recharge is severely limited by aridity — a combination that amplifies depletion risk from irrigation extraction."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Alluvial aquifers in arid zones present a paradox: their high storativity allows large volumes to be extracted, but recharge is episodic and dependent on rare high-intensity rainfall events and river flooding. In Rajasthan and Kachchh (AER-2, <400 mm rainfall), the alluvial aquifer system receives minimal direct recharge, and abstraction for irrigation — which accounts for approximately 43% of total consumptive groundwater use globally and is the dominant use in these regions — rapidly depletes storage. Unlike peninsular hard-rock aquifers where depletion manifests as seasonal emptying and refilling, alluvial aquifer depletion in arid zones is a progressive, multi-decadal process that is difficult to reverse without managed recharge interventions.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -98,16 +83,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "nrega_swc_count < 10",
-        "qualitative_description": "Fewer than 10 cumulative SWC works recorded under MGNREGA in the micro-watershed, indicating critically low investment in recharge infrastructure in an arid zone where artificial recharge is essential to offset low natural recharge.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "Fewer than 10 cumulative SWC works recorded under MGNREGA in the micro-watershed, indicating critically low investment in recharge infrastructure in an arid zone where artificial recharge is essential to offset low natural recharge."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "In arid alluvial settings, natural groundwater recharge is insufficient to offset extraction, making managed aquifer recharge (MAR) through SWC structures — check dams, percolation tanks, trench bunds — essential. India has a long history of such structures, with over 500,000 tanks and ponds historically used to detain monsoon runoff for both direct use and aquifer infiltration. Low MGNREGA SWC investment signals that this recharge opportunity has not been exploited, amplifying depletion. The Indian government's master plan for artificial recharge envisions 11 million additional structures, underscoring the scale of the gap. Low SWC counts also indicate an actionable intervention pathway rather than a terminal condition.",
-      "interaction_with": [
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -116,13 +97,12 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Farmers report that they have had to deepen borewells or tubewells over recent years, or that shallow dug wells have gone dry during rabi or zaid seasons, indicating progressive water table decline in the alluvial aquifer.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Farmers report that they have had to deepen borewells or tubewells over recent years, or that shallow dug wells have gone dry during rabi or zaid seasons, indicating progressive water table decline in the alluvial aquifer."
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "Well deepening is a direct proxy for declining groundwater table. In arid alluvial plains, where the water table may initially be relatively shallow due to historical recharge from rivers and floods, progressive deepening indicates that extraction is outpacing recharge. Farmer-reported well failures during rabi and zaid seasons — when there is no monsoon recharge — are a reliable field indicator of chronic depletion. This variable is not available in the framework dataset and must be elicited through farmer interviews."
+      "explanation": "Well deepening is a direct proxy for declining groundwater table. In arid alluvial plains, where the water table may initially be relatively shallow due to historical recharge from rivers and floods, progressive deepening indicates that extraction is outpacing recharge. Farmer-reported well failures during rabi and zaid seasons — when there is no monsoon recharge — are a reliable field indicator of chronic depletion. This variable is not available in the framework dataset and must be elicited through farmer interviews.",
+      "active": true
     },
     {
       "variables": [
@@ -130,14 +110,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Farmers report moderate-to-high borewell/tubewell density (roughly 10–50 or more than 50 within 2–3 km) in hard rock terrain, indicating localised over-extraction not captured by block-level SOGE. Very low density or widespread borewell failure may indicate aquifer limits rather than density-driven stress.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Farmers report moderate-to-high borewell/tubewell density (roughly 10–50 or more than 50 within 2–3 km) in hard rock terrain, indicating localised over-extraction not captured by block-level SOGE. Very low density or widespread borewell failure may indicate aquifer limits rather than density-driven stress."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "High local borewell density confirms extraction pressure at micro-watershed scale when paired with landscape depletion signals. Failed or unsuccessful borewells indicate hard-rock aquifer limits and may amplify stress severity without confirming high density per se.",
-      "signal_id": "sig_06"
+      "signal_id": "sig_06",
+      "active": true
     },
     {
       "variables": [
@@ -145,14 +124,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Farmers report salty/brackish well water, white crust on soil or pipes, or water unsuitable for sensitive crops — indicating salinity from deep penetration or over-extraction.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Farmers report salty/brackish well water, white crust on soil or pipes, or water unsuitable for sensitive crops — indicating salinity from deep penetration or over-extraction."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Reported salinity confirms groundwater stress as a quality-and-quantity problem; may also indicate a distinct salinity pathway requiring solution reassessment.",
-      "signal_id": "sig_07"
+      "signal_id": "sig_07",
+      "active": true
     }
   ],
   "overall_reasoning_note": "Groundwater stress in arid alluvial aquifers should be confirmed by at least two primary signals: elevated SOGE classification (Critical/Over-exploited) and a sustained negative trend in annual delta_g. The alluvial aquifer context (sig_03) amplifies risk because high storage capacity can mask progressive depletion until a threshold is crossed. Unlike hard-rock aquifers where seasonal recovery is possible, arid alluvial depletion is cumulative and slow to reverse. Low SWC investment (sig_04) and farmer-reported well deepening (sig_05) are amplifying signals that strengthen the diagnosis but do not confirm it independently. Always distinguish between meteorological drought causing temporary recharge failure versus chronic over-extraction — check whether SOGE was already Critical before recent drought years. In Haryana's arid belt (AER-4, 400–740 mm rainfall), the threshold for concern may be slightly higher than in AER-2, so apply SOGE thresholds with awareness of the sub-zone.",
@@ -179,6 +157,14 @@
           "normalized": {
             "trend": "stable",
             "present": false
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -187,6 +173,14 @@
           "normalized": {
             "trend": "worsening",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -196,9 +190,18 @@
             "trend": "worsening",
             "present": true,
             "band": "high"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "trend"
     },
     {
       "missing_variable": "borewell_density",
@@ -212,6 +215,14 @@
           "normalized": {
             "band": "low",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -220,6 +231,14 @@
           "normalized": {
             "band": "moderate",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -228,9 +247,18 @@
           "normalized": {
             "band": "high",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     },
     {
       "missing_variable": "groundwater_salinity",
@@ -244,6 +272,14 @@
           "normalized": {
             "present": false,
             "trend": "stable"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -253,6 +289,14 @@
             "present": true,
             "band": "moderate",
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -262,9 +306,18 @@
             "present": true,
             "band": "high",
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "presence_graded"
     }
   ],
   "sources": [
@@ -377,5 +430,53 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 24,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_05",
+      "sig_06",
+      "sig_07"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_05",
+          "sig_06",
+          "sig_07"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_05",
+            "sig_06",
+            "sig_07"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

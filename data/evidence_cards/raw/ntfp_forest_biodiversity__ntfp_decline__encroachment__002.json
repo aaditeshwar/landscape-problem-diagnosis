@@ -31,15 +31,14 @@
         "type": "trend",
         "expression": "cd_forest_to_farm_ha > 100",
         "qualitative_description": "Forest-to-farm conversion area has increased over the observation period, indicating progressive encroachment of agricultural activity into forest land.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional",
         "variables": [
           "cd_forest_to_farm_ha"
         ]
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "A positive trend in forest-to-farm conversion hectares is the most direct measurable indicator of encroachment. In semi-arid plateau and hilly terrain of Andhra Pradesh, Karnataka interior, and Odisha, forest fringe communities under livelihood pressure progressively clear forest margins for cultivation. Geospatial studies of forest fragmentation in Karnataka document reduction of evergreen-semi-evergreen forest cover from 57% to 32% over three decades, with cropland and built-up areas now accounting for 47% of formerly forested landscapes, directly reducing NTFP-bearing forest extent accessible to dependent communities."
+      "explanation": "A positive trend in forest-to-farm conversion hectares is the most direct measurable indicator of encroachment. In semi-arid plateau and hilly terrain of Andhra Pradesh, Karnataka interior, and Odisha, forest fringe communities under livelihood pressure progressively clear forest margins for cultivation. Geospatial studies of forest fragmentation in Karnataka document reduction of evergreen-semi-evergreen forest cover from 57% to 32% over three decades, with cropland and built-up areas now accounting for 47% of formerly forested landscapes, directly reducing NTFP-bearing forest extent accessible to dependent communities.",
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -50,8 +49,6 @@
         "type": "trend",
         "expression": "cd_urbanization_ha > 50",
         "qualitative_description": "Total urbanized area has expanded by more than 50 ha over the observation period, suggesting settlement encroachment into forest margins.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "cd_urbanization_ha"
         ]
@@ -59,9 +56,7 @@
       "severity": "moderate",
       "direction": "confirms",
       "explanation": "Settlement expansion into forest fringes reduces both the physical extent of NTFP-bearing forest and community access corridors. In semi-arid hard rock plateau regions, peri-urban growth along forest edges fragments contiguous forest patches, increasing edge effects and reducing interior forest habitat where high-value NTFPs such as tendu leaf, mahua, and amla are concentrated. A threshold of 50 ha accounts for meaningful landscape-level change at the micro-watershed scale relevant to village-level NTFP collection.",
-      "interaction_with": [
-        "sig_01"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -72,8 +67,6 @@
         "type": "composite",
         "expression": "village_st_percent > 30 and cd_forest_to_farm_ha > 100",
         "qualitative_description": "Village has a high Scheduled Tribe population (>30%) coinciding with measurable forest-to-farm conversion, indicating that forest rights disputes or displacement may be driving NTFP access decline for the most dependent communities.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local",
         "variables": [
           "village_st_percent",
           "cd_forest_to_farm_ha"
@@ -82,9 +75,7 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "Scheduled Tribe communities are disproportionately dependent on NTFPs for subsistence and income in semi-arid forest fringe areas of Andhra Pradesh, Karnataka, and Odisha. Where encroachment is occurring alongside high ST population share, the affected households are likely those with the greatest NTFP dependence and the least alternative livelihood options. Research on protected area conflicts in India documents that failure to recognize tenure rights under the Forest Rights Act results in displacement and loss of access for indigenous forest dwellers, directly reducing NTFP collection capacity.",
-      "interaction_with": [
-        "sig_01"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -96,8 +87,6 @@
         "type": "composite",
         "expression": "cd_forest_to_farm_ha > 100 and terrain_cluster_id != 1",
         "qualitative_description": "Forest-to-farm conversion exceeds 100 ha over the record period in non-plains terrain, indicating substantial encroachment pressure in hilly or plateau landscapes where forest access routes are limited.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "cd_forest_to_farm_ha",
           "cd_urbanization_ha"
@@ -106,10 +95,7 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "In hilly and plateau terrain (terrain_cluster_id != 1, i.e., not mostly plains), forest-to-farm conversion above 100 ha represents significant fragmentation of contiguous forest patches. Geospatial fragmentation studies show that interior forest loss accelerates non-linearly once patch sizes fall below critical thresholds, reducing NTFP yields even in remaining forest areas due to edge effects, altered microclimate, and disrupted seed dispersal. The 100 ha threshold reflects a meaningful landscape-scale change for village-level NTFP catchment areas in semi-arid Deccan plateau contexts.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "variables": [
@@ -117,14 +103,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Many pending or rejected FRA claims with reported NTFP decline and forest conversion indicate tenure insecurity confirming encroachment vulnerability; high recognition weakens encroachment as primary driver.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Many pending or rejected FRA claims with reported NTFP decline and forest conversion indicate tenure insecurity confirming encroachment vulnerability; high recognition weakens encroachment as primary driver."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Unresolved forest rights alongside measurable conversion corroborates encroachment as a tenure and access driver of NTFP decline.",
-      "signal_id": "sig_05"
+      "signal_id": "sig_05",
+      "active": true
     },
     {
       "variables": [
@@ -132,14 +117,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Collectors report NTFP decline attributed to shrinking forest area or blocked/restricted access (not merely lower density inside intact forest). Decline greater than 25–50% increases severity.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Collectors report NTFP decline attributed to shrinking forest area or blocked/restricted access (not merely lower density inside intact forest). Decline greater than 25–50% increases severity."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Access- or area-attributed NTFP decline distinguishes encroachment from degradation or over-harvesting within intact forest.",
-      "signal_id": "sig_06"
+      "signal_id": "sig_06",
+      "active": true
     }
   ],
   "overall_reasoning_note": "Diagnosis of encroachment as the primary driver of NTFP decline should be confirmed by at least two signals: a positive trend in cd_forest_to_farm_ha (sig_01) is the strongest single indicator and should be present. Settlement expansion (sig_02) amplifies the diagnosis when co-occurring. High ST population share with concurrent forest conversion (sig_03) elevates severity and points to Forest Rights Act implementation gaps as a priority intervention. Sig_04 provides a magnitude threshold for landscape-level significance. If cd_forest_to_farm_ha shows no trend but NTFP decline is reported, consider alternative pathways such as over-harvesting, fire, or drought-driven forest degradation. In semi-arid hard rock plateau contexts, encroachment pressure is often driven by agricultural expansion during drought years when crop failures push households to clear forest margins for subsistence cultivation — check drought_severe_return_period to assess whether encroachment pulses coincide with drought cycles.",
@@ -165,6 +149,14 @@
           "label": "No FRA claims filed by community members",
           "normalized": {
             "present": false
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -173,6 +165,14 @@
           "normalized": {
             "band": "moderate",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -181,9 +181,18 @@
           "normalized": {
             "band": "high",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "presence_graded"
     },
     {
       "missing_variable": "ntfp_collection_trend_qualitative",
@@ -199,6 +208,14 @@
             "present": true,
             "trend": "stable",
             "percent_upper": 25
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -210,6 +227,14 @@
             "trend": "worsening",
             "percent_lower": 25,
             "percent_upper": 50
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -220,9 +245,18 @@
             "present": true,
             "trend": "worsening",
             "percent_lower": 50
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     }
   ],
   "sources": [
@@ -288,5 +322,47 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 17,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_03",
+      "sig_04"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_03",
+          "sig_04"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_03",
+            "sig_04"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

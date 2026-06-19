@@ -31,13 +31,12 @@
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "soge_dev_percent > 70 or soge_class_name in ['Semi-critical', 'Critical', 'Over-exploited']",
-        "threshold_confidence": "high",
-        "context_sensitivity": "global"
+        "expression": "soge_dev_percent > 70 or soge_class_name in ['Semi-critical', 'Critical', 'Over-exploited']"
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "CGWB defines groundwater stress classes based on extraction as a percentage of net annual recharge. In coastal alluvial aquifers, SOGE values above 70% indicate that extraction is approaching or exceeding sustainable recharge limits. Coastal alluvial aquifers are particularly vulnerable because over-extraction can induce seawater intrusion, permanently degrading water quality in addition to reducing quantity. Block-level SOGE values above 90% (Critical) or 100% (Over-exploited) confirm chronic over-extraction relative to recharge in the coastal plain setting."
+      "explanation": "CGWB defines groundwater stress classes based on extraction as a percentage of net annual recharge. In coastal alluvial aquifers, SOGE values above 70% indicate that extraction is approaching or exceeding sustainable recharge limits. Coastal alluvial aquifers are particularly vulnerable because over-extraction can induce seawater intrusion, permanently degrading water quality in addition to reducing quantity. Block-level SOGE values above 90% (Critical) or 100% (Over-exploited) confirm chronic over-extraction relative to recharge in the coastal plain setting.",
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -49,8 +48,6 @@
         "type": "composite",
         "expression": "trend_annual_delta_g_mm < 0 and mean_annual_delta_g_mm < 0",
         "qualitative_description": "Both the linear trend and the multi-year mean of annual groundwater recharge (P - ET - Runoff) are negative, indicating chronic depletion rather than a single drought year anomaly.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "trend_annual_delta_g_mm",
           "delta_g_mm"
@@ -59,10 +56,7 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "A sustained negative trend in delta_g combined with a negative multi-year mean confirms that outflows (ET + runoff) persistently exceed precipitation inputs, leaving no surplus for aquifer recharge. In coastal alluvial plains receiving 900-1400 mm annual rainfall (AER-18), a negative mean delta_g is particularly significant because these aquifers should theoretically benefit from monsoon recharge. Chronic negative balance despite sub-humid rainfall indicates extraction pressure is the dominant driver. Global analysis of groundwater monitoring wells confirms that rapid groundwater-level declines (>0.5 m/year) are widespread in cropland-intensive regions, and that acceleration of decline over recent decades signals an urgent need for intervention.",
-      "interaction_with": [
-        "sig_01",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -73,17 +67,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "aquifer_class == 'alluvium' and aquifer_lithology_percent.get('alluvium', 0) > 50",
-        "qualitative_description": "Dominant alluvial aquifer lithology (>50% of MWS area) in a coastal plain setting confirms high recharge potential but also high extraction vulnerability due to ease of borewell installation and intensive irrigation demand.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Dominant alluvial aquifer lithology (>50% of MWS area) in a coastal plain setting confirms high recharge potential but also high extraction vulnerability due to ease of borewell installation and intensive irrigation demand."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Alluvial aquifers in coastal plains have higher storativity than hard-rock aquifers, meaning depletion manifests more gradually but can reach large volumes before becoming apparent. India has the largest area equipped for groundwater irrigation globally (39 million ha), and alluvial aquifers bear the greatest share of this extraction pressure. In coastal settings, alluvial aquifer depletion is compounded by the risk of seawater intrusion when hydraulic gradients reverse due to over-pumping, making recovery more difficult than in inland alluvial systems. The ease of borewell installation in alluvium also leads to rapid proliferation of extraction points that outpaces governance capacity.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -93,16 +82,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "nrega_swc_count < 5",
-        "qualitative_description": "Fewer than 5 cumulative SWC works recorded under MGNREGA in the micro-watershed, indicating low investment in recharge infrastructure relative to extraction pressure.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "Fewer than 5 cumulative SWC works recorded under MGNREGA in the micro-watershed, indicating low investment in recharge infrastructure relative to extraction pressure."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "In coastal alluvial plains, managed aquifer recharge through check dams, percolation tanks, and streambed structures is critical to sustaining groundwater levels. India has a long history of tank and pond-based recharge infrastructure, with over 500,000 tanks and ponds historically used to detain monsoon runoff for both direct irrigation and aquifer recharge. Low MGNREGA SWC investment signals that this recharge infrastructure has not been maintained or expanded, amplifying depletion caused by extraction. It also represents an actionable intervention opportunity: MGNREGA-funded SWC works, trench-and-check-dam construction, and community pond desilting can meaningfully augment recharge in alluvial coastal plains.",
-      "interaction_with": [
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -111,13 +96,12 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Farmers report that borewell or dug-well depth has increased over recent years, or that previously productive shallow wells have dried up or require deepening to maintain yield, particularly during rabi season or dry spells in kharif.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Farmers report that borewell or dug-well depth has increased over recent years, or that previously productive shallow wells have dried up or require deepening to maintain yield, particularly during rabi season or dry spells in kharif."
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "Increasing well depth is a direct proxy for declining groundwater table. In alluvial coastal aquifers, well deepening is particularly significant because it may indicate that farmers are penetrating deeper into the aquifer profile where water quality may be poorer or where saline intrusion from the coast is more likely. Unlike hard-rock aquifers where seasonal emptying and refilling is normal, alluvial aquifer depletion tends to be more gradual and cumulative, making multi-year well depth trends a reliable indicator of chronic over-extraction."
+      "explanation": "Increasing well depth is a direct proxy for declining groundwater table. In alluvial coastal aquifers, well deepening is particularly significant because it may indicate that farmers are penetrating deeper into the aquifer profile where water quality may be poorer or where saline intrusion from the coast is more likely. Unlike hard-rock aquifers where seasonal emptying and refilling is normal, alluvial aquifer depletion tends to be more gradual and cumulative, making multi-year well depth trends a reliable indicator of chronic over-extraction.",
+      "active": true
     },
     {
       "variables": [
@@ -125,14 +109,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Farmers report moderate-to-high borewell/tubewell density (roughly 10–50 or more than 50 within 2–3 km) in hard rock terrain, indicating localised over-extraction not captured by block-level SOGE. Very low density or widespread borewell failure may indicate aquifer limits rather than density-driven stress.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Farmers report moderate-to-high borewell/tubewell density (roughly 10–50 or more than 50 within 2–3 km) in hard rock terrain, indicating localised over-extraction not captured by block-level SOGE. Very low density or widespread borewell failure may indicate aquifer limits rather than density-driven stress."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "High local borewell density confirms extraction pressure at micro-watershed scale when paired with landscape depletion signals. Failed or unsuccessful borewells indicate hard-rock aquifer limits and may amplify stress severity without confirming high density per se.",
-      "signal_id": "sig_06"
+      "signal_id": "sig_06",
+      "active": true
     },
     {
       "variables": [
@@ -140,14 +123,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Farmers report salty/brackish well water, white crust on soil or pipes, or water unsuitable for sensitive crops — indicating salinity from deep penetration or over-extraction.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Farmers report salty/brackish well water, white crust on soil or pipes, or water unsuitable for sensitive crops — indicating salinity from deep penetration or over-extraction."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Reported salinity confirms groundwater stress as a quality-and-quantity problem; may also indicate a distinct salinity pathway requiring solution reassessment.",
-      "signal_id": "sig_07"
+      "signal_id": "sig_07",
+      "active": true
     }
   ],
   "overall_reasoning_note": "Groundwater stress in coastal alluvial aquifers (AER-18) should be confirmed by at least two primary signals: elevated SOGE classification, chronic negative delta_g trend, or farmer-reported well deepening. The alluvial aquifer context distinguishes this card from hard-rock pathway cards: depletion is more gradual and volumetrically larger, but the coastal location adds the compounding risk of seawater intrusion once hydraulic gradients reverse. A block-level Safe SOGE classification should not be taken as reassuring if delta_g trend is negative and nrega_swc_count is low — alluvial aquifer depletion in the Indo-Gangetic and coastal plains requires different management approaches than peninsular hard-rock systems, including demand-side governance mechanisms and participatory groundwater management. Always probe for groundwater salinity and borewell density before finalising diagnosis, as coastal saline intrusion may require different solutions than simple recharge augmentation.",
@@ -174,6 +156,14 @@
           "normalized": {
             "trend": "stable",
             "present": false
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -182,6 +172,14 @@
           "normalized": {
             "trend": "worsening",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -191,9 +189,18 @@
             "trend": "worsening",
             "present": true,
             "band": "high"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "trend"
     },
     {
       "missing_variable": "borewell_density",
@@ -207,6 +214,14 @@
           "normalized": {
             "band": "low",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -215,6 +230,14 @@
           "normalized": {
             "band": "moderate",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -223,9 +246,18 @@
           "normalized": {
             "band": "high",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     },
     {
       "missing_variable": "groundwater_salinity",
@@ -239,6 +271,14 @@
           "normalized": {
             "present": false,
             "trend": "stable"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -248,6 +288,14 @@
             "present": true,
             "band": "moderate",
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -257,9 +305,18 @@
             "present": true,
             "band": "high",
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "presence_graded"
     }
   ],
   "sources": [
@@ -373,5 +430,53 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 24,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_05",
+      "sig_06",
+      "sig_07"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_05",
+          "sig_06",
+          "sig_07"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_05",
+            "sig_06",
+            "sig_07"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

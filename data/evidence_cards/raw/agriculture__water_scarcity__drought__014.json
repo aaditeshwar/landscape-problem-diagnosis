@@ -30,17 +30,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "drought_weeks_severe[-1] >= 3 or (drought_weeks_severe[-1] >= 1 and drought_weeks_moderate[-1] >= 4)",
-        "qualitative_description": "Three or more severe drought weeks in the latest kharif season, or a combination of at least one severe week and four or more moderate weeks, indicates persistent crop-season water deficit sufficient to cause yield loss.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Three or more severe drought weeks in the latest kharif season, or a combination of at least one severe week and four or more moderate weeks, indicates persistent crop-season water deficit sufficient to cause yield loss."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Persistent severe drought weeks during kharif directly reduce soil moisture below crop wilting thresholds. In semi-arid Malwa and Gujarat, where baseline rainfall is 500–740 mm and hard rock aquifers offer limited buffer storage, even 3 consecutive severe weeks during critical crop growth stages (flowering, grain fill) can cause significant yield loss. The India Drought Manual uses SPI-based weekly classification to define severe drought; multiple severe weeks confirm meteorological drought as the primary water scarcity driver.",
-      "interaction_with": [
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -50,17 +45,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "dry_spell_weeks[-1] >= 4",
-        "qualitative_description": "Four or more dry spell weeks (4-week moving window with <50% historical rainfall) in the latest kharif season indicate prolonged rainfall gaps that disrupt critical crop growth stages.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Four or more dry spell weeks (4-week moving window with <50% historical rainfall) in the latest kharif season indicate prolonged rainfall gaps that disrupt critical crop growth stages."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Dry spells of 4 or more weeks during kharif are particularly damaging in semi-arid zones where crops rely almost entirely on in-season rainfall. In the Malwa plateau and Gujarat plains, soybean and cotton — the dominant kharif crops — are highly sensitive to moisture stress during vegetative and reproductive stages. A 4-week dry spell window with less than 50% of historical rainfall represents a significant departure from normal that disrupts crop water demand-supply synchronisation, as documented in crop water management literature.",
-      "interaction_with": [
-        "sig_01",
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -72,8 +62,6 @@
         "type": "composite",
         "expression": "mean_annual_precipitation_mm < 600 and seasonal_precipitation_mm[-1]['kharif'] < (0.75 * mean_annual_precipitation_mm)",
         "qualitative_description": "Long-run mean annual precipitation below 600 mm combined with a kharif season receiving less than 75% of the long-run annual mean confirms a below-normal monsoon year in an already moisture-limited zone.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "precipitation_mm",
           "seasonal_precipitation_mm"
@@ -82,10 +70,7 @@
       "severity": "moderate",
       "direction": "confirms",
       "explanation": "AER-5 (Central Malwa Highlands and Gujarat Plains) receives 500–740 mm annually, placing it at the lower end of semi-arid rainfall. When the long-run mean falls below 600 mm and the current kharif season delivers less than 75% of that mean, the zone is in a confirmed below-normal monsoon year. Seasonal precipitation breakdown is critical because rabi and zaid seasons in this zone depend on residual soil moisture and groundwater, both of which are recharged primarily during kharif. A deficit kharif season therefore cascades into multi-season water scarcity.",
-      "interaction_with": [
-        "sig_01",
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -95,17 +80,12 @@
       "condition": {
         "type": "trend",
         "expression": "monsoon_onset_date[-1] > monsoon_onset_date[0] and (monsoon_onset_date[-1] - monsoon_onset_date[0]) > 7",
-        "qualitative_description": "Monsoon onset in the latest year is more than 7 days later than the earliest year in the record, indicating a trend toward delayed onset that shortens the effective kharif growing season.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Monsoon onset in the latest year is more than 7 days later than the earliest year in the record, indicating a trend toward delayed onset that shortens the effective kharif growing season."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Delayed monsoon onset in semi-arid zones shortens the effective kharif season, compressing the window for sowing, vegetative growth, and grain fill. In Malwa and Gujarat, where kharif crops such as soybean and groundnut have fixed phenological requirements, a delay of more than one week forces either late sowing (reducing yield potential) or dry sowing under moisture stress. Delayed onset also reduces total seasonal accumulation even if withdrawal timing is unchanged, amplifying the drought signal from sig_01 and sig_03.",
-      "interaction_with": [
-        "sig_01",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -116,8 +96,6 @@
         "type": "composite",
         "expression": "(drought_mild_spi_score_latest >= 26 or drought_severe_moderate_spi_score_latest >= 26) and drought_mild_vci_score_latest >= 26",
         "qualitative_description": "SPI classification of moderate drought or worse combined with VCI below 35 confirms co-occurrence of meteorological and agricultural drought, ruling out irrigation-buffered scenarios.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional",
         "variables": [
           "drought_mild_vci_score_latest",
           "drought_mild_spi_score_latest",
@@ -127,10 +105,7 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "The India Drought Manual prescribes a multi-index approach combining SPI (meteorological drought), MAI (soil moisture adequacy), and VCI (vegetation condition) to classify drought type and severity. When SPI indicates moderate-to-extreme drought and VCI falls below 35 — the threshold associated with significant vegetation stress — the combination confirms that meteorological deficit has translated into agricultural drought affecting crop biomass. Studies on kharif rice in India show SPI and VCI are significantly correlated with productivity index, validating their joint use for drought confirmation in semi-arid cropping systems.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     }
   ],
   "confounders": [
@@ -205,5 +180,50 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 24,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_05",
+      "sig_02",
+      "sig_03"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_05",
+          "sig_02",
+          "sig_03"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_05",
+            "sig_02",
+            "sig_03"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

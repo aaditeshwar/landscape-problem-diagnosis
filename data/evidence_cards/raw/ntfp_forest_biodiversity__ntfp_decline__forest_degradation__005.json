@@ -29,17 +29,12 @@
       "condition": {
         "type": "trend",
         "expression": "lulc_tree_forest_ha[-1] < lulc_tree_forest_ha[0]",
-        "qualitative_description": "Forest area in the micro-watershed has declined from 2017 to 2024, indicating net loss of NTFP-bearing tree cover over the monitoring period.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Forest area in the micro-watershed has declined from 2017 to 2024, indicating net loss of NTFP-bearing tree cover over the monitoring period."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "A declining trend in forest area directly reduces the stock of NTFP-bearing trees and understory species. In the Central Highlands (AER-10), forests support key NTFP species such as Tendu (Diospyros melanoxylon), Mahua (Madhuca indica), Harra (Terminalia chebula), and Achar (Buchanania lanzan). Any net reduction in forest cover over the 2017–2024 period is a primary indicator that the NTFP resource base is shrinking, consistent with documented declines in NTFP availability for forest-fringe communities.",
-      "interaction_with": [
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -51,8 +46,6 @@
         "type": "composite",
         "expression": "cd_total_deforestation_ha > 0 and (cd_afforestation_ha / (cd_total_deforestation_ha + 1e-9)) < 0.5",
         "qualitative_description": "Cumulative deforestation exceeds afforestation by more than 2:1, indicating that forest recovery is failing to compensate for habitat loss.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "cd_total_deforestation_ha",
           "cd_afforestation_ha"
@@ -61,10 +54,7 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "When afforestation covers less than half the deforested area, the net forest balance is strongly negative. In sub-humid plateau and slope terrain of Bundelkhand and Malwa, compensatory afforestation programmes have been documented to rely heavily on industrial monoculture plantations that do not restore NTFP species diversity or understory habitat. A large deforestation-to-afforestation gap therefore signals both quantitative and qualitative degradation of the NTFP resource base.",
-      "interaction_with": [
-        "sig_01",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -74,17 +64,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "cd_total_deforestation_ha > 50",
-        "qualitative_description": "More than 50 hectares of cumulative deforestation recorded in the micro-watershed, representing a significant absolute loss of forest habitat.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "More than 50 hectares of cumulative deforestation recorded in the micro-watershed, representing a significant absolute loss of forest habitat."
       },
       "severity": "moderate",
       "direction": "confirms",
       "explanation": "Absolute deforestation above 50 ha in a micro-watershed context is sufficient to materially reduce NTFP availability for dependent communities. In tribal and forest-fringe economies of Central India, NTFPs contribute 15–20% of household income; even moderate forest loss can push communities below subsistence thresholds. The threshold of 50 ha is indicative and should be interpreted relative to total watershed forest area.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -94,17 +79,12 @@
       "condition": {
         "type": "qualitative",
         "expression": "'Agroforestry' not in organization_domains and 'Watershed management' not in organization_domains",
-        "qualitative_description": "No NGOs or organisations active in agroforestry or watershed management domains are present in the micro-watershed, indicating weak institutional support for forest protection and NTFP restoration.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "No NGOs or organisations active in agroforestry or watershed management domains are present in the micro-watershed, indicating weak institutional support for forest protection and NTFP restoration."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "The absence of organisations working in agroforestry or watershed management domains signals a governance gap that amplifies forest degradation risk. Community Forest Resource (CFR) rights under the Forest Rights Act and Joint Forest Management (JFM) arrangements require active facilitation by civil society organisations. Where such organisations are absent, communities are less likely to have formalised forest protection bylaws, fire line maintenance, or assisted natural regeneration programmes in place.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -117,7 +97,8 @@
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "Direct evidence of NTFP species decline is the most diagnostic indicator of forest degradation impact on NTFP availability. In Central India, species such as Tendu leaves, Mahua flowers, and Harra fruit are the primary income sources for tribal households. Declining abundance or collection quantities reported by communities directly confirms the causal pathway from forest degradation to NTFP decline. This variable is not available from remote sensing and requires primary data collection."
+      "explanation": "Direct evidence of NTFP species decline is the most diagnostic indicator of forest degradation impact on NTFP availability. In Central India, species such as Tendu leaves, Mahua flowers, and Harra fruit are the primary income sources for tribal households. Declining abundance or collection quantities reported by communities directly confirms the causal pathway from forest degradation to NTFP decline. This variable is not available from remote sensing and requires primary data collection.",
+      "active": true
     }
   ],
   "confounders": [
@@ -144,6 +125,14 @@
             "band": "high",
             "present": true,
             "trend": "stable"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -162,9 +151,18 @@
             "band": "low",
             "present": true,
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     }
   ],
   "sources": [
@@ -240,5 +238,47 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 25,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_03"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_03"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

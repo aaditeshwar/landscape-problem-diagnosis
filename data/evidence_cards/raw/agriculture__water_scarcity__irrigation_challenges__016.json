@@ -30,13 +30,12 @@
       "condition": {
         "type": "composite",
         "expression": "mean_swb_total_area_ha < 5 and swb_count < 3",
-        "qualitative_description": "Very few and small surface water bodies in the MWS indicate minimal storage infrastructure relative to agricultural demand in this cold arid zone.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Very few and small surface water bodies in the MWS indicate minimal storage infrastructure relative to agricultural demand in this cold arid zone."
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "In the cold arid Ladakh region with rainfall below 150 mm annually, surface water storage is the primary irrigation source. A very low count and area of surface water bodies signals that storage infrastructure is absent or grossly insufficient to support even limited kharif and rabi cropping. Hard rock aquifers in this terrain offer minimal groundwater buffering, making surface storage critical."
+      "explanation": "In the cold arid Ladakh region with rainfall below 150 mm annually, surface water storage is the primary irrigation source. A very low count and area of surface water bodies signals that storage infrastructure is absent or grossly insufficient to support even limited kharif and rabi cropping. Hard rock aquifers in this terrain offer minimal groundwater buffering, making surface storage critical.",
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -47,17 +46,12 @@
       "condition": {
         "type": "trend",
         "expression": "trend_swb_total_area_ha < -1 or mean_swb_rabi_kharif_ratio < 0.3",
-        "qualitative_description": "Declining SWB area over time or very low rabi-to-kharif SWB ratio indicates that water storage is not persisting into the dry rabi season, consistent with siltation, structural failure, or inadequate design.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Declining SWB area over time or very low rabi-to-kharif SWB ratio indicates that water storage is not persisting into the dry rabi season, consistent with siltation, structural failure, or inadequate design."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "A declining trend in total SWB area (>1 ha/year loss) or a rabi/kharif SWB ratio below 0.3 indicates that water bodies dry out rapidly after the monsoon or snowmelt pulse, leaving insufficient storage for rabi and zaid irrigation. In hard rock hilly terrain, siltation of check dams and small tanks is a well-documented cause of reduced storage capacity — manual desilting has been shown to increase recharge by up to 84% in comparable hard rock settings in India (Dashora2019).",
-      "interaction_with": [
-        "sig_01",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -67,17 +61,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "nrega_swc_count < 3",
-        "qualitative_description": "Fewer than 3 cumulative soil and water conservation or irrigation works recorded under MGNREGA, indicating very low historical investment in water harvesting infrastructure.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "Fewer than 3 cumulative soil and water conservation or irrigation works recorded under MGNREGA, indicating very low historical investment in water harvesting infrastructure."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "Low MGNREGA investment in SWC and irrigation works in a cold arid MWS indicates that community-level water harvesting infrastructure has not been developed or maintained. In Ladakh and similar high Himalayan cold deserts, traditional irrigation channels (kuls) and small impoundments are the backbone of agriculture; absence of modern supplementary works amplifies seasonal water stress. The low count also signals an opportunity for targeted intervention through MGNREGA-funded tank desilting and check dam construction.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -87,13 +76,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "river_name is None",
-        "qualitative_description": "No named river passes through or adjacent to the MWS, eliminating the possibility of diversion or lift irrigation from a perennial surface water source.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "No named river passes through or adjacent to the MWS, eliminating the possibility of diversion or lift irrigation from a perennial surface water source."
       },
       "severity": "moderate",
       "direction": "confirms",
-      "explanation": "In cold arid Himalayan valleys, glacial meltwater streams and rivers are the primary perennial water source for irrigation. If no named river is present in or adjacent to the MWS, farmers cannot rely on diversion channels or lift irrigation from surface flows, making the MWS entirely dependent on limited rainfall, snowmelt storage, and groundwater — all of which are severely constrained in this context."
+      "explanation": "In cold arid Himalayan valleys, glacial meltwater streams and rivers are the primary perennial water source for irrigation. If no named river is present in or adjacent to the MWS, farmers cannot rely on diversion channels or lift irrigation from surface flows, making the MWS entirely dependent on limited rainfall, snowmelt storage, and groundwater — all of which are severely constrained in this context.",
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -106,7 +94,8 @@
       },
       "severity": "moderate",
       "direction": "amplifies",
-      "explanation": "In hard rock aquifers of hilly cold arid terrain, groundwater storage is confined to shallow weathered and fractured zones. If farmers report increasing well depths or seasonal well failure, this confirms that groundwater cannot compensate for surface irrigation infrastructure deficits. This variable is not available in the framework data and must be elicited from farmers directly."
+      "explanation": "In hard rock aquifers of hilly cold arid terrain, groundwater storage is confined to shallow weathered and fractured zones. If farmers report increasing well depths or seasonal well failure, this confirms that groundwater cannot compensate for surface irrigation infrastructure deficits. This variable is not available in the framework data and must be elicited from farmers directly.",
+      "active": true
     }
   ],
   "confounders": [
@@ -132,6 +121,14 @@
           "normalized": {
             "trend": "stable",
             "present": false
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -140,6 +137,14 @@
           "normalized": {
             "trend": "worsening",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -149,9 +154,18 @@
             "trend": "worsening",
             "present": true,
             "band": "high"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "trend"
     }
   ],
   "sources": [
@@ -209,5 +223,47 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 20,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_04"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_04"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_04"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

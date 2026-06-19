@@ -30,8 +30,6 @@
         "type": "trend",
         "expression": "cd_forest_to_farm_ha > 30",
         "qualitative_description": "Forest-to-farm conversion area has increased over the available record, indicating progressive encroachment of forest land for agriculture.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional",
         "variables": [
           "cd_forest_to_farm_ha"
         ]
@@ -39,10 +37,7 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "A positive trend in forest-to-farm conversion directly measures encroachment of forest land for agricultural use. In cold arid zones like Ladakh, where cultivable land is scarce and communities expand terraced fields along valley floors and lower slopes, even small increments in forest-to-farm conversion can significantly reduce the extent of forest available for NTFP collection. Geospatial analyses of forest fragmentation in Indian hill districts have documented how cropland expansion at forest margins reduces interior forest area and NTFP-bearing habitat.",
-      "interaction_with": [
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -53,8 +48,6 @@
         "type": "trend",
         "expression": "cd_urbanization_ha > 5",
         "qualitative_description": "Settlement footprint has expanded by more than 5 ha over the available record, suggesting built-up encroachment into forest margins.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "cd_urbanization_ha"
         ]
@@ -62,9 +55,7 @@
       "severity": "moderate",
       "direction": "confirms",
       "explanation": "Settlement expansion into forest fringes is a secondary encroachment pathway alongside agricultural conversion. In Ladakh's valley settlements, tourism infrastructure, road construction, and residential expansion have progressively pushed into riparian and lower-slope forest patches that historically provided fuelwood, medicinal herbs, and fodder. An increase of more than 5 ha in total urbanized area over the monitoring period is a meaningful signal given the small absolute forest extents typical of cold arid valleys.",
-      "interaction_with": [
-        "sig_01"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -74,17 +65,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "village_st_percent > 25",
-        "qualitative_description": "Scheduled Tribe population exceeds 25% of village population, indicating high dependence on forest resources and potential vulnerability to forest rights disputes.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Scheduled Tribe population exceeds 25% of village population, indicating high dependence on forest resources and potential vulnerability to forest rights disputes."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "High ST population share combined with declining NTFP access is a strong indicator of forest rights conflict or displacement. Research on protected area relocations in India documents how indigenous and forest-dwelling communities are disenfranchised when encroachment disputes arise without formal tenure recognition under the Forest Rights Act. In Ladakh, traditional agro-pastoral communities with customary forest use rights may lack formal FRA documentation, making them vulnerable to exclusion when encroachment by outsiders or state agencies is contested.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -96,8 +82,6 @@
         "type": "composite",
         "expression": "(cd_forest_to_farm_ha > 30) and (cd_urbanization_ha > 5) and (village_st_percent > 25)",
         "qualitative_description": "Both agricultural and settlement encroachment are increasing while ST population share is high — a compound signal of encroachment-driven NTFP access loss.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional",
         "variables": [
           "cd_forest_to_farm_ha",
           "cd_urbanization_ha",
@@ -107,11 +91,7 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "When forest-to-farm conversion, settlement expansion, and high ST dependence co-occur, the encroachment pathway is strongly confirmed. This composite condition distinguishes active encroachment from other causes of NTFP decline such as climate-driven vegetation change or over-harvesting. In cold arid Himalayan contexts, the combination of scarce arable land and growing tourism pressure creates dual encroachment vectors that together can rapidly reduce the forest extent accessible to dependent communities.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "variables": [
@@ -119,14 +99,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Many pending or rejected FRA claims with reported NTFP decline and forest conversion indicate tenure insecurity confirming encroachment vulnerability; high recognition weakens encroachment as primary driver.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Many pending or rejected FRA claims with reported NTFP decline and forest conversion indicate tenure insecurity confirming encroachment vulnerability; high recognition weakens encroachment as primary driver."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Unresolved forest rights alongside measurable conversion corroborates encroachment as a tenure and access driver of NTFP decline.",
-      "signal_id": "sig_05"
+      "signal_id": "sig_05",
+      "active": true
     },
     {
       "variables": [
@@ -134,14 +113,13 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Absent or disputed forest boundary demarcation (no pillars/signage, active boundary disputes) is a precondition for encroachment; clear demarcation with no disputes weakens the pathway.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Absent or disputed forest boundary demarcation (no pillars/signage, active boundary disputes) is a precondition for encroachment; clear demarcation with no disputes weakens the pathway."
       },
       "severity": "moderate",
       "direction": "confirms",
       "explanation": "Boundary ambiguity enables encroachment and restricts communities' ability to defend forest access.",
-      "signal_id": "sig_06"
+      "signal_id": "sig_06",
+      "active": true
     }
   ],
   "overall_reasoning_note": "Diagnosis of encroachment-driven NTFP decline in cold arid Himalayan contexts should be confirmed by at least two of the three primary signals: increasing forest-to-farm conversion (sig_01), expanding settlement footprint (sig_02), or the composite condition (sig_04). High ST population share (sig_03) amplifies the social vulnerability dimension but does not confirm encroachment on its own. In Ladakh's AER-1 context, forest extents are inherently small and fragmented by terrain; even modest encroachment can eliminate community access to entire NTFP-bearing patches. Distinguish from climate-driven vegetation loss by checking whether forest-to-farm conversion is spatially concentrated at valley margins and settlement edges rather than distributed across upper slopes. FRA claim status and boundary demarcation records should be sought as qualitative corroboration.",
@@ -167,6 +145,14 @@
           "label": "No FRA claims filed by community members",
           "normalized": {
             "present": false
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -175,6 +161,14 @@
           "normalized": {
             "band": "moderate",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -183,9 +177,18 @@
           "normalized": {
             "band": "high",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "presence_graded"
     },
     {
       "missing_variable": "forest_boundary_demarcation_status",
@@ -199,6 +202,14 @@
           "normalized": {
             "present": false,
             "trend": "stable"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -207,6 +218,14 @@
           "normalized": {
             "band": "moderate",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -216,9 +235,18 @@
             "band": "high",
             "present": true,
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "presence_graded"
     }
   ],
   "sources": [
@@ -283,5 +311,47 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 17,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_04"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_04"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_04"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

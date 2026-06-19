@@ -1,0 +1,1600 @@
+{
+  "f0fdcd358f41": {
+    "variable": "annual_well_depth_m",
+    "question_mode": "trend",
+    "choice_summary": "stable->False; deepening->True; failed->True",
+    "choices": [
+      {
+        "id": "stable",
+        "label": "Well depth has stayed roughly the same (within ~1 m)",
+        "normalized": {
+          "trend": "stable",
+          "present": false
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_05",
+              "result": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "deepening",
+        "label": "Wells have deepened by more than 2–3 m in the last 5–10 years",
+        "normalized": {
+          "trend": "worsening",
+          "present": true
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_05",
+              "result": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "failed",
+        "label": "Springs or shallow wells have dried up permanently or for much longer",
+        "normalized": {
+          "trend": "worsening",
+          "present": true,
+          "band": "high"
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_05",
+              "result": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "da54b8988614": {
+    "variable": "borewell_density",
+    "question_mode": "magnitude",
+    "choice_summary": "few->False; moderate->True; many->True",
+    "choices": [
+      {
+        "id": "few",
+        "label": "Very few (fewer than 10 within 2–3 km)",
+        "normalized": {
+          "band": "low",
+          "present": true
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "moderate",
+        "label": "Moderate (10–50 within 2–3 km)",
+        "normalized": {
+          "band": "moderate",
+          "present": true
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "many",
+        "label": "More than 50 within 2–3 km",
+        "normalized": {
+          "band": "high",
+          "present": true
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "b160430a1352": {
+    "variable": "groundwater_salinity",
+    "question_mode": "presence_graded",
+    "choice_summary": "none->False; mild->True; severe->True",
+    "choices": [
+      {
+        "id": "none",
+        "label": "No — water quality has not changed; no saltiness or deposits",
+        "normalized": {
+          "present": false,
+          "trend": "stable"
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_07",
+              "result": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "mild",
+        "label": "Some salinity or white deposits; still usable for some crops",
+        "normalized": {
+          "present": true,
+          "band": "moderate",
+          "trend": "worsening"
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_07",
+              "result": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "severe",
+        "label": "Brackish or salty water; crop damage or unsuitable for irrigation",
+        "normalized": {
+          "present": true,
+          "band": "high",
+          "trend": "worsening"
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_07",
+              "result": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "7c09ec886281": {
+    "variable": "groundwater_salinity",
+    "question_mode": "presence_graded",
+    "choice_summary": "none->False; mild->True; severe->True",
+    "choices": [
+      {
+        "id": "none",
+        "label": "No — water quality has not changed; no saltiness or deposits",
+        "normalized": {
+          "present": false,
+          "trend": "stable"
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "mild",
+        "label": "Some salinity or white deposits; still usable for some crops",
+        "normalized": {
+          "present": true,
+          "band": "moderate",
+          "trend": "worsening"
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "severe",
+        "label": "Brackish or salty water; crop damage or unsuitable for irrigation",
+        "normalized": {
+          "present": true,
+          "band": "high",
+          "trend": "worsening"
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "2357603d3f78": {
+    "variable": "borewell_density",
+    "question_mode": "magnitude",
+    "choice_summary": "few->False; moderate->True; many->True",
+    "choices": [
+      {
+        "id": "few",
+        "label": "Very few (fewer than 10 within 2–3 km)",
+        "normalized": {
+          "band": "low",
+          "present": true
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_05",
+              "result": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "moderate",
+        "label": "Moderate (10–50 within 2–3 km)",
+        "normalized": {
+          "band": "moderate",
+          "present": true
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_05",
+              "result": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "many",
+        "label": "More than 50 within 2–3 km",
+        "normalized": {
+          "band": "high",
+          "present": true
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_05",
+              "result": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "e6e58cb4c8e4": {
+    "variable": "annual_well_depth_m",
+    "question_mode": "trend",
+    "choice_summary": "stable->False; deepening->True; failed->True",
+    "choices": [
+      {
+        "id": "stable",
+        "label": "Well depth has stayed roughly the same (within ~1 m)",
+        "normalized": {
+          "trend": "stable",
+          "present": false
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_07",
+              "result": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "deepening",
+        "label": "Wells have deepened by more than 2–3 m in the last 5–10 years",
+        "normalized": {
+          "trend": "worsening",
+          "present": true
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_07",
+              "result": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "failed",
+        "label": "Springs or shallow wells have dried up permanently or for much longer",
+        "normalized": {
+          "trend": "worsening",
+          "present": true,
+          "band": "high"
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_07",
+              "result": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "5545f9c13dc6": {
+    "variable": "annual_well_depth_m",
+    "question_mode": "trend",
+    "choice_summary": "stable->False; deepening->True; failed->True",
+    "choices": [
+      {
+        "id": "stable",
+        "label": "Well depth has stayed roughly the same (within ~1 m)",
+        "normalized": {
+          "trend": "stable",
+          "present": false
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "deepening",
+        "label": "Wells have deepened by more than 2–3 m in the last 5–10 years",
+        "normalized": {
+          "trend": "worsening",
+          "present": true
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "failed",
+        "label": "Springs or shallow wells have dried up permanently or for much longer",
+        "normalized": {
+          "trend": "worsening",
+          "present": true,
+          "band": "high"
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "ffccb0c6ff52": {
+    "variable": "tank_siltation_status",
+    "question_mode": "presence_graded",
+    "choice_summary": "none->False; moderate->True; severe->True",
+    "choices": [
+      {
+        "id": "none",
+        "label": "Tanks and ponds not visibly silted; depth and retention similar to before",
+        "normalized": {
+          "present": false,
+          "trend": "stable"
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "moderate",
+        "label": "Visible siltation or shallower than before; dries somewhat faster",
+        "normalized": {
+          "band": "moderate",
+          "present": true,
+          "trend": "worsening"
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "severe",
+        "label": "Heavily silted, much shallower, or drying out quickly after monsoon",
+        "normalized": {
+          "band": "high",
+          "present": true,
+          "trend": "worsening"
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "fd2910b0e649": {
+    "variable": "irrigated_area_ha",
+    "question_mode": "magnitude",
+    "choice_summary": "low->True; moderate->None; high->False",
+    "choices": [
+      {
+        "id": "low",
+        "label": "Less than 10% of cultivated land is irrigated",
+        "normalized": {
+          "band": "low",
+          "present": true,
+          "percent_upper": 10
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "moderate",
+        "label": "Between 10% and 30% of cultivated land is irrigated",
+        "normalized": {
+          "band": "moderate",
+          "present": true,
+          "percent_lower": 10,
+          "percent_upper": 30
+        }
+      },
+      {
+        "id": "high",
+        "label": "More than 30% of cultivated land is irrigated",
+        "normalized": {
+          "band": "high",
+          "present": true,
+          "percent_lower": 30
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": false
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "591fd63a0fe3": {
+    "variable": "irrigated_area_ha",
+    "question_mode": "magnitude",
+    "choice_summary": "low->True; moderate->None; high->False",
+    "choices": [
+      {
+        "id": "low",
+        "label": "Less than 10% of cultivated land is irrigated",
+        "normalized": {
+          "band": "low",
+          "present": true,
+          "percent_upper": 10
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_05",
+              "result": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "moderate",
+        "label": "Between 10% and 30% of cultivated land is irrigated",
+        "normalized": {
+          "band": "moderate",
+          "present": true,
+          "percent_lower": 10,
+          "percent_upper": 30
+        }
+      },
+      {
+        "id": "high",
+        "label": "More than 30% of cultivated land is irrigated",
+        "normalized": {
+          "band": "high",
+          "present": true,
+          "percent_lower": 30
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_05",
+              "result": false
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "880fdb2fa14f": {
+    "variable": "fra_claims_filed_count",
+    "question_mode": "presence_graded",
+    "choice_summary": "none->True; pending->True; recognized->False",
+    "choices": [
+      {
+        "id": "none",
+        "label": "No FRA claims filed by community members",
+        "normalized": {
+          "present": false
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_05",
+              "result": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "pending",
+        "label": "Claims filed but mostly pending or rejected",
+        "normalized": {
+          "band": "moderate",
+          "present": true
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_05",
+              "result": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "recognized",
+        "label": "Several claims recognised (individual or community forest rights)",
+        "normalized": {
+          "band": "high",
+          "present": true
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_05",
+              "result": false
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "2bbbd9bc272e": {
+    "variable": "forest_patch_connectivity",
+    "question_mode": "presence_graded",
+    "choice_summary": "connected->False; partial->True; isolated->True",
+    "choices": [
+      {
+        "id": "connected",
+        "label": "Forest areas remain connected; little new fragmentation",
+        "normalized": {
+          "present": false,
+          "trend": "stable"
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "partial",
+        "label": "Some patches separated by fields, roads, or cleared land",
+        "normalized": {
+          "band": "moderate",
+          "present": true,
+          "trend": "worsening"
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "isolated",
+        "label": "Forest broken into small isolated patches",
+        "normalized": {
+          "band": "high",
+          "present": true,
+          "trend": "worsening"
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "e30fba28d7d4": {
+    "variable": "ntfp_collection_trend_qualitative",
+    "question_mode": "magnitude",
+    "choice_summary": "little_change->False; moderate_decline->True; severe_decline->True",
+    "choices": [
+      {
+        "id": "little_change",
+        "label": "Little change — decline under 25% or stable collection",
+        "normalized": {
+          "band": "low",
+          "present": true,
+          "trend": "stable",
+          "percent_upper": 25
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "moderate_decline",
+        "label": "Noticeable decline of about 25–50% in collection volume",
+        "normalized": {
+          "band": "moderate",
+          "present": true,
+          "trend": "worsening",
+          "percent_lower": 25,
+          "percent_upper": 50
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "severe_decline",
+        "label": "Severe decline over 50% or access largely blocked",
+        "normalized": {
+          "band": "high",
+          "present": true,
+          "trend": "worsening",
+          "percent_lower": 50
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "886d0a179f8d": {
+    "variable": "ntfp_collection_trend_qualitative",
+    "question_mode": "magnitude",
+    "choice_summary": "little_change->False; moderate_decline->True; severe_decline->True",
+    "choices": [
+      {
+        "id": "little_change",
+        "label": "Little change — decline under 25% or stable collection",
+        "normalized": {
+          "band": "low",
+          "present": true,
+          "trend": "stable",
+          "percent_upper": 25
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_07",
+              "result": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "moderate_decline",
+        "label": "Noticeable decline of about 25–50% in collection volume",
+        "normalized": {
+          "band": "moderate",
+          "present": true,
+          "trend": "worsening",
+          "percent_lower": 25,
+          "percent_upper": 50
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_07",
+              "result": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "severe_decline",
+        "label": "Severe decline over 50% or access largely blocked",
+        "normalized": {
+          "band": "high",
+          "present": true,
+          "trend": "worsening",
+          "percent_lower": 50
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_07",
+              "result": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "feab43f98167": {
+    "variable": "fra_claims_filed_count",
+    "question_mode": "presence_graded",
+    "choice_summary": "none->True; pending->True; recognized->False",
+    "choices": [
+      {
+        "id": "none",
+        "label": "No FRA claims filed by community members",
+        "normalized": {
+          "present": false
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "pending",
+        "label": "Claims filed but mostly pending or rejected",
+        "normalized": {
+          "band": "moderate",
+          "present": true
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "recognized",
+        "label": "Several claims recognised (individual or community forest rights)",
+        "normalized": {
+          "band": "high",
+          "present": true
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": false
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "0ff2529b2d8d": {
+    "variable": "forest_boundary_demarcation_status",
+    "question_mode": "presence_graded",
+    "choice_summary": "clear->False; partial->True; absent->True",
+    "choices": [
+      {
+        "id": "clear",
+        "label": "Boundaries clearly marked; no recent disputes",
+        "normalized": {
+          "present": false,
+          "trend": "stable"
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "partial",
+        "label": "Some marking exists but incomplete or poorly maintained",
+        "normalized": {
+          "band": "moderate",
+          "present": true
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "absent",
+        "label": "No clear demarcation or active boundary disputes",
+        "normalized": {
+          "band": "high",
+          "present": true,
+          "trend": "worsening"
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "2e4ce89e22c3": {
+    "variable": "ntfp_species_presence",
+    "question_mode": "magnitude",
+    "choice_summary": "abundant->False; reduced->None; rare->True",
+    "choices": [
+      {
+        "id": "abundant",
+        "label": "NTFP species are still common and easy to find",
+        "normalized": {
+          "band": "high",
+          "present": true,
+          "trend": "stable"
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_05",
+              "result": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "reduced",
+        "label": "Some species are harder to find than 5–10 years ago",
+        "normalized": {
+          "band": "moderate",
+          "present": true,
+          "trend": "worsening"
+        }
+      },
+      {
+        "id": "rare",
+        "label": "Several species that used to be common are now rare or absent",
+        "normalized": {
+          "band": "low",
+          "present": true,
+          "trend": "worsening"
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_05",
+              "result": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "0b577ebe7e94": {
+    "variable": "forest_fire_frequency",
+    "question_mode": "presence_graded",
+    "choice_summary": "rare->False; occasional->True; frequent->True",
+    "choices": [
+      {
+        "id": "rare",
+        "label": "Forest fires are rare; no increase in recent years",
+        "normalized": {
+          "band": "low",
+          "present": false,
+          "trend": "stable"
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "occasional",
+        "label": "Occasional fires; frequency or severity increasing",
+        "normalized": {
+          "band": "moderate",
+          "present": true,
+          "trend": "worsening"
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "frequent",
+        "label": "Frequent or repeated fires in the same forest patches",
+        "normalized": {
+          "band": "high",
+          "present": true,
+          "trend": "worsening"
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "05a42e4850c3": {
+    "variable": "ntfp_species_presence",
+    "question_mode": "magnitude",
+    "choice_summary": "abundant->False; reduced->None; rare->True",
+    "choices": [
+      {
+        "id": "abundant",
+        "label": "NTFP species are still common and easy to find",
+        "normalized": {
+          "band": "high",
+          "present": true,
+          "trend": "stable"
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_04",
+              "result": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "reduced",
+        "label": "Some species are harder to find than 5–10 years ago",
+        "normalized": {
+          "band": "moderate",
+          "present": true,
+          "trend": "worsening"
+        }
+      },
+      {
+        "id": "rare",
+        "label": "Several species that used to be common are now rare or absent",
+        "normalized": {
+          "band": "low",
+          "present": true,
+          "trend": "worsening"
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_04",
+              "result": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "5070ee1eefbf": {
+    "variable": "community_forest_governance_status",
+    "question_mode": "presence_graded",
+    "choice_summary": "active->False; inactive->None; none->True",
+    "choices": [
+      {
+        "id": "active",
+        "label": "Active JFM/Van Suraksha Samiti or recognised CFR with patrols or bylaws",
+        "normalized": {
+          "band": "high",
+          "present": true
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "inactive",
+        "label": "Committee exists on paper but little enforcement or activity",
+        "normalized": {
+          "band": "moderate",
+          "present": true
+        }
+      },
+      {
+        "id": "none",
+        "label": "No functioning forest governance institution in the village",
+        "normalized": {
+          "present": false
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "8b1d1dbe846f": {
+    "variable": "migrant_household_percent",
+    "question_mode": "magnitude",
+    "choice_summary": "low->None; moderate->None; high->True",
+    "choices": [
+      {
+        "id": "low",
+        "label": "Very few households migrate seasonally (roughly under 10%)",
+        "normalized": {
+          "band": "low",
+          "present": true
+        }
+      },
+      {
+        "id": "moderate",
+        "label": "A moderate share migrate (roughly 10–30%)",
+        "normalized": {
+          "band": "moderate",
+          "present": true
+        }
+      },
+      {
+        "id": "high",
+        "label": "Many households migrate (roughly over 30%)",
+        "normalized": {
+          "band": "high",
+          "present": true
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_05",
+              "result": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "56f079a09fe6": {
+    "variable": "household_income_inr",
+    "question_mode": "magnitude",
+    "choice_summary": "below_50k->True; 50k_to_100k->None; above_100k->False",
+    "choices": [
+      {
+        "id": "below_50k",
+        "label": "Below ₹50,000 per year from farming (or total household income)",
+        "normalized": {
+          "band": "low",
+          "present": true
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_05",
+              "result": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "50k_to_100k",
+        "label": "Between ₹50,000 and ₹1,00,000 per year",
+        "normalized": {
+          "band": "moderate",
+          "present": true
+        }
+      },
+      {
+        "id": "above_100k",
+        "label": "Above ₹1,00,000 per year",
+        "normalized": {
+          "band": "high",
+          "present": true
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_05",
+              "result": false
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "edde0493030c": {
+    "variable": "household_income_inr",
+    "question_mode": "magnitude",
+    "choice_summary": "below_50k->True; 50k_to_100k->None; above_100k->False",
+    "choices": [
+      {
+        "id": "below_50k",
+        "label": "Below ₹50,000 per year from farming (or total household income)",
+        "normalized": {
+          "band": "low",
+          "present": true
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "50k_to_100k",
+        "label": "Between ₹50,000 and ₹1,00,000 per year",
+        "normalized": {
+          "band": "moderate",
+          "present": true
+        }
+      },
+      {
+        "id": "above_100k",
+        "label": "Above ₹1,00,000 per year",
+        "normalized": {
+          "band": "high",
+          "present": true
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": false
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "8b3270c83bd6": {
+    "variable": "migrant_household_percent",
+    "question_mode": "magnitude",
+    "choice_summary": "low->None; moderate->None; high->True",
+    "choices": [
+      {
+        "id": "low",
+        "label": "Very few households migrate seasonally (roughly under 10%)",
+        "normalized": {
+          "band": "low",
+          "present": true
+        }
+      },
+      {
+        "id": "moderate",
+        "label": "A moderate share migrate (roughly 10–30%)",
+        "normalized": {
+          "band": "moderate",
+          "present": true
+        }
+      },
+      {
+        "id": "high",
+        "label": "Many households migrate (roughly over 30%)",
+        "normalized": {
+          "band": "high",
+          "present": true
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "f0138d9d7252": {
+    "variable": "household_income_inr",
+    "question_mode": "magnitude",
+    "choice_summary": "below_50k->True; 50k_to_100k->None; above_100k->False",
+    "choices": [
+      {
+        "id": "below_50k",
+        "label": "Below ₹50,000 per year from farming (or total household income)",
+        "normalized": {
+          "band": "low",
+          "present": true
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_07",
+              "result": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "50k_to_100k",
+        "label": "Between ₹50,000 and ₹1,00,000 per year",
+        "normalized": {
+          "band": "moderate",
+          "present": true
+        }
+      },
+      {
+        "id": "above_100k",
+        "label": "Above ₹1,00,000 per year",
+        "normalized": {
+          "band": "high",
+          "present": true
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_07",
+              "result": false
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "52aa3ca5f5ba": {
+    "variable": "landholding_size_distribution",
+    "question_mode": "magnitude",
+    "choice_summary": "minority->False; about_half->True; majority->True",
+    "choices": [
+      {
+        "id": "minority",
+        "label": "Less than one-quarter of farming households own under 1 ha",
+        "normalized": {
+          "band": "low",
+          "present": true
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_05",
+              "result": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "about_half",
+        "label": "About half of farming households own under 1 ha",
+        "normalized": {
+          "band": "moderate",
+          "present": true
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_05",
+              "result": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "majority",
+        "label": "More than half (or two-thirds) of households are marginal (<1 ha)",
+        "normalized": {
+          "band": "high",
+          "present": true
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_05",
+              "result": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "02d45fe6c668": {
+    "variable": "market_price_crop",
+    "question_mode": "magnitude",
+    "choice_summary": "near_msp->False; below_msp->True; unable_to_sell->True",
+    "choices": [
+      {
+        "id": "near_msp",
+        "label": "Prices close to government MSP (mandi or procurement)",
+        "normalized": {
+          "band": "low",
+          "present": true
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_07",
+              "result": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "below_msp",
+        "label": "Prices significantly below MSP (e.g. farm-gate or trader)",
+        "normalized": {
+          "band": "moderate",
+          "present": true,
+          "trend": "worsening"
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_07",
+              "result": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "unable_to_sell",
+        "label": "Unable to sell at all or forced to accept very low prices",
+        "normalized": {
+          "band": "high",
+          "present": true,
+          "trend": "worsening"
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_07",
+              "result": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "26086aab7349": {
+    "variable": "landholding_size_distribution",
+    "question_mode": "magnitude",
+    "choice_summary": "minority->False; about_half->True; majority->True",
+    "choices": [
+      {
+        "id": "minority",
+        "label": "Less than one-quarter of farming households own under 1 ha",
+        "normalized": {
+          "band": "low",
+          "present": true
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_07",
+              "result": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "about_half",
+        "label": "About half of farming households own under 1 ha",
+        "normalized": {
+          "band": "moderate",
+          "present": true
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_07",
+              "result": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "majority",
+        "label": "More than half (or two-thirds) of households are marginal (<1 ha)",
+        "normalized": {
+          "band": "high",
+          "present": true
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_07",
+              "result": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "2db69145599e": {
+    "variable": "market_price_crop",
+    "question_mode": "magnitude",
+    "choice_summary": "near_msp->False; below_msp->True; unable_to_sell->True",
+    "choices": [
+      {
+        "id": "near_msp",
+        "label": "Prices close to government MSP (mandi or procurement)",
+        "normalized": {
+          "band": "low",
+          "present": true
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "below_msp",
+        "label": "Prices significantly below MSP (e.g. farm-gate or trader)",
+        "normalized": {
+          "band": "moderate",
+          "present": true,
+          "trend": "worsening"
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "unable_to_sell",
+        "label": "Unable to sell at all or forced to accept very low prices",
+        "normalized": {
+          "band": "high",
+          "present": true,
+          "trend": "worsening"
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_06",
+              "result": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "32507f753a5a": {
+    "variable": "landholding_size_distribution",
+    "question_mode": "magnitude",
+    "choice_summary": "minority->False; about_half->True; majority->True",
+    "choices": [
+      {
+        "id": "minority",
+        "label": "Less than one-quarter of farming households own under 1 ha",
+        "normalized": {
+          "band": "low",
+          "present": true
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_08",
+              "result": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "about_half",
+        "label": "About half of farming households own under 1 ha",
+        "normalized": {
+          "band": "moderate",
+          "present": true
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_08",
+              "result": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "majority",
+        "label": "More than half (or two-thirds) of households are marginal (<1 ha)",
+        "normalized": {
+          "band": "high",
+          "present": true
+        },
+        "effects": {
+          "signals": [
+            {
+              "signal_id": "sig_08",
+              "result": true
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -30,17 +30,12 @@
       "condition": {
         "type": "trend",
         "expression": "lulc_tree_forest_ha[-1] < lulc_tree_forest_ha[0]",
-        "qualitative_description": "Total forest area in the micro-watershed is lower in the most recent year (2024) than in the baseline year (2017), indicating net forest cover loss over the monitoring period.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "regional"
+        "qualitative_description": "Total forest area in the micro-watershed is lower in the most recent year (2024) than in the baseline year (2017), indicating net forest cover loss over the monitoring period."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "A declining trend in forest area directly reduces the habitat of NTFP-bearing trees and understory species. In the perhumid North-Eastern Hills (AER-17), dense evergreen and semi-evergreen forests support a high diversity of commercially and subsistence-important NTFPs including bamboo, cane, medicinal plants, and wild fruits. Any net reduction in forest cover over 2017–2024 is a primary indicator that the resource base for NTFP-dependent communities is contracting. Over 50 million people in India depend directly on NTFPs for subsistence, and forest cover loss is the most proximate structural driver of NTFP decline.",
-      "interaction_with": [
-        "sig_02",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_02",
@@ -52,8 +47,6 @@
         "type": "composite",
         "expression": "cd_total_deforestation_ha > 50 and (cd_afforestation_ha / (cd_total_deforestation_ha + 1e-9)) < 0.5",
         "qualitative_description": "Cumulative deforestation exceeds 50 ha and afforestation covers less than half the deforested area, indicating a net forest deficit with weak recovery.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "regional",
         "variables": [
           "cd_total_deforestation_ha",
           "cd_afforestation_ha"
@@ -62,10 +55,7 @@
       "severity": "high",
       "direction": "confirms",
       "explanation": "When deforestation substantially outpaces afforestation, the forest landscape enters a net degradation trajectory. In hilly perhumid terrain, natural regeneration can be rapid if disturbance ceases, but active deforestation for jhum expansion, timber extraction, or infrastructure development without compensatory planting creates persistent gaps in NTFP-bearing canopy. The ratio of afforestation to deforestation below 0.5 signals that institutional forest protection and restoration mechanisms are insufficient to offset habitat loss. Compensatory afforestation programs in India have been critiqued for relying on industrial monoculture plantations that do not restore NTFP diversity.",
-      "interaction_with": [
-        "sig_01",
-        "sig_03"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_03",
@@ -75,17 +65,12 @@
       "condition": {
         "type": "quantitative",
         "expression": "cd_total_deforestation_ha > 100",
-        "qualitative_description": "Cumulative deforested area exceeds 100 ha, representing substantial absolute habitat loss for NTFP species in the micro-watershed.",
-        "threshold_confidence": "medium",
-        "context_sensitivity": "local"
+        "qualitative_description": "Cumulative deforested area exceeds 100 ha, representing substantial absolute habitat loss for NTFP species in the micro-watershed."
       },
       "severity": "high",
       "direction": "confirms",
       "explanation": "Absolute deforestation above 100 ha in a micro-watershed context represents a significant loss of NTFP-bearing habitat. In the North-Eastern Hills, where forest-dependent tribal communities rely on NTFPs for 15–20% of household income and as subsistence safety nets, large-scale deforestation directly reduces collection quantities and forces communities to travel farther or access degraded secondary forest with lower NTFP yields. The threshold of 100 ha is calibrated to micro-watershed scale; smaller watersheds may show stress at lower absolute values.",
-      "interaction_with": [
-        "sig_01",
-        "sig_04"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_04",
@@ -95,17 +80,12 @@
       "condition": {
         "type": "qualitative",
         "expression": "'Agroforestry' not in organization_domains and 'Forest' not in organization_domains and 'NTFP' not in organization_domains",
-        "qualitative_description": "No NGO or organisation active in the micro-watershed works in agroforestry, forest management, or NTFP domains, indicating an absence of institutional support for forest protection and NTFP livelihood recovery.",
-        "threshold_confidence": "low",
-        "context_sensitivity": "local"
+        "qualitative_description": "No NGO or organisation active in the micro-watershed works in agroforestry, forest management, or NTFP domains, indicating an absence of institutional support for forest protection and NTFP livelihood recovery."
       },
       "severity": "moderate",
       "direction": "amplifies",
       "explanation": "The presence of organisations working in agroforestry, NTFP value chains, or community forest management is associated with better forest governance outcomes, including community forest protection bylaws, Joint Forest Management, and Community Forest Resource rights under the Forest Rights Act. Their absence means that even where forest degradation is occurring, there is no active institutional mechanism to support community-led restoration or NTFP certification initiatives. This amplifies the risk that degradation will continue unchecked and that NTFP-dependent households will not receive support to transition to sustainable harvesting or alternative livelihoods.",
-      "interaction_with": [
-        "sig_01",
-        "sig_02"
-      ]
+      "active": true
     },
     {
       "signal_id": "sig_05",
@@ -114,13 +94,12 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Field surveys or community reports indicate reduced abundance, local disappearance, or declining harvest yields of key NTFP species such as bamboo, cane, wild fruits, medicinal plants, or honey-producing trees compared to 5–10 years ago.",
-        "threshold_confidence": "high",
-        "context_sensitivity": "local"
+        "qualitative_description": "Field surveys or community reports indicate reduced abundance, local disappearance, or declining harvest yields of key NTFP species such as bamboo, cane, wild fruits, medicinal plants, or honey-producing trees compared to 5–10 years ago."
       },
       "severity": "high",
       "direction": "confirms",
-      "explanation": "Direct evidence of NTFP species decline is the most diagnostic indicator of forest degradation impact on NTFP availability. In the North-Eastern Hills, key NTFPs include bamboo (Bambusa spp.), cane (Calamus spp.), Aquilaria (agarwood), wild cardamom, and various medicinal plants. Community-reported declines in harvest quantities or quality, or the need to travel farther to collect NTFPs, directly confirm that forest degradation is translating into livelihood stress. This variable is not available in the current data framework and must be gathered through field surveys or community interviews."
+      "explanation": "Direct evidence of NTFP species decline is the most diagnostic indicator of forest degradation impact on NTFP availability. In the North-Eastern Hills, key NTFPs include bamboo (Bambusa spp.), cane (Calamus spp.), Aquilaria (agarwood), wild cardamom, and various medicinal plants. Community-reported declines in harvest quantities or quality, or the need to travel farther to collect NTFPs, directly confirm that forest degradation is translating into livelihood stress. This variable is not available in the current data framework and must be gathered through field surveys or community interviews.",
+      "active": true
     }
   ],
   "confounders": [
@@ -147,6 +126,14 @@
             "band": "high",
             "present": true,
             "trend": "stable"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
           }
         },
         {
@@ -165,9 +152,18 @@
             "band": "low",
             "present": true,
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         }
-      ]
+      ],
+      "question_mode": "magnitude"
     }
   ],
   "sources": [
@@ -243,5 +239,47 @@
     "embedding_includes_aliases": true,
     "semantic_alias_count": 25,
     "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_03"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_03"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
   }
 }

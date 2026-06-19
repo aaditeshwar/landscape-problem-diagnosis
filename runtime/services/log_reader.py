@@ -32,6 +32,9 @@ SUMMARY_FIELDS = (
     "status",
     "error",
     "failure_stage",
+    "follow_up_count",
+    "turn_no",
+    "diagnosis_snapshot_id",
 )
 
 HEAVY_FIELDS = frozenset({"prompt", "llm_raw_response", "llm_response"})
@@ -107,6 +110,45 @@ def get_event(index: int) -> dict[str, Any] | None:
     event["index"] = index
     event.pop("_index", None)
     return event
+
+
+def find_log_event(
+    *,
+    session_id: str,
+    follow_up_count: int | None = None,
+    log_index: int | None = None,
+) -> dict[str, Any] | None:
+    """Find a successful diagnosis log event for a session snapshot."""
+    all_events = load_all_events(include_heavy=True)
+    if log_index is not None:
+        if 0 <= log_index < len(all_events):
+            event = all_events[log_index]
+            if event.get("session_id") == session_id and event.get("status", "ok") == "ok":
+                out = dict(event)
+                out["index"] = log_index
+                out.pop("_index", None)
+                return out
+        return None
+
+    matches: list[tuple[int, dict[str, Any]]] = []
+    for idx, event in enumerate(all_events):
+        if event.get("parse_error"):
+            continue
+        if event.get("session_id") != session_id:
+            continue
+        if event.get("status", "ok") != "ok":
+            continue
+        if follow_up_count is not None and event.get("follow_up_count") != follow_up_count:
+            continue
+        matches.append((idx, event))
+
+    if not matches:
+        return None
+    idx, event = matches[-1]
+    out = dict(event)
+    out["index"] = idx
+    out.pop("_index", None)
+    return out
 
 
 def aggregate_stats(events: list[dict[str, Any]] | None = None) -> dict[str, Any]:
