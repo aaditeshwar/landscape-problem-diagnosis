@@ -65,7 +65,10 @@
       "condition": {
         "type": "quantitative",
         "expression": "village_st_percent > 25",
-        "qualitative_description": "Scheduled Tribe population exceeds 25% of village population, indicating high dependence on forest resources and potential vulnerability to forest rights disputes."
+        "qualitative_description": "Scheduled Tribe population exceeds 25% of village population, indicating high dependence on forest resources and potential vulnerability to forest rights disputes.",
+        "variables": [
+          "village_st_percent"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -76,7 +79,8 @@
       "signal_id": "sig_04",
       "variables": [
         "cd_forest_to_farm_ha",
-        "cd_urbanization_ha"
+        "cd_urbanization_ha",
+        "village_st_percent"
       ],
       "condition": {
         "type": "composite",

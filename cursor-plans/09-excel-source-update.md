@@ -2,7 +2,22 @@
 
 **Date:** 2026-06-15 · **Updated:** 2026-06-19  
 **Scope:** Process CoRE Stack Excel changes so new or extended data flows into diagnosis (ingest → registry → assembler → evidence cards)  
-**Related:** [06-variable-naming-normalization.md](./06-variable-naming-normalization.md), [05-induct-new-pathway.md](./05-induct-new-pathway.md), [13-confirmation-policy-and-schema.md](./13-confirmation-policy-and-schema.md), `PREPROCESS.md`
+**Related:** [06-variable-naming-normalization.md](./06-variable-naming-normalization.md), [05-induct-new-pathway.md](./05-induct-new-pathway.md), [13-confirmation-policy-and-schema.md](./13-confirmation-policy-and-schema.md), `PREPROCESS.md`, [**00-tooling-registry.md**](./00-tooling-registry.md)
+
+---
+
+## Script inventory (sync with tooling registry)
+
+**Last verified:** 2026-06-07 — see [00-tooling-registry.md](./00-tooling-registry.md) before re-running this plan.
+
+| Step | Scripts |
+|------|---------|
+| 0 — Sync | `sync_active_excels.py` |
+| 1 — Audit | `verify/audit_excel_core_stack.py` |
+| 2–3 — Ingest | `ingest_excel.py`, `batch_ingest_excel.py`, `verify/verify_ingest.py` |
+| Backfill | `maintenance/backfill_mws_variable_names.py`, `maintenance/backfill_mws_tehsils.py`, `maintenance/backfill_mws_aer.py` |
+| Spot checks | `verify/spot_check_drought_ingest.py` |
+| Post-ingest cards | `verify/audit_variable_registry.py`, Plan 15 `review/run_preflight.py` if expressions change |
 
 ---
 

@@ -25,12 +25,16 @@
       "signal_id": "sig_01",
       "variables": [
         "aquifer_class",
-        "aquifer_lithology_percent"
+        "acwadam_class_percent"
       ],
       "condition": {
         "type": "composite",
-        "expression": "aquifer_class == 'himalayan_and_sub_himalayan' and aquifer_lithology_percent.get('alluvium', 0) < 20",
-        "qualitative_description": "Aquifer classified as Himalayan/sub-Himalayan with less than 20% alluvial lithology, indicating dominance of fractured crystalline or glaciofluvial hard rock with very low storativity."
+        "expression": "aquifer_class == 'himalayan_and_sub_himalayan' and acwadam_class_percent.get('alluvium', 0) < 20",
+        "qualitative_description": "Aquifer classified as Himalayan/sub-Himalayan with less than 20% alluvial lithology, indicating dominance of fractured crystalline or glaciofluvial hard rock with very low storativity.",
+        "variables": [
+          "aquifer_class",
+          "acwadam_class_percent"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -40,7 +44,7 @@
     {
       "signal_id": "sig_02",
       "variables": [
-        "delta_g_mm",
+        "mean_annual_delta_g_mm",
         "trend_annual_delta_g_mm"
       ],
       "condition": {
@@ -48,7 +52,7 @@
         "expression": "mean_annual_delta_g_mm < 0 and trend_annual_delta_g_mm < 0",
         "qualitative_description": "Mean annual groundwater balance (P - ET - Runoff) is negative across the multi-year record and the trend is declining, confirming chronic recharge deficit.",
         "variables": [
-          "delta_g_mm",
+          "mean_annual_delta_g_mm",
           "trend_annual_delta_g_mm"
         ]
       },
@@ -66,7 +70,11 @@
       "condition": {
         "type": "quantitative",
         "expression": "soge_dev_percent > 70 or soge_class_name in ['Semi-critical', 'Critical', 'Over-exploited']",
-        "qualitative_description": "Block-level CGWB SOGE classification indicates Semi-critical or worse, or extraction exceeds 70% of net annual recharge."
+        "qualitative_description": "Block-level CGWB SOGE classification indicates Semi-critical or worse, or extraction exceeds 70% of net annual recharge.",
+        "variables": [
+          "soge_dev_percent",
+          "soge_class_name"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -81,7 +89,10 @@
       "condition": {
         "type": "quantitative",
         "expression": "nrega_swc_count < 5",
-        "qualitative_description": "Fewer than 5 cumulative MGNREGA soil and water conservation works recorded in the micro-watershed, indicating very low investment in recharge infrastructure."
+        "qualitative_description": "Fewer than 5 cumulative MGNREGA soil and water conservation works recorded in the micro-watershed, indicating very low investment in recharge infrastructure.",
+        "variables": [
+          "nrega_swc_count"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -392,7 +403,7 @@
       "year": 2022,
       "doi": "10.37773/ees.v8i1.1122",
       "source_type": "peer_reviewed_journal",
-      "relevance_note": "Distinguishes hard rock aquifer depletion dynamics (seasonal emptying and filling, low storage) from alluvial aquifer depletion; argues that management approaches must account for geological differences; supports the aquifer_class and aquifer_lithology_percent signals in this card."
+      "relevance_note": "Distinguishes hard rock aquifer depletion dynamics (seasonal emptying and filling, low storage) from alluvial aquifer depletion; argues that management approaches must account for geological differences; supports the aquifer_class and acwadam_class_percent signals in this card."
     }
   ],
   "metadata": {

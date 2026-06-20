@@ -8,7 +8,7 @@ Python tooling for preprocessing, evidence cards, and diagnostics. Run from the 
 
 Shared bootstrap: `scripts/_bootstrap.py` (repo `ROOT`, optional `runtime/` on `sys.path`).
 
-**Plans:** `cursor-plans/05-induct-new-pathway.md`, `cursor-plans/09-excel-source-update.md`, `cursor-plans/13-confirmation-policy-and-schema.md`.
+**Plans:** `cursor-plans/00-tooling-registry.md` (lifecycle + context), `cursor-plans/05-induct-new-pathway.md`, `cursor-plans/09-excel-source-update.md`, `cursor-plans/13-confirmation-policy-and-schema.md`, `cursor-plans/15-claude-evidence-card-review.md`.
 
 ## Pipeline (run in order for a new pathway / tehsil)
 
@@ -54,10 +54,23 @@ Paper manifest helpers: `validate_manifest.py`, `sync_manifest_pdfs.py`, `restor
 | `verify/audit_variable_registry.py` | Registry ↔ framework ↔ assembler ↔ cards |
 | `verify/evaluate_signal_matrix.py` | Full signal eval matrix (0 hard errors gate) |
 | `verify/spot_check_resolvers.py` | Variable resolver spot checks |
-| `verify/audit_confirmation_policy.py` | Plan 13 — policy vs signals / prose |
+| `verify/audit_confirmation_policy.py` | Plan 13 — policy vs signals / prose; enriched CSV for human review |
 | `verify/audit_follow_up_effects.py` | Plan 13 — MCQ `effects.signals` coverage |
 | `verify/audit_mcq_normalized.py` | Plan 13 — MCQ `normalized` shape consistency |
+| `verify/audit_card_expressions.py` | Plan 15 — per-card expression audit CSV |
+| `verify/audit_card_schema.py` | Plan 15 — JSON Schema validate raw cards |
 | `verify/generate_review_catalog.py` | Local CSV catalogs + `REVIEW_WORKFLOW.md` (outputs gitignored) |
+
+## `review/` — Plan 15 Claude corpus review
+
+| Script | Purpose |
+|--------|---------|
+| `review/run_preflight.py` | Run all preflight audits; index by `card_id` |
+| `review/claude_card_reviewer.py` | One Claude call per card (`--dry-run`, `--resume`, `--pathway`) |
+| `review/merge_claude_review_report.py` | Merge results → summary MD, CSV, patches JSON |
+| `review/apply_claude_review_patches.py` | Apply approved patches (`--dry-run` / `--apply`; reads `metadata/claude_review_edited_patches.json`) |
+
+**Human review UI:** `http://localhost:5173/revise-cards` (Plan 16) — finalize per card → `metadata/claude_review_decisions.json` + `metadata/claude_review_edited_patches.json`.
 
 ## `test/` — unit / smoke tests (no pytest required)
 

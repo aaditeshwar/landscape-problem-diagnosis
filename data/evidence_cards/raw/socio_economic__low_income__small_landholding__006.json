@@ -32,7 +32,11 @@
       "condition": {
         "type": "quantitative",
         "expression": "(lulc_cropland_ha[-1] / (village_total_population + 1e-9)) < 0.2",
-        "qualitative_description": "Per-capita cropland availability below 0.2 ha per person (roughly 1 ha per 5-person household) indicates severe land constraint typical of marginal and small farm categories."
+        "qualitative_description": "Per-capita cropland availability below 0.2 ha per person (roughly 1 ha per 5-person household) indicates severe land constraint typical of marginal and small farm categories.",
+        "variables": [
+          "lulc_cropland_ha",
+          "village_total_population"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -49,7 +53,12 @@
       "condition": {
         "type": "composite",
         "expression": "mean_cropping_intensity <= 1.15 and (lulc_cropland_ha[-1] / (village_total_population + 1e-9)) < 0.2",
-        "qualitative_description": "Low cropping intensity (<=1.15) combined with small per-capita cropland means the effective productive area per household is doubly constrained — neither land area nor seasonal utilisation compensates for fragmentation."
+        "qualitative_description": "Low cropping intensity (<=1.15) combined with small per-capita cropland means the effective productive area per household is doubly constrained — neither land area nor seasonal utilisation compensates for fragmentation.",
+        "variables": [
+          "mean_cropping_intensity",
+          "lulc_cropland_ha",
+          "village_total_population"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -65,7 +74,11 @@
       "condition": {
         "type": "composite",
         "expression": "dist_apmc_km > 20 and dist_dairy_km > 15",
-        "qualitative_description": "Village is more than 20 km from the nearest APMC and more than 15 km from the nearest dairy collection centre, indicating that small holders face both crop market access barriers and limited livestock income diversification options."
+        "qualitative_description": "Village is more than 20 km from the nearest APMC and more than 15 km from the nearest dairy collection centre, indicating that small holders face both crop market access barriers and limited livestock income diversification options.",
+        "variables": [
+          "dist_apmc_km",
+          "dist_dairy_km"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -81,7 +94,11 @@
       "condition": {
         "type": "composite",
         "expression": "nrega_community_assets_count < 10 and 'livelihoods' not in organization_domains and 'fisheries' not in organization_domains",
-        "qualitative_description": "Fewer than 10 cumulative MGNREGA community asset works and no NGO presence in livelihoods or fisheries domains indicates a weak safety net and limited diversification support for small holders in this coastal context."
+        "qualitative_description": "Fewer than 10 cumulative MGNREGA community asset works and no NGO presence in livelihoods or fisheries domains indicates a weak safety net and limited diversification support for small holders in this coastal context.",
+        "variables": [
+          "nrega_community_assets_count",
+          "organization_domains"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -227,6 +244,14 @@
           "normalized": {
             "band": "moderate",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {

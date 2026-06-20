@@ -25,12 +25,16 @@
       "signal_id": "sig_01",
       "variables": [
         "aquifer_class",
-        "aquifer_lithology_percent"
+        "acwadam_class_percent"
       ],
       "condition": {
         "type": "composite",
-        "expression": "aquifer_class == 'himalayan_and_sub_himalayan' and aquifer_lithology_percent.get('crystalline', 0) + aquifer_lithology_percent.get('hard_rock', 0) > 40",
-        "qualitative_description": "Aquifer classified as Himalayan and sub-Himalayan with significant crystalline or hard-rock lithology fraction, indicating low storativity and limited recharge capacity despite high rainfall."
+        "expression": "aquifer_class == 'himalayan_and_sub_himalayan' and acwadam_class_percent.get('crystalline_basement', 0) + acwadam_class_percent.get('sedimentary_hard_rock', 0) > 40",
+        "qualitative_description": "Aquifer classified as Himalayan and sub-Himalayan with significant crystalline or hard-rock lithology fraction, indicating low storativity and limited recharge capacity despite high rainfall.",
+        "variables": [
+          "aquifer_class",
+          "acwadam_class_percent"
+        ]
       },
       "severity": "moderate",
       "direction": "confirms",
@@ -46,7 +50,11 @@
       "condition": {
         "type": "quantitative",
         "expression": "soge_dev_percent > 50 or soge_class_name in ['Semi-critical', 'Critical', 'Over-exploited']",
-        "qualitative_description": "SOGE development exceeds 50% or block is classified Semi-critical or above. In hard-rock hilly aquifers, even moderate SOGE values signal localised stress due to spatial heterogeneity of recharge."
+        "qualitative_description": "SOGE development exceeds 50% or block is classified Semi-critical or above. In hard-rock hilly aquifers, even moderate SOGE values signal localised stress due to spatial heterogeneity of recharge.",
+        "variables": [
+          "soge_dev_percent",
+          "soge_class_name"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -57,15 +65,15 @@
       "signal_id": "sig_03",
       "variables": [
         "trend_annual_delta_g_mm",
-        "delta_g_mm"
+        "mean_annual_delta_g_mm"
       ],
       "condition": {
         "type": "trend",
-        "expression": "trend_annual_delta_g_mm < 0 and mean_annual_delta_g_mm < 50",
+        "expression": "trend_annual_delta_g_mm < 0 and mean_annual_delta_g_mm < 0",
         "qualitative_description": "Declining trend in annual groundwater recharge balance (P - ET - Runoff) with a low mean recharge value, indicating that despite high rainfall, net groundwater replenishment is diminishing over time.",
         "variables": [
           "trend_annual_delta_g_mm",
-          "delta_g_mm"
+          "mean_annual_delta_g_mm"
         ]
       },
       "severity": "high",
@@ -81,7 +89,10 @@
       "condition": {
         "type": "quantitative",
         "expression": "nrega_swc_count < 10",
-        "qualitative_description": "Fewer than 10 cumulative SWC works in the micro-watershed under MGNREGA, indicating underinvestment in recharge infrastructure in a terrain where check dams, trench bunds, and gabion structures are critical for slowing runoff and enhancing infiltration."
+        "qualitative_description": "Fewer than 10 cumulative SWC works in the micro-watershed under MGNREGA, indicating underinvestment in recharge infrastructure in a terrain where check dams, trench bunds, and gabion structures are critical for slowing runoff and enhancing infiltration.",
+        "variables": [
+          "nrega_swc_count"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",

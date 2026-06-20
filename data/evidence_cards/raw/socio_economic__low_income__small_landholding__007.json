@@ -32,7 +32,11 @@
       "condition": {
         "type": "quantitative",
         "expression": "(lulc_cropland_ha[-1] / (village_total_population + 1e-9)) < 0.2",
-        "qualitative_description": "Per-capita cropland availability below 0.2 ha per person (approximately 1 ha per household of 5) indicates predominantly marginal or sub-marginal landholding sizes."
+        "qualitative_description": "Per-capita cropland availability below 0.2 ha per person (approximately 1 ha per household of 5) indicates predominantly marginal or sub-marginal landholding sizes.",
+        "variables": [
+          "lulc_cropland_ha",
+          "village_total_population"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -48,7 +52,11 @@
       "condition": {
         "type": "trend",
         "expression": "mean_cropping_intensity <= 1.15 and cropping_intensity[-1] <= 1.2",
-        "qualitative_description": "Mean cropping intensity at or below 1.15 and latest year value at or below 1.2 indicates that small holders are not compensating for limited land area through double-cropping, compounding income constraints."
+        "qualitative_description": "Mean cropping intensity at or below 1.15 and latest year value at or below 1.2 indicates that small holders are not compensating for limited land area through double-cropping, compounding income constraints.",
+        "variables": [
+          "mean_cropping_intensity",
+          "cropping_intensity"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -64,7 +72,11 @@
       "condition": {
         "type": "composite",
         "expression": "dist_apmc_km > 30 and dist_dairy_km > 20",
-        "qualitative_description": "APMC market more than 30 km away and dairy collection centre more than 20 km away together indicate that small holders face high transaction costs for both crop and livestock income streams, with no viable diversification outlet nearby."
+        "qualitative_description": "APMC market more than 30 km away and dairy collection centre more than 20 km away together indicate that small holders face high transaction costs for both crop and livestock income streams, with no viable diversification outlet nearby.",
+        "variables": [
+          "dist_apmc_km",
+          "dist_dairy_km"
+        ]
       },
       "severity": "high",
       "direction": "amplifies",
@@ -74,13 +86,17 @@
     {
       "signal_id": "sig_04",
       "variables": [
-        "organization_domains",
-        "nrega_community_assets_count"
+        "nrega_community_assets_count",
+        "organization_domains"
       ],
       "condition": {
         "type": "composite",
         "expression": "('livelihoods' not in organization_domains and 'fisheries' not in organization_domains) and nrega_community_assets_count < 10",
-        "qualitative_description": "No NGO presence in livelihoods or fisheries domains combined with fewer than 10 cumulative MGNREGA community asset works indicates a weak institutional safety net and limited diversification support for small holders."
+        "qualitative_description": "No NGO presence in livelihoods or fisheries domains combined with fewer than 10 cumulative MGNREGA community asset works indicates a weak institutional safety net and limited diversification support for small holders.",
+        "variables": [
+          "nrega_community_assets_count",
+          "organization_domains"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -226,6 +242,14 @@
           "normalized": {
             "band": "moderate",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {

@@ -125,7 +125,7 @@ export function PrecipitationChart({ mws }: { mws: MwsDocument }) {
 export function DroughtChart({ mws }: { mws: MwsDocument }) {
   const data = droughtSeries(mws)
   return (
-    <ChartCard title="Kharif drought weeks">
+    <ChartCard title="Kharif drought weeks (moderate + severe)">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" />
@@ -133,8 +133,6 @@ export function DroughtChart({ mws }: { mws: MwsDocument }) {
           <YAxis tick={{ fontSize: 11 }} />
           <Tooltip />
           <Legend wrapperStyle={{ fontSize: 11 }} />
-          <Bar dataKey="no" stackId="a" fill="#86efac" name="None" />
-          <Bar dataKey="mild" stackId="a" fill="#fde047" name="Mild" />
           <Bar dataKey="moderate" stackId="a" fill="#fb923c" name="Moderate" />
           <Bar dataKey="severe" stackId="a" fill="#ef4444" name="Severe" />
         </BarChart>
@@ -255,8 +253,16 @@ export function ForestTrendChart({ mws }: { mws: MwsDocument }) {
   )
 }
 
-export function LulcStackedChart({ mws }: { mws: MwsDocument }) {
-  const data = lulcStackedSeries(mws)
+export function LulcStackedChart({
+  mws,
+  combineWater = false,
+  builtUpColor = '#d97706',
+}: {
+  mws: MwsDocument
+  combineWater?: boolean
+  builtUpColor?: string
+}) {
+  const data = lulcStackedSeries(mws, { combineWater })
   if (data.length === 0) {
     return (
       <ChartCard title="Land use change">
@@ -274,10 +280,26 @@ export function LulcStackedChart({ mws }: { mws: MwsDocument }) {
           <Tooltip />
           <Legend wrapperStyle={{ fontSize: 11 }} />
           <Area type="monotone" dataKey="cropland" stackId="lulc" fill="#ca8a04" stroke="#ca8a04" name="Cropland" />
+          <Area
+            type="monotone"
+            dataKey="built_up"
+            stackId="lulc"
+            fill={builtUpColor}
+            stroke={builtUpColor}
+            name="Built-up"
+          />
           <Area type="monotone" dataKey="tree_forest" stackId="lulc" fill="#15803d" stroke="#15803d" name="Forest" />
           <Area type="monotone" dataKey="shrub_scrub" stackId="lulc" fill="#a3a3a3" stroke="#a3a3a3" name="Shrub/scrub" />
           <Area type="monotone" dataKey="barrenland" stackId="lulc" fill="#78716c" stroke="#78716c" name="Barren" />
-          <Area type="monotone" dataKey="krz_water" stackId="lulc" fill="#0284c7" stroke="#0284c7" name="Water" />
+          {combineWater ? (
+            <Area type="monotone" dataKey="water" stackId="lulc" fill="#0284c7" stroke="#0284c7" name="Water" />
+          ) : (
+            <>
+              <Area type="monotone" dataKey="k_water" stackId="lulc" fill="#38bdf8" stroke="#38bdf8" name="Water (kharif)" />
+              <Area type="monotone" dataKey="kr_water" stackId="lulc" fill="#0284c7" stroke="#0284c7" name="Water (kharif+rabi)" />
+              <Area type="monotone" dataKey="krz_water" stackId="lulc" fill="#0369a1" stroke="#0369a1" name="Water (kharif+rabi+zaid)" />
+            </>
+          )}
         </AreaChart>
       </ResponsiveContainer>
     </ChartCard>

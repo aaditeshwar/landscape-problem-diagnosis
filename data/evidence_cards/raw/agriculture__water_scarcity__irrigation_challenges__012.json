@@ -24,13 +24,19 @@
     {
       "signal_id": "sig_01",
       "variables": [
-        "swb_total_area_ha",
-        "swb_count"
+        "trend_swb_total_area_ha",
+        "swb_count",
+        "mean_swb_total_area_ha"
       ],
       "condition": {
         "type": "trend",
         "expression": "trend_swb_total_area_ha < -2 or (swb_count < 3 and mean_swb_total_area_ha < 5)",
-        "qualitative_description": "Declining SWB total area (slope < -2 ha/year) or very few small water bodies relative to watershed size indicates inadequate surface storage infrastructure in hilly terrain."
+        "qualitative_description": "Declining SWB total area (slope < -2 ha/year) or very few small water bodies relative to watershed size indicates inadequate surface storage infrastructure in hilly terrain.",
+        "variables": [
+          "trend_swb_total_area_ha",
+          "swb_count",
+          "mean_swb_total_area_ha"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -40,12 +46,15 @@
     {
       "signal_id": "sig_02",
       "variables": [
-        "swb_kharif_area_ha"
+        "mean_swb_rabi_kharif_ratio"
       ],
       "condition": {
         "type": "trend",
         "expression": "mean_swb_rabi_kharif_ratio < 0.4",
-        "qualitative_description": "Mean rabi-to-kharif SWB area ratio below 0.4 indicates rapid post-monsoon drying of water bodies, confirming poor storage persistence into the rabi season."
+        "qualitative_description": "Mean rabi-to-kharif SWB area ratio below 0.4 indicates rapid post-monsoon drying of water bodies, confirming poor storage persistence into the rabi season.",
+        "variables": [
+          "mean_swb_rabi_kharif_ratio"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -60,7 +69,10 @@
       "condition": {
         "type": "quantitative",
         "expression": "nrega_swc_count < 5",
-        "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA indicates historically low investment in water harvesting infrastructure."
+        "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA indicates historically low investment in water harvesting infrastructure.",
+        "variables": [
+          "nrega_swc_count"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -76,7 +88,11 @@
       "condition": {
         "type": "composite",
         "expression": "river_name is None and dist_cooperative_km > 15",
-        "qualitative_description": "No named river passing through or adjacent to the MWS, combined with distant cooperative access (>15 km), indicates both limited surface diversion potential and poor institutional access to credit for irrigation investment."
+        "qualitative_description": "No named river passing through or adjacent to the MWS, combined with distant cooperative access (>15 km), indicates both limited surface diversion potential and poor institutional access to credit for irrigation investment.",
+        "variables": [
+          "river_name",
+          "dist_cooperative_km"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",

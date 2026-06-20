@@ -32,7 +32,11 @@
       "condition": {
         "type": "quantitative",
         "expression": "soge_dev_percent > 70 or soge_class_name in ['Semi-critical', 'Critical', 'Over-exploited']",
-        "qualitative_description": "Block-level groundwater extraction exceeds 70% of net annual recharge, or CGWB classifies the block as Semi-critical, Critical, or Over-exploited."
+        "qualitative_description": "Block-level groundwater extraction exceeds 70% of net annual recharge, or CGWB classifies the block as Semi-critical, Critical, or Over-exploited.",
+        "variables": [
+          "soge_dev_percent",
+          "soge_class_name"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -43,7 +47,7 @@
       "signal_id": "sig_02",
       "variables": [
         "trend_annual_delta_g_mm",
-        "delta_g_mm"
+        "mean_annual_delta_g_mm"
       ],
       "condition": {
         "type": "trend",
@@ -51,7 +55,7 @@
         "qualitative_description": "The linear trend in annual groundwater recharge (P - ET - Runoff) is negative and the multi-year mean is also negative, indicating chronic depletion rather than a single drought year.",
         "variables": [
           "trend_annual_delta_g_mm",
-          "delta_g_mm"
+          "mean_annual_delta_g_mm"
         ]
       },
       "severity": "high",
@@ -63,12 +67,16 @@
       "signal_id": "sig_03",
       "variables": [
         "aquifer_class",
-        "aquifer_lithology_percent"
+        "acwadam_class_percent"
       ],
       "condition": {
         "type": "composite",
-        "expression": "aquifer_class == 'himalayan_and_sub_himalayan' and aquifer_lithology_percent.get('alluvium', 0) < 20",
-        "qualitative_description": "The dominant aquifer class is Himalayan and sub-Himalayan (fractured/hard rock), with less than 20% alluvial lithology, indicating low bulk storativity and limited recharge buffering capacity."
+        "expression": "aquifer_class == 'himalayan_and_sub_himalayan' and acwadam_class_percent.get('alluvium', 0) < 20",
+        "qualitative_description": "The dominant aquifer class is Himalayan and sub-Himalayan (fractured/hard rock), with less than 20% alluvial lithology, indicating low bulk storativity and limited recharge buffering capacity.",
+        "variables": [
+          "aquifer_class",
+          "acwadam_class_percent"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -83,7 +91,10 @@
       "condition": {
         "type": "quantitative",
         "expression": "nrega_swc_count < 5",
-        "qualitative_description": "Fewer than 5 cumulative soil and water conservation works recorded under MGNREGA in the micro-watershed, indicating low investment in recharge infrastructure on hilly slopes."
+        "qualitative_description": "Fewer than 5 cumulative soil and water conservation works recorded under MGNREGA in the micro-watershed, indicating low investment in recharge infrastructure on hilly slopes.",
+        "variables": [
+          "nrega_swc_count"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -358,7 +369,7 @@
       "year": 2022,
       "doi": "10.37773/ees.v8i1.1122",
       "source_type": "peer_reviewed_journal",
-      "relevance_note": "Distinguishes hard rock aquifer depletion dynamics (seasonal emptying and filling, low storativity) from alluvial aquifer depletion; supports the use of aquifer_class and aquifer_lithology_percent as amplifying signals in hilly hard rock terrain."
+      "relevance_note": "Distinguishes hard rock aquifer depletion dynamics (seasonal emptying and filling, low storativity) from alluvial aquifer depletion; supports the use of aquifer_class and acwadam_class_percent as amplifying signals in hilly hard rock terrain."
     },
     {
       "source_id": "Dillon2019",

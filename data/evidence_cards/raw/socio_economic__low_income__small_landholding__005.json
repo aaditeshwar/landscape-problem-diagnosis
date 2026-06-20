@@ -30,7 +30,11 @@
       "condition": {
         "type": "quantitative",
         "expression": "(lulc_cropland_ha[-1] / (village_total_population + 1e-9)) < 0.4",
-        "qualitative_description": "Per-capita cropland availability below 0.4 ha/person is a proxy for marginal or sub-marginal average farm size, consistent with fragmented landholding structures in Bundelkhand and Malwa."
+        "qualitative_description": "Per-capita cropland availability below 0.4 ha/person is a proxy for marginal or sub-marginal average farm size, consistent with fragmented landholding structures in Bundelkhand and Malwa.",
+        "variables": [
+          "lulc_cropland_ha",
+          "village_total_population"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -40,12 +44,15 @@
     {
       "signal_id": "sig_02",
       "variables": [
-        "cropping_intensity"
+        "mean_cropping_intensity"
       ],
       "condition": {
         "type": "trend",
         "expression": "mean_cropping_intensity <= 1.15",
-        "qualitative_description": "Mean cropping intensity at or below 1.15 indicates that most cropland is harvested only once per year, meaning small holders cannot compensate for limited area through intensification."
+        "qualitative_description": "Mean cropping intensity at or below 1.15 indicates that most cropland is harvested only once per year, meaning small holders cannot compensate for limited area through intensification.",
+        "variables": [
+          "mean_cropping_intensity"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -60,7 +67,10 @@
       "condition": {
         "type": "quantitative",
         "expression": "dist_apmc_km > 30",
-        "qualitative_description": "Distance to nearest APMC market exceeding 30 km severely limits price discovery and market access for small holders, who lack transport capital and are forced to sell to local intermediaries at below-MSP prices."
+        "qualitative_description": "Distance to nearest APMC market exceeding 30 km severely limits price discovery and market access for small holders, who lack transport capital and are forced to sell to local intermediaries at below-MSP prices.",
+        "variables": [
+          "dist_apmc_km"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -71,13 +81,18 @@
       "signal_id": "sig_04",
       "variables": [
         "dist_dairy_km",
-        "organization_domains",
-        "nrega_community_assets_count"
+        "nrega_community_assets_count",
+        "organization_domains"
       ],
       "condition": {
         "type": "composite",
         "expression": "dist_dairy_km > 20 and ('livelihoods' not in organization_domains and 'fisheries' not in organization_domains) and nrega_community_assets_count < 10",
-        "qualitative_description": "Absence of nearby dairy infrastructure, lack of NGO support for livelihood diversification, and low MGNREGA community asset creation collectively indicate that small holders have no viable off-farm or livestock income supplement."
+        "qualitative_description": "Absence of nearby dairy infrastructure, lack of NGO support for livelihood diversification, and low MGNREGA community asset creation collectively indicate that small holders have no viable off-farm or livestock income supplement.",
+        "variables": [
+          "dist_dairy_km",
+          "nrega_community_assets_count",
+          "organization_domains"
+        ]
       },
       "severity": "high",
       "direction": "amplifies",
@@ -223,6 +238,14 @@
           "normalized": {
             "band": "moderate",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {

@@ -1,0 +1,487 @@
+{
+  "meta": {
+    "description": "A bank of realistic user queries organized by production system and user persona. Each query entry contains the natural-language query text, the persona asking it, the production system it primarily relates to, and the expected response properties used in evaluation.",
+    "response_schema_ref": "response_schema.json",
+    "data_dictionary_ref": "data_dictionary_v2.json",
+    "mws_area_context": "Each MWS is ~1000–1500 ha. Variables are available for 2017–2024/25 agricultural years (Jul–Jun).",
+    "personas": [
+      "watershed_programme_manager",
+      "agricultural_extension_worker",
+      "restoration_professional",
+      "forest_development_officer",
+      "livelihood_organisation_planner",
+      "hydrology_researcher"
+    ]
+  },
+  "queries": [
+    {
+      "id": "Q001",
+      "persona": "watershed_programme_manager",
+      "production_system": "Agriculture",
+      "sub_theme": "water_scarcity",
+      "query": "We are planning a watershed development programme in this area. Can you help me understand whether water stress here is primarily a rainfall deficit problem or a groundwater extraction problem? I need to know which type of water harvesting structures will actually make a difference.",
+      "intent": "Distinguish meteorological drought from groundwater over-extraction to prioritise check dams vs recharge structures vs demand management.",
+      "key_variables_expected": [
+        "annual_precipitation_mm", "delta_g_mm", "cumulative_g_mm",
+        "well_depth_m", "soge_dev_percent", "soge_class_name",
+        "drought_weeks", "dry_spell_weeks", "aquifer_class",
+        "swb_annual", "nrega_mws"
+      ],
+      "expected_pathway_candidates": ["groundwater_stress", "drought", "rainfed_risk", "irrigation_challenges"],
+      "expected_follow_up_topics": ["borewell_density", "canal_presence", "nrega_swc_history"]
+    },
+    {
+      "id": "Q002",
+      "persona": "watershed_programme_manager",
+      "production_system": "Agriculture",
+      "sub_theme": "intervention_prioritisation",
+      "query": "I have a limited budget and need to decide which MWS to invest in first for soil and water conservation works. This MWS has had several MGNREGA soil and water conservation works done in the past. Has that investment worked — is the water balance improving? Are there signs of diminishing returns or should we continue?",
+      "intent": "Evaluate historical SWC investment effectiveness by correlating nrega_mws SWC counts with delta_g trends.",
+      "key_variables_expected": [
+        "nrega_mws", "delta_g_mm", "cumulative_g_mm",
+        "annual_precipitation_mm", "annual_runoff_mm",
+        "swb_annual", "lulc_ha"
+      ],
+      "expected_pathway_candidates": ["groundwater_stress", "irrigation_challenges"],
+      "expected_follow_up_topics": ["borewell_density", "irrigated_area_ha"]
+    },
+    {
+      "id": "Q003",
+      "persona": "watershed_programme_manager",
+      "production_system": "Agriculture",
+      "sub_theme": "connectivity_and_planning",
+      "query": "Before I plan interventions, I want to understand how this MWS relates to its neighbours hydrologically. Are there upstream MWSes contributing to drainage here? Is the water stress a localised problem or part of a larger watershed-level issue I should address at the catchment scale?",
+      "intent": "Use connectivity and stream order data to contextualise the MWS within its watershed hierarchy.",
+      "key_variables_expected": [
+        "upstream_uids", "downstream_uid", "stream_order_area_percent",
+        "drainage_density_km_per_km2", "flow_direction",
+        "delta_g_mm", "annual_runoff_mm", "terrain_area_percent"
+      ],
+      "expected_pathway_candidates": ["groundwater_stress", "rainfed_risk"],
+      "expected_follow_up_topics": ["upstream_land_use_change", "canal_presence"]
+    },
+    {
+      "id": "Q004",
+      "persona": "agricultural_extension_worker",
+      "production_system": "Agriculture",
+      "sub_theme": "crop_suitability",
+      "query": "Farmers here keep asking me what crops they should shift to. The area has been getting erratic rainfall and yields are poor. Based on the water balance and cropping patterns here, which season and which cropping intensity seems most reliable, and what does that suggest about which crops are feasible?",
+      "intent": "Identify safe cropping seasons and intensity levels from precipitation, drought, and cropping intensity time series.",
+      "key_variables_expected": [
+        "cropping_intensity", "seasonal_precipitation_mm",
+        "drought_weeks", "dry_spell_weeks", "monsoon_onset_date",
+        "lulc_ha", "kharif_cropped_area_percent",
+        "swb_annual", "canal_name"
+      ],
+      "expected_pathway_candidates": ["rainfed_risk", "drought", "monocropping"],
+      "expected_follow_up_topics": ["crop_type_area_ha", "soil_type", "market_access"]
+    },
+    {
+      "id": "Q005",
+      "persona": "agricultural_extension_worker",
+      "production_system": "Agriculture",
+      "sub_theme": "soil_health",
+      "query": "Many farmers in the villages here complain about declining soil fertility and increased input costs. Is there any evidence in the data that soil conditions here are deteriorating? What would you recommend I investigate further when I visit?",
+      "intent": "Detect soil degradation signals from LULC change detection and barren land trend, and surface targeted field visit questions.",
+      "key_variables_expected": [
+        "cd_degradation_ha", "lulc_ha",
+        "cropping_intensity", "nrega_mws",
+        "terrain_area_percent", "drainage_density_km_per_km2"
+      ],
+      "expected_pathway_candidates": ["soil_degradation", "monocropping", "chemical_dependence"],
+      "expected_follow_up_topics": ["soil_organic_carbon", "soil_type", "crop_type_area_ha", "fertiliser_use"]
+    },
+    {
+      "id": "Q006",
+      "persona": "agricultural_extension_worker",
+      "production_system": "Agriculture",
+      "sub_theme": "market_access",
+      "query": "Farmers tell me they don't get good prices for their produce. Is the market access situation here a significant problem? Which facilities are far away and what does that mean for what farmers can realistically grow and sell?",
+      "intent": "Diagnose market access gap from facility distance data and link to crop diversification feasibility.",
+      "key_variables_expected": [
+        "facility_distances_km",
+        "village_literacy_rate",
+        "organization_domains",
+        "nrega_village"
+      ],
+      "expected_pathway_candidates": ["market_access_gap", "small_landholding"],
+      "expected_follow_up_topics": ["crop_type_area_ha", "landholding_distribution", "market_price_crop", "cooperative_membership"]
+    },
+    {
+      "id": "Q007",
+      "persona": "agricultural_extension_worker",
+      "production_system": "Livestock",
+      "sub_theme": "fodder_and_water",
+      "query": "Livestock keepers in this area say their animals suffer in summer because of water and fodder shortage. What does the seasonal water availability data tell us about how long water bodies persist here, and is there evidence of pasture degradation?",
+      "intent": "Assess livestock water stress from SWB seasonal persistence and pasture degradation from LULC shrub/barren trends.",
+      "key_variables_expected": [
+        "swb_annual", "lulc_ha",
+        "cd_degradation_ha", "restoration_area_ha",
+        "seasonal_precipitation_mm", "drought_weeks"
+      ],
+      "expected_pathway_candidates": ["water_scarcity_livestock", "fodder_shortage", "pasture_degradation"],
+      "expected_follow_up_topics": ["livestock_population", "common_land_area_ha", "invasive_species_area_ha", "fodder_land_area_ha"]
+    },
+    {
+      "id": "Q008",
+      "persona": "restoration_professional",
+      "production_system": "NTFP_Forest_Biodiversity",
+      "sub_theme": "restoration_opportunity",
+      "query": "I'm scoping this MWS for a forest landscape restoration project. How much area is potentially restorable, what type of restoration is recommended (widescale, protection, mosaic), and what are the main drivers of forest degradation I should focus my efforts on?",
+      "intent": "Quantify restoration potential from WRI Restoration Atlas categories and identify primary deforestation/degradation drivers.",
+      "key_variables_expected": [
+        "restoration_area_ha", "lulc_ha",
+        "cd_deforestation_ha", "cd_afforestation_ha",
+        "cd_degradation_ha", "terrain_area_percent",
+        "aquifer_class", "organization_domains"
+      ],
+      "expected_pathway_candidates": ["forest_degradation", "encroachment", "land_degradation"],
+      "expected_follow_up_topics": ["invasive_species_area_ha", "ntfp_species_presence", "forest_fire_incidents", "common_land_area_ha"]
+    },
+    {
+      "id": "Q009",
+      "persona": "restoration_professional",
+      "production_system": "NTFP_Forest_Biodiversity",
+      "sub_theme": "deforestation_drivers",
+      "query": "Between 2017 and 2024 has forest cover been increasing or decreasing here? Is the net change positive or negative when I compare deforestation against afforestation, and what is the likely driver — agricultural encroachment, settlements, or natural vegetation dynamics?",
+      "intent": "Net forest change analysis from paired deforestation and afforestation change detection variables.",
+      "key_variables_expected": [
+        "cd_deforestation_ha", "cd_afforestation_ha",
+        "lulc_ha", "cd_urbanization_ha",
+        "cd_degradation_ha", "terrain_area_percent"
+      ],
+      "expected_pathway_candidates": ["forest_degradation", "encroachment", "land_degradation"],
+      "expected_follow_up_topics": ["forest_fire_incidents", "invasive_species_area_ha", "village_st_percent"]
+    },
+    {
+      "id": "Q010",
+      "persona": "restoration_professional",
+      "production_system": "NTFP_Forest_Biodiversity",
+      "sub_theme": "ecological_connectivity",
+      "query": "I need to understand whether the remaining tree cover and forest in this MWS is likely to be well-connected to adjacent landscapes or fragmented. The terrain and drainage structure might tell me something about where native vegetation is most likely to persist. What does the data say?",
+      "intent": "Use terrain, stream order, and LULC to infer likely ecological corridor potential and fragmentation.",
+      "key_variables_expected": [
+        "terrain_area_percent", "stream_order_area_percent",
+        "lulc_ha", "restoration_area_ha",
+        "drainage_density_km_per_km2", "elevation_min_m", "elevation_max_m"
+      ],
+      "expected_pathway_candidates": ["forest_degradation", "habitat_loss_fragmentation"],
+      "expected_follow_up_topics": ["invasive_species_area_ha", "ntfp_species_presence", "forest_fire_incidents"]
+    },
+    {
+      "id": "Q011",
+      "persona": "restoration_professional",
+      "production_system": "Agriculture",
+      "sub_theme": "land_degradation",
+      "query": "I'm looking for areas where farmland has been abandoned or degraded over the past 7 years, because these could be priority sites for restoration. How much degraded farmland is there in this MWS, and is the degradation accelerating or stabilising?",
+      "intent": "Identify farmland degradation magnitude and trend from change detection and LULC barren/shrub trends.",
+      "key_variables_expected": [
+        "cd_degradation_ha", "lulc_ha",
+        "terrain_area_percent", "nrega_mws",
+        "restoration_area_ha"
+      ],
+      "expected_pathway_candidates": ["soil_degradation", "land_degradation"],
+      "expected_follow_up_topics": ["soil_erosion_rate", "soil_organic_carbon", "common_land_area_ha", "invasive_species_area_ha"]
+    },
+    {
+      "id": "Q012",
+      "persona": "forest_development_officer",
+      "production_system": "NTFP_Forest_Biodiversity",
+      "sub_theme": "ntfp_livelihood",
+      "query": "Many forest-fringe villages in my jurisdiction depend on NTFP collection for a significant share of their income. Is there evidence in this MWS that the forest resource base supporting NTFP livelihoods is under pressure, and which communities are most at risk?",
+      "intent": "Link forest degradation signals to village-level vulnerability of communities likely dependent on NTFPs.",
+      "key_variables_expected": [
+        "lulc_ha", "cd_deforestation_ha",
+        "restoration_area_ha", "village_st_percent",
+        "village_sc_percent", "village_literacy_rate",
+        "organization_domains", "facility_distances_km"
+      ],
+      "expected_pathway_candidates": ["forest_degradation", "genetic_erosion", "multi_sector_vulnerability"],
+      "expected_follow_up_topics": ["ntfp_species_presence", "household_income_inr", "migrant_household_percent", "common_land_area_ha"]
+    },
+    {
+      "id": "Q013",
+      "persona": "forest_development_officer",
+      "production_system": "NTFP_Forest_Biodiversity",
+      "sub_theme": "forest_rights_and_encroachment",
+      "query": "I want to understand the pattern of forest encroachment in this MWS. Is agricultural expansion happening at the expense of forest land, and does the data suggest this is a recent acceleration or a long-standing trend?",
+      "intent": "Identify forest-to-farm encroachment from change detection and LULC time series.",
+      "key_variables_expected": [
+        "cd_deforestation_ha", "lulc_ha",
+        "cd_degradation_ha", "terrain_area_percent",
+        "village_st_percent", "village_population"
+      ],
+      "expected_pathway_candidates": ["encroachment", "forest_degradation"],
+      "expected_follow_up_topics": ["common_land_area_ha", "forest_fire_incidents", "landholding_distribution"]
+    },
+    {
+      "id": "Q014",
+      "persona": "forest_development_officer",
+      "production_system": "Socio_Economic",
+      "sub_theme": "forest_community_wellbeing",
+      "query": "I am trying to identify which villages in this MWS have the worst socio-economic conditions and the least access to government services, because I want to target them for Joint Forest Management and livelihood support. What does the data tell me?",
+      "intent": "Rank village-level vulnerability from social indicators and facility distance, especially for SC/ST communities.",
+      "key_variables_expected": [
+        "village_st_percent", "village_sc_percent",
+        "village_literacy_rate", "village_population",
+        "facility_distances_km", "nrega_village"
+      ],
+      "expected_pathway_candidates": ["multi_sector_vulnerability", "small_landholding"],
+      "expected_follow_up_topics": ["household_income_inr", "migrant_household_percent", "ntfp_species_presence"]
+    },
+    {
+      "id": "Q015",
+      "persona": "livelihood_organisation_planner",
+      "production_system": "Socio_Economic",
+      "sub_theme": "integrated_programme_design",
+      "query": "We are designing an integrated livelihood programme for this area. I want to understand the key constraints to household income here — is it primarily agricultural, related to market access, or linked to natural resource degradation? What should be the entry point for our programme?",
+      "intent": "Identify dominant livelihood constraint pathway across agriculture, natural resources, and market access.",
+      "key_variables_expected": [
+        "facility_distances_km", "village_literacy_rate",
+        "village_sc_percent", "village_st_percent",
+        "lulc_ha", "cropping_intensity",
+        "cd_degradation_ha", "nrega_village",
+        "organization_domains", "restoration_area_ha"
+      ],
+      "expected_pathway_candidates": ["multi_sector_vulnerability", "small_landholding", "market_access_gap", "soil_degradation"],
+      "expected_follow_up_topics": ["household_income_inr", "landholding_distribution", "crop_type_area_ha", "migrant_household_percent"]
+    },
+    {
+      "id": "Q016",
+      "persona": "livelihood_organisation_planner",
+      "production_system": "Fishery",
+      "sub_theme": "fishery_potential",
+      "query": "We are exploring fishery-based livelihood options for communities around water bodies in this MWS. What is the scale of surface water resource available here, does it persist through the year, and is there existing evidence of fishery activity or support organisations?",
+      "intent": "Assess fishery livelihood potential from SWB persistence, water body count, and organisation presence.",
+      "key_variables_expected": [
+        "swb_annual", "lulc_ha",
+        "organization_domains", "village_population",
+        "village_sc_percent", "village_st_percent",
+        "facility_distances_km"
+      ],
+      "expected_pathway_candidates": ["water_potential", "multi_sector_vulnerability"],
+      "expected_follow_up_topics": ["fish_production_kg", "ntfp_species_presence", "common_land_area_ha"]
+    },
+    {
+      "id": "Q017",
+      "persona": "livelihood_organisation_planner",
+      "production_system": "Livestock",
+      "sub_theme": "livestock_livelihood",
+      "query": "Livestock rearing is an important secondary income for many households here. What does the data suggest about the sustainability of livestock-based livelihoods — is the resource base (water, pasture) adequate, and are there signs of stress I should be worried about?",
+      "intent": "Assess livestock livelihood sustainability from SWB, LULC scrub/barren, and ecological indicators.",
+      "key_variables_expected": [
+        "swb_annual", "lulc_ha",
+        "cd_degradation_ha", "restoration_area_ha",
+        "drought_weeks", "seasonal_precipitation_mm",
+        "facility_distances_km"
+      ],
+      "expected_pathway_candidates": ["fodder_shortage", "pasture_degradation", "water_scarcity_livestock", "overgrazing"],
+      "expected_follow_up_topics": ["livestock_population", "common_land_area_ha", "fodder_land_area_ha", "invasive_species_area_ha"]
+    },
+    {
+      "id": "Q018",
+      "persona": "livelihood_organisation_planner",
+      "production_system": "Socio_Economic",
+      "sub_theme": "nrega_coverage_and_quality",
+      "query": "We want to understand how well MGNREGA has been used here as a livelihood safety net and for creating productive assets. Has work been concentrated in certain categories like soil and water conservation, or is it spread across different types of works? Has investment been consistent or erratic over the years?",
+      "intent": "Profile MGNREGA investment history by category and consistency to assess safety net adequacy and asset creation quality.",
+      "key_variables_expected": [
+        "nrega_mws", "nrega_village",
+        "delta_g_mm", "cd_degradation_ha",
+        "lulc_ha"
+      ],
+      "expected_pathway_candidates": ["multi_sector_vulnerability", "small_landholding"],
+      "expected_follow_up_topics": ["household_income_inr", "migrant_household_percent", "landholding_distribution"]
+    },
+    {
+      "id": "Q019",
+      "persona": "hydrology_researcher",
+      "production_system": "Agriculture",
+      "sub_theme": "water_balance_validation",
+      "query": "I want to review the water balance diagnosis for this MWS. Can you show me how the system is computing groundwater recharge here and whether the trend in delta_g is consistent with the trend in well depth? I am specifically looking for any inconsistencies in the reasoning.",
+      "intent": "Technical audit of delta_g computation and consistency check with well depth trend.",
+      "key_variables_expected": [
+        "annual_precipitation_mm", "annual_et_mm",
+        "annual_runoff_mm", "delta_g_mm", "cumulative_g_mm",
+        "well_depth_m", "aquifer_class",
+        "soge_dev_percent", "drainage_density_km_per_km2"
+      ],
+      "expected_pathway_candidates": ["groundwater_stress"],
+      "expected_follow_up_topics": ["borewell_density", "groundwater_salinity", "irrigated_area_ha"]
+    },
+    {
+      "id": "Q020",
+      "persona": "hydrology_researcher",
+      "production_system": "Agriculture",
+      "sub_theme": "drought_classification_review",
+      "query": "I want to understand the basis on which the system classifies drought years for this MWS. Which years were drought years here, what were the SPI, MAI, and VCI values driving that classification, and does the classification align with the observed kharif cropped area in those years?",
+      "intent": "Cross-validate drought causality index scores against kharif cropped area response.",
+      "key_variables_expected": [
+        "drought_causality", "drought_weeks",
+        "dry_spell_weeks", "kharif_cropped_area_ha",
+        "kharif_cropped_area_percent", "monsoon_onset_date",
+        "annual_precipitation_mm"
+      ],
+      "expected_pathway_candidates": ["drought", "rainfed_risk"],
+      "expected_follow_up_topics": ["crop_type_area_ha", "borewell_density", "irrigated_area_ha"]
+    },
+    {
+      "id": "Q021",
+      "persona": "hydrology_researcher",
+      "production_system": "Agriculture",
+      "sub_theme": "seasonal_water_balance",
+      "query": "I am interested in the seasonal disaggregation of the water balance. How does groundwater recharge distribute across kharif, rabi, and zaid seasons, and is there evidence of rabi or zaid ET exceeding recharge — which would indicate irrigation-driven depletion in the non-monsoon period?",
+      "intent": "Detect irrigation-driven groundwater depletion in rabi/zaid from seasonal ET vs recharge comparison.",
+      "key_variables_expected": [
+        "seasonal_precipitation_mm", "seasonal_et_mm",
+        "seasonal_runoff_mm", "seasonal_delta_g_mm",
+        "cropping_intensity", "double_crop_area_ha",
+        "triple_crop_area_ha", "swb_annual"
+      ],
+      "expected_pathway_candidates": ["groundwater_stress", "irrigation_challenges"],
+      "expected_follow_up_topics": ["borewell_density", "irrigated_area_ha", "canal_name"]
+    },
+    {
+      "id": "Q022",
+      "persona": "hydrology_researcher",
+      "production_system": "Agriculture",
+      "sub_theme": "cropping_and_hydrology_coupling",
+      "query": "I want to test whether changes in cropping intensity in this MWS are correlated with changes in the water balance. Is there a period where cropping intensity increased and delta_g became more negative, which would suggest irrigation expansion is driving groundwater depletion?",
+      "intent": "Correlate cropping intensity time series with delta_g trend to identify irrigation-groundwater coupling.",
+      "key_variables_expected": [
+        "cropping_intensity", "delta_g_mm",
+        "cumulative_g_mm", "seasonal_delta_g_mm",
+        "lulc_ha", "annual_precipitation_mm",
+        "well_depth_m"
+      ],
+      "expected_pathway_candidates": ["groundwater_stress", "irrigation_challenges"],
+      "expected_follow_up_topics": ["borewell_density", "irrigated_area_ha", "crop_type_area_ha"]
+    },
+    {
+      "id": "Q023",
+      "persona": "hydrology_researcher",
+      "production_system": "Agriculture",
+      "sub_theme": "runoff_and_erosion",
+      "query": "High drainage density and sloped terrain could mean significant surface runoff and soil erosion in this MWS. What does the terrain and hydrology data suggest about runoff behaviour here, and is there evidence in the LULC data of degradation consistent with erosion?",
+      "intent": "Infer erosion risk from terrain, drainage density, and runoff magnitude corroborated by LULC degradation.",
+      "key_variables_expected": [
+        "drainage_density_km_per_km2", "terrain_area_percent",
+        "annual_runoff_mm", "annual_precipitation_mm",
+        "lulc_ha", "cd_degradation_ha",
+        "stream_order_area_percent", "elevation_min_m", "elevation_max_m"
+      ],
+      "expected_pathway_candidates": ["soil_degradation", "rainfed_risk"],
+      "expected_follow_up_topics": ["soil_erosion_rate", "soil_type", "invasive_species_area_ha"]
+    },
+    {
+      "id": "Q024",
+      "persona": "watershed_programme_manager",
+      "production_system": "Socio_Economic",
+      "sub_theme": "programme_convergence",
+      "query": "Before launching a new programme here I want to understand what organisations are already working in this MWS and which gaps remain. What is the existing institutional presence, and what domains are not yet covered that I should plan to fill?",
+      "intent": "Map existing NGO domain coverage against production system needs to identify gaps.",
+      "key_variables_expected": [
+        "organization_domains", "nrega_mws",
+        "village_population", "village_sc_percent",
+        "village_st_percent", "facility_distances_km"
+      ],
+      "expected_pathway_candidates": ["multi_sector_vulnerability"],
+      "expected_follow_up_topics": ["household_income_inr", "migrant_household_percent", "landholding_distribution"]
+    },
+    {
+      "id": "Q025",
+      "persona": "agricultural_extension_worker",
+      "production_system": "Agriculture",
+      "sub_theme": "crop_intensification_vs_sustainability",
+      "query": "I've noticed some farmers are trying to grow double or triple crops. Is the water resource here sufficient to support increased cropping intensity sustainably, or is intensification already straining the water balance?",
+      "intent": "Assess whether current or increasing cropping intensity is water-sustainable given delta_g and aquifer context.",
+      "key_variables_expected": [
+        "cropping_intensity", "double_crop_area_ha",
+        "triple_crop_area_ha", "delta_g_mm",
+        "cumulative_g_mm", "well_depth_m",
+        "soge_dev_percent", "swb_annual",
+        "aquifer_class", "canal_name"
+      ],
+      "expected_pathway_candidates": ["groundwater_stress", "irrigation_challenges", "rainfed_risk"],
+      "expected_follow_up_topics": ["borewell_density", "irrigated_area_ha", "crop_type_area_ha"]
+    },
+    {
+      "id": "Q026",
+      "persona": "livelihood_organisation_planner",
+      "production_system": "Socio_Economic",
+      "sub_theme": "migration_and_distress",
+      "query": "We are concerned about distress out-migration from this area as a sign of livelihood failure. Does the data here show patterns that are typically associated with high distress — recurring drought, degraded land, poor market access, limited institutional presence?",
+      "intent": "Synthesise multiple stress signals to assess overall distress level predictive of out-migration.",
+      "key_variables_expected": [
+        "drought_weeks", "cd_degradation_ha",
+        "facility_distances_km", "organization_domains",
+        "village_sc_percent", "village_st_percent",
+        "village_literacy_rate", "nrega_village",
+        "cumulative_g_mm", "lulc_ha"
+      ],
+      "expected_pathway_candidates": ["multi_sector_vulnerability", "drought", "soil_degradation", "market_access_gap"],
+      "expected_follow_up_topics": ["migrant_household_percent", "household_income_inr", "crop_type_area_ha", "landholding_distribution"]
+    },
+    {
+      "id": "Q027",
+      "persona": "forest_development_officer",
+      "production_system": "NTFP_Forest_Biodiversity",
+      "sub_theme": "biodiversity_and_genetic_erosion",
+      "query": "I'm worried that traditional crop and plant varieties known to tribals in this area are being lost as farming systems change. Does the data show a shift away from traditional practices or crop diversity in this MWS?",
+      "intent": "Infer genetic erosion risk from monoculture trends in LULC and cropping intensity, and identify high ST-population villages.",
+      "key_variables_expected": [
+        "lulc_ha", "cropping_intensity",
+        "cd_crop_intensity_ha", "village_st_percent",
+        "organization_domains", "cd_deforestation_ha"
+      ],
+      "expected_pathway_candidates": ["genetic_erosion", "monocropping", "forest_degradation"],
+      "expected_follow_up_topics": ["ntfp_species_presence", "crop_type_area_ha", "invasive_species_area_ha"]
+    },
+    {
+      "id": "Q028",
+      "persona": "restoration_professional",
+      "production_system": "NTFP_Forest_Biodiversity",
+      "sub_theme": "invasive_species",
+      "query": "Invasive species like Lantana and Prosopis are a serious restoration barrier in this region. Can the system tell me anything about the risk of invasive dominance in this MWS based on the degradation and vegetation data available?",
+      "intent": "Infer invasive species risk from LULC shrub/scrub trends and degradation, flag the data gap, and ask targeted questions.",
+      "key_variables_expected": [
+        "lulc_ha", "cd_degradation_ha",
+        "restoration_area_ha", "terrain_area_percent",
+        "cd_afforestation_ha"
+      ],
+      "expected_pathway_candidates": ["invasive_species", "land_degradation", "pasture_degradation"],
+      "expected_follow_up_topics": ["invasive_species_area_ha", "forest_fire_incidents", "common_land_area_ha", "ntfp_species_presence"]
+    },
+    {
+      "id": "Q029",
+      "persona": "watershed_programme_manager",
+      "production_system": "Agriculture",
+      "sub_theme": "aquifer_specific_planning",
+      "query": "I know that the type of aquifer matters a lot for what recharge interventions will work. What type of aquifer does this MWS sit on, and what does that mean for the realistic potential of check dams, percolation ponds, or recharge shafts here?",
+      "intent": "Translate ACWADAM aquifer class into practical intervention suitability guidance.",
+      "key_variables_expected": [
+        "aquifer_class", "aquifer_lithology_percent",
+        "soge_dev_percent", "delta_g_mm",
+        "terrain_area_percent", "drainage_density_km_per_km2",
+        "stream_order_area_percent"
+      ],
+      "expected_pathway_candidates": ["groundwater_stress", "irrigation_challenges"],
+      "expected_follow_up_topics": ["borewell_density", "groundwater_salinity", "irrigated_area_ha"]
+    },
+    {
+      "id": "Q030",
+      "persona": "hydrology_researcher",
+      "production_system": "Agriculture",
+      "sub_theme": "surface_water_dynamics",
+      "query": "I want to understand the inter-annual variability in surface water bodies in this MWS and whether it tracks rainfall or shows anomalous behaviour that might indicate tank siltation, structural failure, or changes in catchment runoff.",
+      "intent": "Analyse SWB area inter-annual variability relative to precipitation to detect structural vs rainfall-driven changes.",
+      "key_variables_expected": [
+        "swb_annual", "annual_precipitation_mm",
+        "annual_runoff_mm", "lulc_ha",
+        "cd_degradation_ha", "terrain_area_percent"
+      ],
+      "expected_pathway_candidates": ["irrigation_challenges", "drought"],
+      "expected_follow_up_topics": ["swb_siltation_data", "nrega_swc_desilting", "fish_production_kg"]
+    }
+  ]
+}

@@ -25,13 +25,17 @@
     {
       "signal_id": "sig_01",
       "variables": [
-        "swb_total_area_ha",
+        "trend_swb_total_area_ha",
         "swb_count"
       ],
       "condition": {
         "type": "trend",
         "expression": "trend_swb_total_area_ha < -5 and swb_count < 3",
-        "qualitative_description": "Surface water body total area is declining at more than 5 ha/year and fewer than 3 distinct water bodies exist in the MWS, indicating shrinking storage infrastructure."
+        "qualitative_description": "Surface water body total area is declining at more than 5 ha/year and fewer than 3 distinct water bodies exist in the MWS, indicating shrinking storage infrastructure.",
+        "variables": [
+          "trend_swb_total_area_ha",
+          "swb_count"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -41,12 +45,15 @@
     {
       "signal_id": "sig_02",
       "variables": [
-        "swb_kharif_area_ha"
+        "mean_swb_rabi_kharif_ratio"
       ],
       "condition": {
         "type": "trend",
         "expression": "mean_swb_rabi_kharif_ratio < 0.35",
-        "qualitative_description": "The mean ratio of SWB rabi area to kharif area is below 0.35, indicating that water bodies dry out rapidly after the monsoon and cannot sustain rabi irrigation."
+        "qualitative_description": "The mean ratio of SWB rabi area to kharif area is below 0.35, indicating that water bodies dry out rapidly after the monsoon and cannot sustain rabi irrigation.",
+        "variables": [
+          "mean_swb_rabi_kharif_ratio"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -61,10 +68,13 @@
       "condition": {
         "type": "quantitative",
         "expression": "nrega_swc_count < 5",
-        "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA for the MWS, indicating historically low investment in water harvesting infrastructure."
+        "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA for the MWS, indicating historically low investment in water harvesting infrastructure.",
+        "variables": [
+          "nrega_swc_count"
+        ]
       },
       "severity": "moderate",
-      "direction": "amplifies",
+      "direction": "confirms",
       "explanation": "Low MGNREGA SWC investment means that opportunities to rehabilitate tanks, construct check dams, or build percolation ponds have not been taken up. In semi-arid Deccan plateau contexts, MGNREGA-funded tank desilting and check dam construction are the primary public mechanisms for restoring irrigation water availability. Dashora et al. (2019) showed that manual desilting of a check dam increased recharge by 84% in the following year, with a benefit-cost ratio of 4.1 across four structures — underscoring the high returns from maintenance investment that low NREGA counts suggest is absent.",
       "active": true
     },
@@ -77,7 +87,11 @@
       "condition": {
         "type": "composite",
         "expression": "river_name is None and dist_cooperative_km > 15",
-        "qualitative_description": "No named river passes through or adjacent to the MWS, and the nearest agricultural cooperative is more than 15 km away, indicating both absence of surface diversion potential and limited institutional access to credit for irrigation investment."
+        "qualitative_description": "No named river passes through or adjacent to the MWS, and the nearest agricultural cooperative is more than 15 km away, indicating both absence of surface diversion potential and limited institutional access to credit for irrigation investment.",
+        "variables": [
+          "river_name",
+          "dist_cooperative_km"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -229,7 +243,8 @@
     "version": 1,
     "primary_confirm_signals": [
       "sig_01",
-      "sig_02"
+      "sig_02",
+      "sig_03"
     ],
     "confirm_when": {
       "min_confirms_true": 2,
@@ -237,7 +252,8 @@
       "min_from_set": {
         "signals": [
           "sig_01",
-          "sig_02"
+          "sig_02",
+          "sig_03"
         ],
         "min": 2
       }
@@ -248,7 +264,8 @@
         "min_from_set": {
           "signals": [
             "sig_01",
-            "sig_02"
+            "sig_02",
+            "sig_03"
           ],
           "min": 2
         },

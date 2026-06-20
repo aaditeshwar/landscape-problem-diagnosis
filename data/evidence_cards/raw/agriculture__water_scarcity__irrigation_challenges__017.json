@@ -24,13 +24,19 @@
     {
       "signal_id": "sig_01",
       "variables": [
-        "swb_total_area_ha",
-        "swb_count"
+        "trend_swb_total_area_ha",
+        "swb_count",
+        "mean_swb_total_area_ha"
       ],
       "condition": {
         "type": "trend",
         "expression": "trend_swb_total_area_ha < -2 or (swb_count < 3 and mean_swb_total_area_ha < 10)",
-        "qualitative_description": "Declining surface water body area (more than 2 ha/year loss) or very few small water bodies relative to the micro-watershed, indicating insufficient or shrinking storage infrastructure on these small island territories."
+        "qualitative_description": "Declining surface water body area (more than 2 ha/year loss) or very few small water bodies relative to the micro-watershed, indicating insufficient or shrinking storage infrastructure on these small island territories.",
+        "variables": [
+          "trend_swb_total_area_ha",
+          "swb_count",
+          "mean_swb_total_area_ha"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -40,12 +46,15 @@
     {
       "signal_id": "sig_02",
       "variables": [
-        "swb_kharif_area_ha"
+        "mean_swb_rabi_kharif_ratio"
       ],
       "condition": {
         "type": "trend",
         "expression": "mean_swb_rabi_kharif_ratio < 0.4",
-        "qualitative_description": "The rabi-to-kharif SWB area ratio is below 0.4, meaning surface water bodies lose more than 60% of their kharif-season area by rabi season, indicating rapid post-monsoon drying and inability to support rabi or zaid irrigation."
+        "qualitative_description": "The rabi-to-kharif SWB area ratio is below 0.4, meaning surface water bodies lose more than 60% of their kharif-season area by rabi season, indicating rapid post-monsoon drying and inability to support rabi or zaid irrigation.",
+        "variables": [
+          "mean_swb_rabi_kharif_ratio"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -60,7 +69,10 @@
       "condition": {
         "type": "quantitative",
         "expression": "nrega_swc_count < 5",
-        "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA for the micro-watershed, indicating historically low investment in water harvesting infrastructure."
+        "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA for the micro-watershed, indicating historically low investment in water harvesting infrastructure.",
+        "variables": [
+          "nrega_swc_count"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -76,7 +88,11 @@
       "condition": {
         "type": "composite",
         "expression": "dist_cooperative_km > 15 and river_name is None",
-        "qualitative_description": "The nearest agricultural cooperative is more than 15 km away and no named river passes through or adjacent to the micro-watershed, indicating both limited access to institutional credit for irrigation investment and absence of surface diversion potential."
+        "qualitative_description": "The nearest agricultural cooperative is more than 15 km away and no named river passes through or adjacent to the micro-watershed, indicating both limited access to institutional credit for irrigation investment and absence of surface diversion potential.",
+        "variables": [
+          "dist_cooperative_km",
+          "river_name"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",

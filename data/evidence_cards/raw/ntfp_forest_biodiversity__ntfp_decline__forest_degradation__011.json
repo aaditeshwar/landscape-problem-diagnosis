@@ -31,7 +31,10 @@
       "condition": {
         "type": "trend",
         "expression": "lulc_tree_forest_ha[-1] < lulc_tree_forest_ha[0]",
-        "qualitative_description": "Forest cover area (ha) in the micro-watershed is lower in the most recent year than in the earliest year of the 2017–2024 record, indicating net forest loss over the period."
+        "qualitative_description": "Forest cover area (ha) in the micro-watershed is lower in the most recent year than in the earliest year of the 2017–2024 record, indicating net forest loss over the period.",
+        "variables": [
+          "lulc_tree_forest_ha"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -66,7 +69,10 @@
       "condition": {
         "type": "quantitative",
         "expression": "cd_total_deforestation_ha > 50",
-        "qualitative_description": "More than 50 ha of cumulative deforestation recorded in the micro-watershed, indicating substantial habitat loss for NTFP species."
+        "qualitative_description": "More than 50 ha of cumulative deforestation recorded in the micro-watershed, indicating substantial habitat loss for NTFP species.",
+        "variables": [
+          "cd_total_deforestation_ha"
+        ]
       },
       "severity": "moderate",
       "direction": "confirms",
@@ -81,7 +87,10 @@
       "condition": {
         "type": "qualitative",
         "expression": "'Agroforestry' not in organization_domains and 'NTFP' not in organization_domains and 'Forest' not in organization_domains",
-        "qualitative_description": "No NGO or organisation active in the micro-watershed has a domain focus on agroforestry, NTFP management, or forest governance, indicating an absence of institutional support for NTFP recovery and community forest protection."
+        "qualitative_description": "No NGO or organisation active in the micro-watershed has a domain focus on agroforestry, NTFP management, or forest governance, indicating an absence of institutional support for NTFP recovery and community forest protection.",
+        "variables": [
+          "organization_domains"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -144,6 +153,14 @@
             "band": "moderate",
             "present": true,
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {

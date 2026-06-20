@@ -231,8 +231,6 @@ export function dualAxisSeries(mws: MwsDocument): Array<{ year: string; cropping
     .map((c) => ({ year: c.year, cropping: c.value, deltaG: deltaMap[c.year] }))
 }
 
-const LULC_STACK_KEYS = ['cropland', 'tree_forest', 'shrub_scrub', 'barrenland', 'krz_water'] as const
-
 export function lulcForestSeries(mws: MwsDocument): YearPoint[] {
   const data = mws.lulc_ha ?? {}
   return sortedYears(data)
@@ -240,13 +238,29 @@ export function lulcForestSeries(mws: MwsDocument): YearPoint[] {
     .filter((p) => Number.isFinite(p.value))
 }
 
-export function lulcStackedSeries(mws: MwsDocument): Array<Record<string, string | number>> {
+const LULC_CROPLAND_COMPONENTS = ['single_kharif', 'single_non_kharif', 'double_crop', 'triple_crop'] as const
+const LULC_SURFACE_KEYS = ['cropland', 'built_up', 'tree_forest', 'shrub_scrub', 'barrenland'] as const
+const LULC_WATER_KEYS = ['k_water', 'kr_water', 'krz_water'] as const
+
+export function lulcStackedSeries(
+  mws: MwsDocument,
+  options?: { combineWater?: boolean },
+): Array<Record<string, string | number>> {
+  const combineWater = options?.combineWater ?? false
   const data = mws.lulc_ha ?? {}
   return sortedYears(data).map((year) => {
     const row = data[year] ?? {}
     const out: Record<string, string | number> = { year }
-    for (const key of LULC_STACK_KEYS) {
+    out.cropland = LULC_CROPLAND_COMPONENTS.reduce((sum, key) => sum + Number(row[key] ?? 0), 0)
+    for (const key of LULC_SURFACE_KEYS.slice(1)) {
       out[key] = Number(row[key] ?? 0)
+    }
+    if (combineWater) {
+      out.water = LULC_WATER_KEYS.reduce((sum, key) => sum + Number(row[key] ?? 0), 0)
+    } else {
+      for (const key of LULC_WATER_KEYS) {
+        out[key] = Number(row[key] ?? 0)
+      }
     }
     return out
   })

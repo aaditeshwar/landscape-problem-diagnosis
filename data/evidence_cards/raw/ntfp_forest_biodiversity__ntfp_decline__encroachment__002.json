@@ -54,14 +54,15 @@
         ]
       },
       "severity": "moderate",
-      "direction": "confirms",
+      "direction": "amplifies",
       "explanation": "Settlement expansion into forest fringes reduces both the physical extent of NTFP-bearing forest and community access corridors. In semi-arid hard rock plateau regions, peri-urban growth along forest edges fragments contiguous forest patches, increasing edge effects and reducing interior forest habitat where high-value NTFPs such as tendu leaf, mahua, and amla are concentrated. A threshold of 50 ha accounts for meaningful landscape-level change at the micro-watershed scale relevant to village-level NTFP collection.",
       "active": true
     },
     {
       "signal_id": "sig_03",
       "variables": [
-        "village_st_percent"
+        "village_st_percent",
+        "cd_forest_to_farm_ha"
       ],
       "condition": {
         "type": "composite",
@@ -81,7 +82,7 @@
       "signal_id": "sig_04",
       "variables": [
         "cd_forest_to_farm_ha",
-        "cd_urbanization_ha"
+        "terrain_cluster_id"
       ],
       "condition": {
         "type": "composite",
@@ -89,7 +90,7 @@
         "qualitative_description": "Forest-to-farm conversion exceeds 100 ha over the record period in non-plains terrain, indicating substantial encroachment pressure in hilly or plateau landscapes where forest access routes are limited.",
         "variables": [
           "cd_forest_to_farm_ha",
-          "cd_urbanization_ha"
+          "terrain_cluster_id"
         ]
       },
       "severity": "high",
@@ -333,25 +334,29 @@
     "confirm_when": {
       "min_confirms_true": 2,
       "amplifiers_do_not_confirm": true,
+      "required_all": [
+        "sig_01"
+      ],
       "min_from_set": {
         "signals": [
-          "sig_01",
           "sig_03",
           "sig_04"
         ],
-        "min": 2
+        "min": 1
       }
     },
     "confidence_when": [
       {
         "level": "high",
+        "required_all": [
+          "sig_01"
+        ],
         "min_from_set": {
           "signals": [
-            "sig_01",
             "sig_03",
             "sig_04"
           ],
-          "min": 2
+          "min": 1
         },
         "min_high_severity_confirms": 2
       },

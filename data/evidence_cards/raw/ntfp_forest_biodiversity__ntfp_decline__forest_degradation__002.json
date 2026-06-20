@@ -30,7 +30,10 @@
       "condition": {
         "type": "trend",
         "expression": "lulc_tree_forest_ha[-1] < lulc_tree_forest_ha[0] and (lulc_tree_forest_ha[0] - lulc_tree_forest_ha[-1]) / (lulc_tree_forest_ha[0] + 1e-9) > 0.05",
-        "qualitative_description": "Forest area has declined by more than 5% from the earliest to the latest year in the 2017–2024 record, indicating meaningful net loss of tree cover."
+        "qualitative_description": "Forest area has declined by more than 5% from the earliest to the latest year in the 2017–2024 record, indicating meaningful net loss of tree cover.",
+        "variables": [
+          "lulc_tree_forest_ha"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -65,7 +68,10 @@
       "condition": {
         "type": "quantitative",
         "expression": "cd_total_deforestation_ha > 100",
-        "qualitative_description": "Total deforested area in the micro-watershed exceeds 100 ha, representing a substantial absolute loss of NTFP habitat."
+        "qualitative_description": "Total deforested area in the micro-watershed exceeds 100 ha, representing a substantial absolute loss of NTFP habitat.",
+        "variables": [
+          "cd_total_deforestation_ha"
+        ]
       },
       "severity": "moderate",
       "direction": "confirms",
@@ -80,7 +86,10 @@
       "condition": {
         "type": "qualitative",
         "expression": "'Agroforestry' not in organization_domains and 'Forest management' not in organization_domains and 'NTFP' not in organization_domains",
-        "qualitative_description": "No NGO or organisation active in the micro-watershed has agroforestry, forest management, or NTFP as a domain of work, indicating an absence of institutional support for forest and NTFP recovery."
+        "qualitative_description": "No NGO or organisation active in the micro-watershed has agroforestry, forest management, or NTFP as a domain of work, indicating an absence of institutional support for forest and NTFP recovery.",
+        "variables": [
+          "organization_domains"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -157,6 +166,14 @@
             "band": "moderate",
             "present": true,
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {

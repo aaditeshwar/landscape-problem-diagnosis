@@ -60,7 +60,8 @@
     {
       "signal_id": "sig_03",
       "variables": [
-        "village_st_percent"
+        "village_st_percent",
+        "cd_forest_to_farm_ha"
       ],
       "condition": {
         "type": "composite",
@@ -84,7 +85,10 @@
       "condition": {
         "type": "quantitative",
         "expression": "village_st_percent > 40",
-        "qualitative_description": "Villages with ST population exceeding 40% are likely to have significant NTFP dependency, making any forest loss disproportionately impactful on livelihoods."
+        "qualitative_description": "Villages with ST population exceeding 40% are likely to have significant NTFP dependency, making any forest loss disproportionately impactful on livelihoods.",
+        "variables": [
+          "village_st_percent"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",

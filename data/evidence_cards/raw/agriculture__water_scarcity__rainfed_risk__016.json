@@ -24,14 +24,19 @@
     {
       "signal_id": "sig_01",
       "variables": [
-        "cropping_intensity",
-        "lulc_single_kharif_ha",
-        "lulc_double_crop_ha"
+        "mean_cropping_intensity",
+        "mean_kharif_cropped_area_ha",
+        "mean_double_crop_area_ha"
       ],
       "condition": {
         "type": "composite",
         "expression": "mean_cropping_intensity <= 1.15 and (mean_kharif_cropped_area_ha / (mean_double_crop_area_ha + mean_kharif_cropped_area_ha + 1e-9)) > 0.80",
-        "qualitative_description": "Mean cropping intensity at or below 1.15 combined with over 80% of cropped area under single kharif season indicates near-total rainfed dependence with no meaningful rabi or irrigated double-cropping."
+        "qualitative_description": "Mean cropping intensity at or below 1.15 combined with over 80% of cropped area under single kharif season indicates near-total rainfed dependence with no meaningful rabi or irrigated double-cropping.",
+        "variables": [
+          "mean_cropping_intensity",
+          "mean_kharif_cropped_area_ha",
+          "mean_double_crop_area_ha"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -47,7 +52,11 @@
       "condition": {
         "type": "composite",
         "expression": "canal_name is None and nrega_irrigation_count < 3",
-        "qualitative_description": "No irrigation canal intersects the micro-watershed and fewer than 3 MGNREGA irrigation works have been recorded, confirming absence of surface irrigation infrastructure."
+        "qualitative_description": "No irrigation canal intersects the micro-watershed and fewer than 3 MGNREGA irrigation works have been recorded, confirming absence of surface irrigation infrastructure.",
+        "variables": [
+          "canal_name",
+          "nrega_irrigation_count"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -57,16 +66,16 @@
     {
       "signal_id": "sig_03",
       "variables": [
-        "runoff_mm",
-        "terrain_cluster_id"
+        "terrain_cluster_id",
+        "mean_annual_runoff_mm"
       ],
       "condition": {
         "type": "composite",
         "expression": "terrain_cluster_id == 3 and mean_annual_runoff_mm > 40",
         "qualitative_description": "Broad plains and slopes terrain (cluster 3) combined with mean annual runoff exceeding 40 mm indicates that a significant fraction of the scarce precipitation is lost as surface runoff rather than infiltrating to support crops.",
         "variables": [
-          "runoff_mm",
-          "terrain_cluster_id"
+          "terrain_cluster_id",
+          "mean_annual_runoff_mm"
         ]
       },
       "severity": "moderate",
@@ -77,12 +86,15 @@
     {
       "signal_id": "sig_04",
       "variables": [
-        "swb_rabi_area_ha"
+        "mean_swb_rabi_kharif_ratio"
       ],
       "condition": {
         "type": "trend",
         "expression": "mean_swb_rabi_kharif_ratio < 0.15",
-        "qualitative_description": "Mean ratio of surface water body area in rabi to kharif season below 0.15 indicates that surface water storage does not persist into the post-monsoon period, confirming absence of stored water for rabi irrigation."
+        "qualitative_description": "Mean ratio of surface water body area in rabi to kharif season below 0.15 indicates that surface water storage does not persist into the post-monsoon period, confirming absence of stored water for rabi irrigation.",
+        "variables": [
+          "mean_swb_rabi_kharif_ratio"
+        ]
       },
       "severity": "moderate",
       "direction": "confirms",
@@ -146,6 +158,14 @@
             "present": true,
             "percent_lower": 10,
             "percent_upper": 30
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {

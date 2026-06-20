@@ -32,7 +32,11 @@
       "condition": {
         "type": "quantitative",
         "expression": "drought_weeks_severe[-1] >= 2 or drought_weeks_moderate[-1] >= 4",
-        "qualitative_description": "Two or more severe drought weeks, or four or more moderate drought weeks in the latest kharif season, indicate meaningful crop-season water deficit even in a normally humid zone."
+        "qualitative_description": "Two or more severe drought weeks, or four or more moderate drought weeks in the latest kharif season, indicate meaningful crop-season water deficit even in a normally humid zone.",
+        "variables": [
+          "drought_weeks_severe",
+          "drought_weeks_moderate"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -47,7 +51,10 @@
       "condition": {
         "type": "quantitative",
         "expression": "dry_spell_weeks[-1] >= 3",
-        "qualitative_description": "Three or more dry spell weeks (4-week moving window with <50% historical rainfall) in the latest kharif season indicate a prolonged intra-seasonal break that disrupts crop water supply."
+        "qualitative_description": "Three or more dry spell weeks (4-week moving window with <50% historical rainfall) in the latest kharif season indicate a prolonged intra-seasonal break that disrupts crop water supply.",
+        "variables": [
+          "dry_spell_weeks"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -57,7 +64,9 @@
     {
       "signal_id": "sig_03",
       "variables": [
-        "drought_causality"
+        "drought_mild_spi_score_latest",
+        "drought_mild_mai_score_latest",
+        "drought_mild_vci_score_latest"
       ],
       "condition": {
         "type": "composite",
@@ -77,16 +86,18 @@
     {
       "signal_id": "sig_04",
       "variables": [
-        "seasonal_precipitation_mm",
-        "precipitation_mm"
+        "trend_annual_precipitation_mm",
+        "mean_annual_precipitation_mm",
+        "seasonal_precipitation_mm"
       ],
       "condition": {
         "type": "trend",
         "expression": "(seasonal_precipitation_mm[-1].get('kharif', 9999) < 0.75 * mean_annual_precipitation_mm * 0.85) or (trend_annual_precipitation_mm < -20)",
         "qualitative_description": "Kharif seasonal precipitation in the latest year below 75% of the long-run kharif normal, or a declining trend in annual precipitation exceeding 20 mm/year, confirms a structural rainfall deficit underpinning drought.",
         "variables": [
-          "seasonal_precipitation_mm",
-          "precipitation_mm"
+          "trend_annual_precipitation_mm",
+          "mean_annual_precipitation_mm",
+          "seasonal_precipitation_mm"
         ]
       },
       "severity": "moderate",
@@ -102,7 +113,10 @@
       "condition": {
         "type": "trend",
         "expression": "monsoon_onset_date[-1] > monsoon_onset_date[0]",
-        "qualitative_description": "Monsoon onset in the latest year is later than in the earliest year of the record, indicating a trend toward delayed onset that shortens the effective kharif growing season."
+        "qualitative_description": "Monsoon onset in the latest year is later than in the earliest year of the record, indicating a trend toward delayed onset that shortens the effective kharif growing season.",
+        "variables": [
+          "monsoon_onset_date"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",

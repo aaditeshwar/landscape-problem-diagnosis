@@ -1,0 +1,645 @@
+{
+  "schema_version": 1,
+  "edits": {
+    "agriculture__water_scarcity__drought__002": {
+      "card_id": "agriculture__water_scarcity__drought__002",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "required_all": [
+              "sig_03"
+            ],
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02"
+              ],
+              "min": 1
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-20T16:12:31+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-20T16:23:14+00:00",
+      "applied_card_digest": "77c0faba97f99a6b3305cfbfaeaa1f1590451222c957c254c90176bedc8e4072"
+    },
+    "agriculture__water_scarcity__irrigation_challenges__001": {
+      "card_id": "agriculture__water_scarcity__irrigation_challenges__001",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "variables": [
+              "nrega_swc_count"
+            ],
+            "severity": "moderate",
+            "direction": "confirms",
+            "condition": {
+              "expression": "nrega_swc_count < 5",
+              "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA in the MWS, indicating historically low investment in water harvesting infrastructure."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-20T17:20:31+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-20T17:31:22+00:00",
+      "applied_card_digest": "ec5106ff769dfc3b49f42b7a0a17b43c91a5a3e185c63395c2c3555e9cafa3b8"
+    },
+    "agriculture__water_scarcity__irrigation_challenges__002": {
+      "card_id": "agriculture__water_scarcity__irrigation_challenges__002",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "variables": [
+              "nrega_swc_count"
+            ],
+            "severity": "moderate",
+            "direction": "confirms",
+            "condition": {
+              "expression": "nrega_swc_count < 5",
+              "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA for the MWS, indicating historically low investment in water harvesting infrastructure."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-20T17:24:15+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-20T17:31:22+00:00",
+      "applied_card_digest": "ad2901f71a1c915a8649093944353d3caf52b6aeb93495110404ff656c16b0ca"
+    },
+    "agriculture__water_scarcity__rainfed_risk__002": {
+      "card_id": "agriculture__water_scarcity__rainfed_risk__002",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_05",
+            "sig_06"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03",
+                "sig_05",
+                "sig_06"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03",
+                  "sig_05",
+                  "sig_06"
+                ],
+                "min": 3
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03",
+                  "sig_05",
+                  "sig_06"
+                ],
+                "min": 2
+              }
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-20T18:25:36+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-20T18:46:46+00:00",
+      "applied_card_digest": "c9236aee55029260ff1408b98be2cdf1e28b27aa82d3e830f740f3dfecb63dc8"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__encroachment__002": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__002",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_03",
+            "sig_04"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "required_all": [
+              "sig_01"
+            ],
+            "min_from_set": {
+              "signals": [
+                "sig_03",
+                "sig_04"
+              ],
+              "min": 1
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "required_all": [
+                "sig_01"
+              ],
+              "min_from_set": {
+                "signals": [
+                  "sig_03",
+                  "sig_04"
+                ],
+                "min": 1
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "variables": [
+              "cd_urbanization_ha"
+            ],
+            "severity": "moderate",
+            "direction": "amplifies",
+            "condition": {
+              "expression": "cd_urbanization_ha > 50",
+              "qualitative_description": "Total urbanized area has expanded by more than 50 ha over the observation period, suggesting settlement encroachment into forest margins."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-20T18:34:25+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-20T18:46:46+00:00",
+      "applied_card_digest": "ac32658f71bbf8f9b1e3f5cd946d56d5a1d6a4395de0af7a8f6f562e6356e811"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__001": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__001",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_05"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 1,
+            "amplifiers_do_not_confirm": true,
+            "required_any": [
+              [
+                "sig_01",
+                "sig_02"
+              ],
+              [
+                "sig_01",
+                "sig_03"
+              ],
+              [
+                "sig_02",
+                "sig_03"
+              ],
+              [
+                "sig_05"
+              ]
+            ]
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03",
+                  "sig_05"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-20T18:45:58+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-20T18:46:46+00:00",
+      "applied_card_digest": "369a73f8e8c1886d36d5fcc163d9a5260e4391919c0047bc885285158a7a7ea0"
+    },
+    "socio_economic__economic_hardship__multi_sector_vulnerability__001": {
+      "card_id": "socio_economic__economic_hardship__multi_sector_vulnerability__001",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_04"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 3,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03",
+                "sig_04"
+              ],
+              "min": 3
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03",
+                  "sig_04"
+                ],
+                "min": 3
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_04",
+            "variables": [
+              "nrega_swc_count"
+            ],
+            "severity": "moderate",
+            "direction": "confirms",
+            "condition": {
+              "expression": "nrega_swc_count < 5",
+              "qualitative_description": "Fewer than 5 cumulative MGNREGA soil and water conservation works recorded in the micro-watershed, indicating insufficient wage employment provision and low investment in productive assets during lean seasons."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-20T19:05:35+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-20T19:29:16+00:00",
+      "applied_card_digest": "7c587ed7b0c736153ea2ce42ce75b363cdf862aabfa8b28ffadaa1c3b63ae941"
+    },
+    "socio_economic__economic_hardship__multi_sector_vulnerability__002": {
+      "card_id": "socio_economic__economic_hardship__multi_sector_vulnerability__002",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_04"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 3,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03",
+                "sig_04"
+              ],
+              "min": 3
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03",
+                  "sig_04"
+                ],
+                "min": 3
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_04",
+            "variables": [
+              "nrega_swc_count"
+            ],
+            "severity": "moderate",
+            "direction": "confirms",
+            "condition": {
+              "expression": "nrega_swc_count < 5",
+              "qualitative_description": "Fewer than 5 cumulative MGNREGA soil and water conservation works in the micro-watershed, indicating insufficient public employment and watershed investment to buffer households against agricultural income shocks."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-20T19:07:12+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-20T19:29:16+00:00",
+      "applied_card_digest": "be7995fe8f34fe7501d3203ca88c8b8f2bcbed5eb3e30cac5b7257ac9ea4f3bc"
+    },
+    "socio_economic__low_income__small_landholding__001": {
+      "card_id": "socio_economic__low_income__small_landholding__001",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_05"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 1,
+            "amplifiers_do_not_confirm": true,
+            "required_any": [
+              [
+                "sig_01",
+                "sig_02",
+                "sig_03"
+              ],
+              [
+                "sig_05"
+              ]
+            ]
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03",
+                  "sig_05"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "variables": [
+              "dist_apmc_km",
+              "dist_dairy_km"
+            ],
+            "severity": "moderate",
+            "direction": "confirms",
+            "condition": {
+              "expression": "dist_apmc_km > 30 and dist_dairy_km > 20",
+              "qualitative_description": "Village is more than 30 km from the nearest APMC and more than 20 km from the nearest dairy collection centre, indicating that small holders face high transaction costs and are unable to diversify into livestock income."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-20T19:23:28+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-20T19:29:16+00:00",
+      "applied_card_digest": "0cbaa2e385eb81baac42279f0f052ecafba72d6561feabccbe703d248230a319"
+    },
+    "socio_economic__low_income__small_landholding__002": {
+      "card_id": "socio_economic__low_income__small_landholding__002",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_05",
+            "sig_07"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_05",
+                "sig_07"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_05",
+                  "sig_07"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-20T19:29:04+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-20T19:29:16+00:00",
+      "applied_card_digest": "3bccbc7544b8e8dd92011058719e7918e6dc7a0315b763177359e30bdaa0e40e"
+    }
+  }
+}

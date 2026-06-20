@@ -47,7 +47,10 @@
       "condition": {
         "type": "quantitative",
         "expression": "cd_forest_to_farm_ha > 50",
-        "qualitative_description": "Latest year forest-to-farm conversion exceeds 50 ha, indicating substantial ongoing encroachment pressure on remaining forest patches."
+        "qualitative_description": "Latest year forest-to-farm conversion exceeds 50 ha, indicating substantial ongoing encroachment pressure on remaining forest patches.",
+        "variables": [
+          "cd_forest_to_farm_ha"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -80,7 +83,10 @@
       "condition": {
         "type": "quantitative",
         "expression": "village_st_percent > 10",
-        "qualitative_description": "Scheduled Tribe population exceeds 10% of village population, indicating a community with historically high NTFP dependence and potential forest rights claims under FRA."
+        "qualitative_description": "Scheduled Tribe population exceeds 10% of village population, indicating a community with historically high NTFP dependence and potential forest rights claims under FRA.",
+        "variables": [
+          "village_st_percent"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -91,7 +97,8 @@
       "signal_id": "sig_05",
       "variables": [
         "cd_forest_to_farm_ha",
-        "village_st_percent"
+        "village_st_percent",
+        "cd_urbanization_ha"
       ],
       "condition": {
         "type": "composite",

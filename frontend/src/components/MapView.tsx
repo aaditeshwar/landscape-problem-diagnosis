@@ -12,7 +12,8 @@ interface Props {
   selectedMwsUid: string | null
   mwsHighlightEpoch?: number
   showVillages: boolean
-  flyTarget: { lat: number; lon: number; zoom?: number } | null
+  flyTarget: { lat: number; lon: number; zoom?: number; seq: number } | null
+  onFlyComplete?: () => void
   onTehsilSelect: (ref: TehsilRef) => void
   onMwsSelect: (uid: string) => void
 }
@@ -37,12 +38,20 @@ function FitBounds({ data, layerKey }: { data: GeoJSON.GeoJsonObject | null; lay
   return null
 }
 
-function FlyToTarget({ target }: { target: { lat: number; lon: number; zoom?: number } | null }) {
+function FlyToTarget({
+  target,
+  onComplete,
+}: {
+  target: { lat: number; lon: number; zoom?: number; seq: number } | null
+  onComplete?: () => void
+}) {
   const map = useMap()
   useEffect(() => {
     if (!target) return
     map.flyTo([target.lat, target.lon], target.zoom ?? 11, { duration: 1.2 })
-  }, [target, map])
+    const timer = window.setTimeout(() => onComplete?.(), 1300)
+    return () => window.clearTimeout(timer)
+  }, [target?.seq, map, onComplete, target])
   return null
 }
 
@@ -55,6 +64,7 @@ export function MapView({
   mwsHighlightEpoch = 0,
   showVillages,
   flyTarget,
+  onFlyComplete,
   onTehsilSelect,
   onMwsSelect,
 }: Props) {
@@ -176,8 +186,8 @@ export function MapView({
           onEachFeature={bindMwsEvents}
         />
       )}
-      <FitBounds data={visibleMws} layerKey={activeTehsilKey} />
-      <FlyToTarget target={flyTarget} />
+      {!flyTarget && <FitBounds data={visibleMws} layerKey={activeTehsilKey} />}
+      <FlyToTarget target={flyTarget} onComplete={onFlyComplete} />
     </MapContainer>
   )
 }

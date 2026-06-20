@@ -32,7 +32,11 @@
       "condition": {
         "type": "quantitative",
         "expression": "(lulc_cropland_ha[-1] / (village_total_population + 1e-9)) < 0.2",
-        "qualitative_description": "Per-capita cropland availability below 0.2 ha per person (proxy for marginal/small holding dominance) in the latest available year."
+        "qualitative_description": "Per-capita cropland availability below 0.2 ha per person (proxy for marginal/small holding dominance) in the latest available year.",
+        "variables": [
+          "lulc_cropland_ha",
+          "village_total_population"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -42,12 +46,15 @@
     {
       "signal_id": "sig_02",
       "variables": [
-        "cropping_intensity"
+        "mean_cropping_intensity"
       ],
       "condition": {
         "type": "trend",
         "expression": "mean_cropping_intensity <= 1.15",
-        "qualitative_description": "Mean cropping intensity at or below 1.15 across the available time series, indicating that small holdings are not compensating through double-cropping or intensification."
+        "qualitative_description": "Mean cropping intensity at or below 1.15 across the available time series, indicating that small holdings are not compensating through double-cropping or intensification.",
+        "variables": [
+          "mean_cropping_intensity"
+        ]
       },
       "severity": "moderate",
       "direction": "confirms",
@@ -63,7 +70,11 @@
       "condition": {
         "type": "composite",
         "expression": "dist_apmc_km > 30 and dist_dairy_km > 20",
-        "qualitative_description": "APMC market more than 30 km away and nearest dairy infrastructure more than 20 km away, indicating that small holders lack both crop price discovery and livestock income diversification pathways."
+        "qualitative_description": "APMC market more than 30 km away and nearest dairy infrastructure more than 20 km away, indicating that small holders lack both crop price discovery and livestock income diversification pathways.",
+        "variables": [
+          "dist_apmc_km",
+          "dist_dairy_km"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -79,7 +90,11 @@
       "condition": {
         "type": "composite",
         "expression": "nrega_community_assets_count < 10 and 'livelihoods' not in organization_domains",
-        "qualitative_description": "Fewer than 10 cumulative MGNREGA community asset works and no NGO presence in livelihoods domain, indicating weak safety net and diversification support infrastructure."
+        "qualitative_description": "Fewer than 10 cumulative MGNREGA community asset works and no NGO presence in livelihoods domain, indicating weak safety net and diversification support infrastructure.",
+        "variables": [
+          "nrega_community_assets_count",
+          "organization_domains"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -225,6 +240,14 @@
           "normalized": {
             "band": "moderate",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {

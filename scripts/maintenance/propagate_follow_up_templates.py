@@ -19,6 +19,7 @@ REPORT = ROOT / "reports/follow_up_propagation_review.md"
 sys.path.insert(0, str(ROOT / "scripts"))
 from lib.follow_up_utils import (  # noqa: E402
     choice_summary,
+    choice_summary_from_map,
     fingerprint_short,
     follow_up_fingerprint,
     parse_choice_summary,
@@ -114,6 +115,10 @@ def main() -> int:
     ]
 
     for row in rows:
+        decision = str(row.get("review_decision") or "").strip().lower()
+        if decision in {"", "needs_review", "ok"}:
+            continue
+
         found = find_group(groups, row)
         if not found:
             print(f"WARN: no group for {row.get('fingerprint')} {row.get('example_card_id')}")
@@ -130,6 +135,12 @@ def main() -> int:
             continue
 
         summary_map = parse_choice_summary(str(row.get("choice_summary") or ""))
+        if decision == "apply_suggested":
+            summary_map = parse_choice_summary(str(row.get("suggested_choice_summary") or ""))
+        elif decision == "keep_none":
+            summary_map = parse_choice_summary(str(row.get("choice_summary") or ""))
+        elif decision == "propagate":
+            summary_map = parse_choice_summary(str(row.get("choice_summary") or ""))
         if not summary_map:
             summary_map = parse_choice_summary(choice_summary(template_q))
 
@@ -159,7 +170,9 @@ def main() -> int:
                 "",
                 f"- **Example card:** `{example_id}`",
                 f"- **Cards in group:** {len(items)}",
+                f"- **Review decision:** `{row.get('review_decision')}`",
                 f"- **Choice summary:** `{row.get('choice_summary')}`",
+                f"- **Applied summary:** `{choice_summary_from_map(summary_map) if summary_map else row.get('choice_summary')}`",
                 f"- **Updates applied:** {group_changes} field change(s) across group",
                 "",
             ]

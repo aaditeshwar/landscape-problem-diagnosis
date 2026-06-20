@@ -236,6 +236,7 @@ _BASE_VARIABLE_RESOLVERS: dict[str, Any] = {
     "soge_class_name": lambda m: (m.get("soge") or {}).get("class_name"),
     "aquifer_class": lambda m: (m.get("aquifer") or {}).get("acwadam_class"),
     "aquifer_lithology_percent": lambda m: (m.get("aquifer") or {}).get("lithology_percent"),
+    "acwadam_class_percent": lambda m: (m.get("aquifer") or {}).get("acwadam_class_percent"),
     "annual_delta_g_mm": lambda m: _annual_series(m, "delta_g_mm"),
     "delta_g_mm": lambda m: _annual_series(m, "delta_g_mm"),
     "annual_precipitation_mm": lambda m: _annual_series(m, "precipitation_mm"),

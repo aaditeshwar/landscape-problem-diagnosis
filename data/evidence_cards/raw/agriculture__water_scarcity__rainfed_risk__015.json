@@ -32,7 +32,11 @@
       "condition": {
         "type": "quantitative",
         "expression": "(lulc_single_kharif_ha[-1] / (lulc_single_kharif_ha[-1] + lulc_double_crop_ha[-1] + 1e-9)) > 0.75",
-        "qualitative_description": "More than 75% of cropped area is under single kharif season only, indicating near-total dependence on monsoon rainfall with negligible irrigation-supported double cropping."
+        "qualitative_description": "More than 75% of cropped area is under single kharif season only, indicating near-total dependence on monsoon rainfall with negligible irrigation-supported double cropping.",
+        "variables": [
+          "lulc_single_kharif_ha",
+          "lulc_double_crop_ha"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -42,12 +46,15 @@
     {
       "signal_id": "sig_02",
       "variables": [
-        "cropping_intensity"
+        "mean_cropping_intensity"
       ],
       "condition": {
         "type": "trend",
         "expression": "mean_cropping_intensity <= 1.15",
-        "qualitative_description": "Mean cropping intensity at or below 1.15 across the multi-year record indicates that the vast majority of net sown area is harvested only once per year, consistent with single-season rainfed farming."
+        "qualitative_description": "Mean cropping intensity at or below 1.15 across the multi-year record indicates that the vast majority of net sown area is harvested only once per year, consistent with single-season rainfed farming.",
+        "variables": [
+          "mean_cropping_intensity"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -57,7 +64,7 @@
     {
       "signal_id": "sig_03",
       "variables": [
-        "runoff_mm",
+        "mean_annual_runoff_mm",
         "terrain_cluster_id"
       ],
       "condition": {
@@ -65,7 +72,7 @@
         "expression": "mean_annual_runoff_mm > 1200 and terrain_cluster_id == 3",
         "qualitative_description": "High mean annual runoff (>1200 mm) combined with broad plains and slopes terrain (cluster 3) indicates rapid lateral drainage of rainfall, reducing in-field moisture retention and limiting water availability between rain events.",
         "variables": [
-          "runoff_mm",
+          "mean_annual_runoff_mm",
           "terrain_cluster_id"
         ]
       },
@@ -83,7 +90,11 @@
       "condition": {
         "type": "composite",
         "expression": "canal_name is None and nrega_irrigation_count < 3",
-        "qualitative_description": "No irrigation canal intersects the micro-watershed and fewer than 3 MGNREGA irrigation works have been constructed, confirming absence of both formal surface irrigation and community-level irrigation investment."
+        "qualitative_description": "No irrigation canal intersects the micro-watershed and fewer than 3 MGNREGA irrigation works have been constructed, confirming absence of both formal surface irrigation and community-level irrigation investment.",
+        "variables": [
+          "canal_name",
+          "nrega_irrigation_count"
+        ]
       },
       "severity": "moderate",
       "direction": "confirms",
@@ -93,12 +104,15 @@
     {
       "signal_id": "sig_05",
       "variables": [
-        "swb_rabi_area_ha"
+        "mean_swb_rabi_kharif_ratio"
       ],
       "condition": {
         "type": "quantitative",
         "expression": "mean_swb_rabi_kharif_ratio < 0.15",
-        "qualitative_description": "Mean ratio of surface water body area in rabi season to kharif season below 0.15 indicates that surface water bodies largely dry up after the monsoon, confirming limited post-monsoon water storage for supplemental irrigation."
+        "qualitative_description": "Mean ratio of surface water body area in rabi season to kharif season below 0.15 indicates that surface water bodies largely dry up after the monsoon, confirming limited post-monsoon water storage for supplemental irrigation.",
+        "variables": [
+          "mean_swb_rabi_kharif_ratio"
+        ]
       },
       "severity": "moderate",
       "direction": "confirms",
@@ -162,6 +176,14 @@
             "present": true,
             "percent_lower": 10,
             "percent_upper": 30
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {

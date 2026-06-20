@@ -30,7 +30,11 @@
       "condition": {
         "type": "quantitative",
         "expression": "(lulc_cropland_ha[-1] / (village_total_population + 1e-9)) < 0.2",
-        "qualitative_description": "Per-capita cropland availability below 0.2 ha per person indicates severe land scarcity consistent with marginal or sub-marginal holding sizes in island contexts."
+        "qualitative_description": "Per-capita cropland availability below 0.2 ha per person indicates severe land scarcity consistent with marginal or sub-marginal holding sizes in island contexts.",
+        "variables": [
+          "lulc_cropland_ha",
+          "village_total_population"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -40,12 +44,15 @@
     {
       "signal_id": "sig_02",
       "variables": [
-        "cropping_intensity"
+        "mean_cropping_intensity"
       ],
       "condition": {
         "type": "trend",
         "expression": "mean_cropping_intensity <= 1.15",
-        "qualitative_description": "Mean cropping intensity at or below 1.15 indicates that small holders are not compensating for land scarcity through double-cropping or multi-season cultivation."
+        "qualitative_description": "Mean cropping intensity at or below 1.15 indicates that small holders are not compensating for land scarcity through double-cropping or multi-season cultivation.",
+        "variables": [
+          "mean_cropping_intensity"
+        ]
       },
       "severity": "moderate",
       "direction": "confirms",
@@ -60,7 +67,10 @@
       "condition": {
         "type": "quantitative",
         "expression": "dist_apmc_km > 50",
-        "qualitative_description": "Distance to nearest APMC exceeding 50 km is typical for island communities and indicates that small holders face severe market access barriers, reducing price realisation."
+        "qualitative_description": "Distance to nearest APMC exceeding 50 km is typical for island communities and indicates that small holders face severe market access barriers, reducing price realisation.",
+        "variables": [
+          "dist_apmc_km"
+        ]
       },
       "severity": "high",
       "direction": "amplifies",
@@ -76,7 +86,11 @@
       "condition": {
         "type": "composite",
         "expression": "nrega_community_assets_count < 5 and ('livelihoods' not in organization_domains and 'fisheries' not in organization_domains)",
-        "qualitative_description": "Fewer than 5 cumulative MGNREGA community asset works combined with absence of NGO support in livelihoods or fisheries domains indicates a weak safety net and limited diversification support for small holders."
+        "qualitative_description": "Fewer than 5 cumulative MGNREGA community asset works combined with absence of NGO support in livelihoods or fisheries domains indicates a weak safety net and limited diversification support for small holders.",
+        "variables": [
+          "nrega_community_assets_count",
+          "organization_domains"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -222,6 +236,14 @@
           "normalized": {
             "band": "moderate",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {

@@ -55,7 +55,7 @@ export function FeedbackReferencePanel({ mws }: { mws: MwsDocument }) {
             <DeltaGChart mws={mws} />
             <CroppingChart mws={mws} />
             <DroughtChart mws={mws} />
-            <LulcStackedChart mws={mws} />
+            <LulcStackedChart mws={mws} combineWater builtUpColor="#dc2626" />
           </div>
         </div>
       </details>

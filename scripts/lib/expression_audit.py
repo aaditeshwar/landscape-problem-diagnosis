@@ -16,7 +16,7 @@ from _bootstrap import bootstrap  # noqa: E402
 bootstrap(runtime=True)
 
 from services.assembler import NOT_AVAILABLE, VARIABLE_RESOLVERS  # noqa: E402
-from services.derived_variables import DROUGHT_DERIVED_VARIABLE_NAMES  # noqa: E402
+from services.derived_variables import ASSEMBLER_DERIVED_VARIABLE_NAMES, DROUGHT_DERIVED_VARIABLE_NAMES  # noqa: E402
 from services.variable_registry import (  # noqa: E402
     alias_to_canonical,
     canonical_name,
@@ -30,28 +30,7 @@ GET_CALL_RE = re.compile(
 )
 STATIC_INDEX_RE = re.compile(r"\b([A-Za-z_][A-Za-z0-9_]*)\s*\[[^\]]+\]")
 
-_DERIVED_NAMES = {
-    "mean_annual_precipitation_mm",
-    "trend_annual_precipitation_mm",
-    "mean_annual_et_mm",
-    "trend_annual_et_mm",
-    "mean_annual_runoff_mm",
-    "trend_annual_runoff_mm",
-    "mean_annual_delta_g_mm",
-    "trend_annual_delta_g_mm",
-    "mean_cropping_intensity",
-    "trend_cropping_intensity",
-    "mean_kharif_cropped_area_ha",
-    "trend_kharif_cropped_area_ha",
-    "mean_double_crop_area_ha",
-    "trend_double_crop_area_ha",
-    "drought_moderate_return_period",
-    "drought_severe_return_period",
-    "mean_swb_total_area_ha",
-    "trend_swb_total_area_ha",
-    "mean_swb_rabi_kharif_ratio",
-    "trend_swb_rabi_kharif_ratio",
-}
+_DERIVED_NAMES = ASSEMBLER_DERIVED_VARIABLE_NAMES
 
 
 def all_known_names() -> set[str]:

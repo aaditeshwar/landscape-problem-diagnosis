@@ -1,0 +1,55 @@
+import type { ReviewBatch, ReviewCardBundle, ReviewCardSummary, FinalizeCardResponse } from '../revise-cards/types'
+
+async function api<T>(path: string, init?: RequestInit): Promise<T> {
+  const res = await fetch(path, init)
+  if (!res.ok) {
+    let detail = await res.text()
+    try {
+      const parsed = JSON.parse(detail) as { detail?: string }
+      if (typeof parsed.detail === 'string') detail = parsed.detail
+    } catch {
+      /* keep raw */
+    }
+    throw new Error(detail || `${res.status} ${res.statusText}`)
+  }
+  return res.json() as Promise<T>
+}
+
+export function fetchReviewBatches(): Promise<{ batches: ReviewBatch[] }> {
+  return api('/api/claude-review/batches')
+}
+
+export function fetchReviewBatch(batchId: string): Promise<{
+  batch_id: string
+  cards: ReviewCardSummary[]
+  totals: { cards: number; finalized_cards: number; findings: number }
+}> {
+  return api(`/api/claude-review/batch/${encodeURIComponent(batchId)}`)
+}
+
+export function fetchReviewCard(batchId: string, cardId: string): Promise<ReviewCardBundle> {
+  return api(
+    `/api/claude-review/batch/${encodeURIComponent(batchId)}/card/${encodeURIComponent(cardId)}`,
+  )
+}
+
+export function finalizeReviewCard(
+  cardId: string,
+  body: {
+    batch_id: string
+    reviewer?: string
+    issues: Array<{
+      issue_id: string
+      decision: 'handled' | 'not_handled'
+      field_path?: string
+      reviewer_note?: string
+    }>
+    user_card_edit?: Record<string, unknown> | null
+  },
+): Promise<FinalizeCardResponse> {
+  return api(`/api/claude-review/card/${encodeURIComponent(cardId)}/finalize`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
+}

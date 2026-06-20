@@ -30,7 +30,11 @@
       "condition": {
         "type": "quantitative",
         "expression": "(lulc_single_kharif_ha[-1] / (lulc_single_kharif_ha[-1] + lulc_double_crop_ha[-1] + 1e-9)) > 0.75",
-        "qualitative_description": "More than 75% of cropped area is under single kharif season only, indicating near-total dependence on monsoon rainfall with negligible irrigation-supported rabi or double cropping."
+        "qualitative_description": "More than 75% of cropped area is under single kharif season only, indicating near-total dependence on monsoon rainfall with negligible irrigation-supported rabi or double cropping.",
+        "variables": [
+          "lulc_single_kharif_ha",
+          "lulc_double_crop_ha"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -40,12 +44,15 @@
     {
       "signal_id": "sig_02",
       "variables": [
-        "cropping_intensity"
+        "mean_cropping_intensity"
       ],
       "condition": {
         "type": "trend",
         "expression": "mean_cropping_intensity <= 1.15",
-        "qualitative_description": "Mean cropping intensity at or below 1.15 across the multi-year record indicates that the micro-watershed is effectively single-season rainfed, with minimal double-cropped area enabled by irrigation."
+        "qualitative_description": "Mean cropping intensity at or below 1.15 across the multi-year record indicates that the micro-watershed is effectively single-season rainfed, with minimal double-cropped area enabled by irrigation.",
+        "variables": [
+          "mean_cropping_intensity"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -61,7 +68,11 @@
       "condition": {
         "type": "composite",
         "expression": "canal_name is None and nrega_irrigation_count < 3",
-        "qualitative_description": "No canal irrigation infrastructure intersects the micro-watershed, and fewer than 3 MGNREGA irrigation works have been constructed, jointly confirming absence of surface irrigation investment."
+        "qualitative_description": "No canal irrigation infrastructure intersects the micro-watershed, and fewer than 3 MGNREGA irrigation works have been constructed, jointly confirming absence of surface irrigation investment.",
+        "variables": [
+          "canal_name",
+          "nrega_irrigation_count"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -71,16 +82,16 @@
     {
       "signal_id": "sig_04",
       "variables": [
-        "runoff_mm",
-        "terrain_cluster_id"
+        "terrain_cluster_id",
+        "mean_annual_runoff_mm"
       ],
       "condition": {
         "type": "composite",
         "expression": "terrain_cluster_id == 3 and mean_annual_runoff_mm > 200",
         "qualitative_description": "Broad plains and slopes terrain (cluster 3) combined with high mean annual runoff above 200 mm indicates rapid water loss from the landscape, reducing in-field moisture availability despite sub-humid rainfall totals.",
         "variables": [
-          "runoff_mm",
-          "terrain_cluster_id"
+          "terrain_cluster_id",
+          "mean_annual_runoff_mm"
         ]
       },
       "severity": "moderate",
@@ -145,6 +156,14 @@
             "present": true,
             "percent_lower": 10,
             "percent_upper": 30
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {

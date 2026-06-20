@@ -29,7 +29,10 @@
       "condition": {
         "type": "trend",
         "expression": "lulc_tree_forest_ha[-1] < lulc_tree_forest_ha[0]",
-        "qualitative_description": "Forest area in the micro-watershed has declined from 2017 to 2024, indicating net loss of NTFP-bearing tree cover over the monitoring period."
+        "qualitative_description": "Forest area in the micro-watershed has declined from 2017 to 2024, indicating net loss of NTFP-bearing tree cover over the monitoring period.",
+        "variables": [
+          "lulc_tree_forest_ha"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -64,7 +67,10 @@
       "condition": {
         "type": "quantitative",
         "expression": "cd_total_deforestation_ha > 50",
-        "qualitative_description": "More than 50 hectares of cumulative deforestation recorded in the micro-watershed, representing a significant absolute loss of forest habitat."
+        "qualitative_description": "More than 50 hectares of cumulative deforestation recorded in the micro-watershed, representing a significant absolute loss of forest habitat.",
+        "variables": [
+          "cd_total_deforestation_ha"
+        ]
       },
       "severity": "moderate",
       "direction": "confirms",
@@ -79,7 +85,10 @@
       "condition": {
         "type": "qualitative",
         "expression": "'Agroforestry' not in organization_domains and 'Watershed management' not in organization_domains",
-        "qualitative_description": "No NGOs or organisations active in agroforestry or watershed management domains are present in the micro-watershed, indicating weak institutional support for forest protection and NTFP restoration."
+        "qualitative_description": "No NGOs or organisations active in agroforestry or watershed management domains are present in the micro-watershed, indicating weak institutional support for forest protection and NTFP restoration.",
+        "variables": [
+          "organization_domains"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -142,6 +151,14 @@
             "band": "moderate",
             "present": true,
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {

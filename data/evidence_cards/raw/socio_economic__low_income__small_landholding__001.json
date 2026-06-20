@@ -31,7 +31,11 @@
       "condition": {
         "type": "quantitative",
         "expression": "(lulc_cropland_ha[-1] / (village_total_population + 1e-9)) < 0.4",
-        "qualitative_description": "Per-capita cropland availability below 0.4 ha/person is a proxy for marginal or sub-marginal average farm size, consistent with landholding fragmentation in densely populated semi-arid villages."
+        "qualitative_description": "Per-capita cropland availability below 0.4 ha/person is a proxy for marginal or sub-marginal average farm size, consistent with landholding fragmentation in densely populated semi-arid villages.",
+        "variables": [
+          "lulc_cropland_ha",
+          "village_total_population"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -49,7 +53,10 @@
       "condition": {
         "type": "quantitative",
         "expression": "mean_cropping_intensity <= 1.15",
-        "qualitative_description": "Mean cropping intensity at or below 1.15 indicates predominantly single-season rainfed cultivation with little double-cropping, compounding the income constraint imposed by small landholding size."
+        "qualitative_description": "Mean cropping intensity at or below 1.15 indicates predominantly single-season rainfed cultivation with little double-cropping, compounding the income constraint imposed by small landholding size.",
+        "variables": [
+          "mean_cropping_intensity"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -69,10 +76,14 @@
       "condition": {
         "type": "composite",
         "expression": "dist_apmc_km > 30 and dist_dairy_km > 20",
-        "qualitative_description": "Village is more than 30 km from the nearest APMC and more than 20 km from the nearest dairy collection centre, indicating that small holders face high transaction costs and are unable to diversify into livestock income."
+        "qualitative_description": "Village is more than 30 km from the nearest APMC and more than 20 km from the nearest dairy collection centre, indicating that small holders face high transaction costs and are unable to diversify into livestock income.",
+        "variables": [
+          "dist_apmc_km",
+          "dist_dairy_km"
+        ]
       },
       "severity": "moderate",
-      "direction": "amplifies",
+      "direction": "confirms",
       "explanation": "Small holders near APMCs benefit from competitive price discovery and reduced dependence on intermediaries; remote smallholders are forced to sell at farm-gate prices well below MSP. Similarly, proximity to dairy infrastructure is the primary route for livestock income diversification for marginal farmers. When both market access channels are distant, the income constraint from small landholding is amplified: households cannot realise fair crop prices and cannot supplement farm income through milk sales. FPO formation is recommended precisely to overcome this market access barrier for unorganised small farmers.",
       "sources_cited": [
         "Sharma2019",
@@ -89,7 +100,11 @@
       "condition": {
         "type": "composite",
         "expression": "nrega_community_assets_count < 10 and ('livelihoods' not in organization_domains and 'fisheries' not in organization_domains)",
-        "qualitative_description": "Fewer than 10 cumulative MGNREGA community asset works and no NGO presence in livelihoods or fisheries domains indicate a weak safety net and absence of diversification support for small holders."
+        "qualitative_description": "Fewer than 10 cumulative MGNREGA community asset works and no NGO presence in livelihoods or fisheries domains indicate a weak safety net and absence of diversification support for small holders.",
+        "variables": [
+          "nrega_community_assets_count",
+          "organization_domains"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -244,6 +259,14 @@
           "normalized": {
             "band": "moderate",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -402,19 +425,22 @@
     "primary_confirm_signals": [
       "sig_01",
       "sig_02",
+      "sig_03",
       "sig_05"
     ],
     "confirm_when": {
-      "min_confirms_true": 2,
+      "min_confirms_true": 1,
       "amplifiers_do_not_confirm": true,
-      "min_from_set": {
-        "signals": [
+      "required_any": [
+        [
           "sig_01",
           "sig_02",
-          "sig_05"
+          "sig_03"
         ],
-        "min": 2
-      }
+        [
+          "sig_05"
+        ]
+      ]
     },
     "confidence_when": [
       {
@@ -423,6 +449,7 @@
           "signals": [
             "sig_01",
             "sig_02",
+            "sig_03",
             "sig_05"
           ],
           "min": 2

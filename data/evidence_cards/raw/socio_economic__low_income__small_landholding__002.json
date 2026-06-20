@@ -31,7 +31,11 @@
       "condition": {
         "type": "quantitative",
         "expression": "(lulc_cropland_ha[-1] / (village_total_population + 1e-9)) < 0.4",
-        "qualitative_description": "Per-capita cropland availability below 0.4 ha per person is a proxy for marginal or sub-marginal average farm size, consistent with landholding fragmentation in semi-arid Deccan plateau villages."
+        "qualitative_description": "Per-capita cropland availability below 0.4 ha per person is a proxy for marginal or sub-marginal average farm size, consistent with landholding fragmentation in semi-arid Deccan plateau villages.",
+        "variables": [
+          "lulc_cropland_ha",
+          "village_total_population"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -42,12 +46,18 @@
       "signal_id": "sig_02",
       "variables": [
         "mean_cropping_intensity",
-        "lulc_cropland_ha"
+        "lulc_cropland_ha",
+        "village_total_population"
       ],
       "condition": {
         "type": "composite",
         "expression": "mean_cropping_intensity <= 1.15 and (lulc_cropland_ha[-1] / (village_total_population + 1e-9)) < 0.4",
-        "qualitative_description": "Low cropping intensity (≤1.15, close to single-season rainfed) combined with small per-capita cropland compounds income constraint: small holdings are not compensated by double-cropping."
+        "qualitative_description": "Low cropping intensity (≤1.15, close to single-season rainfed) combined with small per-capita cropland compounds income constraint: small holdings are not compensated by double-cropping.",
+        "variables": [
+          "mean_cropping_intensity",
+          "lulc_cropland_ha",
+          "village_total_population"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -62,7 +72,10 @@
       "condition": {
         "type": "quantitative",
         "expression": "dist_apmc_km > 30",
-        "qualitative_description": "Distance to nearest APMC market exceeding 30 km forces small holders to sell through intermediaries at below-MSP prices, compressing net farm income."
+        "qualitative_description": "Distance to nearest APMC market exceeding 30 km forces small holders to sell through intermediaries at below-MSP prices, compressing net farm income.",
+        "variables": [
+          "dist_apmc_km"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -79,7 +92,12 @@
       "condition": {
         "type": "composite",
         "expression": "dist_dairy_km > 20 and 'livelihoods' not in organization_domains and nrega_community_assets_count < 10",
-        "qualitative_description": "Absence of nearby dairy infrastructure, no NGO presence in livelihoods domain, and low MGNREGA community asset creation together indicate a weak diversification support environment for small holders."
+        "qualitative_description": "Absence of nearby dairy infrastructure, no NGO presence in livelihoods domain, and low MGNREGA community asset creation together indicate a weak diversification support environment for small holders.",
+        "variables": [
+          "dist_dairy_km",
+          "organization_domains",
+          "nrega_community_assets_count"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -225,6 +243,14 @@
           "normalized": {
             "band": "moderate",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -384,7 +410,9 @@
     "version": 1,
     "primary_confirm_signals": [
       "sig_01",
-      "sig_02"
+      "sig_02",
+      "sig_05",
+      "sig_07"
     ],
     "confirm_when": {
       "min_confirms_true": 2,
@@ -392,7 +420,9 @@
       "min_from_set": {
         "signals": [
           "sig_01",
-          "sig_02"
+          "sig_02",
+          "sig_05",
+          "sig_07"
         ],
         "min": 2
       }
@@ -403,7 +433,9 @@
         "min_from_set": {
           "signals": [
             "sig_01",
-            "sig_02"
+            "sig_02",
+            "sig_05",
+            "sig_07"
           ],
           "min": 2
         },

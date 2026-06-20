@@ -9,7 +9,11 @@ from pathlib import Path
 from typing import Any
 
 from config import METADATA_DIR
-from services.derived_variables import IDM_INDICATOR_TRIGGER_SCORE, DROUGHT_DERIVED_VARIABLE_NAMES
+from services.derived_variables import (
+    ASSEMBLER_DERIVED_VARIABLE_NAMES,
+    DROUGHT_DERIVED_VARIABLE_NAMES,
+    IDM_INDICATOR_TRIGGER_SCORE,
+)
 
 STATIC_CD_VARIABLES = frozenset(
     {
@@ -461,6 +465,275 @@ def registry_excerpt_block() -> str:
     )
     lines.append("  Do NOT use invented flat keys: spi_class, spi_kharif, mai_kharif, vci_kharif.")
     return "\n".join(lines)
+
+
+def all_expression_allowed_names() -> set[str]:
+    """Names valid in signal condition.expression (dictionary + assembler + derived)."""
+    from services.assembler import NOT_AVAILABLE, VARIABLE_RESOLVERS
+
+    names = known_variable_names()
+    names.update(VARIABLE_RESOLVERS)
+    names.update(NOT_AVAILABLE)
+    names.update(ASSEMBLER_DERIVED_VARIABLE_NAMES)
+    names.update(DROUGHT_DERIVED_VARIABLE_NAMES)
+    names.update({"True", "False", "None"})
+    return names
+
+
+TIME_SERIES_EXPRESSION_VARIABLES: frozenset[str] = frozenset(
+    {
+        "annual_delta_g_mm",
+        "annual_precipitation_mm",
+        "annual_et_mm",
+        "annual_runoff_mm",
+        "seasonal_precipitation_mm",
+        "seasonal_et_mm",
+        "seasonal_runoff_mm",
+        "seasonal_delta_g_mm",
+        "drought_weeks_severe",
+        "drought_weeks_moderate",
+        "dry_spell_weeks",
+        "monsoon_onset_date",
+        "kharif_cropped_area_percent",
+        "cropping_intensity",
+        "lulc_single_kharif_ha",
+        "lulc_double_crop_ha",
+        "lulc_cropland_ha",
+        "lulc_shrub_scrub_ha",
+        "lulc_barrenland_ha",
+        "lulc_tree_forest_ha",
+        "lulc_krz_water_ha",
+        "swb_total_area_ha",
+        "swb_kharif_area_ha",
+        "swb_rabi_area_ha",
+        "swb_zaid_area_ha",
+        "drought_causality",
+        "drought_causality_json",
+    }
+)
+
+SEASONAL_TIME_SERIES_VARIABLES: frozenset[str] = frozenset(
+    {
+        "seasonal_precipitation_mm",
+        "seasonal_et_mm",
+        "seasonal_runoff_mm",
+        "seasonal_delta_g_mm",
+    }
+)
+
+CATEGORICAL_SCALAR_VARIABLES: frozenset[str] = frozenset(
+    {
+        "aquifer_class",
+        "aquifer_raw_class",
+        "aquifer_dominant_lithology",
+        "soge_class_name",
+        "terrain_cluster_id",
+        "river_name",
+        "canal_name",
+    }
+)
+
+STATIC_SNAPSHOT_VARIABLES: frozenset[str] = frozenset(
+    {
+        "soge_dev_percent",
+        "soge_class_name",
+        "aquifer_class",
+        "aquifer_raw_class",
+        "aquifer_dominant_lithology",
+        "terrain_cluster_id",
+        "terrain_description",
+        "nbss_lup_aer_code",
+        "river_name",
+        "canal_name",
+        "swb_count",
+        "nrega_swc_count",
+        "nrega_irrigation_count",
+        "nrega_land_restoration_count",
+        "dist_apmc_km",
+        "dist_cooperative_km",
+        "dist_milk_chilling_km",
+        "village_population",
+        "village_sc_percent",
+        "village_st_percent",
+        "village_literacy_rate",
+    }
+)
+
+
+def full_review_registry_block() -> str:
+    """Complete allowed-identifier list for Claude card review (Plan 15 / D1e)."""
+    lines = [
+        registry_excerpt_block(),
+        "",
+        "Complete allowed expression identifiers (data_dictionary_v2 + variable_registry + assembler resolvers + derived scalars):",
+        "  Only flag D1e unregistered variables if the identifier is NOT listed below.",
+        "  Do NOT flag .get() on dict-typed variables listed under 'Keyed dict variables' below.",
+        "",
+        "  Assembler-derived scalars (mean_*, trend_*, drought_*_return_period):",
+    ]
+    derived = sorted(ASSEMBLER_DERIVED_VARIABLE_NAMES | DROUGHT_DERIVED_VARIABLE_NAMES)
+    for name in derived:
+        lines.append(f"    {name}")
+    skip = set(derived) | {"True", "False", "None"}
+    framework = sorted(all_expression_allowed_names() - skip - TIME_SERIES_EXPRESSION_VARIABLES)
+    lines.append(f"  Static / point-in-time framework variables ({len(framework)} names, alphabetical):")
+    lines.append("    " + ", ".join(framework))
+    lines.extend(
+        [
+            "",
+            "Static block-level / point-in-time variables (one value per MWS — NOT time series):",
+            "  CGWB SOGE is published annually in the real world, but this framework stores only the",
+            "  current block-level snapshot on each MWS — not a year-keyed series.",
+            "  Do NOT treat soge_dev_percent or soge_class_name as time series.",
+            "  Do NOT suggest [-1], mean_soge, trend_soge, or multi-year persistence guards on SOGE.",
+            "  Using soge_dev_percent > 70 in an expression is valid as a static threshold check.",
+        ]
+    )
+    for name in sorted(STATIC_SNAPSHOT_VARIABLES):
+        if name in TIME_SERIES_EXPRESSION_VARIABLES:
+            continue
+        lines.append(f"    {name}")
+    lines.extend(
+        [
+            "",
+            "Time-series variables (YearIndexedMapping at evaluation — NOT scalars):",
+            "  Integer indexing is valid: var[-1] = latest agricultural year, var[0] = earliest.",
+            "  Do NOT flag [-1] or [0] on these names as invalid scalar indexing.",
+            "  For persistence across years prefer mean_*, trend_*, drought_*_return_period, or max(var).",
+        ]
+    )
+    for name in sorted(TIME_SERIES_EXPRESSION_VARIABLES):
+        if name in SEASONAL_TIME_SERIES_VARIABLES:
+            lines.append(
+                f"    {name}: yearly series; latest year block supports .get('kharif'|'rabi'|'zaid')"
+            )
+        else:
+            lines.append(f"    {name}: yearly scalar per agricultural year")
+    lines.extend(
+        [
+            "",
+            "Categorical string scalars (dominant class / name — use == or in [...], NOT .get()):",
+            "    aquifer_class — dominant ACWADAM class string from aquifer.acwadam_class "
+            "(values: alluvium, volcanic, crystalline_basement, …)",
+            "    soge_class_name, terrain_cluster_id, river_name, canal_name, aquifer_raw_class",
+            "",
+            "Keyed dict / object variables (use .get('Key', default) with exact keys):",
+        ]
+    )
+    for name, meta in sorted(variable_type_catalog().items()):
+        keys = meta.get("dict_keys")
+        if not keys:
+            continue
+        key_preview = ", ".join(keys[:8])
+        if len(keys) > 8:
+            key_preview += f", … ({len(keys)} total)"
+        lines.append(f"    {name} ({meta.get('type', '?')}): keys = {key_preview}")
+    lines.append("")
+    lines.append(
+        "  Review focus: semantic alignment (prose ↔ expressions ↔ policy). "
+        "Deterministic preflight already checks syntax, schema, and registry names — "
+        "do not re-flag type/indexing issues covered above unless prose contradicts the expression."
+    )
+    return "\n".join(lines)
+
+
+def _resolve_data_dictionary_ref(ref: str, dd: dict) -> Any:
+    cur: Any = dd
+    for part in str(ref or "").split("."):
+        if not isinstance(cur, dict):
+            return None
+        cur = cur.get(part)
+    return cur
+
+
+@lru_cache
+def variable_type_catalog() -> dict[str, dict[str, Any]]:
+    """Per-variable type metadata from data_dictionary_v2 for review UI and Claude prompts."""
+    dd = load_data_dictionary()
+    variables = dd.get("variables") or {}
+    catalog: dict[str, dict[str, Any]] = {}
+    for name, meta in variables.items():
+        if not isinstance(meta, dict):
+            continue
+        entry: dict[str, Any] = {
+            "type": meta.get("type"),
+            "unit": meta.get("unit"),
+            "description": meta.get("description"),
+            "availability": meta.get("availability"),
+        }
+        desc = str(meta.get("description") or "").lower()
+        unit = str(meta.get("unit") or "").lower()
+        var_type = str(meta.get("type") or "").lower()
+        if "object keyed" in desc or "keyed by" in desc:
+            entry["shape"] = "dict"
+        elif any(token in unit for token in ("percent per", "hectares per", "km per", "count per", "list per")):
+            entry["shape"] = "dict"
+        elif var_type == "time_series":
+            if "sub-keyed by season" in desc or "{kharif" in desc:
+                entry["shape"] = "time_series_seasonal"
+            else:
+                entry["shape"] = "time_series_yearly"
+        elif "categorical" in unit and name in CATEGORICAL_SCALAR_VARIABLES:
+            entry["shape"] = "scalar_categorical"
+        ref = meta.get("allowed_values_ref")
+        if ref:
+            resolved = _resolve_data_dictionary_ref(str(ref), dd)
+            if isinstance(resolved, list):
+                if entry.get("shape") == "dict":
+                    entry["dict_keys"] = resolved
+                elif entry.get("shape") == "scalar_categorical" or "categorical" in unit:
+                    entry["allowed_values"] = resolved
+                    entry["shape"] = "scalar_categorical"
+                else:
+                    entry["dict_keys"] = resolved
+                    entry["shape"] = entry.get("shape") or "dict"
+            elif isinstance(resolved, dict):
+                entry["allowed_values"] = resolved
+        catalog[str(name)] = entry
+    return catalog
+
+
+def audit_dict_access_keys(expression: str) -> list[dict[str, str]]:
+    """Return dict .get('key') usages where key is missing or wrong case vs catalog."""
+    if not expression:
+        return []
+    catalog = variable_type_catalog()
+    issues: list[dict[str, str]] = []
+    for match in re.finditer(
+        r"\b([A-Za-z_][A-Za-z0-9_]*)\.get\s*\(\s*['\"]([^'\"]+)['\"]",
+        expression,
+    ):
+        var_name = match.group(1)
+        key = match.group(2)
+        meta = catalog.get(var_name) or {}
+        dict_keys = meta.get("dict_keys")
+        if not dict_keys:
+            continue
+        allowed = [str(k) for k in dict_keys]
+        if key in allowed:
+            continue
+        case_map = {k.lower(): k for k in allowed}
+        canonical = case_map.get(key.lower())
+        if canonical:
+            issues.append(
+                {
+                    "variable": var_name,
+                    "key_used": key,
+                    "issue": "wrong_case",
+                    "canonical_key": canonical,
+                    "message": f"Use .get('{canonical}', …) — keys are Title Case per data dictionary, not '{key}'.",
+                }
+            )
+        else:
+            issues.append(
+                {
+                    "variable": var_name,
+                    "key_used": key,
+                    "issue": "unknown_key",
+                    "message": f"Key '{key}' is not in {var_name} keys ({', '.join(allowed[:5])}…).",
+                }
+            )
+    return issues
 
 
 def normalize_expression(expression: str, *, card_thresholds: dict[str, str] | None = None) -> tuple[str, list[str]]:

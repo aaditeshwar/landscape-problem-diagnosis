@@ -31,7 +31,11 @@
       "condition": {
         "type": "quantitative",
         "expression": "soge_dev_percent > 70 or soge_class_name in ['Semi-critical', 'Critical', 'Over-exploited']",
-        "qualitative_description": "Block-level SOGE exceeds 70% or CGWB classifies the block as Semi-critical, Critical, or Over-exploited, indicating extraction pressure on the alluvial aquifer exceeds safe yield."
+        "qualitative_description": "Block-level SOGE exceeds 70% or CGWB classifies the block as Semi-critical, Critical, or Over-exploited, indicating extraction pressure on the alluvial aquifer exceeds safe yield.",
+        "variables": [
+          "soge_dev_percent",
+          "soge_class_name"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -42,7 +46,7 @@
       "signal_id": "sig_02",
       "variables": [
         "trend_annual_delta_g_mm",
-        "delta_g_mm"
+        "mean_annual_delta_g_mm"
       ],
       "condition": {
         "type": "trend",
@@ -50,7 +54,7 @@
         "qualitative_description": "The linear trend in annual groundwater recharge (P - ET - Runoff) is negative and the multi-year mean is also negative, indicating chronic depletion of the alluvial aquifer despite high rainfall.",
         "variables": [
           "trend_annual_delta_g_mm",
-          "delta_g_mm"
+          "mean_annual_delta_g_mm"
         ]
       },
       "severity": "high",
@@ -62,12 +66,16 @@
       "signal_id": "sig_03",
       "variables": [
         "aquifer_class",
-        "aquifer_lithology_percent"
+        "acwadam_class_percent"
       ],
       "condition": {
         "type": "composite",
-        "expression": "aquifer_class == 'alluvium' and aquifer_lithology_percent.get('alluvium', 0) > 60",
-        "qualitative_description": "The dominant aquifer class is alluvium and more than 60% of the micro-watershed area is underlain by alluvial lithology, confirming the hydrogeological setting where cumulative depletion dynamics apply."
+        "expression": "aquifer_class == 'alluvium' and acwadam_class_percent.get('alluvium', 0) > 60",
+        "qualitative_description": "The dominant aquifer class is alluvium and more than 60% of the micro-watershed area is underlain by alluvial lithology, confirming the hydrogeological setting where cumulative depletion dynamics apply.",
+        "variables": [
+          "aquifer_class",
+          "acwadam_class_percent"
+        ]
       },
       "severity": "moderate",
       "direction": "confirms",
@@ -82,7 +90,10 @@
       "condition": {
         "type": "quantitative",
         "expression": "nrega_swc_count < 5",
-        "qualitative_description": "Fewer than 5 cumulative SWC works recorded under MGNREGA in the micro-watershed, indicating low investment in recharge infrastructure despite the availability of monsoon runoff that could be harvested."
+        "qualitative_description": "Fewer than 5 cumulative SWC works recorded under MGNREGA in the micro-watershed, indicating low investment in recharge infrastructure despite the availability of monsoon runoff that could be harvested.",
+        "variables": [
+          "nrega_swc_count"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",

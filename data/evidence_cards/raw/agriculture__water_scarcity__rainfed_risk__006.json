@@ -26,13 +26,17 @@
     {
       "signal_id": "sig_01",
       "variables": [
-        "lulc_single_kharif_ha",
-        "lulc_double_crop_ha"
+        "mean_kharif_cropped_area_ha",
+        "mean_double_crop_area_ha"
       ],
       "condition": {
         "type": "quantitative",
         "expression": "(mean_kharif_cropped_area_ha / (mean_kharif_cropped_area_ha + mean_double_crop_area_ha + 1e-9)) > 0.70",
-        "qualitative_description": "More than 70% of mean cropped area is under single kharif, with low double-cropped area, indicating dominant rainfed dependence and minimal irrigation access."
+        "qualitative_description": "More than 70% of mean cropped area is under single kharif, with low double-cropped area, indicating dominant rainfed dependence and minimal irrigation access.",
+        "variables": [
+          "mean_kharif_cropped_area_ha",
+          "mean_double_crop_area_ha"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -42,12 +46,17 @@
     {
       "signal_id": "sig_02",
       "variables": [
-        "cropping_intensity"
+        "mean_cropping_intensity",
+        "trend_cropping_intensity"
       ],
       "condition": {
         "type": "trend",
         "expression": "mean_cropping_intensity <= 1.15 and trend_cropping_intensity <= 0.0",
-        "qualitative_description": "Mean cropping intensity at or below 1.15 with a flat or declining trend confirms single-season rainfed farming with no expansion of irrigated double-cropping over time."
+        "qualitative_description": "Mean cropping intensity at or below 1.15 with a flat or declining trend confirms single-season rainfed farming with no expansion of irrigated double-cropping over time.",
+        "variables": [
+          "mean_cropping_intensity",
+          "trend_cropping_intensity"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -57,13 +66,17 @@
     {
       "signal_id": "sig_03",
       "variables": [
-        "swb_rabi_area_ha",
+        "mean_swb_rabi_kharif_ratio",
         "canal_name"
       ],
       "condition": {
         "type": "composite",
         "expression": "mean_swb_rabi_kharif_ratio < 0.25 and canal_name is None",
-        "qualitative_description": "Surface water bodies shrink substantially after kharif (rabi-to-kharif ratio below 0.25) and no irrigation canal is present, confirming absence of surface water storage and conveyance infrastructure for post-monsoon cropping."
+        "qualitative_description": "Surface water bodies shrink substantially after kharif (rabi-to-kharif ratio below 0.25) and no irrigation canal is present, confirming absence of surface water storage and conveyance infrastructure for post-monsoon cropping.",
+        "variables": [
+          "mean_swb_rabi_kharif_ratio",
+          "canal_name"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -73,7 +86,7 @@
     {
       "signal_id": "sig_04",
       "variables": [
-        "runoff_mm",
+        "mean_annual_runoff_mm",
         "terrain_cluster_id"
       ],
       "condition": {
@@ -81,7 +94,7 @@
         "expression": "mean_annual_runoff_mm > 300 and terrain_cluster_id == 1",
         "qualitative_description": "High mean annual runoff (above 300 mm) on mostly plains terrain (cluster 1) indicates significant harvestable water that is currently lost, representing an untapped opportunity for in-situ water harvesting.",
         "variables": [
-          "runoff_mm",
+          "mean_annual_runoff_mm",
           "terrain_cluster_id"
         ]
       },
@@ -98,7 +111,10 @@
       "condition": {
         "type": "quantitative",
         "expression": "nrega_irrigation_count < 3",
-        "qualitative_description": "Fewer than 3 MGNREGA irrigation works recorded in the micro-watershed, indicating minimal public investment in irrigation infrastructure."
+        "qualitative_description": "Fewer than 3 MGNREGA irrigation works recorded in the micro-watershed, indicating minimal public investment in irrigation infrastructure.",
+        "variables": [
+          "nrega_irrigation_count"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -162,6 +178,14 @@
             "present": true,
             "percent_lower": 10,
             "percent_upper": 30
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {

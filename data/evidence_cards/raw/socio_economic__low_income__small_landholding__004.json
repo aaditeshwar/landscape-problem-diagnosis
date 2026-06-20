@@ -32,7 +32,11 @@
       "condition": {
         "type": "quantitative",
         "expression": "(lulc_cropland_ha[-1] / (village_total_population + 1e-9)) < 0.4",
-        "qualitative_description": "Per-capita cropland availability below 0.4 ha per person (proxy for average farm size per household assuming ~5 persons/household gives <2 ha/household) indicates predominantly marginal or small landholding conditions."
+        "qualitative_description": "Per-capita cropland availability below 0.4 ha per person (proxy for average farm size per household assuming ~5 persons/household gives <2 ha/household) indicates predominantly marginal or small landholding conditions.",
+        "variables": [
+          "lulc_cropland_ha",
+          "village_total_population"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -48,7 +52,11 @@
       "condition": {
         "type": "trend",
         "expression": "mean_cropping_intensity <= 1.15 and cropping_intensity[-1] <= 1.15",
-        "qualitative_description": "Mean cropping intensity at or below 1.15 across the multi-year record, with no improvement in the latest year, indicates that small holders are unable to intensify production to compensate for limited land area."
+        "qualitative_description": "Mean cropping intensity at or below 1.15 across the multi-year record, with no improvement in the latest year, indicates that small holders are unable to intensify production to compensate for limited land area.",
+        "variables": [
+          "mean_cropping_intensity",
+          "cropping_intensity"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -64,7 +72,11 @@
       "condition": {
         "type": "composite",
         "expression": "dist_apmc_km > 30 and dist_dairy_km > 20",
-        "qualitative_description": "Village is more than 30 km from the nearest APMC and more than 20 km from the nearest dairy collection point, indicating that small holders face high transaction costs and are dependent on intermediaries for both crop and livestock sales."
+        "qualitative_description": "Village is more than 30 km from the nearest APMC and more than 20 km from the nearest dairy collection point, indicating that small holders face high transaction costs and are dependent on intermediaries for both crop and livestock sales.",
+        "variables": [
+          "dist_apmc_km",
+          "dist_dairy_km"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -80,7 +92,11 @@
       "condition": {
         "type": "composite",
         "expression": "nrega_community_assets_count < 10 and 'livelihoods' not in organization_domains and 'watershed management' not in organization_domains",
-        "qualitative_description": "Fewer than 10 cumulative MGNREGA community asset works and no NGO presence in livelihoods or watershed management domains, indicating weak safety net and limited external support for income diversification."
+        "qualitative_description": "Fewer than 10 cumulative MGNREGA community asset works and no NGO presence in livelihoods or watershed management domains, indicating weak safety net and limited external support for income diversification.",
+        "variables": [
+          "nrega_community_assets_count",
+          "organization_domains"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -226,6 +242,14 @@
           "normalized": {
             "band": "moderate",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {

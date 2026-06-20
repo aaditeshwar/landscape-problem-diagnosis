@@ -31,7 +31,11 @@
       "condition": {
         "type": "quantitative",
         "expression": "(lulc_single_kharif_ha[-1] / (lulc_single_kharif_ha[-1] + lulc_double_crop_ha[-1] + 1e-9)) > 0.70",
-        "qualitative_description": "More than 70% of cropland is under single kharif cropping, indicating that the vast majority of cultivation is rainfed and dependent on monsoon rainfall alone."
+        "qualitative_description": "More than 70% of cropland is under single kharif cropping, indicating that the vast majority of cultivation is rainfed and dependent on monsoon rainfall alone.",
+        "variables": [
+          "lulc_single_kharif_ha",
+          "lulc_double_crop_ha"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -41,12 +45,15 @@
     {
       "signal_id": "sig_02",
       "variables": [
-        "cropping_intensity"
+        "mean_cropping_intensity"
       ],
       "condition": {
         "type": "trend",
         "expression": "mean_cropping_intensity <= 1.15",
-        "qualitative_description": "Mean cropping intensity at or below 1.15 over the multi-year record indicates near-single-season farming, consistent with rainfed dependence and absence of irrigation enabling a second crop."
+        "qualitative_description": "Mean cropping intensity at or below 1.15 over the multi-year record indicates near-single-season farming, consistent with rainfed dependence and absence of irrigation enabling a second crop.",
+        "variables": [
+          "mean_cropping_intensity"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -62,7 +69,11 @@
       "condition": {
         "type": "composite",
         "expression": "canal_name is None and nrega_irrigation_count < 3",
-        "qualitative_description": "No irrigation canal intersects the micro-watershed and fewer than 3 MGNREGA irrigation works have been recorded, confirming minimal formal irrigation infrastructure."
+        "qualitative_description": "No irrigation canal intersects the micro-watershed and fewer than 3 MGNREGA irrigation works have been recorded, confirming minimal formal irrigation infrastructure.",
+        "variables": [
+          "canal_name",
+          "nrega_irrigation_count"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -72,7 +83,7 @@
     {
       "signal_id": "sig_04",
       "variables": [
-        "runoff_mm",
+        "mean_annual_runoff_mm",
         "terrain_cluster_id"
       ],
       "condition": {
@@ -80,7 +91,7 @@
         "expression": "mean_annual_runoff_mm > 600 and terrain_cluster_id == 1",
         "qualitative_description": "High mean annual runoff (>600 mm) on mostly plains terrain indicates substantial water loss that could be harvested in-situ, but is currently not being captured due to absence of farm ponds or bunds.",
         "variables": [
-          "runoff_mm",
+          "mean_annual_runoff_mm",
           "terrain_cluster_id"
         ]
       },
@@ -92,12 +103,15 @@
     {
       "signal_id": "sig_05",
       "variables": [
-        "swb_rabi_area_ha"
+        "mean_swb_rabi_kharif_ratio"
       ],
       "condition": {
         "type": "trend",
         "expression": "mean_swb_rabi_kharif_ratio < 0.25",
-        "qualitative_description": "The ratio of surface water body area in rabi to kharif season is below 0.25, indicating that surface water storage does not persist into the post-monsoon season and cannot support rabi irrigation."
+        "qualitative_description": "The ratio of surface water body area in rabi to kharif season is below 0.25, indicating that surface water storage does not persist into the post-monsoon season and cannot support rabi irrigation.",
+        "variables": [
+          "mean_swb_rabi_kharif_ratio"
+        ]
       },
       "severity": "moderate",
       "direction": "confirms",
@@ -161,6 +175,14 @@
             "present": true,
             "percent_lower": 10,
             "percent_upper": 30
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {

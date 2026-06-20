@@ -1,0 +1,260 @@
+{
+  "meta": {
+    "title": "Evaluation Rubric for Diagnosis System Responses",
+    "description": "A structured rubric for LLM-based evaluation of DiagnosisResponse objects (conforming to response_schema.json) against queries from query_bank.json. Designed to be executable by Claude or a locally-running LLM (e.g. qwen2.5:14b via Ollama). Each dimension produces a score and a brief justification. The overall evaluation is the mean of dimension scores, weighted as specified.",
+    "evaluator_model_guidance": {
+      "note": "When this rubric is used as an LLM evaluation prompt, the evaluator receives: (1) the user query text, (2) the DiagnosisResponse JSON, (3) the MWS variable values used (as a flat key-value summary), (4) this rubric. It scores each dimension independently before computing the weighted total.",
+      "output_format": "The evaluator should output a JSON object with keys matching each dimension_id, each containing {score: int, justification: str}, plus a weighted_total: float and a summary: str (2–3 sentences).",
+      "compatible_models": ["claude-sonnet-4-6", "qwen2.5:14b", "llama3.1:8b"],
+      "recommended_temperature": 0.1,
+      "instruction_prefix": "You are evaluating a diagnosis system response. Score each dimension using the rubric below. Be strict: do not award full marks unless all criteria are clearly met. Cite specific fields from the response JSON in your justifications."
+    },
+    "scoring_scale": "0–3 integer per dimension: 0=fail, 1=partial, 2=good, 3=excellent",
+    "weight_note": "Weights sum to 1.0. Weighted total = sum(score_i * weight_i / 3) expressed as 0–1."
+  },
+  "dimensions": [
+    {
+      "dimension_id": "D1",
+      "name": "Query Relevance",
+      "weight": 0.20,
+      "description": "Does the response address what the user actually asked? The confirmed and uncertain pathways, solutions, and follow-up question should all be visibly anchored to the specific concern raised in the query.",
+      "scoring_criteria": {
+        "3_excellent": "Every confirmed pathway, solution, and follow-up question is directly relevant to the user's stated concern. No irrelevant pathways are included. The production system and sub-theme of the query are addressed.",
+        "2_good": "Most of the response is relevant. One minor tangent or one mildly off-topic pathway is included but does not dominate the response.",
+        "1_partial": "The response is partially relevant but includes significant off-topic content, or addresses a different aspect of the production system than the one asked about.",
+        "0_fail": "The response does not address the query. Pathways and solutions relate to a different production system or stress entirely."
+      },
+      "evaluation_prompt_fragment": "Read the user query carefully. Check whether the confirmed_pathways, uncertain_pathways, solutions, and follow_up_question in the response all relate to the specific problem the user asked about. Score 3 if fully relevant, 2 if mostly relevant with a minor tangent, 1 if substantially off-topic, 0 if unrelated."
+    },
+    {
+      "dimension_id": "D2",
+      "name": "Variable Grounding — Available Variables",
+      "weight": 0.25,
+      "description": "The reasoning field in each ConfirmedPathway should cite specific available MWS variables with actual values or directions of change. Vague reasoning that does not reference any variable is not acceptable.",
+      "scoring_criteria": {
+        "3_excellent": "Each confirmed pathway's reasoning cites at least two specific available variables (from data_dictionary_v2.json, availability=available) with actual values, units, or year-on-year direction (e.g. 'cumulative_g_mm has declined from 0 to -450mm over 2017–2024'). Variable values cited are consistent with what the MWS data would plausibly show.",
+        "2_good": "Most pathways cite specific variables but one pathway's reasoning is generic or cites only one variable. All cited variable names exist in the data dictionary.",
+        "1_partial": "Variables are mentioned by name but without values or directions, OR the reasoning is generic ('water stress is likely because the water balance is negative') without citing which variables show this.",
+        "0_fail": "No specific variables are cited. Reasoning is entirely generic or uses variable names not in the data dictionary."
+      },
+      "evaluation_prompt_fragment": "For each item in confirmed_pathways, read the reasoning field. Count how many distinct available variables (from the data dictionary) are cited with specific values, units, or trends. Score 3 if each pathway cites ≥2 with values, 2 if ≥1 with values but not all, 1 if variables named but no values, 0 if no variables cited at all."
+    },
+    {
+      "dimension_id": "D3",
+      "name": "Reasoning Correctness",
+      "weight": 0.25,
+      "description": "The logical chain from variable values to pathway conclusions must be hydrologically, ecologically, or agronomically sound. This tests whether the system is using variables correctly — not just mentioning them.",
+      "scoring_criteria": {
+        "3_excellent": "All reasoning chains are logically valid. The direction of inference is correct (e.g. negative cumulative_g_mm → groundwater depletion, not surplus; increasing shrub_scrub → degradation not recovery unless contextualised). No contradictions between cited variables and pathway conclusions.",
+        "2_good": "Reasoning is mostly correct. One minor logical error or imprecision is present (e.g. citing a variable that is suggestive but not strongly diagnostic for the pathway, without acknowledging the limitation).",
+        "1_partial": "One significant reasoning error: a variable is cited but its direction of inference is wrong, or a pathway is concluded from variables that would not normally indicate it.",
+        "0_fail": "Multiple reasoning errors, or the reasoning contradicts the variable values (e.g. concluding drought stress from high precipitation values, or deforestation from increasing tree cover)."
+      },
+      "evaluation_prompt_fragment": "For each confirmed pathway, assess whether the reasoning chain is logically valid. Check: (a) is the direction of each variable's implication correct (e.g. does a negative delta_g correctly imply depletion)? (b) are all cited variables actually diagnostic for the stated pathway? (c) are there any internal contradictions? Score 3 if all chains are correct, 2 if minor errors, 1 if one significant error, 0 if multiple errors or contradictions."
+    },
+    {
+      "dimension_id": "D4",
+      "name": "Appropriate Use of Uncertainty",
+      "weight": 0.10,
+      "description": "The system should correctly distinguish between pathways it can confidently confirm and those requiring more data. It should not over-claim confidence on pathways that depend on not-available variables, and should not under-claim by putting obviously data-supported pathways in uncertain_pathways.",
+      "scoring_criteria": {
+        "3_excellent": "Pathways supported only by available variables and evidence are in confirmed_pathways with appropriate confidence. Pathways requiring not-available variables are in uncertain_pathways. Confidence levels (high/medium/low) are calibrated: high only when ≥2 corroborating available variables support the pathway.",
+        "2_good": "Uncertainty is mostly handled correctly. One pathway's confidence level is slightly miscalibrated (e.g. high confidence when only one variable supports it).",
+        "1_partial": "A pathway requiring a key not-available variable (e.g. borewell_density for groundwater extraction diagnosis) is placed in confirmed_pathways at high confidence without acknowledging the data gap.",
+        "0_fail": "Uncertainty is not meaningfully used. All pathways are placed in confirmed_pathways regardless of variable availability, or all are placed in uncertain_pathways despite strong available evidence."
+      },
+      "evaluation_prompt_fragment": "Check whether pathways that depend on not-available variables (listed in data_dictionary_v2.json with availability=not_available) appear in uncertain_pathways rather than confirmed_pathways. Check that confidence=high is only used when multiple available variables corroborate the pathway. Score 3 if fully calibrated, 2 if minor miscalibration, 1 if a data-gap pathway is overconfidently confirmed, 0 if uncertainty dimension is not used meaningfully."
+    },
+    {
+      "dimension_id": "D5",
+      "name": "Follow-up Question Appropriateness",
+      "weight": 0.10,
+      "description": "The follow_up_question (if present) should ask for information that would meaningfully resolve the highest-priority uncertainty in the response, framed in non-technical language accessible to the stated persona.",
+      "scoring_criteria": {
+        "3_excellent": "The follow-up question targets the single most decision-relevant missing variable for the highest-confidence uncertain pathway. The question is phrased in plain language appropriate for the persona (e.g. a farmer-friendly question for extension worker queries, a technical question for hydrology researcher queries). The question is not redundant with information already in MWS data.",
+        "2_good": "The follow-up question is appropriate and targets a relevant missing variable but is either slightly too technical/simple for the persona, or is the second most important missing variable rather than the first.",
+        "1_partial": "The follow-up question asks about a variable that is already available in the MWS dataset, OR asks about a completely irrelevant variable, OR is absent when it would clearly be useful.",
+        "0_fail": "No follow-up question when uncertain_pathways are present, OR the follow-up question is about a variable already clearly covered by available MWS data."
+      },
+      "evaluation_prompt_fragment": "Check the follow_up_question field. (a) Is it about a variable that is genuinely not_available in the data dictionary? (b) Would the answer materially change the diagnosis for the most important uncertain pathway? (c) Is the language appropriate for the user persona (check the query's persona field)? (d) Is the question absent despite there being uncertain_pathways? Score 3 if all criteria met, 2 if mostly appropriate, 1 if asking about an available variable or wrong level, 0 if absent when needed or totally off-topic."
+    },
+    {
+      "dimension_id": "D6",
+      "name": "Solution Relevance and Actionability",
+      "weight": 0.10,
+      "description": "Solutions listed in the solutions array should correspond to confirmed pathways and should be actionable for the user's role and context. Generic solutions that do not match the specific pathway or aquifer/terrain context are penalised.",
+      "scoring_criteria": {
+        "3_excellent": "Each solution in solutions is directly linked to a confirmed pathway. Solutions are contextually appropriate (e.g. recommending percolation ponds for hard rock aquifer rather than canal extension; recommending check dams for slopy terrain). Solutions are framed at an appropriate scale for the MWS (~1000–1500 ha).",
+        "2_good": "Solutions are relevant but one is generic (e.g. 'improve irrigation' without specifying type) or one solution is not a good match for the aquifer or terrain type.",
+        "1_partial": "Solutions are vaguely related to the production system but not to the specific confirmed pathways. Or solutions recommended are inappropriate for the context (e.g. recommending canal irrigation in a MWS with no canal access).",
+        "0_fail": "Solutions do not correspond to any confirmed pathway, or are contextually inappropriate (e.g. recommending monsoon-crop intensification in a drought-stressed MWS with negative delta_g)."
+      },
+      "evaluation_prompt_fragment": "For each item in solutions, check: (a) does it correspond to a pathway in confirmed_pathways? (b) is it appropriate for the aquifer type and terrain context of the MWS? (c) is it plausible at MWS scale (~1000–1500 ha)? Penalise solutions that are inapposite to the context even if generically correct for the production system. Score 3 if all contextually grounded, 2 if mostly appropriate, 1 if vague/generic, 0 if inappropriate."
+    }
+  ],
+  "persona_specific_adjustments": {
+    "description": "These adjustments modify the weight or interpretation of specific dimensions based on the user persona. Apply these after scoring all base dimensions.",
+    "adjustments": [
+      {
+        "persona": "hydrology_researcher",
+        "dimension": "D3",
+        "adjustment": "Increase effective weight to 0.35 (reduce D1 weight to 0.10). Hydrology researchers are specifically checking reasoning correctness and should not be given credit for relevant but incorrectly reasoned responses.",
+        "note": "For this persona, the reasoning field must cite specific numeric values and directions. Qualitative reasoning ('likely depleted') without figures is scored as D3=1 at most."
+      },
+      {
+        "persona": "watershed_programme_manager",
+        "dimension": "D6",
+        "adjustment": "Increase effective weight to 0.15 (reduce D4 weight to 0.05). Programme managers need actionable, context-appropriate solutions.",
+        "note": "Solutions must be plausible given MGNREGA history, SOGE class, and aquifer type. Generic solutions ('improve water management') score D6=1 at most for this persona."
+      },
+      {
+        "persona": "agricultural_extension_worker",
+        "dimension": "D5",
+        "adjustment": "Increase effective weight to 0.15 (reduce D4 weight to 0.05). Extension workers rely heavily on follow-up questions to guide field visits.",
+        "note": "For this persona, follow-up questions must be phrased for field use — simple, unambiguous, and answerable by a farmer or village leader without instruments."
+      },
+      {
+        "persona": "restoration_professional",
+        "dimension": "D2",
+        "adjustment": "Standard weight (0.25) but restoration pathways must cite restoration_area_ha, lulc_ha, and cd_deforestation_ha / cd_afforestation_ha where relevant. Generic ecological reasoning without these variables scores D2=1.",
+        "note": "Restoration professionals expect quantified areas, not just directional trends."
+      },
+      {
+        "persona": "forest_development_officer",
+        "dimension": "D1",
+        "adjustment": "Standard weight (0.20). However, responses must address both ecological and socio-economic dimensions (forest resource + community wellbeing) to score D1=3. Addressing only one dimension scores D1=2 at most.",
+        "note": "Forest development officers work at the intersection of ecology and community development."
+      },
+      {
+        "persona": "livelihood_organisation_planner",
+        "dimension": "D6",
+        "adjustment": "Increase effective weight to 0.15 (reduce D4 weight to 0.05). Solutions must span multiple livelihoods dimensions and not be narrowly agricultural.",
+        "note": "For this persona, solutions restricted to a single production system (e.g. only soil and water conservation) when the query asks about integrated development score D6=1 at most."
+      }
+    ]
+  },
+  "query_specific_expected_variables": {
+    "description": "For each query ID in query_bank.json, this section lists the minimum set of available variables the response MUST reference in reasoning fields to pass D2 at score ≥ 2. If fewer than half the listed variables are cited (with values or directions), D2 is capped at 1.",
+    "entries": [
+      {"query_id": "Q001", "must_cite_min_2_of": ["delta_g_mm", "cumulative_g_mm", "soge_dev_percent", "drought_weeks", "annual_precipitation_mm", "well_depth_m"]},
+      {"query_id": "Q002", "must_cite_min_2_of": ["nrega_mws", "delta_g_mm", "cumulative_g_mm", "annual_runoff_mm", "swb_annual"]},
+      {"query_id": "Q003", "must_cite_min_2_of": ["upstream_uids", "stream_order_area_percent", "drainage_density_km_per_km2", "terrain_area_percent", "delta_g_mm"]},
+      {"query_id": "Q004", "must_cite_min_2_of": ["seasonal_precipitation_mm", "drought_weeks", "monsoon_onset_date", "cropping_intensity", "kharif_cropped_area_percent"]},
+      {"query_id": "Q005", "must_cite_min_2_of": ["cd_degradation_ha", "lulc_ha", "cropping_intensity", "terrain_area_percent"]},
+      {"query_id": "Q006", "must_cite_min_2_of": ["facility_distances_km", "organization_domains"]},
+      {"query_id": "Q007", "must_cite_min_2_of": ["swb_annual", "lulc_ha", "cd_degradation_ha", "drought_weeks"]},
+      {"query_id": "Q008", "must_cite_min_2_of": ["restoration_area_ha", "cd_deforestation_ha", "cd_afforestation_ha", "lulc_ha"]},
+      {"query_id": "Q009", "must_cite_min_2_of": ["cd_deforestation_ha", "cd_afforestation_ha", "lulc_ha", "cd_urbanization_ha"]},
+      {"query_id": "Q010", "must_cite_min_2_of": ["terrain_area_percent", "stream_order_area_percent", "lulc_ha", "restoration_area_ha"]},
+      {"query_id": "Q011", "must_cite_min_2_of": ["cd_degradation_ha", "lulc_ha", "restoration_area_ha"]},
+      {"query_id": "Q012", "must_cite_min_2_of": ["lulc_ha", "cd_deforestation_ha", "village_st_percent", "facility_distances_km"]},
+      {"query_id": "Q013", "must_cite_min_2_of": ["cd_deforestation_ha", "lulc_ha", "village_st_percent", "terrain_area_percent"]},
+      {"query_id": "Q014", "must_cite_min_2_of": ["village_st_percent", "village_sc_percent", "village_literacy_rate", "facility_distances_km"]},
+      {"query_id": "Q015", "must_cite_min_2_of": ["facility_distances_km", "lulc_ha", "cd_degradation_ha", "nrega_village", "village_sc_percent"]},
+      {"query_id": "Q016", "must_cite_min_2_of": ["swb_annual", "lulc_ha", "organization_domains"]},
+      {"query_id": "Q017", "must_cite_min_2_of": ["swb_annual", "lulc_ha", "cd_degradation_ha", "drought_weeks"]},
+      {"query_id": "Q018", "must_cite_min_2_of": ["nrega_mws", "nrega_village"]},
+      {"query_id": "Q019", "must_cite_min_2_of": ["annual_precipitation_mm", "annual_et_mm", "annual_runoff_mm", "delta_g_mm", "cumulative_g_mm", "well_depth_m"]},
+      {"query_id": "Q020", "must_cite_min_2_of": ["drought_causality", "drought_weeks", "kharif_cropped_area_ha", "monsoon_onset_date"]},
+      {"query_id": "Q021", "must_cite_min_2_of": ["seasonal_precipitation_mm", "seasonal_et_mm", "seasonal_runoff_mm", "seasonal_delta_g_mm", "cropping_intensity"]},
+      {"query_id": "Q022", "must_cite_min_2_of": ["cropping_intensity", "delta_g_mm", "cumulative_g_mm", "well_depth_m"]},
+      {"query_id": "Q023", "must_cite_min_2_of": ["drainage_density_km_per_km2", "terrain_area_percent", "annual_runoff_mm", "lulc_ha"]},
+      {"query_id": "Q024", "must_cite_min_2_of": ["organization_domains", "nrega_mws", "village_population"]},
+      {"query_id": "Q025", "must_cite_min_2_of": ["cropping_intensity", "delta_g_mm", "cumulative_g_mm", "well_depth_m", "soge_dev_percent", "aquifer_class"]},
+      {"query_id": "Q026", "must_cite_min_2_of": ["drought_weeks", "cd_degradation_ha", "facility_distances_km", "nrega_village", "cumulative_g_mm"]},
+      {"query_id": "Q027", "must_cite_min_2_of": ["village_st_percent", "lulc_ha", "cropping_intensity", "cd_deforestation_ha"]},
+      {"query_id": "Q028", "must_cite_min_2_of": ["lulc_ha", "cd_degradation_ha", "restoration_area_ha"]},
+      {"query_id": "Q029", "must_cite_min_2_of": ["aquifer_class", "aquifer_lithology_percent", "soge_dev_percent", "delta_g_mm", "terrain_area_percent"]},
+      {"query_id": "Q030", "must_cite_min_2_of": ["swb_annual", "annual_precipitation_mm", "annual_runoff_mm", "lulc_ha"]}
+    ]
+  },
+  "error_flags": {
+    "description": "Specific response properties that should be flagged as errors regardless of dimension scores. Any flag triggered reduces the weighted_total by 0.10 (floor 0).",
+    "flags": [
+      {
+        "flag_id": "EF1",
+        "name": "Variable hallucination",
+        "description": "A reasoning field cites a variable name that does not exist in data_dictionary_v2.json.",
+        "check": "For each variable name mentioned in any reasoning field, verify it exists as a key in data_dictionary_v2.json variables. Flag if any are absent.",
+        "penalty": -0.10
+      },
+      {
+        "flag_id": "EF2",
+        "name": "Not-available variable cited as evidence",
+        "description": "A confirmed pathway's reasoning cites a not_available variable (availability=not_available) as though its value is known, without indicating it was user-provided.",
+        "check": "If reasoning mentions borewell_density, soil_organic_carbon, livestock_population, crop_type_area_ha, etc. (any not_available variable) as a known fact rather than a user-provided answer, flag it.",
+        "penalty": -0.10
+      },
+      {
+        "flag_id": "EF3",
+        "name": "Wrong direction of inference",
+        "description": "A reasoning field asserts a direction of change that contradicts the plain meaning of the variable (e.g. positive cumulative_g_mm cited as evidence of depletion, or increasing lulc tree_forest cited as evidence of deforestation).",
+        "check": "Spot-check direction claims for delta_g_mm, cumulative_g_mm, lulc_ha tree_forest, cd_deforestation_ha, cd_afforestation_ha, drought_weeks, soge_dev_percent.",
+        "penalty": -0.10
+      },
+      {
+        "flag_id": "EF4",
+        "name": "Confirmed pathway not supported by any available variable",
+        "description": "A pathway appears in confirmed_pathways but its reasoning cites no available variable at all — only not_available variables or no variables.",
+        "check": "For each confirmed pathway, check that reasoning cites at least one variable with availability=available.",
+        "penalty": -0.10
+      },
+      {
+        "flag_id": "EF5",
+        "name": "Follow-up question about available variable",
+        "description": "The follow_up_question asks the user to provide information that is already captured in the available MWS dataset.",
+        "check": "Check whether the variable implied by follow_up_question is in data_dictionary_v2.json with availability=available. If so, flag.",
+        "penalty": -0.05
+      }
+    ]
+  },
+  "evaluator_output_schema": {
+    "description": "The JSON structure the evaluating LLM must produce.",
+    "type": "object",
+    "required": ["query_id", "dimension_scores", "error_flags_triggered", "weighted_total", "summary"],
+    "properties": {
+      "query_id": {"type": "string", "description": "e.g. Q001"},
+      "persona": {"type": "string"},
+      "dimension_scores": {
+        "type": "object",
+        "description": "Keys D1–D6, each with score (0–3) and justification (string).",
+        "additionalProperties": {
+          "type": "object",
+          "properties": {
+            "score": {"type": "integer", "minimum": 0, "maximum": 3},
+            "justification": {"type": "string"}
+          }
+        }
+      },
+      "error_flags_triggered": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "flag_id": {"type": "string"},
+            "detail": {"type": "string", "description": "Specific excerpt from response that triggered the flag"}
+          }
+        }
+      },
+      "persona_adjustment_applied": {
+        "type": ["string", "null"],
+        "description": "Which persona-specific weight adjustment was applied, if any."
+      },
+      "weighted_total": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1,
+        "description": "sum(score_i * effective_weight_i / 3) minus error flag penalties, floored at 0."
+      },
+      "summary": {
+        "type": "string",
+        "description": "2–3 sentence overall assessment. Should name the strongest and weakest dimension and note any error flags."
+      }
+    }
+  },
+  "example_evaluator_prompt": {
+    "description": "Template for constructing the full LLM evaluation prompt. Fill in the bracketed fields at runtime.",
+    "system": "You are an expert evaluator of AI diagnosis responses for agricultural watershed planning. You score responses strictly and cite evidence from the response JSON for every score you give.",
+    "user": "## Query\nQuery ID: {query_id}\nPersona: {persona}\nProduction system: {production_system}\nQuery text: \"{query_text}\"\n\n## MWS Variable Values (summary)\n{mws_variable_summary_json}\n\n## Response to Evaluate\n{diagnosis_response_json}\n\n## Rubric\n{evaluation_rubric_json}\n\n## Instructions\n1. Score each dimension D1–D6 (0–3) with a one-sentence justification citing specific fields from the response.\n2. Check all error flags (EF1–EF5) and list any triggered.\n3. Apply the persona-specific weight adjustment if applicable.\n4. Compute weighted_total = sum(score_i * effective_weight_i / 3) - sum(flag penalties), floored at 0.\n5. Write a 2–3 sentence summary.\n6. Output only valid JSON conforming to the evaluator_output_schema."
+  }
+}

@@ -29,7 +29,11 @@
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "soge_dev_percent > 70 or soge_class_name in ['Semi-critical', 'Critical', 'Over-exploited']"
+        "expression": "soge_dev_percent > 70 or soge_class_name in ['Semi-critical', 'Critical', 'Over-exploited']",
+        "variables": [
+          "soge_dev_percent",
+          "soge_class_name"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -40,7 +44,7 @@
       "signal_id": "sig_02",
       "variables": [
         "trend_annual_delta_g_mm",
-        "delta_g_mm"
+        "mean_annual_delta_g_mm"
       ],
       "condition": {
         "type": "trend",
@@ -48,7 +52,7 @@
         "qualitative_description": "The linear trend in annual groundwater recharge (P - ET - Runoff) is negative and the multi-year mean is also negative, indicating chronic depletion where extraction and losses persistently exceed recharge.",
         "variables": [
           "trend_annual_delta_g_mm",
-          "delta_g_mm"
+          "mean_annual_delta_g_mm"
         ]
       },
       "severity": "high",
@@ -60,12 +64,16 @@
       "signal_id": "sig_03",
       "variables": [
         "aquifer_class",
-        "aquifer_lithology_percent"
+        "acwadam_class_percent"
       ],
       "condition": {
         "type": "composite",
-        "expression": "aquifer_class == 'alluvium' and aquifer_lithology_percent.get('alluvium', 0) > 60",
-        "qualitative_description": "Dominant alluvial aquifer with more than 60% alluvial lithology confirms high recharge potential, meaning observed depletion is driven by extraction pressure rather than geological limitation."
+        "expression": "aquifer_class == 'alluvium' and acwadam_class_percent.get('alluvium', 0) > 60",
+        "qualitative_description": "Dominant alluvial aquifer with more than 60% alluvial lithology confirms high recharge potential, meaning observed depletion is driven by extraction pressure rather than geological limitation.",
+        "variables": [
+          "aquifer_class",
+          "acwadam_class_percent"
+        ]
       },
       "severity": "moderate",
       "direction": "confirms",
@@ -80,7 +88,10 @@
       "condition": {
         "type": "quantitative",
         "expression": "nrega_swc_count < 10",
-        "qualitative_description": "Fewer than 10 cumulative SWC works in the micro-watershed over the MGNREGA record, indicating low investment in recharge infrastructure relative to extraction pressure."
+        "qualitative_description": "Fewer than 10 cumulative SWC works in the micro-watershed over the MGNREGA record, indicating low investment in recharge infrastructure relative to extraction pressure.",
+        "variables": [
+          "nrega_swc_count"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",

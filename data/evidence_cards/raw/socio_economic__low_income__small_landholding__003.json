@@ -30,7 +30,11 @@
       "condition": {
         "type": "quantitative",
         "expression": "(lulc_cropland_ha[-1] / (village_total_population + 1e-9)) < 0.2",
-        "qualitative_description": "Per-capita cropland availability below 0.2 ha per person (roughly 1 ha per household of 5) indicates predominantly marginal or sub-marginal farm sizes, consistent with fragmented landholding structure."
+        "qualitative_description": "Per-capita cropland availability below 0.2 ha per person (roughly 1 ha per household of 5) indicates predominantly marginal or sub-marginal farm sizes, consistent with fragmented landholding structure.",
+        "variables": [
+          "lulc_cropland_ha",
+          "village_total_population"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -40,12 +44,19 @@
     {
       "signal_id": "sig_02",
       "variables": [
-        "cropping_intensity"
+        "mean_cropping_intensity",
+        "lulc_cropland_ha",
+        "village_total_population"
       ],
       "condition": {
         "type": "composite",
         "expression": "mean_cropping_intensity <= 1.3 and (lulc_cropland_ha[-1] / (village_total_population + 1e-9)) < 0.2",
-        "qualitative_description": "Low cropping intensity (≤1.3) combined with small per-capita cropland means small holders are not compensating for land scarcity through intensification, compounding the income constraint."
+        "qualitative_description": "Low cropping intensity (≤1.3) combined with small per-capita cropland means small holders are not compensating for land scarcity through intensification, compounding the income constraint.",
+        "variables": [
+          "mean_cropping_intensity",
+          "lulc_cropland_ha",
+          "village_total_population"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -60,7 +71,10 @@
       "condition": {
         "type": "quantitative",
         "expression": "dist_apmc_km > 20",
-        "qualitative_description": "Distance to nearest APMC market exceeds 20 km, reducing price discovery and exposing small holders to intermediary exploitation."
+        "qualitative_description": "Distance to nearest APMC market exceeds 20 km, reducing price discovery and exposing small holders to intermediary exploitation.",
+        "variables": [
+          "dist_apmc_km"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -77,7 +91,12 @@
       "condition": {
         "type": "composite",
         "expression": "dist_dairy_km > 15 and 'livelihoods' not in organization_domains and nrega_community_assets_count < 10",
-        "qualitative_description": "Distant dairy infrastructure, absence of livelihood-focused NGOs, and low MGNREGA community asset creation collectively indicate weak diversification support for small holders."
+        "qualitative_description": "Distant dairy infrastructure, absence of livelihood-focused NGOs, and low MGNREGA community asset creation collectively indicate weak diversification support for small holders.",
+        "variables": [
+          "dist_dairy_km",
+          "organization_domains",
+          "nrega_community_assets_count"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -223,6 +242,14 @@
           "normalized": {
             "band": "moderate",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {

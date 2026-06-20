@@ -31,7 +31,11 @@
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "soge_dev_percent > 70 or soge_class_name in ['Semi-critical', 'Critical', 'Over-exploited']"
+        "expression": "soge_dev_percent > 70 or soge_class_name in ['Semi-critical', 'Critical', 'Over-exploited']",
+        "variables": [
+          "soge_dev_percent",
+          "soge_class_name"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -42,7 +46,7 @@
       "signal_id": "sig_02",
       "variables": [
         "trend_annual_delta_g_mm",
-        "delta_g_mm"
+        "mean_annual_delta_g_mm"
       ],
       "condition": {
         "type": "composite",
@@ -50,7 +54,7 @@
         "qualitative_description": "Both the linear trend and the multi-year mean of annual groundwater recharge (P - ET - Runoff) are negative, indicating chronic depletion rather than a single drought year anomaly.",
         "variables": [
           "trend_annual_delta_g_mm",
-          "delta_g_mm"
+          "mean_annual_delta_g_mm"
         ]
       },
       "severity": "high",
@@ -62,12 +66,16 @@
       "signal_id": "sig_03",
       "variables": [
         "aquifer_class",
-        "aquifer_lithology_percent"
+        "acwadam_class_percent"
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "aquifer_class == 'alluvium' and aquifer_lithology_percent.get('alluvium', 0) > 50",
-        "qualitative_description": "Dominant alluvial aquifer lithology (>50% of MWS area) in a coastal plain setting confirms high recharge potential but also high extraction vulnerability due to ease of borewell installation and intensive irrigation demand."
+        "expression": "aquifer_class == 'alluvium' and acwadam_class_percent.get('alluvium', 0) > 50",
+        "qualitative_description": "Dominant alluvial aquifer lithology (>50% of MWS area) in a coastal plain setting confirms high recharge potential but also high extraction vulnerability due to ease of borewell installation and intensive irrigation demand.",
+        "variables": [
+          "aquifer_class",
+          "acwadam_class_percent"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -82,7 +90,10 @@
       "condition": {
         "type": "quantitative",
         "expression": "nrega_swc_count < 5",
-        "qualitative_description": "Fewer than 5 cumulative SWC works recorded under MGNREGA in the micro-watershed, indicating low investment in recharge infrastructure relative to extraction pressure."
+        "qualitative_description": "Fewer than 5 cumulative SWC works recorded under MGNREGA in the micro-watershed, indicating low investment in recharge infrastructure relative to extraction pressure.",
+        "variables": [
+          "nrega_swc_count"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",

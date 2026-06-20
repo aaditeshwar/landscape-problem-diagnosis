@@ -19,6 +19,32 @@ DROUGHT_DERIVED_VARIABLE_NAMES = frozenset(
     }
 )
 
+# Computed by assembler / signal_evaluator from MWS time series (also in data_dictionary_v2).
+ASSEMBLER_DERIVED_VARIABLE_NAMES = frozenset(
+    {
+        "mean_annual_precipitation_mm",
+        "trend_annual_precipitation_mm",
+        "mean_annual_et_mm",
+        "trend_annual_et_mm",
+        "mean_annual_runoff_mm",
+        "trend_annual_runoff_mm",
+        "mean_annual_delta_g_mm",
+        "trend_annual_delta_g_mm",
+        "mean_cropping_intensity",
+        "trend_cropping_intensity",
+        "mean_kharif_cropped_area_ha",
+        "trend_kharif_cropped_area_ha",
+        "mean_double_crop_area_ha",
+        "trend_double_crop_area_ha",
+        "drought_moderate_return_period",
+        "drought_severe_return_period",
+        "mean_swb_total_area_ha",
+        "trend_swb_total_area_ha",
+        "mean_swb_rabi_kharif_ratio",
+        "trend_swb_rabi_kharif_ratio",
+    }
+)
+
 
 def _sorted_numeric_series(series: dict | None) -> list[tuple[int, float]]:
     if not series:

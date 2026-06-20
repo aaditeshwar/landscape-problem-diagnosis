@@ -26,6 +26,23 @@ from lib.card_policy_utils import (  # noqa: E402
     signal_map,
 )
 
+POLICY_AUDIT_FIELDS = [
+    "card_id",
+    "severity",
+    "code",
+    "detail",
+    "note_min_derived",
+    "policy_min_confirms_true",
+    "note_derived_primary",
+    "policy_primary_signals",
+    "stored_primary_signals",
+    "derived_primary_signals",
+    "confirm_signal_ids",
+    "note_excerpt",
+    "draft_note_from_policy",
+    "confirmation_policy_json",
+]
+
 
 def load_pilot_card_ids() -> set[str]:
     if not PILOT_POLICIES.exists():
@@ -35,9 +52,39 @@ def load_pilot_card_ids() -> set[str]:
     return set(data.keys()) if isinstance(data, dict) else set()
 
 
+def card_policy_context(card: dict, pilot_ids: set[str] | None = None) -> dict[str, str]:
+    card_id = str(card.get("card_id") or "")
+    note = str(card.get("overall_reasoning_note") or "")
+    policy = card.get("confirmation_policy") or {}
+    confirm_ids = confirm_signal_ids(card)
+    note_primary = primary_signals_from_note(note, confirm_ids)
+    policy_primary = sorted(policy_primary_set(policy))
+    note_min = min_confirms_from_note(note)
+    policy_min = int((policy.get("confirm_when") or {}).get("min_confirms_true") or 0)
+    derived = derive_policy(card)
+    derived_primary = sorted(derived.get("primary_confirm_signals") or [])
+    stored_primary = sorted(policy.get("primary_confirm_signals") or [])
+    draft = draft_reasoning_note_from_policy(card, policy)
+    return {
+        "card_id": card_id,
+        "note_min_derived": str(note_min),
+        "policy_min_confirms_true": str(policy_min),
+        "note_derived_primary": ",".join(note_primary),
+        "policy_primary_signals": ",".join(policy_primary),
+        "stored_primary_signals": ",".join(stored_primary),
+        "derived_primary_signals": ",".join(derived_primary),
+        "confirm_signal_ids": ",".join(confirm_ids),
+        "note_excerpt": note[:600].replace("\n", " "),
+        "draft_note_from_policy": draft[:600].replace("\n", " "),
+        "confirmation_policy_json": json.dumps(policy, ensure_ascii=False, separators=(",", ":")),
+        "_pilot_exempt": str(card_id in (pilot_ids or set())),
+    }
+
+
 def audit_card(card: dict, pilot_ids: set[str] | None = None) -> list[dict[str, str]]:
     issues: list[dict[str, str]] = []
-    card_id = str(card.get("card_id") or "")
+    ctx = card_policy_context(card, pilot_ids)
+    card_id = ctx["card_id"]
     note = str(card.get("overall_reasoning_note") or "")
     policy = card.get("confirmation_policy") or {}
     confirm_ids = confirm_signal_ids(card)
@@ -45,11 +92,17 @@ def audit_card(card: dict, pilot_ids: set[str] | None = None) -> list[dict[str, 
     policy_primary = policy_primary_set(policy)
     smap = signal_map(card)
 
-    note_min = min_confirms_from_note(note)
-    policy_min = int((policy.get("confirm_when") or {}).get("min_confirms_true") or 0)
+    note_min = int(ctx["note_min_derived"])
+    policy_min = int(ctx["policy_min_confirms_true"] or 0)
 
     def add(code: str, detail: str, severity: str = "warn") -> None:
-        issues.append({"card_id": card_id, "severity": severity, "code": code, "detail": detail})
+        row = {
+            "severity": severity,
+            "code": code,
+            "detail": detail,
+        }
+        row.update({k: v for k, v in ctx.items() if not k.startswith("_")})
+        issues.append(row)
 
     if not policy:
         add("missing_policy", "confirmation_policy absent", "error")
@@ -108,24 +161,19 @@ def main() -> int:
 
     pilot_ids = load_pilot_card_ids()
     all_issues: list[dict[str, str]] = []
-    draft_rows: list[dict[str, str]] = []
+    all_card_rows: list[dict[str, str]] = []
 
     for path in sorted(RAW_DIR.glob("*.json")):
         with path.open(encoding="utf-8") as handle:
             card = json.load(handle)
-        all_issues.extend(audit_card(card, pilot_ids))
-        card_id = str(card.get("card_id") or path.stem)
-        note = str(card.get("overall_reasoning_note") or "")
-        policy = card.get("confirmation_policy") or {}
-        draft = draft_reasoning_note_from_policy(card, policy)
-        if note.strip() and draft.strip():
-            draft_rows.append(
-                {
-                    "card_id": card_id,
-                    "note_excerpt": note[:240].replace("\n", " "),
-                    "draft_note": draft[:400].replace("\n", " "),
-                }
-            )
+        ctx = card_policy_context(card, pilot_ids)
+        card_issues = audit_card(card, pilot_ids)
+        all_issues.extend(card_issues)
+        summary_row = dict(ctx)
+        summary_row.pop("_pilot_exempt", None)
+        summary_row["issue_count"] = str(len(card_issues))
+        summary_row["issue_codes"] = ",".join(sorted({i["code"] for i in card_issues}))
+        all_card_rows.append(summary_row)
 
     errors = [i for i in all_issues if i["severity"] == "error"]
     warns = [i for i in all_issues if i["severity"] != "error"]
@@ -133,13 +181,30 @@ def main() -> int:
     if args.write_report:
         REPORT_DIR.mkdir(parents=True, exist_ok=True)
         with (REPORT_DIR / "policy_audit.csv").open("w", encoding="utf-8", newline="") as handle:
-            writer = csv.DictWriter(handle, fieldnames=["card_id", "severity", "code", "detail"])
+            writer = csv.DictWriter(handle, fieldnames=POLICY_AUDIT_FIELDS, extrasaction="ignore")
             writer.writeheader()
             writer.writerows(all_issues)
-        with (REPORT_DIR / "policy_prose_comparison.csv").open("w", encoding="utf-8", newline="") as handle:
-            writer = csv.DictWriter(handle, fieldnames=["card_id", "note_excerpt", "draft_note"])
+        summary_fields = [
+            "card_id",
+            "issue_count",
+            "issue_codes",
+            "note_min_derived",
+            "policy_min_confirms_true",
+            "note_derived_primary",
+            "policy_primary_signals",
+            "stored_primary_signals",
+            "derived_primary_signals",
+            "confirm_signal_ids",
+            "note_excerpt",
+            "draft_note_from_policy",
+            "confirmation_policy_json",
+        ]
+        with (REPORT_DIR / "policy_audit_summary.csv").open("w", encoding="utf-8", newline="") as handle:
+            writer = csv.DictWriter(handle, fieldnames=summary_fields, extrasaction="ignore")
             writer.writeheader()
-            writer.writerows(draft_rows)
+            writer.writerows(all_card_rows)
+        print(f"Wrote {REPORT_DIR / 'policy_audit.csv'} ({len(all_issues)} issue row(s))")
+        print(f"Wrote {REPORT_DIR / 'policy_audit_summary.csv'} ({len(all_card_rows)} card row(s))")
 
     for item in warns[:20]:
         print(f"WARN {item['card_id']} [{item['code']}]: {item['detail']}")
@@ -149,7 +214,7 @@ def main() -> int:
     for item in errors:
         print(f"ERROR {item['card_id']} [{item['code']}]: {item['detail']}", file=sys.stderr)
 
-    print(f"policy audit: {len(errors)} error(s), {len(warns)} warning(s) across {len(list(RAW_DIR.glob('*.json')))} cards")
+    print(f"policy audit: {len(errors)} error(s), {len(warns)} warning(s) across {len(all_card_rows)} cards")
     if errors:
         return 1
     if args.strict and warns:

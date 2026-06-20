@@ -29,7 +29,10 @@
       "condition": {
         "type": "trend",
         "expression": "cd_forest_to_farm_ha > 10",
-        "qualitative_description": "Cumulative forest-to-farm conversion has increased by more than 10 ha over the available record, indicating active encroachment of forest land for agriculture."
+        "qualitative_description": "Cumulative forest-to-farm conversion has increased by more than 10 ha over the available record, indicating active encroachment of forest land for agriculture.",
+        "variables": [
+          "cd_forest_to_farm_ha"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -62,7 +65,10 @@
       "condition": {
         "type": "quantitative",
         "expression": "village_st_percent > 15",
-        "qualitative_description": "Scheduled Tribe population exceeds 15% of village population, indicating a community with historically high forest dependence and potential Forest Rights Act tenure disputes."
+        "qualitative_description": "Scheduled Tribe population exceeds 15% of village population, indicating a community with historically high forest dependence and potential Forest Rights Act tenure disputes.",
+        "variables": [
+          "village_st_percent"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -73,7 +79,8 @@
       "signal_id": "sig_04",
       "variables": [
         "cd_forest_to_farm_ha",
-        "cd_urbanization_ha"
+        "cd_urbanization_ha",
+        "village_st_percent"
       ],
       "condition": {
         "type": "composite",

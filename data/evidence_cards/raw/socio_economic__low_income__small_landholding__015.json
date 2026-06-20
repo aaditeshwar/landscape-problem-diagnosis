@@ -32,7 +32,11 @@
       "condition": {
         "type": "quantitative",
         "expression": "(lulc_cropland_ha[-1] / (village_total_population + 1e-9)) < 0.2",
-        "qualitative_description": "Per-capita cropland availability below 0.2 ha per person (roughly 1 ha per 5-person household) indicates severe land constraint consistent with marginal or sub-marginal holdings."
+        "qualitative_description": "Per-capita cropland availability below 0.2 ha per person (roughly 1 ha per 5-person household) indicates severe land constraint consistent with marginal or sub-marginal holdings.",
+        "variables": [
+          "lulc_cropland_ha",
+          "village_total_population"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -42,12 +46,15 @@
     {
       "signal_id": "sig_02",
       "variables": [
-        "cropping_intensity"
+        "mean_cropping_intensity"
       ],
       "condition": {
         "type": "trend",
         "expression": "mean_cropping_intensity <= 1.15",
-        "qualitative_description": "Mean cropping intensity at or below 1.15 across the available record indicates that small holders are not compensating for limited land area through double-cropping or multi-season cultivation."
+        "qualitative_description": "Mean cropping intensity at or below 1.15 across the available record indicates that small holders are not compensating for limited land area through double-cropping or multi-season cultivation.",
+        "variables": [
+          "mean_cropping_intensity"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -62,7 +69,10 @@
       "condition": {
         "type": "quantitative",
         "expression": "dist_apmc_km > 30",
-        "qualitative_description": "Distance to nearest APMC market exceeding 30 km indicates that small holders face high transaction costs and are likely dependent on intermediaries for price discovery, reducing net farm income."
+        "qualitative_description": "Distance to nearest APMC market exceeding 30 km indicates that small holders face high transaction costs and are likely dependent on intermediaries for price discovery, reducing net farm income.",
+        "variables": [
+          "dist_apmc_km"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -78,7 +88,11 @@
       "condition": {
         "type": "composite",
         "expression": "nrega_community_assets_count < 10 and ('livelihoods' not in organization_domains and 'fisheries' not in organization_domains and 'watershed_management' not in organization_domains)",
-        "qualitative_description": "Fewer than 10 cumulative MGNREGA community asset works combined with absence of livelihood-focused NGOs indicates a weak safety net and limited diversification support for small holders."
+        "qualitative_description": "Fewer than 10 cumulative MGNREGA community asset works combined with absence of livelihood-focused NGOs indicates a weak safety net and limited diversification support for small holders.",
+        "variables": [
+          "nrega_community_assets_count",
+          "organization_domains"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -93,7 +107,10 @@
       "condition": {
         "type": "quantitative",
         "expression": "dist_dairy_km > 20",
-        "qualitative_description": "Distance to nearest dairy cooperative or collection centre exceeding 20 km indicates that livestock-based income diversification — a key pathway out of farm income poverty for small holders — is not accessible."
+        "qualitative_description": "Distance to nearest dairy cooperative or collection centre exceeding 20 km indicates that livestock-based income diversification — a key pathway out of farm income poverty for small holders — is not accessible.",
+        "variables": [
+          "dist_dairy_km"
+        ]
       },
       "severity": "low",
       "direction": "amplifies",
@@ -239,6 +256,14 @@
           "normalized": {
             "band": "moderate",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {

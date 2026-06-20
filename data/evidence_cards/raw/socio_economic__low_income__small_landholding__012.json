@@ -30,7 +30,11 @@
       "condition": {
         "type": "quantitative",
         "expression": "(lulc_cropland_ha[-1] / (village_total_population + 1e-9)) < 0.2",
-        "qualitative_description": "Per-capita cropland availability below 0.2 ha/person is a strong proxy for marginal or sub-marginal landholding size, consistent with the national average of ~0.38 ha/household declining further in hill states."
+        "qualitative_description": "Per-capita cropland availability below 0.2 ha/person is a strong proxy for marginal or sub-marginal landholding size, consistent with the national average of ~0.38 ha/household declining further in hill states.",
+        "variables": [
+          "lulc_cropland_ha",
+          "village_total_population"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -40,12 +44,15 @@
     {
       "signal_id": "sig_02",
       "variables": [
-        "cropping_intensity"
+        "mean_cropping_intensity"
       ],
       "condition": {
         "type": "trend",
         "expression": "mean_cropping_intensity <= 1.15",
-        "qualitative_description": "Mean cropping intensity at or below 1.15 indicates that small holders are not compensating for limited land area through double-cropping or multi-season cultivation, compounding the income constraint."
+        "qualitative_description": "Mean cropping intensity at or below 1.15 indicates that small holders are not compensating for limited land area through double-cropping or multi-season cultivation, compounding the income constraint.",
+        "variables": [
+          "mean_cropping_intensity"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -60,7 +67,10 @@
       "condition": {
         "type": "quantitative",
         "expression": "dist_apmc_km > 30",
-        "qualitative_description": "Distance to nearest APMC market exceeding 30 km in hilly terrain effectively isolates small holders from price discovery mechanisms, forcing dependence on intermediaries who capture most of the value margin."
+        "qualitative_description": "Distance to nearest APMC market exceeding 30 km in hilly terrain effectively isolates small holders from price discovery mechanisms, forcing dependence on intermediaries who capture most of the value margin.",
+        "variables": [
+          "dist_apmc_km"
+        ]
       },
       "severity": "high",
       "direction": "amplifies",
@@ -70,13 +80,17 @@
     {
       "signal_id": "sig_04",
       "variables": [
-        "organization_domains",
-        "nrega_community_assets_count"
+        "nrega_community_assets_count",
+        "organization_domains"
       ],
       "condition": {
         "type": "composite",
         "expression": "('livelihoods' not in organization_domains and 'fisheries' not in organization_domains) and nrega_community_assets_count < 10",
-        "qualitative_description": "Absence of NGO presence in livelihoods or fisheries domains combined with low MGNREGA community asset creation indicates weak institutional support for income diversification, leaving small holders with no safety net beyond subsistence farming."
+        "qualitative_description": "Absence of NGO presence in livelihoods or fisheries domains combined with low MGNREGA community asset creation indicates weak institutional support for income diversification, leaving small holders with no safety net beyond subsistence farming.",
+        "variables": [
+          "nrega_community_assets_count",
+          "organization_domains"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -222,6 +236,14 @@
           "normalized": {
             "band": "moderate",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {

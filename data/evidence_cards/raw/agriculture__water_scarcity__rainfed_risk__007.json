@@ -26,13 +26,17 @@
     {
       "signal_id": "sig_01",
       "variables": [
-        "lulc_single_kharif_ha",
-        "lulc_double_crop_ha"
+        "mean_kharif_cropped_area_ha",
+        "mean_double_crop_area_ha"
       ],
       "condition": {
         "type": "quantitative",
         "expression": "(mean_kharif_cropped_area_ha / (mean_kharif_cropped_area_ha + mean_double_crop_area_ha + 1e-9)) > 0.75",
-        "qualitative_description": "More than 75% of cropped area is under single kharif cultivation over the multi-year mean, indicating dominant rainfed dependence with negligible rabi or irrigated double cropping."
+        "qualitative_description": "More than 75% of cropped area is under single kharif cultivation over the multi-year mean, indicating dominant rainfed dependence with negligible rabi or irrigated double cropping.",
+        "variables": [
+          "mean_kharif_cropped_area_ha",
+          "mean_double_crop_area_ha"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -42,12 +46,17 @@
     {
       "signal_id": "sig_02",
       "variables": [
-        "cropping_intensity"
+        "mean_cropping_intensity",
+        "trend_cropping_intensity"
       ],
       "condition": {
         "type": "trend",
         "expression": "mean_cropping_intensity <= 1.15 and trend_cropping_intensity <= 0.005",
-        "qualitative_description": "Mean cropping intensity at or below 1.15 with no upward trend over the observation period confirms persistent single-season rainfed farming without expansion of irrigated area."
+        "qualitative_description": "Mean cropping intensity at or below 1.15 with no upward trend over the observation period confirms persistent single-season rainfed farming without expansion of irrigated area.",
+        "variables": [
+          "mean_cropping_intensity",
+          "trend_cropping_intensity"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -57,16 +66,16 @@
     {
       "signal_id": "sig_03",
       "variables": [
-        "runoff_mm",
-        "terrain_cluster_id"
+        "terrain_cluster_id",
+        "mean_annual_runoff_mm"
       ],
       "condition": {
         "type": "composite",
         "expression": "terrain_cluster_id == 3 and mean_annual_runoff_mm > 600",
         "qualitative_description": "Broad plains and slopes terrain (cluster 3) combined with high mean annual runoff (>600 mm) indicates rapid lateral drainage off the plateau, reducing in-field moisture retention and limiting recharge of shallow hard rock aquifers.",
         "variables": [
-          "runoff_mm",
-          "terrain_cluster_id"
+          "terrain_cluster_id",
+          "mean_annual_runoff_mm"
         ]
       },
       "severity": "moderate",
@@ -83,7 +92,11 @@
       "condition": {
         "type": "composite",
         "expression": "canal_name is None and nrega_irrigation_count < 5",
-        "qualitative_description": "No irrigation canal intersects the micro-watershed and fewer than 5 MGNREGA irrigation works have been recorded, confirming absence of both surface irrigation infrastructure and public investment in water harvesting."
+        "qualitative_description": "No irrigation canal intersects the micro-watershed and fewer than 5 MGNREGA irrigation works have been recorded, confirming absence of both surface irrigation infrastructure and public investment in water harvesting.",
+        "variables": [
+          "canal_name",
+          "nrega_irrigation_count"
+        ]
       },
       "severity": "moderate",
       "direction": "confirms",
@@ -93,12 +106,15 @@
     {
       "signal_id": "sig_05",
       "variables": [
-        "swb_rabi_area_ha"
+        "mean_swb_rabi_kharif_ratio"
       ],
       "condition": {
         "type": "trend",
         "expression": "mean_swb_rabi_kharif_ratio < 0.25",
-        "qualitative_description": "Mean rabi-to-kharif surface water body area ratio below 0.25 indicates that surface water bodies largely dry up after the monsoon, leaving insufficient stored water for post-monsoon supplemental irrigation."
+        "qualitative_description": "Mean rabi-to-kharif surface water body area ratio below 0.25 indicates that surface water bodies largely dry up after the monsoon, leaving insufficient stored water for post-monsoon supplemental irrigation.",
+        "variables": [
+          "mean_swb_rabi_kharif_ratio"
+        ]
       },
       "severity": "moderate",
       "direction": "confirms",
@@ -162,6 +178,14 @@
             "present": true,
             "percent_lower": 10,
             "percent_upper": 30
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {

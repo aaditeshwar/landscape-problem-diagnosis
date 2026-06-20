@@ -32,7 +32,11 @@
       "condition": {
         "type": "quantitative",
         "expression": "soge_dev_percent > 90 or soge_class_name in ['Critical', 'Over-exploited']",
-        "qualitative_description": "Block-level groundwater extraction exceeds 90% of net annual recharge, or CGWB classifies the block as Critical or Over-exploited — thresholds particularly significant in arid alluvial settings where recharge is episodic and low."
+        "qualitative_description": "Block-level groundwater extraction exceeds 90% of net annual recharge, or CGWB classifies the block as Critical or Over-exploited — thresholds particularly significant in arid alluvial settings where recharge is episodic and low.",
+        "variables": [
+          "soge_dev_percent",
+          "soge_class_name"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -43,7 +47,7 @@
       "signal_id": "sig_02",
       "variables": [
         "trend_annual_delta_g_mm",
-        "delta_g_mm"
+        "mean_annual_delta_g_mm"
       ],
       "condition": {
         "type": "trend",
@@ -51,7 +55,7 @@
         "qualitative_description": "The linear trend in annual groundwater balance (P - ET - Runoff) is declining at more than 2 mm/year and the multi-year mean is negative, confirming chronic depletion exceeding recharge in the arid zone.",
         "variables": [
           "trend_annual_delta_g_mm",
-          "delta_g_mm"
+          "mean_annual_delta_g_mm"
         ]
       },
       "severity": "high",
@@ -63,12 +67,16 @@
       "signal_id": "sig_03",
       "variables": [
         "aquifer_class",
-        "aquifer_lithology_percent"
+        "mean_annual_precipitation_mm"
       ],
       "condition": {
         "type": "composite",
         "expression": "aquifer_class == 'alluvium' and mean_annual_precipitation_mm < 450",
-        "qualitative_description": "Alluvial aquifer confirmed with mean annual precipitation below 450 mm, indicating that despite high storage capacity, recharge is severely limited by aridity — a combination that amplifies depletion risk from irrigation extraction."
+        "qualitative_description": "Alluvial aquifer confirmed with mean annual precipitation below 450 mm, indicating that despite high storage capacity, recharge is severely limited by aridity — a combination that amplifies depletion risk from irrigation extraction.",
+        "variables": [
+          "aquifer_class",
+          "mean_annual_precipitation_mm"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -83,7 +91,10 @@
       "condition": {
         "type": "quantitative",
         "expression": "nrega_swc_count < 10",
-        "qualitative_description": "Fewer than 10 cumulative SWC works recorded under MGNREGA in the micro-watershed, indicating critically low investment in recharge infrastructure in an arid zone where artificial recharge is essential to offset low natural recharge."
+        "qualitative_description": "Fewer than 10 cumulative SWC works recorded under MGNREGA in the micro-watershed, indicating critically low investment in recharge infrastructure in an arid zone where artificial recharge is essential to offset low natural recharge.",
+        "variables": [
+          "nrega_swc_count"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",

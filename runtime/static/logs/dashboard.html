@@ -1075,7 +1075,14 @@
             const failed = ev.status === "failed" || ev.error;
             const badgeClass = failed ? "failed" : ev.event === "diagnosis_follow_up" ? "follow" : "query";
             const stageSuffix = failed && ev.failure_stage ? ` · ${formatFailureStage(ev.failure_stage)}` : "";
-            const label = failed ? `Failed${stageSuffix}` : ev.event === "diagnosis_follow_up" ? "Follow-up" : "Query";
+            const fuCount = ev.follow_up_count;
+            const fuSuffix =
+              ev.event === "diagnosis_follow_up" && fuCount != null ? ` · fu_${fuCount}` : "";
+            const label = failed
+              ? `Failed${stageSuffix}`
+              : ev.event === "diagnosis_follow_up"
+                ? `Follow-up${fuSuffix}`
+                : "Query";
             const selected = state.selectedIndex === ev.index ? "selected" : "";
             const rowClass = failed ? "failed" : "";
             return `<tr class="event-row ${rowClass} ${selected}" data-index="${ev.index}">
@@ -1085,6 +1092,13 @@
                 <div>${ev.session_id || "—"}</div>
                 <div style="color:var(--muted);font-size:0.78rem;">${ev.mws_uid || "—"}</div>
                 <div style="color:var(--muted);font-size:0.78rem;">${fmtLocation(ev)}</div>
+                ${
+                  ev.follow_up_count != null
+                    ? `<div style="color:var(--muted);font-size:0.78rem;">fu_${ev.follow_up_count}${
+                        ev.diagnosis_snapshot_id ? ` · ${ev.diagnosis_snapshot_id}` : ""
+                      }</div>`
+                    : ""
+                }
               </td>
               <td>${ev.model || "—"}</td>
               <td>${fmtMs(ev.timings_ms?.total)}</td>
@@ -1162,6 +1176,9 @@
         <div class="meta-grid">
           <div><strong>Event</strong>${event.event || "—"}</div>
           <div><strong>Session</strong>${event.session_id || "—"}</div>
+          <div><strong>Snapshot ID</strong>${event.diagnosis_snapshot_id || "—"}</div>
+          <div><strong>Follow-up count</strong>${event.follow_up_count != null ? event.follow_up_count : "—"}</div>
+          <div><strong>Turn</strong>${event.turn_no != null ? event.turn_no : "—"}</div>
           <div><strong>MWS</strong>${event.mws_uid || "—"}</div>
           <div><strong>Tehsil</strong>${event.tehsil || "—"}</div>
           <div><strong>District</strong>${event.district || "—"}</div>

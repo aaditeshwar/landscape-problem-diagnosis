@@ -355,46 +355,6 @@ export function DiagnosisPanel({
               ) : null}
             </section>
           ) : null}
-          {diagnosis.panel_update_explanation?.trim() ? (
-            <section className="rounded-lg border border-sky-200 bg-sky-50/60 px-3 py-2">
-              <div className="flex items-start justify-between gap-2">
-                <h3 className="text-sm font-semibold text-sky-900">{summaryHeading}</h3>
-                <GiveFeedbackLink
-                  snapshotId={diagnosis.diagnosis_snapshot_id}
-                  focus="summary"
-                  disabled={!canGiveFeedback}
-                />
-              </div>
-              <p className="mt-1 text-sm text-stone-800">
-                <SignalRichText
-                  text={diagnosis.panel_update_explanation}
-                  signalEvaluation={diagnosis.signal_evaluation}
-                />
-              </p>
-            </section>
-          ) : null}
-
-          {diagnosis.solutions.length > 0 && (
-            <section>
-              <div className="flex items-start justify-between gap-2">
-                <h3 className="text-sm font-semibold text-stone-800">Suggested solutions</h3>
-                <GiveFeedbackLink
-                  snapshotId={diagnosis.diagnosis_snapshot_id}
-                  focus="solutions"
-                  disabled={!canGiveFeedback}
-                />
-              </div>
-              {diagnosis.solutions_review_notes ? (
-                <p className="mt-1 text-xs text-stone-600">{diagnosis.solutions_review_notes}</p>
-              ) : null}
-              <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-stone-700">
-                {diagnosis.solutions.map((s: string) => (
-                  <li key={s}>{s}</li>
-                ))}
-              </ul>
-            </section>
-          )}
-
           {followUpHistory.length > 0 && (
             <section className="space-y-3">
               <h3 className="text-sm font-semibold text-stone-800">Follow-up conversation</h3>
@@ -506,6 +466,46 @@ export function DiagnosisPanel({
                   ) : null}
                 </div>
               ))}
+            </section>
+          )}
+
+          {diagnosis.panel_update_explanation?.trim() ? (
+            <section className="rounded-lg border border-sky-200 bg-sky-50/60 px-3 py-2">
+              <div className="flex items-start justify-between gap-2">
+                <h3 className="text-sm font-semibold text-sky-900">{summaryHeading}</h3>
+                <GiveFeedbackLink
+                  snapshotId={diagnosis.diagnosis_snapshot_id}
+                  focus="summary"
+                  disabled={!canGiveFeedback}
+                />
+              </div>
+              <p className="mt-1 text-sm text-stone-800">
+                <SignalRichText
+                  text={diagnosis.panel_update_explanation}
+                  signalEvaluation={diagnosis.signal_evaluation}
+                />
+              </p>
+            </section>
+          ) : null}
+
+          {diagnosis.solutions.length > 0 && (
+            <section>
+              <div className="flex items-start justify-between gap-2">
+                <h3 className="text-sm font-semibold text-stone-800">Suggested solutions</h3>
+                <GiveFeedbackLink
+                  snapshotId={diagnosis.diagnosis_snapshot_id}
+                  focus="solutions"
+                  disabled={!canGiveFeedback}
+                />
+              </div>
+              {diagnosis.solutions_review_notes ? (
+                <p className="mt-1 text-xs text-stone-600">{diagnosis.solutions_review_notes}</p>
+              ) : null}
+              <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-stone-700">
+                {diagnosis.solutions.map((s: string) => (
+                  <li key={s}>{s}</li>
+                ))}
+              </ul>
             </section>
           )}
 

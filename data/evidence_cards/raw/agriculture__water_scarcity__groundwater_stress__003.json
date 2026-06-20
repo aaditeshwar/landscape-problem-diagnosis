@@ -30,7 +30,11 @@
       "condition": {
         "type": "quantitative",
         "expression": "soge_dev_percent > 90 or soge_class_name in ['Critical', 'Over-exploited']",
-        "qualitative_description": "Block-level SOGE exceeds 90% or is classified Critical/Over-exploited by CGWB, indicating abstraction is at or beyond net annual recharge in the alluvial aquifer."
+        "qualitative_description": "Block-level SOGE exceeds 90% or is classified Critical/Over-exploited by CGWB, indicating abstraction is at or beyond net annual recharge in the alluvial aquifer.",
+        "variables": [
+          "soge_dev_percent",
+          "soge_class_name"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -41,7 +45,7 @@
       "signal_id": "sig_02",
       "variables": [
         "trend_annual_delta_g_mm",
-        "delta_g_mm"
+        "mean_annual_delta_g_mm"
       ],
       "condition": {
         "type": "composite",
@@ -49,7 +53,7 @@
         "qualitative_description": "Both the linear trend slope of annual groundwater balance (P - ET - Runoff) is negative and the multi-year mean is negative, confirming chronic depletion rather than a single drought year anomaly.",
         "variables": [
           "trend_annual_delta_g_mm",
-          "delta_g_mm"
+          "mean_annual_delta_g_mm"
         ]
       },
       "severity": "high",
@@ -61,12 +65,16 @@
       "signal_id": "sig_03",
       "variables": [
         "aquifer_class",
-        "aquifer_lithology_percent"
+        "acwadam_class_percent"
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "aquifer_class == 'alluvium' and aquifer_lithology_percent.get('alluvium', 0) > 60",
-        "qualitative_description": "Dominant alluvial aquifer with more than 60% of MWS area underlain by alluvial lithology, confirming the high-storage but over-exploited aquifer type characteristic of the Indo-Gangetic Plain."
+        "expression": "aquifer_class == 'alluvium' and acwadam_class_percent.get('alluvium', 0) > 60",
+        "qualitative_description": "Dominant alluvial aquifer with more than 60% of MWS area underlain by alluvial lithology, confirming the high-storage but over-exploited aquifer type characteristic of the Indo-Gangetic Plain.",
+        "variables": [
+          "aquifer_class",
+          "acwadam_class_percent"
+        ]
       },
       "severity": "moderate",
       "direction": "confirms",
@@ -81,7 +89,10 @@
       "condition": {
         "type": "quantitative",
         "expression": "nrega_swc_count < 10",
-        "qualitative_description": "Fewer than 10 cumulative SWC works in the MWS over the MGNREGA record, indicating low investment in recharge infrastructure relative to the extraction pressure in an alluvial plain setting."
+        "qualitative_description": "Fewer than 10 cumulative SWC works in the MWS over the MGNREGA record, indicating low investment in recharge infrastructure relative to the extraction pressure in an alluvial plain setting.",
+        "variables": [
+          "nrega_swc_count"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",

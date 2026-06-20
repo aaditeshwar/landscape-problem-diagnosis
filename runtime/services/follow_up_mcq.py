@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 # Explicit confirms-direction inference for MCQ choices where generic band/trend
-# matching is ambiguous or wrong. None = fall back to card excerpt logic.
+# matching is ambiguous. None = fall back to card effects.signals, then prose heuristics.
 def _choice(variable: str, choice_id: str, label: str, normalized: dict[str, Any], confirms_result: bool | None):
     return {
         "id": choice_id,
@@ -35,8 +35,8 @@ MCQ_TEMPLATES: dict[str, dict[str, Any]] = {
     "migrant_household_percent": {
         "response_type": "mcq",
         "choices": [
-            _choice("migrant_household_percent", "low", "Very few households migrate seasonally (roughly under 10%)", {"band": "low", "present": True}, None),
-            _choice("migrant_household_percent", "moderate", "A moderate share migrate (roughly 10–30%)", {"band": "moderate", "present": True}, None),
+            _choice("migrant_household_percent", "low", "Very few households migrate seasonally (roughly under 10%)", {"band": "low", "present": True}, False),
+            _choice("migrant_household_percent", "moderate", "A moderate share migrate (roughly 10–30%)", {"band": "moderate", "present": True}, False),
             _choice("migrant_household_percent", "high", "Many households migrate (roughly over 30%)", {"band": "high", "present": True}, True),
         ],
     },
@@ -44,7 +44,7 @@ MCQ_TEMPLATES: dict[str, dict[str, Any]] = {
         "response_type": "mcq",
         "choices": [
             _choice("household_income_inr", "below_50k", "Below ₹50,000 per year from farming (or total household income)", {"band": "low", "present": True}, True),
-            _choice("household_income_inr", "50k_to_100k", "Between ₹50,000 and ₹1,00,000 per year", {"band": "moderate", "present": True}, None),
+            _choice("household_income_inr", "50k_to_100k", "Between ₹50,000 and ₹1,00,000 per year", {"band": "moderate", "present": True}, True),
             _choice("household_income_inr", "above_100k", "Above ₹1,00,000 per year", {"band": "high", "present": True}, False),
         ],
     },
@@ -60,7 +60,7 @@ MCQ_TEMPLATES: dict[str, dict[str, Any]] = {
         "response_type": "mcq",
         "choices": [
             _choice("irrigated_area_ha", "low", "Less than 10% of cultivated land is irrigated", {"band": "low", "present": True, "percent_upper": 10}, True),
-            _choice("irrigated_area_ha", "moderate", "Between 10% and 30% of cultivated land is irrigated", {"band": "moderate", "present": True, "percent_lower": 10, "percent_upper": 30}, None),
+            _choice("irrigated_area_ha", "moderate", "Between 10% and 30% of cultivated land is irrigated", {"band": "moderate", "present": True, "percent_lower": 10, "percent_upper": 30}, True),
             _choice("irrigated_area_ha", "high", "More than 30% of cultivated land is irrigated", {"band": "high", "present": True, "percent_lower": 30}, False),
         ],
     },
@@ -68,7 +68,7 @@ MCQ_TEMPLATES: dict[str, dict[str, Any]] = {
         "response_type": "mcq",
         "choices": [
             _choice("ntfp_species_presence", "abundant", "NTFP species are still common and easy to find", {"band": "high", "present": True, "trend": "stable"}, False),
-            _choice("ntfp_species_presence", "reduced", "Some species are harder to find than 5–10 years ago", {"band": "moderate", "present": True, "trend": "worsening"}, None),
+            _choice("ntfp_species_presence", "reduced", "Some species are harder to find than 5–10 years ago", {"band": "moderate", "present": True, "trend": "worsening"}, True),
             _choice("ntfp_species_presence", "rare", "Several species that used to be common are now rare or absent", {"band": "low", "present": True, "trend": "worsening"}, True),
         ],
     },
@@ -132,7 +132,7 @@ MCQ_TEMPLATES: dict[str, dict[str, Any]] = {
         "response_type": "mcq",
         "choices": [
             _choice("community_forest_governance_status", "active", "Active JFM/Van Suraksha Samiti or recognised CFR with patrols or bylaws", {"band": "high", "present": True}, False),
-            _choice("community_forest_governance_status", "inactive", "Committee exists on paper but little enforcement or activity", {"band": "moderate", "present": True}, None),
+            _choice("community_forest_governance_status", "inactive", "Committee exists on paper but little enforcement or activity", {"band": "moderate", "present": True}, True),
             _choice("community_forest_governance_status", "none", "No functioning forest governance institution in the village", {"present": False}, True),
         ],
     },

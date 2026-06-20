@@ -31,7 +31,11 @@
       "condition": {
         "type": "quantitative",
         "expression": "(lulc_single_kharif_ha[-1] / (lulc_single_kharif_ha[-1] + lulc_double_crop_ha[-1] + 1e-9)) > 0.75",
-        "qualitative_description": "More than 75% of cropped area is under single kharif season only, indicating near-total dependence on monsoon rainfall with negligible irrigation-supported rabi or double cropping."
+        "qualitative_description": "More than 75% of cropped area is under single kharif season only, indicating near-total dependence on monsoon rainfall with negligible irrigation-supported rabi or double cropping.",
+        "variables": [
+          "lulc_single_kharif_ha",
+          "lulc_double_crop_ha"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -41,12 +45,15 @@
     {
       "signal_id": "sig_02",
       "variables": [
-        "cropping_intensity"
+        "mean_cropping_intensity"
       ],
       "condition": {
         "type": "trend",
         "expression": "mean_cropping_intensity <= 1.15",
-        "qualitative_description": "Mean cropping intensity at or below 1.15 across the multi-year record indicates that the micro-watershed is effectively farming only one season per year, consistent with rainfed-only agriculture."
+        "qualitative_description": "Mean cropping intensity at or below 1.15 across the multi-year record indicates that the micro-watershed is effectively farming only one season per year, consistent with rainfed-only agriculture.",
+        "variables": [
+          "mean_cropping_intensity"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -56,16 +63,16 @@
     {
       "signal_id": "sig_03",
       "variables": [
-        "runoff_mm",
-        "terrain_cluster_id"
+        "terrain_cluster_id",
+        "mean_annual_runoff_mm"
       ],
       "condition": {
         "type": "composite",
         "expression": "terrain_cluster_id == 3 and mean_annual_runoff_mm > 400",
         "qualitative_description": "Broad plains and slopes terrain (cluster 3) combined with high mean annual runoff above 400 mm indicates rapid water loss from the landscape, reducing in-field moisture availability and limiting the effective use of sub-humid rainfall for crop production.",
         "variables": [
-          "runoff_mm",
-          "terrain_cluster_id"
+          "terrain_cluster_id",
+          "mean_annual_runoff_mm"
         ]
       },
       "severity": "moderate",
@@ -82,7 +89,11 @@
       "condition": {
         "type": "composite",
         "expression": "canal_name is None and nrega_irrigation_count < 3",
-        "qualitative_description": "No irrigation canal intersects the micro-watershed and fewer than 3 MGNREGA irrigation works have been constructed, confirming absence of both surface irrigation infrastructure and public investment in water access."
+        "qualitative_description": "No irrigation canal intersects the micro-watershed and fewer than 3 MGNREGA irrigation works have been constructed, confirming absence of both surface irrigation infrastructure and public investment in water access.",
+        "variables": [
+          "canal_name",
+          "nrega_irrigation_count"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -92,12 +103,15 @@
     {
       "signal_id": "sig_05",
       "variables": [
-        "swb_rabi_area_ha"
+        "mean_swb_rabi_kharif_ratio"
       ],
       "condition": {
         "type": "quantitative",
         "expression": "mean_swb_rabi_kharif_ratio < 0.25",
-        "qualitative_description": "Mean rabi-to-kharif surface water body area ratio below 0.25 indicates that surface water storage collapses after the monsoon, leaving negligible water available for post-monsoon irrigation."
+        "qualitative_description": "Mean rabi-to-kharif surface water body area ratio below 0.25 indicates that surface water storage collapses after the monsoon, leaving negligible water available for post-monsoon irrigation.",
+        "variables": [
+          "mean_swb_rabi_kharif_ratio"
+        ]
       },
       "severity": "moderate",
       "direction": "confirms",
@@ -161,6 +175,14 @@
             "present": true,
             "percent_lower": 10,
             "percent_upper": 30
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {

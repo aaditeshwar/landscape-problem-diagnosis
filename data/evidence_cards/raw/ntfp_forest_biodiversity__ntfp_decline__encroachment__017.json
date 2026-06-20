@@ -29,7 +29,10 @@
       "condition": {
         "type": "quantitative",
         "expression": "cd_forest_to_farm_ha > 50",
-        "qualitative_description": "More than 50 ha of forest has been converted to farmland, indicating measurable encroachment reducing NTFP-bearing forest extent."
+        "qualitative_description": "More than 50 ha of forest has been converted to farmland, indicating measurable encroachment reducing NTFP-bearing forest extent.",
+        "variables": [
+          "cd_forest_to_farm_ha"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -75,7 +78,8 @@
     {
       "signal_id": "sig_04",
       "variables": [
-        "village_st_percent"
+        "village_st_percent",
+        "cd_forest_to_farm_ha"
       ],
       "condition": {
         "type": "composite",

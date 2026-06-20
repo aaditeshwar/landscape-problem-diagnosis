@@ -57,19 +57,28 @@ def patch_card(card: dict) -> tuple[dict, list[str]]:
         expression = condition.get("expression") or sig.get("expression")
         if not expression:
             continue
+        signal_id = sig.get("signal_id", "?")
+        inferred = _variables_from_expression(expression)
         patched, expr_notes = normalize_expression(expression, card_thresholds=thresholds)
         if patched != expression:
             if "condition" in sig:
                 sig["condition"]["expression"] = patched
             else:
                 sig["expression"] = patched
-            notes.append(f"{sig.get('signal_id', '?')}: {', '.join(expr_notes)}")
+            notes.append(f"{signal_id}: {', '.join(expr_notes)}")
             inferred = _variables_from_expression(patched)
-            if inferred:
+
+        # Always sync variables from the effective expression, even if expression text is unchanged.
+        if inferred:
+            signal_vars = sig.get("variables")
+            if not isinstance(signal_vars, list) or signal_vars != inferred:
                 sig["variables"] = inferred
-                if isinstance(sig.get("condition"), dict):
+                notes.append(f"{signal_id}: synced signal variables list from expression")
+            if isinstance(sig.get("condition"), dict):
+                cond_vars = sig["condition"].get("variables")
+                if not isinstance(cond_vars, list) or cond_vars != inferred:
                     sig["condition"]["variables"] = inferred
-                notes.append(f"{sig.get('signal_id', '?')}: synced variables list from expression")
+                    notes.append(f"{signal_id}: synced condition variables list from expression")
 
         for var_list, target in (
             (sig.get("variables"), "signal"),
@@ -84,7 +93,7 @@ def patch_card(card: dict) -> tuple[dict, list[str]]:
                 sig["variables"] = updated
             else:
                 sig["condition"]["variables"] = updated
-            notes.append(f"{sig.get('signal_id', '?')}: canonicalized {target} variables list")
+            notes.append(f"{signal_id}: canonicalized {target} variables list")
     return card, notes
 
 

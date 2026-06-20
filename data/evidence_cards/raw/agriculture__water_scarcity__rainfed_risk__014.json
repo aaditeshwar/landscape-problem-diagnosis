@@ -30,7 +30,11 @@
       "condition": {
         "type": "quantitative",
         "expression": "(lulc_single_kharif_ha[-1] / (lulc_single_kharif_ha[-1] + lulc_double_crop_ha[-1] + 1e-9)) > 0.75",
-        "qualitative_description": "More than 75% of cropped area is under single kharif season only, indicating overwhelming rainfed dependence with minimal irrigation enabling a second crop."
+        "qualitative_description": "More than 75% of cropped area is under single kharif season only, indicating overwhelming rainfed dependence with minimal irrigation enabling a second crop.",
+        "variables": [
+          "lulc_single_kharif_ha",
+          "lulc_double_crop_ha"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -40,12 +44,15 @@
     {
       "signal_id": "sig_02",
       "variables": [
-        "cropping_intensity"
+        "mean_cropping_intensity"
       ],
       "condition": {
         "type": "trend",
         "expression": "mean_cropping_intensity <= 1.15",
-        "qualitative_description": "Mean cropping intensity at or below 1.15 across the multi-year record confirms that the vast majority of net sown area is harvested only once per year, consistent with single-season rainfed farming."
+        "qualitative_description": "Mean cropping intensity at or below 1.15 across the multi-year record confirms that the vast majority of net sown area is harvested only once per year, consistent with single-season rainfed farming.",
+        "variables": [
+          "mean_cropping_intensity"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -61,7 +68,11 @@
       "condition": {
         "type": "composite",
         "expression": "canal_name is None and nrega_irrigation_count < 3",
-        "qualitative_description": "No irrigation canal intersects the micro-watershed AND fewer than 3 MGNREGA irrigation works have been constructed, confirming absence of both formal surface irrigation and community-level irrigation investment."
+        "qualitative_description": "No irrigation canal intersects the micro-watershed AND fewer than 3 MGNREGA irrigation works have been constructed, confirming absence of both formal surface irrigation and community-level irrigation investment.",
+        "variables": [
+          "canal_name",
+          "nrega_irrigation_count"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -71,7 +82,7 @@
     {
       "signal_id": "sig_04",
       "variables": [
-        "runoff_mm",
+        "mean_annual_runoff_mm",
         "terrain_cluster_id"
       ],
       "condition": {
@@ -79,7 +90,7 @@
         "expression": "mean_annual_runoff_mm > 80 and terrain_cluster_id == 3",
         "qualitative_description": "Mean annual runoff exceeds 80 mm on broad plains and slopes (terrain cluster 3), indicating significant water loss from the landscape that could otherwise be harvested for supplemental irrigation.",
         "variables": [
-          "runoff_mm",
+          "mean_annual_runoff_mm",
           "terrain_cluster_id"
         ]
       },
@@ -91,12 +102,15 @@
     {
       "signal_id": "sig_05",
       "variables": [
-        "swb_rabi_area_ha"
+        "mean_swb_rabi_kharif_ratio"
       ],
       "condition": {
         "type": "quantitative",
         "expression": "mean_swb_rabi_kharif_ratio < 0.25",
-        "qualitative_description": "Surface water body area in rabi season is less than 25% of kharif season area on average, indicating that surface water storage does not persist into the post-monsoon period and cannot support rabi irrigation."
+        "qualitative_description": "Surface water body area in rabi season is less than 25% of kharif season area on average, indicating that surface water storage does not persist into the post-monsoon period and cannot support rabi irrigation.",
+        "variables": [
+          "mean_swb_rabi_kharif_ratio"
+        ]
       },
       "severity": "moderate",
       "direction": "confirms",
@@ -160,6 +174,14 @@
             "present": true,
             "percent_lower": 10,
             "percent_upper": 30
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {

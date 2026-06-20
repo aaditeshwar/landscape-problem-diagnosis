@@ -32,7 +32,11 @@
       "condition": {
         "type": "quantitative",
         "expression": "soge_dev_percent > 70 or soge_class_name in ['Semi-critical', 'Critical', 'Over-exploited']",
-        "qualitative_description": "Block-level SOGE exceeds 70% or CGWB classification is Semi-critical or worse, indicating extraction pressure on a low-storativity crystalline basement aquifer."
+        "qualitative_description": "Block-level SOGE exceeds 70% or CGWB classification is Semi-critical or worse, indicating extraction pressure on a low-storativity crystalline basement aquifer.",
+        "variables": [
+          "soge_dev_percent",
+          "soge_class_name"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -43,7 +47,7 @@
       "signal_id": "sig_02",
       "variables": [
         "trend_annual_delta_g_mm",
-        "delta_g_mm"
+        "mean_annual_delta_g_mm"
       ],
       "condition": {
         "type": "trend",
@@ -51,7 +55,7 @@
         "qualitative_description": "Both the linear trend and the multi-year mean of annual groundwater recharge (P - ET - Runoff) are negative, indicating chronic depletion rather than a single drought year anomaly.",
         "variables": [
           "trend_annual_delta_g_mm",
-          "delta_g_mm"
+          "mean_annual_delta_g_mm"
         ]
       },
       "severity": "high",
@@ -63,12 +67,16 @@
       "signal_id": "sig_03",
       "variables": [
         "aquifer_class",
-        "aquifer_lithology_percent"
+        "acwadam_class_percent"
       ],
       "condition": {
         "type": "composite",
-        "expression": "aquifer_class == 'crystalline_basement' and aquifer_lithology_percent.get('alluvium', 0) < 20",
-        "qualitative_description": "Dominant aquifer class is crystalline basement with less than 20% alluvial lithology, confirming low recharge capacity and high vulnerability to depletion."
+        "expression": "aquifer_class == 'crystalline_basement' and acwadam_class_percent.get('alluvium', 0) < 20",
+        "qualitative_description": "Dominant aquifer class is crystalline basement with less than 20% alluvial lithology, confirming low recharge capacity and high vulnerability to depletion.",
+        "variables": [
+          "aquifer_class",
+          "acwadam_class_percent"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -83,7 +91,10 @@
       "condition": {
         "type": "quantitative",
         "expression": "nrega_swc_count < 10",
-        "qualitative_description": "Fewer than 10 cumulative SWC works recorded under MGNREGA in the MWS, indicating underinvestment in recharge infrastructure relative to the plateau terrain's runoff generation potential."
+        "qualitative_description": "Fewer than 10 cumulative SWC works recorded under MGNREGA in the MWS, indicating underinvestment in recharge infrastructure relative to the plateau terrain's runoff generation potential.",
+        "variables": [
+          "nrega_swc_count"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",

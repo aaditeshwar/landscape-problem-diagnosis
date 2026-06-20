@@ -47,6 +47,25 @@ def choice_summary(question: dict) -> str:
     return "; ".join(parts)
 
 
+def choice_summary_from_map(summary_map: dict[str, bool | None]) -> str:
+    return "; ".join(f"{choice_id}->{value}" for choice_id, value in summary_map.items())
+
+
+def none_choice_ids_from_summary(summary_map: dict[str, bool | None]) -> list[str]:
+    return [choice_id for choice_id, value in summary_map.items() if value is None]
+
+
+def merge_choice_summary(
+    base_map: dict[str, bool | None],
+    overrides: dict[str, bool | None],
+) -> dict[str, bool | None]:
+    out = dict(base_map)
+    for choice_id, value in overrides.items():
+        if choice_id in out:
+            out[choice_id] = value
+    return out
+
+
 def parse_choice_summary(text: str) -> dict[str, bool | None]:
     out: dict[str, bool | None] = {}
     for part in str(text or "").split(";"):

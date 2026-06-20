@@ -30,7 +30,11 @@
       "condition": {
         "type": "quantitative",
         "expression": "(lulc_cropland_ha[-1] / (village_total_population + 1e-9)) < 0.2",
-        "qualitative_description": "Per-capita cropland availability below 0.2 ha/person indicates extreme land scarcity relative to population, a proxy for marginal or sub-marginal average farm size."
+        "qualitative_description": "Per-capita cropland availability below 0.2 ha/person indicates extreme land scarcity relative to population, a proxy for marginal or sub-marginal average farm size.",
+        "variables": [
+          "lulc_cropland_ha",
+          "village_total_population"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -40,12 +44,15 @@
     {
       "signal_id": "sig_02",
       "variables": [
-        "cropping_intensity"
+        "mean_cropping_intensity"
       ],
       "condition": {
         "type": "trend",
         "expression": "mean_cropping_intensity <= 1.15",
-        "qualitative_description": "Mean cropping intensity at or below 1.15 indicates that most cropland supports only a single crop per year, limiting total output from already small holdings."
+        "qualitative_description": "Mean cropping intensity at or below 1.15 indicates that most cropland supports only a single crop per year, limiting total output from already small holdings.",
+        "variables": [
+          "mean_cropping_intensity"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -60,7 +67,10 @@
       "condition": {
         "type": "quantitative",
         "expression": "dist_apmc_km > 50",
-        "qualitative_description": "Distance to nearest APMC market exceeding 50 km severely limits price discovery and marketable surplus realisation for small holders in remote Himalayan valleys."
+        "qualitative_description": "Distance to nearest APMC market exceeding 50 km severely limits price discovery and marketable surplus realisation for small holders in remote Himalayan valleys.",
+        "variables": [
+          "dist_apmc_km"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -76,7 +86,11 @@
       "condition": {
         "type": "composite",
         "expression": "nrega_community_assets_count < 5 and ('livelihoods' not in organization_domains and 'watershed_management' not in organization_domains)",
-        "qualitative_description": "Fewer than 5 MGNREGA community asset works combined with absence of livelihood or watershed NGOs indicates a weak safety net and limited diversification support for small holders."
+        "qualitative_description": "Fewer than 5 MGNREGA community asset works combined with absence of livelihood or watershed NGOs indicates a weak safety net and limited diversification support for small holders.",
+        "variables": [
+          "nrega_community_assets_count",
+          "organization_domains"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -91,7 +105,10 @@
       "condition": {
         "type": "quantitative",
         "expression": "dist_dairy_km > 30",
-        "qualitative_description": "Distance to nearest dairy infrastructure exceeding 30 km prevents small holders from accessing livestock income diversification, a key pathway out of farm-income poverty."
+        "qualitative_description": "Distance to nearest dairy infrastructure exceeding 30 km prevents small holders from accessing livestock income diversification, a key pathway out of farm-income poverty.",
+        "variables": [
+          "dist_dairy_km"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -237,6 +254,14 @@
           "normalized": {
             "band": "moderate",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {

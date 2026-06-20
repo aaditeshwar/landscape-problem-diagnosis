@@ -16,11 +16,66 @@ REPORT_DIR = ROOT / "reports"
 import sys
 
 sys.path.insert(0, str(ROOT / "scripts"))
+sys.path.insert(0, str(ROOT / "runtime"))
 from lib.card_policy_utils import (  # noqa: E402
     draft_reasoning_note_from_policy,
     expression_fingerprint,
     policy_fingerprint,
 )
+from lib.follow_up_utils import (  # noqa: E402
+    choice_summary,
+    choice_summary_from_map,
+    merge_choice_summary,
+    none_choice_ids_from_summary,
+    parse_choice_summary,
+)
+from services.follow_up_mcq import MCQ_TEMPLATES  # noqa: E402
+
+# Prose-informed suggestions for template-neutral (None) MCQ bands.
+# Synced with review_unique_follow_ups.csv (2026-06-20); None = keep neutral.
+SUGGESTED_NONE_RESULTS: dict[tuple[str, str], bool | None] = {
+    ("irrigated_area_ha", "moderate"): True,
+    ("migrant_household_percent", "low"): False,
+    ("migrant_household_percent", "moderate"): False,
+    ("household_income_inr", "50k_to_100k"): True,
+    ("ntfp_species_presence", "reduced"): True,
+    ("community_forest_governance_status", "inactive"): True,
+}
+
+SUGGESTED_NONE_RATIONALE: dict[tuple[str, str], str] = {
+    ("irrigated_area_ha", "moderate"): "Prose: 10–30% irrigated = pathway partially confirmed.",
+    ("migrant_household_percent", "low"): "Prose only strongly confirms high (>30%); low band rules out distress migration.",
+    ("migrant_household_percent", "moderate"): "Prose only strongly confirms high (>30%); middle band rules out distress migration.",
+    ("household_income_inr", "50k_to_100k"): "Middle income band treated as confirming hardship (user review 2026-06-20).",
+    ("ntfp_species_presence", "reduced"): "Reduced species availability confirms degradation pathway (user review 2026-06-20).",
+    ("community_forest_governance_status", "inactive"): "Inactive governance confirms degradation (user review 2026-06-20).",
+}
+
+
+def template_none_choice_ids(variable: str) -> list[str]:
+    template = MCQ_TEMPLATES.get(variable) or {}
+    out: list[str] = []
+    for choice in template.get("choices") or []:
+        if not isinstance(choice, dict):
+            continue
+        if choice.get("confirms_result") is None and "confirms_result" in choice:
+            out.append(str(choice.get("id") or ""))
+    return [cid for cid in out if cid]
+
+
+def suggested_summary_for_question(variable: str, question: dict) -> tuple[str, str]:
+    base_map = parse_choice_summary(choice_summary(question))
+    overrides: dict[str, bool | None] = {}
+    rationale_parts: list[str] = []
+    for choice_id in none_choice_ids_from_summary(base_map):
+        key = (variable, choice_id)
+        if key in SUGGESTED_NONE_RESULTS:
+            overrides[choice_id] = SUGGESTED_NONE_RESULTS[key]
+            note = SUGGESTED_NONE_RATIONALE.get(key, "")
+            if note:
+                rationale_parts.append(f"{choice_id}: {note}")
+    merged = merge_choice_summary(base_map, overrides)
+    return choice_summary_from_map(merged), " | ".join(rationale_parts)
 
 
 def choice_fingerprint(choices: list) -> str:
@@ -125,7 +180,21 @@ def main() -> int:
     with (REPORT_DIR / "review_unique_follow_ups.csv").open("w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(
             handle,
-            fieldnames=["fingerprint", "card_count", "example_card_id", "variable", "question_mode", "choice_summary"],
+            fieldnames=[
+                "fingerprint",
+                "card_count",
+                "example_card_id",
+                "variable",
+                "question_mode",
+                "choice_summary",
+                "none_choice_ids",
+                "template_none_ids",
+                "prose_excerpt",
+                "suggested_choice_summary",
+                "suggestion_rationale",
+                "review_decision",
+                "review_notes",
+            ],
         )
         writer.writeheader()
         seen_fu: set[str] = set()
@@ -135,23 +204,31 @@ def main() -> int:
             for question in card.get("missing_variable_questions") or []:
                 if not isinstance(question, dict) or question.get("response_type") != "mcq":
                     continue
-                fp = f"{question.get('missing_variable')}::{question.get('question_mode')}::{choice_fingerprint(question.get('choices') or [])}"
+                variable = str(question.get("missing_variable") or "")
+                fp = f"{variable}::{question.get('question_mode')}::{choice_fingerprint(question.get('choices') or [])}"
                 if fp in seen_fu:
                     continue
                 seen_fu.add(fp)
-                summary = "; ".join(
-                    f"{c.get('id')}->{((c.get('effects') or {}).get('signals') or [{}])[0].get('result')}"
-                    for c in (question.get("choices") or [])
-                    if isinstance(c, dict)
-                )
+                summary = choice_summary(question)
+                summary_map = parse_choice_summary(summary)
+                none_ids = none_choice_ids_from_summary(summary_map)
+                suggested_summary, rationale = suggested_summary_for_question(variable, question)
+                prose = str(question.get("how_answer_updates_diagnosis") or "")[:320].replace("\n", " ")
                 writer.writerow(
                     {
                         "fingerprint": hashlib_hex(fp),
                         "card_count": len(follow_up_groups[fp]),
                         "example_card_id": follow_up_groups[fp][0],
-                        "variable": question.get("missing_variable"),
+                        "variable": variable,
                         "question_mode": question.get("question_mode"),
                         "choice_summary": summary,
+                        "none_choice_ids": ",".join(none_ids),
+                        "template_none_ids": ",".join(template_none_choice_ids(variable)),
+                        "prose_excerpt": prose,
+                        "suggested_choice_summary": suggested_summary,
+                        "suggestion_rationale": rationale,
+                        "review_decision": "needs_review" if none_ids else "ok",
+                        "review_notes": "",
                     }
                 )
 
@@ -204,14 +281,25 @@ Each row is a distinct signal **expression + qualitative description + variables
 
 Each row is a distinct MCQ template: variable + question_mode + choice normalized/effects fingerprint.
 
-- Check `choice_summary` (choice id → effect result). `None` means no explicit `effects.signals` (runtime falls back to prose inference).
-- Align `how_answer_updates_diagnosis` prose on the example card with `effects` (prose is display-only; effects are enforced).
+- **`choice_summary`**: choice id → effect result (`True`/`False`/`None`). `None` = no explicit `effects.signals` on the card.
+- **`none_choice_ids`**: choices currently missing effects (audit errors).
+- **`template_none_ids`**: choices with `confirms_result: None` in `follow_up_mcq.py` (intentionally neutral in runtime template).
+- **`suggested_choice_summary`**: proposed summary after applying prose-informed defaults (see `suggestion_rationale`).
+- **`review_decision`**: fill before propagation:
+  - `ok` — no None bands; no action
+  - `needs_review` — has None band(s); decide below
+  - `keep_none` — neutral bands stay without effects (legitimate non-confirm/non-deny)
+  - `apply_suggested` — propagate `suggested_choice_summary` to all cards in group
+  - `propagate` — propagate your edited `choice_summary` column
+
+Align `how_answer_updates_diagnosis` prose on the example card with chosen effects (prose is display-only; effects are enforced).
 
 ### 2b. Propagate reviewed follow-ups
 
-After editing `choice_summary` in the CSV (or the example card JSON):
+After setting `review_decision` on each row:
 
 ```powershell
+.\.venv\Scripts\python.exe scripts/maintenance/propagate_follow_up_templates.py --dry-run
 .\.venv\Scripts\python.exe scripts/maintenance/propagate_follow_up_templates.py
 .\.venv\Scripts\python.exe scripts/verify/audit_follow_up_effects.py --write-report
 .\.venv\Scripts\python.exe scripts/verify/audit_mcq_normalized.py
@@ -255,6 +343,9 @@ After editing `metadata/policy_corrections.json` or approving rows in the policy
 .\.venv\Scripts\python.exe scripts/verify/audit_follow_up_effects.py --write-report
 .\.venv\Scripts\python.exe scripts/verify/audit_mcq_normalized.py
 ```
+
+`policy_audit.csv` — one row per warning/error with note/policy context columns for manual review.  
+`policy_audit_summary.csv` — all 136 cards with issue counts (even clean cards).
 
 ## 5. Reload Mongo
 

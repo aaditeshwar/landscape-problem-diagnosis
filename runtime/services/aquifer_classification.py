@@ -177,6 +177,35 @@ def _apply_himalayan_override(
     return acwadam_class
 
 
+def _lithology_acwadam_bucket(lithology: str, aer_code: str | None) -> str | None:
+    if lithology == "None":
+        return None
+    if lithology == "Laterite":
+        return _laterite_acwadam(aer_code)
+    base = LITHOLOGY_TO_ACWADAM.get(lithology, "crystalline_basement")
+    return _apply_himalayan_override(base, lithology, aer_code)
+
+
+def compute_acwadam_class_percent(
+    lithology_percent: dict[str, Any] | None,
+    aer_code: str | None = None,
+) -> dict[str, float]:
+    """Aggregate lithology area percentages into ACWADAM class buckets."""
+    totals = {cls: 0.0 for cls in ACWADAM_CLASSES}
+    if not lithology_percent:
+        return totals
+    for lithology, raw in lithology_percent.items():
+        if lithology == "None":
+            continue
+        pct = _as_float(raw)
+        if pct is None or pct <= 0:
+            continue
+        bucket = _lithology_acwadam_bucket(lithology, aer_code)
+        if bucket:
+            totals[bucket] = totals.get(bucket, 0.0) + pct
+    return totals
+
+
 def infer_acwadam_class(
     lithology_percent: dict[str, Any] | None,
     aer_code: str | None = None,
@@ -258,6 +287,7 @@ def build_aquifer_payload(
     return {
         "raw_class": raw_class,
         "lithology_percent": lithology_percent,
+        "acwadam_class_percent": compute_acwadam_class_percent(lithology_percent, aer_code),
         "dominant_lithology": inferred["dominant_lithology"],
         "acwadam_class": inferred["acwadam_class"],
         "acwadam_source": inferred["acwadam_source"],

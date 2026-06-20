@@ -82,7 +82,7 @@ def test_mcq_confirms_result_lookup():
     assert mcq_confirms_result("annual_well_depth_m", "stable") is False
     assert mcq_confirms_result("annual_well_depth_m", "deepening") is True
     assert mcq_confirms_result("fra_claims_filed_count", "none") is True
-    assert mcq_confirms_result("migrant_household_percent", "moderate") is None
+    assert mcq_confirms_result("migrant_household_percent", "moderate") is False
 
 
 def test_infer_matches_declared_result_on_representative_cards():

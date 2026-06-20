@@ -30,7 +30,10 @@
       "condition": {
         "type": "trend",
         "expression": "lulc_tree_forest_ha[-1] < lulc_tree_forest_ha[0]",
-        "qualitative_description": "Forest area in the micro-watershed has declined from 2017 to 2024, indicating net loss of NTFP-bearing tree cover over the monitoring period."
+        "qualitative_description": "Forest area in the micro-watershed has declined from 2017 to 2024, indicating net loss of NTFP-bearing tree cover over the monitoring period.",
+        "variables": [
+          "lulc_tree_forest_ha"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -65,7 +68,10 @@
       "condition": {
         "type": "quantitative",
         "expression": "(lulc_tree_forest_ha[-1] - lulc_tree_forest_ha[0]) / (lulc_tree_forest_ha[0] + 1e-9) < -0.10",
-        "qualitative_description": "Forest area has declined by more than 10% relative to the 2017 baseline, indicating substantial habitat loss for NTFP species."
+        "qualitative_description": "Forest area has declined by more than 10% relative to the 2017 baseline, indicating substantial habitat loss for NTFP species.",
+        "variables": [
+          "lulc_tree_forest_ha"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -80,7 +86,10 @@
       "condition": {
         "type": "qualitative",
         "expression": "'Agroforestry' not in organization_domains and 'Forest' not in organization_domains and 'NTFP' not in organization_domains",
-        "qualitative_description": "No NGOs or organisations with NTFP, agroforestry, or forest management mandates are active in the micro-watershed, indicating absence of institutional support for forest protection and NTFP governance."
+        "qualitative_description": "No NGOs or organisations with NTFP, agroforestry, or forest management mandates are active in the micro-watershed, indicating absence of institutional support for forest protection and NTFP governance.",
+        "variables": [
+          "organization_domains"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -158,6 +167,14 @@
             "band": "moderate",
             "present": true,
             "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {
@@ -208,6 +225,14 @@
           "normalized": {
             "band": "moderate",
             "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
           }
         },
         {

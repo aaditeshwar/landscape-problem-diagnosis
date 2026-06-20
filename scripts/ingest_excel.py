@@ -46,6 +46,7 @@ from services.aer_lookup import attach_aer_to_mws, validate_aer_geojson  # noqa:
 from services.aquifer_classification import (  # noqa: E402
     LITHOLOGY_COLUMNS,
     build_aquifer_payload,
+    compute_acwadam_class_percent,
     infer_acwadam_class,
 )
 
@@ -280,6 +281,7 @@ def refine_aquifer_acwadam(db, uids: list[str]) -> dict[str, int]:
             stats["missing"] += 1
             continue
         inferred = infer_acwadam_class(lithology, doc.get("nbss_lup_aer_code"))
+        acwadam_percent = compute_acwadam_class_percent(lithology, doc.get("nbss_lup_aer_code"))
         ops.append(
             UpdateOne(
                 {"uid": uid},
@@ -288,6 +290,7 @@ def refine_aquifer_acwadam(db, uids: list[str]) -> dict[str, int]:
                         "aquifer.dominant_lithology": inferred["dominant_lithology"],
                         "aquifer.acwadam_class": inferred["acwadam_class"],
                         "aquifer.acwadam_source": inferred["acwadam_source"],
+                        "aquifer.acwadam_class_percent": acwadam_percent,
                     }
                 },
             )

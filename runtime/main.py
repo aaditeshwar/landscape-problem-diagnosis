@@ -8,7 +8,22 @@ from fastapi.staticfiles import StaticFiles
 from config import CORS_ORIGINS
 from db import get_client
 from logging_setup import configure_logging, log_startup_config
-from routers import clusters, config_public, context, evidence_cards, evidence_suggestions, execute, feedback, locate, logs, map as map_router, mws, query, village
+from routers import (
+    claude_review,
+    clusters,
+    config_public,
+    context,
+    evidence_cards,
+    evidence_suggestions,
+    execute,
+    feedback,
+    locate,
+    logs,
+    map as map_router,
+    mws,
+    query,
+    village,
+)
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 
@@ -43,6 +58,7 @@ app.include_router(village.router)
 app.include_router(locate.router)
 app.include_router(query.router)
 app.include_router(feedback.router)
+app.include_router(claude_review.router)
 app.include_router(context.router)
 app.include_router(clusters.router)
 app.include_router(evidence_cards.router)

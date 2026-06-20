@@ -31,7 +31,10 @@
       "condition": {
         "type": "quantitative",
         "expression": "cd_forest_to_farm_ha > 50",
-        "qualitative_description": "More than 50 ha of forest has been converted to farmland in the micro-watershed, indicating measurable encroachment pressure on forest extent."
+        "qualitative_description": "More than 50 ha of forest has been converted to farmland in the micro-watershed, indicating measurable encroachment pressure on forest extent.",
+        "variables": [
+          "cd_forest_to_farm_ha"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -46,7 +49,10 @@
       "condition": {
         "type": "trend",
         "expression": "cd_forest_to_farm_ha > 20",
-        "qualitative_description": "Forest-to-farm conversion exceeds 20 ha, and when assessed over multiple periods shows a continuing or accelerating trend of forest loss at the landscape scale."
+        "qualitative_description": "Forest-to-farm conversion exceeds 20 ha, and when assessed over multiple periods shows a continuing or accelerating trend of forest loss at the landscape scale.",
+        "variables": [
+          "cd_forest_to_farm_ha"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -74,12 +80,17 @@
     {
       "signal_id": "sig_04",
       "variables": [
-        "village_st_percent"
+        "village_st_percent",
+        "cd_forest_to_farm_ha"
       ],
       "condition": {
         "type": "composite",
         "expression": "(village_st_percent > 25) and (cd_forest_to_farm_ha > 20)",
-        "qualitative_description": "Villages with more than 25% Scheduled Tribe population combined with measurable forest-to-farm conversion may indicate unresolved Forest Rights Act tenure disputes or displacement of forest-dependent communities."
+        "qualitative_description": "Villages with more than 25% Scheduled Tribe population combined with measurable forest-to-farm conversion may indicate unresolved Forest Rights Act tenure disputes or displacement of forest-dependent communities.",
+        "variables": [
+          "village_st_percent",
+          "cd_forest_to_farm_ha"
+        ]
       },
       "severity": "moderate",
       "direction": "confirms",

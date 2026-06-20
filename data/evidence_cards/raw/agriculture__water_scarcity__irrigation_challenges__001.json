@@ -25,13 +25,17 @@
     {
       "signal_id": "sig_01",
       "variables": [
-        "swb_total_area_ha",
+        "trend_swb_total_area_ha",
         "swb_count"
       ],
       "condition": {
         "type": "composite",
         "expression": "trend_swb_total_area_ha < -5 and swb_count < 3",
-        "qualitative_description": "Total surface water body area is declining at more than 5 ha/year and fewer than 3 distinct SWBs exist in the MWS, indicating both shrinking storage and an infrastructure gap."
+        "qualitative_description": "Total surface water body area is declining at more than 5 ha/year and fewer than 3 distinct SWBs exist in the MWS, indicating both shrinking storage and an infrastructure gap.",
+        "variables": [
+          "trend_swb_total_area_ha",
+          "swb_count"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -41,12 +45,15 @@
     {
       "signal_id": "sig_02",
       "variables": [
-        "swb_kharif_area_ha"
+        "mean_swb_rabi_kharif_ratio"
       ],
       "condition": {
         "type": "trend",
         "expression": "mean_swb_rabi_kharif_ratio < 0.3",
-        "qualitative_description": "The mean ratio of rabi-season SWB area to kharif-season SWB area is below 0.3, indicating that surface water storage dries out rapidly after the monsoon and cannot support rabi or zaid irrigation."
+        "qualitative_description": "The mean ratio of rabi-season SWB area to kharif-season SWB area is below 0.3, indicating that surface water storage dries out rapidly after the monsoon and cannot support rabi or zaid irrigation.",
+        "variables": [
+          "mean_swb_rabi_kharif_ratio"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -61,10 +68,13 @@
       "condition": {
         "type": "quantitative",
         "expression": "nrega_swc_count < 5",
-        "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA in the MWS, indicating historically low investment in water harvesting infrastructure."
+        "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA in the MWS, indicating historically low investment in water harvesting infrastructure.",
+        "variables": [
+          "nrega_swc_count"
+        ]
       },
       "severity": "moderate",
-      "direction": "amplifies",
+      "direction": "confirms",
       "explanation": "Low MGNREGA investment in SWC and irrigation works signals that the MWS has not benefited from the public water harvesting programs that are the primary mechanism for expanding surface storage in semi-arid India. Dashora et al. (2019) found a benefit-to-cost ratio of 4.1 for check dams in hard-rock Rajasthan, demonstrating that such investments are economically justified; their absence therefore represents a missed opportunity that amplifies irrigation water scarcity.",
       "active": true
     },
@@ -76,7 +86,10 @@
       "condition": {
         "type": "qualitative",
         "expression": "river_name is None",
-        "qualitative_description": "No named river passes through or adjacent to the MWS, eliminating the possibility of diversion or lift irrigation from a perennial or seasonal stream."
+        "qualitative_description": "No named river passes through or adjacent to the MWS, eliminating the possibility of diversion or lift irrigation from a perennial or seasonal stream.",
+        "variables": [
+          "river_name"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",
@@ -86,16 +99,14 @@
     {
       "signal_id": "sig_05",
       "variables": [
-        "dist_cooperative_km",
-        "well_depth_m"
+        "dist_cooperative_km"
       ],
       "condition": {
         "type": "quantitative",
         "expression": "dist_cooperative_km > 15",
         "qualitative_description": "Nearest agricultural cooperative society is more than 15 km away, indicating poor access to institutional credit for irrigation investment such as pump purchase, pipeline, or micro-irrigation systems.",
         "variables": [
-          "dist_cooperative_km",
-          "well_depth_m"
+          "dist_cooperative_km"
         ]
       },
       "severity": "moderate",
@@ -252,7 +263,8 @@
     "version": 1,
     "primary_confirm_signals": [
       "sig_01",
-      "sig_02"
+      "sig_02",
+      "sig_03"
     ],
     "confirm_when": {
       "min_confirms_true": 2,
@@ -260,7 +272,8 @@
       "min_from_set": {
         "signals": [
           "sig_01",
-          "sig_02"
+          "sig_02",
+          "sig_03"
         ],
         "min": 2
       }
@@ -271,7 +284,8 @@
         "min_from_set": {
           "signals": [
             "sig_01",
-            "sig_02"
+            "sig_02",
+            "sig_03"
           ],
           "min": 2
         },

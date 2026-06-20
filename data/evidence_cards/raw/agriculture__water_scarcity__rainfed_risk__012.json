@@ -24,13 +24,17 @@
     {
       "signal_id": "sig_01",
       "variables": [
-        "lulc_single_kharif_ha",
-        "lulc_double_crop_ha"
+        "mean_kharif_cropped_area_ha",
+        "mean_double_crop_area_ha"
       ],
       "condition": {
         "type": "quantitative",
         "expression": "(mean_kharif_cropped_area_ha / (mean_kharif_cropped_area_ha + mean_double_crop_area_ha + 1e-9)) > 0.75",
-        "qualitative_description": "More than 75% of cropped area is under single kharif season over the multi-year mean, indicating dominant rainfed dependence with negligible irrigated double-cropping."
+        "qualitative_description": "More than 75% of cropped area is under single kharif season over the multi-year mean, indicating dominant rainfed dependence with negligible irrigated double-cropping.",
+        "variables": [
+          "mean_kharif_cropped_area_ha",
+          "mean_double_crop_area_ha"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -40,12 +44,15 @@
     {
       "signal_id": "sig_02",
       "variables": [
-        "cropping_intensity"
+        "mean_cropping_intensity"
       ],
       "condition": {
         "type": "trend",
         "expression": "mean_cropping_intensity <= 1.15",
-        "qualitative_description": "Mean cropping intensity at or below 1.15 over the available record indicates near-single-season farming, consistent with rainfed systems lacking post-monsoon irrigation."
+        "qualitative_description": "Mean cropping intensity at or below 1.15 over the available record indicates near-single-season farming, consistent with rainfed systems lacking post-monsoon irrigation.",
+        "variables": [
+          "mean_cropping_intensity"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -55,7 +62,7 @@
     {
       "signal_id": "sig_03",
       "variables": [
-        "runoff_mm",
+        "mean_annual_runoff_mm",
         "terrain_cluster_id"
       ],
       "condition": {
@@ -63,7 +70,7 @@
         "expression": "mean_annual_runoff_mm > 600 and terrain_cluster_id == 3",
         "qualitative_description": "High mean annual runoff (>600 mm) combined with broad plains and slopes terrain (cluster 3) indicates rapid water loss from sloping fields, reducing in-field moisture availability despite high rainfall.",
         "variables": [
-          "runoff_mm",
+          "mean_annual_runoff_mm",
           "terrain_cluster_id"
         ]
       },
@@ -81,7 +88,11 @@
       "condition": {
         "type": "composite",
         "expression": "nrega_irrigation_count < 3 and canal_name is None",
-        "qualitative_description": "Fewer than 3 MGNREGA irrigation works recorded and no canal infrastructure present, confirming minimal irrigation investment in the micro-watershed."
+        "qualitative_description": "Fewer than 3 MGNREGA irrigation works recorded and no canal infrastructure present, confirming minimal irrigation investment in the micro-watershed.",
+        "variables": [
+          "nrega_irrigation_count",
+          "canal_name"
+        ]
       },
       "severity": "moderate",
       "direction": "confirms",
@@ -145,6 +156,14 @@
             "present": true,
             "percent_lower": 10,
             "percent_upper": 30
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
           }
         },
         {

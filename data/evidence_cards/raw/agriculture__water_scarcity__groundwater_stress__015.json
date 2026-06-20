@@ -32,7 +32,11 @@
       "condition": {
         "type": "quantitative",
         "expression": "soge_dev_percent > 70 or soge_class_name in ['Semi-critical', 'Critical', 'Over-exploited']",
-        "qualitative_description": "Block-level SOGE exceeds 70% or CGWB classifies the block as Semi-critical, Critical, or Over-exploited, indicating extraction pressure on alluvial aquifers even in high-rainfall zones."
+        "qualitative_description": "Block-level SOGE exceeds 70% or CGWB classifies the block as Semi-critical, Critical, or Over-exploited, indicating extraction pressure on alluvial aquifers even in high-rainfall zones.",
+        "variables": [
+          "soge_dev_percent",
+          "soge_class_name"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -43,7 +47,7 @@
       "signal_id": "sig_02",
       "variables": [
         "trend_annual_delta_g_mm",
-        "delta_g_mm"
+        "mean_annual_delta_g_mm"
       ],
       "condition": {
         "type": "composite",
@@ -51,7 +55,7 @@
         "qualitative_description": "Both the linear trend in annual groundwater recharge (P - ET - Runoff) and the multi-year mean are negative, indicating that despite high rainfall, net groundwater balance is chronically negative — a hallmark of extraction exceeding recharge.",
         "variables": [
           "trend_annual_delta_g_mm",
-          "delta_g_mm"
+          "mean_annual_delta_g_mm"
         ]
       },
       "severity": "high",
@@ -63,12 +67,16 @@
       "signal_id": "sig_03",
       "variables": [
         "aquifer_class",
-        "aquifer_lithology_percent"
+        "acwadam_class_percent"
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "aquifer_class == 'alluvium' and aquifer_lithology_percent.get('alluvium', 0) > 40",
-        "qualitative_description": "Dominant alluvial aquifer with more than 40% of the micro-watershed area underlain by alluvial lithology, confirming the aquifer type context and its recharge-discharge dynamics."
+        "expression": "aquifer_class == 'alluvium' and acwadam_class_percent.get('alluvium', 0) > 40",
+        "qualitative_description": "Dominant alluvial aquifer with more than 40% of the micro-watershed area underlain by alluvial lithology, confirming the aquifer type context and its recharge-discharge dynamics.",
+        "variables": [
+          "aquifer_class",
+          "acwadam_class_percent"
+        ]
       },
       "severity": "moderate",
       "direction": "confirms",
@@ -83,7 +91,10 @@
       "condition": {
         "type": "quantitative",
         "expression": "nrega_swc_count < 10",
-        "qualitative_description": "Fewer than 10 cumulative MGNREGA soil and water conservation works in the micro-watershed, indicating underinvestment in recharge infrastructure relative to the extraction pressure in a high-rainfall zone."
+        "qualitative_description": "Fewer than 10 cumulative MGNREGA soil and water conservation works in the micro-watershed, indicating underinvestment in recharge infrastructure relative to the extraction pressure in a high-rainfall zone.",
+        "variables": [
+          "nrega_swc_count"
+        ]
       },
       "severity": "moderate",
       "direction": "amplifies",

@@ -3,7 +3,23 @@
 **Date:** 2026-06-07 · **Updated:** 2026-06-19  
 **Scope:** Repeatable workflow for adding any **production system → observed stress → causal pathway** branch  
 **Prerequisites (complete):** [06-variable-naming-normalization.md](./06-variable-naming-normalization.md), [07-reasoning-prompt-signal-evaluation.md](./07-reasoning-prompt-signal-evaluation.md), [08-mws-multi-tehsil-membership.md](./08-mws-multi-tehsil-membership.md), [13-confirmation-policy-and-schema.md](./13-confirmation-policy-and-schema.md)  
-**Related docs:** `PREPROCESS.md`, `02-preprocessing-checklist.md`, `04-artifact-relationships.md`, [09-excel-source-update.md](./09-excel-source-update.md), [11-diagnosis-feedback-signal-editor.md](./11-diagnosis-feedback-signal-editor.md) (read-only signal viewer)
+**Related docs:** `PREPROCESS.md`, `02-preprocessing-checklist.md`, `04-artifact-relationships.md`, [09-excel-source-update.md](./09-excel-source-update.md), [11-diagnosis-feedback-signal-editor.md](./11-diagnosis-feedback-signal-editor.md) (read-only signal viewer), [**00-tooling-registry.md**](./00-tooling-registry.md)
+
+---
+
+## Script inventory (sync with tooling registry)
+
+**Last verified:** 2026-06-07 — see [00-tooling-registry.md](./00-tooling-registry.md) before re-running this plan.
+
+| Phase | Scripts |
+|-------|---------|
+| 0 — Data readiness | `verify/audit_variable_registry.py`, `verify/audit_excel_core_stack.py`, `ingest_excel.py`, `batch_ingest_excel.py` |
+| 1–4 — Papers | `fetch_papers.py`, `chunk_and_embed.py`, `verify/verify_papers.py`, `verify/verify_chunks.py` |
+| 5 — Cards | `generate_evidence_cards.py`, `maintenance/normalize_evidence_card_expressions.py`, `reload_evidence_cards.py` |
+| 5c — Plan 13 | `maintenance/derive_confirmation_policy.py`, `verify/audit_confirmation_policy.py`, `verify/audit_follow_up_effects.py` |
+| 7 — Gates | `verify/evaluate_signal_matrix.py`, `maintenance/audit_aer_card_coverage.py`, `test/smoke_test_diagnosis.py` |
+
+**Before go-live on existing corpus:** run [Plan 15](./15-claude-evidence-card-review.md) review if cards were hand-edited since last audit.
 
 ---
 

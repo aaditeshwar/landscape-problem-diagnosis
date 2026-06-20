@@ -31,7 +31,10 @@
       "condition": {
         "type": "trend",
         "expression": "cd_forest_to_farm_ha > 50",
-        "qualitative_description": "Cumulative forest-to-farm conversion has increased by more than 50 ha over the available record, indicating active encroachment of forest land for agriculture."
+        "qualitative_description": "Cumulative forest-to-farm conversion has increased by more than 50 ha over the available record, indicating active encroachment of forest land for agriculture.",
+        "variables": [
+          "cd_forest_to_farm_ha"
+        ]
       },
       "severity": "high",
       "direction": "confirms",
@@ -59,7 +62,8 @@
     {
       "signal_id": "sig_03",
       "variables": [
-        "village_st_percent"
+        "village_st_percent",
+        "cd_forest_to_farm_ha"
       ],
       "condition": {
         "type": "quantitative",
@@ -79,7 +83,8 @@
       "signal_id": "sig_04",
       "variables": [
         "cd_forest_to_farm_ha",
-        "cd_urbanization_ha"
+        "cd_urbanization_ha",
+        "terrain_cluster_id"
       ],
       "condition": {
         "type": "composite",

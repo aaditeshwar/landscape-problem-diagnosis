@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Claude evidence card review finding",
+  "type": "object",
+  "required": ["card_id", "overall_score", "dimensions", "findings", "summary"],
+  "additionalProperties": false,
+  "properties": {
+    "card_id": { "type": "string", "minLength": 1 },
+    "overall_score": { "type": "string", "enum": ["pass", "warn", "fail"] },
+    "dimensions": {
+      "type": "object",
+      "required": [
+        "D1_expressions",
+        "D2_temporal",
+        "D3_confirmation_policy",
+        "D4_follow_ups",
+        "D5_schema"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "D1_expressions": { "$ref": "#/definitions/dimensionScore" },
+        "D2_temporal": { "$ref": "#/definitions/dimensionScore" },
+        "D3_confirmation_policy": { "$ref": "#/definitions/dimensionScore" },
+        "D4_follow_ups": { "$ref": "#/definitions/dimensionScore" },
+        "D5_schema": { "$ref": "#/definitions/dimensionScore" }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/finding" }
+    },
+    "summary": { "type": "string", "minLength": 1 }
+  },
+  "definitions": {
+    "dimensionScore": {
+      "type": "object",
+      "required": ["score"],
+      "additionalProperties": false,
+      "properties": {
+        "score": { "type": "string", "enum": ["pass", "warn", "fail"] },
+        "note": { "type": "string" }
+      }
+    },
+    "finding": {
+      "type": "object",
+      "required": ["issue_id", "dimension", "severity", "field_path", "explanation"],
+      "additionalProperties": false,
+      "properties": {
+        "issue_id": { "type": "string", "minLength": 1 },
+        "dimension": {
+          "type": "string",
+          "enum": [
+            "D1_expressions",
+            "D2_temporal",
+            "D3_confirmation_policy",
+            "D4_follow_ups",
+            "D5_schema"
+          ]
+        },
+        "severity": { "type": "string", "enum": ["info", "warn", "error"] },
+        "field_path": { "type": "string" },
+        "current_value": {},
+        "evidence_from_note": { "type": "string" },
+        "explanation": { "type": "string", "minLength": 1 },
+        "reviewer_confidence": {
+          "type": "string",
+          "enum": ["high", "medium", "low"]
+        },
+        "requires_evaluator_extension": { "type": "boolean" },
+        "suggested_patch": { "type": "object" }
+      }
+    }
+  }
+}

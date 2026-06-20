@@ -50,6 +50,18 @@ export function resolveFollowUpTarget(
 
   const followUpQuestion = normalizeFollowUpQuestion(diagnosis.follow_up_question)
   const followUpVariable = diagnosis.follow_up_variable?.trim() || null
+  const mcq = diagnosis.follow_up_mcq
+
+  if (mcq?.variable && mcq.choices?.length) {
+    const mcqQuestion = mcq.question?.trim() || followUpQuestion
+    if (!mcqQuestion || !askedQuestions.has(mcqQuestion)) {
+      return {
+        variable: mcq.variable,
+        question: mcqQuestion || null,
+        structured: true,
+      }
+    }
+  }
 
   if (followUpQuestion && followUpVariable && !askedQuestions.has(followUpQuestion)) {
     return { variable: followUpVariable, question: followUpQuestion, structured: true }
@@ -63,7 +75,7 @@ export function resolveFollowUpTarget(
     }
   }
 
-  return { variable: USER_OBSERVATION_VARIABLE, question: null, structured: false }
+  return null
 }
 
 export function followUpPromptLabel(target: FollowUpTarget | null, hasHistory: boolean): string {
