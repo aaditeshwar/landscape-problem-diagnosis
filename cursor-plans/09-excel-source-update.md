@@ -1,8 +1,8 @@
 # Excel Source Update — New Columns, Sheets & Time Series
 
-**Date:** 2026-06-15  
+**Date:** 2026-06-15 · **Updated:** 2026-06-19  
 **Scope:** Process CoRE Stack Excel changes so new or extended data flows into diagnosis (ingest → registry → assembler → evidence cards)  
-**Related:** [06-variable-naming-normalization.md](./06-variable-naming-normalization.md), [05-induct-new-pathway.md](./05-induct-new-pathway.md), `PREPROCESS.md`
+**Related:** [06-variable-naming-normalization.md](./06-variable-naming-normalization.md), [05-induct-new-pathway.md](./05-induct-new-pathway.md), [13-confirmation-policy-and-schema.md](./13-confirmation-policy-and-schema.md), `PREPROCESS.md`
 
 ---
 
@@ -14,6 +14,9 @@ CoRE Stack tehsil Excel exports evolve: new indicator columns, new worksheets, o
 2. The **variable registry** and **assembler** expose canonical names
 3. Evidence card expressions remain valid (or are updated deliberately)
 4. Time-series year extensions do not silently break trend / `[-1]` logic
+5. If new variables enter card expressions, re-run Plan 13 policy/follow-up audits (see Step 9e)
+
+**Local review artifacts (not on GitHub):** `reports/` CSVs and `metadata/policy_corrections.json` are gitignored. Regenerate catalogs with `scripts/verify/generate_review_catalog.py`; workflow doc lives locally at `reports/REVIEW_WORKFLOW.md`.
 
 ---
 
@@ -265,6 +268,31 @@ Required when **new variables** appear in:
 
 **Baseline:** 0 hard runtime errors on the signal matrix.
 
+### 9e. Confirmation policy & follow-up effects (Plan 13 — after expression/card changes)
+
+When cards change materially (new signals, new follow-ups, or regenerated pathway batch):
+
+```powershell
+# Derive confirmation_policy from signals + overall_reasoning_note (pilot templates)
+.\.venv\Scripts\python.exe scripts\maintenance\derive_confirmation_policy.py
+
+# Optional: review unique rows locally (gitignored outputs)
+.\.venv\Scripts\python.exe scripts\verify\generate_review_catalog.py
+
+# After editing local policy_corrections.json or follow-up CSV fingerprints:
+.\.venv\Scripts\python.exe scripts\maintenance\apply_policy_corrections.py
+.\.venv\Scripts\python.exe scripts\maintenance\propagate_follow_up_templates.py
+
+# Audits (also write reports/*.csv locally)
+.\.venv\Scripts\python.exe scripts\verify\audit_confirmation_policy.py --write-report
+.\.venv\Scripts\python.exe scripts\verify\audit_follow_up_effects.py --write-report
+.\.venv\Scripts\python.exe scripts\verify\audit_mcq_normalized.py
+
+.\.venv\Scripts\python.exe scripts\reload_evidence_cards.py
+```
+
+See local `reports/REVIEW_WORKFLOW.md` for CSV fingerprint workflow. **Do not** use `wire_follow_up_signals.py` for bulk policy/effects — that script is the pathway-induction template for new MCQ wiring (plan 05 §6b).
+
 ---
 
 ## Step 10 — Frontend / panel updates (if new charts)
@@ -293,21 +321,24 @@ Run `scripts/test/test_panel_updates.py` after adding mappings.
 | 6 | Backfill | `maintenance/backfill_*.py` if needed |
 | 7 | Resolvers | `assembler.py`, `variable_registry.py` |
 | 8 | Year extension QA | `audit_variable_registry.py`, `evaluate_signal_matrix.py` |
-| 9 | Cards (if needed) | normalize → reload → wire follow-ups |
+| 9 | Cards (if needed) | normalize → reload → wire follow-ups → Plan 13 audits |
+| 9e | Policy / follow-up effects | `derive_confirmation_policy.py`, `apply_policy_corrections.py`, verify audits |
 | 10 | Frontend (if needed) | reference_standards + charts |
 
 ---
 
-## Audit artifacts (keep under version control)
+## Audit artifacts
 
-| Path | Produced by |
-|------|-------------|
-| `data/excel_core_stack_audit.json` | `audit_excel_core_stack.py` |
-| `data/raw_excel/sync_report.json` | `sync_active_excels.py` |
-| `data/audits/variable_naming_<date>.json` | `audit_variable_registry.py` |
-| `data/audits/` (signal matrix reports) | `evaluate_signal_matrix.py` |
+| Path | Produced by | In git? |
+|------|-------------|---------|
+| `data/excel_core_stack_audit.json` | `audit_excel_core_stack.py` | Optional (often local) |
+| `data/raw_excel/sync_report.json` | `sync_active_excels.py` | Optional |
+| `data/audits/variable_naming_<date>.json` | `audit_variable_registry.py` | Optional |
+| `data/audits/` (signal matrix reports) | `evaluate_signal_matrix.py` | Optional |
+| `reports/*.csv`, `reports/REVIEW_WORKFLOW.md` | `generate_review_catalog.py`, verify audits | **No** — gitignored (local review only) |
+| `metadata/policy_corrections.json`, `metadata/reviewed_*_by_fingerprint.json` | policy/follow-up propagation scripts | **No** — gitignored |
 
-Review audit JSON in PRs when Excel or ingest changes land.
+Review audit JSON in PRs when Excel or ingest changes land. Policy/follow-up review stays local unless you choose to share artifacts separately.
 
 ---
 

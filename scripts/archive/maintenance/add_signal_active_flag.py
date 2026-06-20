@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Set diagnostic_signals[].active=true on all raw evidence cards."""
+"""Set diagnostic_signals[].active=true on all raw evidence cards (archived one-off)."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ import json
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[3]
 RAW_DIR = ROOT / "data" / "evidence_cards" / "raw"
 
 

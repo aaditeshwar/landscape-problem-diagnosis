@@ -1,20 +1,35 @@
 # Diagnosis feedback + evidence signal editor
 
-> **Status:** In progress — S1–S5e complete; S6–S7 pending  
-> **Updated:** 2026-06-07 (v3 — Plan 13 cross-ref, trimmed editor fields)  
+> **Status:** Feedback complete (S1–S4); signal **viewer** complete (S4–S5e read-only). **Signal editing deferred** (S6–S7 out of scope for now).  
+> **Updated:** 2026-06-19 (v4 — read-only editor, server raster query, editing deferred)  
 > **Branch:** `llm-in-loop`  
 > **Prerequisite:** Plan 10 (dual-opinion diagnosis + MCQ follow-ups) — largely complete on `llm-in-loop`  
-> **Companion:** [`13-confirmation-policy-and-schema.md`](./13-confirmation-policy-and-schema.md) — confirmation policy, follow-up `effects`, MCQ normalization audit, schema cleanup. **Do not implement S5 field edits until Plan 13 is approved.**
+> **Companion:** [`13-confirmation-policy-and-schema.md`](./13-confirmation-policy-and-schema.md) — confirmation policy, follow-up `effects`, MCQ normalization audit, schema cleanup. Policy + follow-up **review/propagation** is done via local CSV/JSON workflow (`reports/REVIEW_WORKFLOW.md`, gitignored).
+
+---
+
+## Decision: signal editing turned off (2026-06-19)
+
+After building the signal editor UI, we **disabled all editing** and ship it as a **read-only review surface** only:
+
+- Page title: **“Evidence signal editor (editing disabled)”**
+- No save panel, no expression builder, no add-signal modal
+- Signals, confirmation policy, follow-ups, and confounders display in full (no scroll-truncated textareas)
+- Cluster map uses **server-side** `GET /api/clusters/raster-query?lat=&lon=` (local `data/clusters.tif` via `rasterio`, or remote proxy) — not client-side `georaster.getValuesAtPoint`
+
+**Rationale:** Domain review is better done via CSV fingerprint workflow (Plan 13 + `reports/REVIEW_WORKFLOW.md`) and raw JSON maintenance scripts. A wiki-style editor adds complexity without a clear near-term merge path.
+
+**Revisit later if:** reviewers need in-browser diffs, or the future Claude “apply suggestions” agent (Phase 7) is prioritized. Deferred work: S6 (add-signal modal + expression builder), S7 (bulk migration polish), `PUT /api/evidence-suggestions/{card_id}` UI wiring.
 
 ---
 
 ## Goals
 
 1. Let reviewers give structured feedback on server (and optional LLM) diagnosis output for a completed session.
-2. Let domain experts suggest edits to evidence-card signals via a cluster-map–driven wiki app.
-3. Persist everything in MongoDB with **log-backed reconstruction** of diagnosis context.
-4. Keep only the **latest version** per reviewer per **diagnosis snapshot** (feedback) or per card (signal suggestions).
-5. Lay groundwork for a future Claude agent that applies suggestions to raw evidence cards.
+2. Let domain experts **browse** evidence-card signals via a cluster-map–driven read-only app (editing deferred).
+3. Persist feedback in MongoDB with **log-backed reconstruction** of diagnosis context.
+4. Keep only the **latest version** per reviewer per **diagnosis snapshot** (feedback). Evidence-card suggestion upserts remain API-ready but **no editor UI** for now.
+5. Lay groundwork for a future Claude agent that applies suggestions to raw evidence cards (Phase 7 — still out of scope).
 
 ---
 
@@ -239,7 +254,7 @@ List from `follow_up_history`: question, answer, MCQ choice label, signal update
 
 ---
 
-## Phase 3 — Evidence signal editor (“wiki” app)
+## Phase 3 — Evidence signal viewer (read-only; editing deferred)
 
 ### Route: `/signals`
 
@@ -250,77 +265,66 @@ Query params:
 | `cluster` | Pre-select cluster suffix `001`–`017` |
 | `pathway` / `card_id` | Pre-select evidence card |
 | `snapshot_id` | Provenance when arriving from feedback (with `session_id` derived from it) |
-| `return` | Back-link URL |
+| `return` | Back-link URL (reserved; not wired in v1 read-only UI) |
 
 ### Left panel — cluster map (~40% width)
 
-**Implementation (fixed): GeoRaster + Leaflet**
+**Implementation: GeoRaster display + server point query**
 
-- Fetch the cluster COG from **`CLUSTER_COG_URL`** (env; see `.env.example`).
-- Render with `georaster` + `georaster-layer-for-leaflet` on the existing Leaflet stack.
-- Apply palette from `clusters.qml` (17 classes + nodata) via server `GET /api/clusters/palette`.
-- **Click handler:** point-query the loaded GeoRaster at lat/lon → cluster id 1–17 → map to suffix `001`–`017` via static lookup matching `CONTEXT_CLUSTERS`.
-- Legend overlay with cluster names; link to **`CLUSTER_COG_VIEWER_URL`** for external reference/debug.
-- If `cluster` query present, highlight that cluster and skip requiring a map click.
+- Fetch the cluster COG from **`CLUSTER_COG_URL`** (env; local fallback serves `data/clusters.tif` at `/api/clusters/cog`).
+- Render with `georaster` + `georaster-layer-for-leaflet` on Leaflet (display only; raster layer has `pointer-events: none`).
+- Apply palette from `clusters.qml` (17 classes + nodata) via `GET /api/clusters/palette`.
+- **Click handler:** `GET /api/clusters/raster-query?lat=&lon=` → `cluster_suffix` + cluster metadata (implemented in `runtime/services/cluster_raster_query.py`; uses `rasterio` locally).
+- Legend list below map; selected cluster highlighted with ring. Popup on map click.
+- Link to **`CLUSTER_COG_VIEWER_URL`** for external reference/debug.
 
 **Configuration:**
 
 | Env var | Purpose |
 |---------|---------|
-| `CLUSTER_COG_URL` | Direct HTTP URL to the GeoTIFF COG fetched by GeoRaster in the browser |
+| `CLUSTER_COG_URL` | Remote COG URL, or omitted when `data/clusters.tif` exists (API serves `/api/clusters/cog`) |
 | `CLUSTER_COG_VIEWER_URL` | Human-readable COG viewer page (e.g. `http://100.102.70.41:10001/raster.html`) |
 
-Both are read in `runtime/config.py` and passed to the frontend via a small public config endpoint. If COG fetch fails due to CORS, add a fallback `GET /api/clusters/at?lon=&lat=` proxy (S4 only if needed).
+Both are read in `runtime/config.py` and passed to the frontend via `GET /api/config/public`.
 
 **Reference assets:**
 
-- `data/clusters.tif` — local cluster raster (~400 KB; dev fallback if remote COG unavailable)
+- `data/clusters.tif` — local cluster raster (~400 KB)
 - `data/clusters.qml` — QGIS palette (17 classes + nodata)
+- `metadata/context_clusters.json` — cluster metadata (sync via `scripts/maintenance/sync_context_clusters.py`)
 
-### Right panel — card editor (~60% width)
+### Right panel — read-only card viewer (~60% width)
 
 **Step 1 — Selectors (top)**  
-- Pathway dropdown: all pathways that have a card for selected cluster (from evidence_cards index or static manifest).  
+- Pathway dropdown: all pathways that have a card for selected cluster.  
 - Show `card_id`, production system, observed stress, causal pathway.
 
 **Step 2 — Read-only cluster context**  
-Render fields from `CONTEXT_CLUSTERS` for selected suffix: label, aquifer_types, aer_tags, rainfall_regime, terrain_types, geographic_examples.
+`ContextClusterInfo` renders `CONTEXT_CLUSTERS` fields for selected suffix.
 
-**Step 3 — Signals list**
+**Step 3 — Signals list (read-only)**
 
-For each `diagnostic_signals[]` item (see Plan 13 for rationale — hide unused fields):
+For each `diagnostic_signals[]` item:
 
-| Field | Editable? |
-|-------|-----------|
-| `signal_id`, `variables`, `condition.expression`, `condition.type` | **No** (read-only) |
-| `severity`, `direction`, `explanation` | Yes |
-| `condition.qualitative_description` | Yes (textarea) |
-| **`active`** | Yes — toggle |
-| ~~`threshold_confidence`~~, ~~`context_sensitivity`~~, ~~`interaction_with`~~ | **Hidden** — removed from schema (Plan 13); not shown in editor |
+| Field | Shown |
+|-------|-------|
+| `signal_id`, `variables`, `condition.expression`, `condition.type`, `severity`, `direction`, `explanation`, `active`, `condition.qualitative_description` | Yes — full text, no edit controls |
+| Legacy fields (`threshold_confidence`, etc.) | Stripped from corpus (Plan 13) |
 
-**Step 4 — Card-level policy and prose**
+**Step 4 — Card-level policy and prose (read-only)**
 
-- **`confirmation_policy`** — editable structured form (or JSON textarea v1): `confirm_when`, `confidence_when`, primary signal sets. Replaces relying on `overall_reasoning_note` keywords for server enforcement.
-- `overall_reasoning_note` — editable wiki textarea (human prose only); support `(sig_01)` references with inline preview (reuse `SignalRichText` pattern).
-- **`missing_variable_questions[]`** — editable: `question_mode`, MCQ choices with `normalized` + **`effects.signals`** (not `how_answer_updates_diagnosis` alone). See Plan 13 for `question_mode` / normalization rules.
-- `confounders[]` — editable list (add/remove items, text only).
+- **`confirmation_policy`** — `ConfirmationPolicySummary` compact read-only view
+- `overall_reasoning_note` — read-only prose block
+- **`missing_variable_questions[]`** — question + choices with effect summaries (no JSON editor)
+- `confounders[]` — read-only list
 
-**Step 5 — Add signal**
+**Step 5 — Save / add signal**
 
-- **Add signal** opens modal:
-  - New `signal_id` auto (`sig_XX` next free)
-  - **Expression builder:** search variables → insert into expression → operators (`>`, `<`, `and`, `or`, `in`, `.get()`)
-  - Full editable: expression, severity, direction, explanation, active=true (no threshold_confidence / context_sensitivity)
-  - Validates expression via backend `POST /api/evidence-suggestions/validate-expression` (reuse `variable_registry` + assembler sandbox on dummy MWS or syntax-only check)
+**Not implemented.** Deferred to S6–S7. Backend `PUT /api/evidence-suggestions/{card_id}` exists but has no UI.
 
-**Step 6 — Save**
+When navigated from feedback page, cluster and pathway are **pre-selected** via query params.
 
-- Name + email (required)
-- **Save** → `PUT /api/evidence-suggestions/{card_id}` upsert
-
-When navigated from feedback page, cluster and pathway should be **pre-selected** (no map click required).
-
-### MongoDB: `evidence_card_suggestions`
+### MongoDB: `evidence_card_suggestions` (API only for now)
 
 ```javascript
 {
@@ -356,7 +360,7 @@ When navigated from feedback page, cluster and pathway should be **pre-selected*
 |--------|-----------|
 | `feedback.py` | `GET /context`, `GET /{snapshot_id}`, `PUT /{snapshot_id}` |
 | `evidence_suggestions.py` | `GET /{card_id}`, `PUT /{card_id}`, `POST /validate-expression`, `GET /by-cluster/{suffix}` |
-| `clusters.py` | `GET /palette`, `GET /at?lon&lat` (optional proxy) |
+| `clusters.py` | `GET /palette`, `GET /cog`, `GET /raster-query?lat&lon`, `GET /suffix/{raster_value}` |
 | `context.py` | `GET /context-clusters` |
 
 Wire in `runtime/main.py`. Add Pydantic models mirroring frontend types.
@@ -379,12 +383,13 @@ frontend/src/
       AgreementControl.tsx
     signals/
       ClusterMap.tsx
-      SignalEditorPanel.tsx
-      ExpressionBuilderModal.tsx
+      SignalEditorPanel.tsx      # read-only
       ContextClusterInfo.tsx
+      ConfirmationPolicySummary.tsx
   api/
     feedback.ts
-    evidenceSuggestions.ts
+    evidenceSuggestions.ts       # API client; no save UI yet
+    signals.ts
 ```
 
 Shared: existing `MwsCharts`, `SignalRichText`, `pathwayLabels`, types extended in `types/index.ts`.
@@ -393,7 +398,7 @@ Shared: existing `MwsCharts`, `SignalRichText`, `pathwayLabels`, types extended 
 
 ## Phase 6 — Evidence card schema migration
 
-1. Script `scripts/maintenance/add_signal_active_flag.py`: set `"active": true` on every signal in raw JSON.
+1. ~~Script `scripts/maintenance/add_signal_active_flag.py`~~ — **applied**; archived at `scripts/archive/maintenance/add_signal_active_flag.py`.
 2. `scripts/reload_evidence_cards.py` to Mongo.
 3. Update `generate_evidence_cards.py` prompt/schema so new cards include `active`.
 4. Update `signal_evaluator.py` to **skip** signals where `active === false`.
@@ -422,10 +427,10 @@ Store agent run id on suggestion doc: `agent_status`, `proposed_card_path`.
 | **S1** | Router setup, `diagnosis_snapshot_id` on diagnosis APIs, context API, `active` flag migration, context-clusters + variables + COG env/config APIs |
 | **S2** | Feedback page panels 1–2 + save/load Mongo; “Give feedback” buttons on DiagnosisPanel |
 | **S3** | Feedback panel 3 (comparison grid, agreement controls, advanced link) |
-| **S4** | Cluster map + palette; card load by cluster/pathway |
-| **S5a–S5e** | See Plan 13 sprint split: policy runtime, schema audit, editor (signals + policy + follow-up effects), save |
-| **S6** | Add-signal modal + expression builder + validation |
-| **S7** | Bulk card migration, CI audits, polish (deep links, reload persistence, error states) |
+| **S4** | Cluster map + palette + server raster-query; card load by cluster/pathway |
+| **S5a–S5e** | Plan 13: policy runtime, schema audit, **read-only** signal viewer, backend suggestion API (no save UI) |
+| **S6** | *(Deferred)* Add-signal modal + expression builder + validation |
+| **S7** | *(Deferred)* Bulk card migration polish, deep links, error states |
 
 ---
 
@@ -437,7 +442,8 @@ Store agent run id on suggestion doc: `agent_status`, `proposed_card_path`.
 | Feedback before closing session? | Allowed once first diagnosis response exists |
 | Upsert key | `diagnosis_snapshot_id + email` (feedback), `card_id + email` (signals) |
 | Email verification | Format check only; no auth in v1 |
-| COG integration | GeoRaster + Leaflet; URLs from `CLUSTER_COG_URL` / `CLUSTER_COG_VIEWER_URL`; backend point proxy only if CORS blocks |
+| COG integration | GeoRaster display + **`GET /api/clusters/raster-query`** for clicks; `rasterio` in `runtime/requirements.txt` |
+| Signal editing | **Off** — read-only viewer; CSV/JSON maintenance workflow instead (Plan 13 + local `reports/`) |
 | LLM column visibility | Hidden when `llm_skipped === true` |
 
 ---
@@ -451,9 +457,9 @@ Store agent run id on suggestion doc: `agent_status`, `proposed_card_path`.
 - Context API returns same pathway text as main app for a given `diagnosis_snapshot_id`.
 - Diagnosis API responses include `diagnosis_snapshot_id` and `follow_up_count` matching the UI state when feedback was opened.
 - Signal editor deep-link from feedback pre-selects cluster + pathway without map click.
-- Map click selects correct cluster suffix vs `CONTEXT_CLUSTERS`.
-- Deactivating a signal in suggestions persists; evaluator ignores inactive signals after agent merge.
-- Expression builder rejects unknown variables.
+- Map click selects correct cluster suffix via `/api/clusters/raster-query`.
+- Read-only viewer shows full signal text, confirmation policy, and follow-up effects.
+- *(Deferred)* Deactivating a signal in suggestions / expression builder tests.
 
 ---
 
@@ -464,7 +470,7 @@ Store agent run id on suggestion doc: `agent_status`, `proposed_card_path`.
 | Diagnosis UI | `frontend/src/components/DiagnosisPanel.tsx` |
 | Session + logs | `runtime/services/session_manager.py`, `runtime/services/log_reader.py` |
 | Trace schema | `runtime/services/diagnosis_trace.py` |
-| Context clusters | `scripts/generate_evidence_cards.py` (`CONTEXT_CLUSTERS`) |
+| Context clusters | `metadata/context_clusters.json` (sync: `scripts/maintenance/sync_context_clusters.py`) |
 | Cluster map assets | `data/clusters.tif`, `data/clusters.qml` |
 | Evidence card example | `data/evidence_cards/raw/*__009.json` |
 | Variable registry | `metadata/variable_registry.json` |

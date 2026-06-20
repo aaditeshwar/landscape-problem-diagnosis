@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Plan 13 follow-up migration: question_mode, effects from MCQ templates."""
+"""Plan 13 follow-up migration: question_mode, effects from MCQ templates (archived one-off)."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ import json
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[3]
 RAW_DIR = ROOT / "data" / "evidence_cards" / "raw"
 
 sys.path.insert(0, str(ROOT / "runtime"))
