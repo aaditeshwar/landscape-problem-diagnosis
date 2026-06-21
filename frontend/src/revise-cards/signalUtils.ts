@@ -1,5 +1,6 @@
 export type SignalSummary = {
   signal_id: string
+  active?: boolean
   severity?: string
   direction?: string
   expression?: string
@@ -20,6 +21,7 @@ export function indexSignals(rawCard: Record<string, unknown> | null | undefined
         : []
       return {
         signal_id: String(signal.signal_id || ''),
+        active: signal.active !== false,
         severity: typeof signal.severity === 'string' ? signal.severity : undefined,
         direction: typeof signal.direction === 'string' ? signal.direction : undefined,
         explanation: typeof signal.explanation === 'string' ? signal.explanation : undefined,

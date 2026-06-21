@@ -14,6 +14,7 @@ import {
 } from '../../utils/feedbackSections'
 import { formatPathwayHierarchy, productionLabel } from '../../utils/pathwayLabels'
 import { AgreementControl } from './AgreementControl'
+import { PathwaySignalStrip } from './PathwaySignalStrip'
 import { SignalRichText } from '../SignalRichText'
 
 type PathwayWithStatus = PathwayResult & { serverStatus: 'confirmed' | 'uncertain' }
@@ -87,7 +88,7 @@ function FeedbackColumn({
             rel="noopener noreferrer"
             className="inline-flex text-xs font-medium text-amber-900 underline decoration-amber-400 underline-offset-2 hover:text-amber-950"
           >
-            Edit signals — advanced
+            See details and edit signals - advanced
           </a>
         ) : null}
       </div>
@@ -216,6 +217,7 @@ export function FeedbackComparisonGrid({
         const serverNote =
           context.server_diagnosis.pathway_notes[pathway.pathway_id] ?? pathway.reasoning ?? '—'
         const llmItem = llmPathwayComment(context.llm_diagnosis?.reviewer_commentary, pathway.pathway_id)
+        const card = cardForPathway(context.retrieved_cards, pathway.pathway_id)
 
         return renderSectionGrid({
           sectionKey,
@@ -228,11 +230,18 @@ export function FeedbackComparisonGrid({
           ),
           pathway,
           serverContent: (
-            <SignalRichText
-              text={serverNote}
-              pathwayId={pathway.pathway_id}
-              signalEvaluation={signalEvaluation}
-            />
+            <>
+              <SignalRichText
+                text={serverNote}
+                pathwayId={pathway.pathway_id}
+                signalEvaluation={signalEvaluation}
+              />
+              <PathwaySignalStrip
+                pathwayId={pathway.pathway_id}
+                card={card}
+                signalEvaluation={signalEvaluation}
+              />
+            </>
           ),
           llmContent: llmItem?.pathway_comment ? (
             <div>

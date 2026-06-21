@@ -11,12 +11,16 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 RAW_DIR = ROOT / "data" / "evidence_cards" / "raw"
-REPORT_DIR = ROOT / "reports"
 PILOT_POLICIES = ROOT / "metadata" / "pilot_confirmation_policies.json"
 
 sys.path.insert(0, str(ROOT / "scripts"))
 from lib.card_policy_utils import derive_policy  # noqa: E402
-from lib.policy_overrides import load_pilot_overrides, resolve_policy_for_card  # noqa: E402
+from lib.policy_overrides import (  # noqa: E402
+    CONFIRMATION_POLICY_REVIEW,
+    POLICY_REVIEW_DIR,
+    load_pilot_overrides,
+    resolve_policy_for_card,
+)
 
 
 def load_pilot_overrides_legacy() -> dict[str, dict]:
@@ -36,8 +40,8 @@ def main() -> int:
     if args.card_id:
         paths = [RAW_DIR / f"{cid}.json" for cid in args.card_id]
 
-    REPORT_DIR.mkdir(parents=True, exist_ok=True)
-    report_path = REPORT_DIR / "confirmation_policy_review.csv"
+    POLICY_REVIEW_DIR.mkdir(parents=True, exist_ok=True)
+    report_path = CONFIRMATION_POLICY_REVIEW
     rows: list[dict[str, str]] = []
     updated = 0
 

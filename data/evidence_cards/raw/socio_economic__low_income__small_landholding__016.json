@@ -73,7 +73,7 @@
         ]
       },
       "severity": "moderate",
-      "direction": "amplifies",
+      "direction": "confirms",
       "explanation": "Remote smallholders in Ladakh face extreme market isolation due to high-altitude terrain and seasonal road closures. Without access to regulated markets, small holders are exploited by intermediaries and cannot realise fair prices for their limited surplus. Market access is a critical determinant of whether small holders can convert even modest production into adequate income. FPO formation and collective marketing are recommended precisely to overcome this barrier.",
       "active": true
     },
@@ -420,7 +420,9 @@
     "version": 1,
     "primary_confirm_signals": [
       "sig_01",
-      "sig_02"
+      "sig_02",
+      "sig_03",
+      "sig_08"
     ],
     "confirm_when": {
       "min_confirms_true": 2,
@@ -428,7 +430,9 @@
       "min_from_set": {
         "signals": [
           "sig_01",
-          "sig_02"
+          "sig_02",
+          "sig_03",
+          "sig_08"
         ],
         "min": 2
       }
@@ -439,7 +443,9 @@
         "min_from_set": {
           "signals": [
             "sig_01",
-            "sig_02"
+            "sig_02",
+            "sig_03",
+            "sig_08"
           ],
           "min": 2
         },

@@ -75,7 +75,7 @@
         ]
       },
       "severity": "moderate",
-      "direction": "amplifies",
+      "direction": "confirms",
       "explanation": "Low cumulative NREGA SWC investment signals that the MWS has not benefited from systematic water harvesting infrastructure development. In hilly sub-humid zones, where terrain limits canal irrigation and groundwater access is constrained by hard-rock aquifers, community-built check dams, farm ponds, and diversion channels are essential. Their absence or low count amplifies irrigation water scarcity during dry spells and the rabi season. Dashora et al. (2019) found benefit-cost ratios averaging 4.1 for check dams in hard-rock terrain, underscoring the high returns from such investment when it does occur.",
       "active": true
     },
@@ -260,7 +260,9 @@
     "version": 1,
     "primary_confirm_signals": [
       "sig_01",
-      "sig_02"
+      "sig_02",
+      "sig_03",
+      "sig_06"
     ],
     "confirm_when": {
       "min_confirms_true": 2,
@@ -268,7 +270,9 @@
       "min_from_set": {
         "signals": [
           "sig_01",
-          "sig_02"
+          "sig_02",
+          "sig_03",
+          "sig_06"
         ],
         "min": 2
       }
@@ -279,7 +283,9 @@
         "min_from_set": {
           "signals": [
             "sig_01",
-            "sig_02"
+            "sig_02",
+            "sig_03",
+            "sig_06"
           ],
           "min": 2
         },

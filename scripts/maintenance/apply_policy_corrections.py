@@ -10,7 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 RAW_DIR = ROOT / "data" / "evidence_cards" / "raw"
-REPORT = ROOT / "reports" / "policy_corrections_review.md"
+REPORT = ROOT / "reports" / "policy_review" / "policy_corrections_review.md"
 
 sys.path.insert(0, str(ROOT / "scripts"))
 from lib.card_policy_utils import draft_reasoning_note_from_policy, policy_fingerprint  # noqa: E402
@@ -37,7 +37,7 @@ def main() -> int:
     parser.add_argument(
         "--no-export",
         action="store_true",
-        help="Skip rebuilding reports/reviewed_policy_by_fingerprint.json",
+        help="Skip rebuilding reports/policy_review/reviewed_policy_by_fingerprint.json",
     )
     args = parser.parse_args()
 

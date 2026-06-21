@@ -22,6 +22,11 @@ from lib.card_policy_utils import (  # noqa: E402
     expression_fingerprint,
     policy_fingerprint,
 )
+from lib.policy_overrides import (  # noqa: E402
+    POLICY_REVIEW_DIR,
+    REVIEW_UNIQUE_FOLLOW_UPS,
+    REVIEW_UNIQUE_SIGNALS,
+)
 from lib.follow_up_utils import (  # noqa: E402
     choice_summary,
     choice_summary_from_map,
@@ -135,8 +140,9 @@ def main() -> int:
             }
 
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
+    POLICY_REVIEW_DIR.mkdir(parents=True, exist_ok=True)
 
-    with (REPORT_DIR / "review_unique_signals.csv").open("w", encoding="utf-8", newline="") as handle:
+    with REVIEW_UNIQUE_SIGNALS.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(
             handle,
             fieldnames=[
@@ -177,7 +183,7 @@ def main() -> int:
                     }
                 )
 
-    with (REPORT_DIR / "review_unique_follow_ups.csv").open("w", encoding="utf-8", newline="") as handle:
+    with REVIEW_UNIQUE_FOLLOW_UPS.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(
             handle,
             fieldnames=[
@@ -232,7 +238,8 @@ def main() -> int:
                     }
                 )
 
-    with (REPORT_DIR / "review_unique_policies.csv").open("w", encoding="utf-8", newline="") as handle:
+    POLICY_REVIEW_DIR.mkdir(parents=True, exist_ok=True)
+    with (POLICY_REVIEW_DIR / "review_unique_policies.csv").open("w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(
             handle,
             fieldnames=[
@@ -269,7 +276,7 @@ def main() -> int:
 
 Review **unique rows** in these CSVs once; changes propagate to all cards sharing the same fingerprint.
 
-## 1. Unique signals — `review_unique_signals.csv`
+## 1. Unique signals — `policy_review/review_unique_signals.csv`
 
 Each row is a distinct signal **expression + qualitative description + variables + direction** pattern across clusters.
 
@@ -277,7 +284,7 @@ Each row is a distinct signal **expression + qualitative description + variables
 - Edit one `example_card_id` in the signal editor (or raw JSON), then run maintenance scripts to mirror if needed.
 - Rows with empty `expression` are qualitative-only follow-up signals — review `qualitative_excerpt`.
 
-## 2. Unique follow-ups — `review_unique_follow_ups.csv`
+## 2. Unique follow-ups — `policy_review/review_unique_follow_ups.csv`
 
 Each row is a distinct MCQ template: variable + question_mode + choice normalized/effects fingerprint.
 
@@ -309,10 +316,10 @@ After setting `review_decision` on each row:
 | Target | What gets updated |
 |--------|-------------------|
 | `data/evidence_cards/raw/*.json` | All cards sharing each template fingerprint |
-| `reports/reviewed_follow_up_by_fingerprint.json` | 30 canonical MCQ templates |
+| `reports/policy_review/reviewed_follow_up_by_fingerprint.json` | 30 canonical MCQ templates |
 | Mongo `evidence_cards` | Via reload script |
 
-## 3. Unique policies — `review_unique_policies.csv`
+## 3. Unique policies — `policy_review/review_unique_policies.csv`
 
 Each row is a distinct `confirmation_policy` JSON shape.
 
@@ -322,7 +329,7 @@ Each row is a distinct `confirmation_policy` JSON shape.
 
 ### 3b. Propagate reviewed policies
 
-After editing `reports/policy_corrections.json` or approving rows in the policy CSV:
+After editing `reports/policy_review/policy_corrections.json` or approving rows in the policy CSV:
 
 ```powershell
 .\.venv\Scripts\python.exe scripts/maintenance/apply_policy_corrections.py
@@ -333,7 +340,7 @@ After editing `reports/policy_corrections.json` or approving rows in the policy 
 | Target | What gets updated |
 |--------|-------------------|
 | `data/evidence_cards/raw/*.json` | Cards matching fingerprint or `by_card_id` overrides |
-| `reports/reviewed_policy_by_fingerprint.json` | Canonical policy templates per fingerprint |
+| `reports/policy_review/reviewed_policy_by_fingerprint.json` | Canonical policy templates per fingerprint |
 | Mongo `evidence_cards` | Via reload script |
 
 ## 4. Audits (run after edits)
@@ -344,8 +351,9 @@ After editing `reports/policy_corrections.json` or approving rows in the policy 
 .\.venv\Scripts\python.exe scripts/verify/audit_mcq_normalized.py
 ```
 
-`policy_audit.csv` — one row per warning/error with note/policy context columns for manual review.  
-`policy_audit_summary.csv` — all 136 cards with issue counts (even clean cards).
+`reports/policy_review/policy_audit.csv` — one row per warning/error with note/policy context columns for manual review.  
+`reports/policy_review/policy_audit_summary.csv` — all 136 cards with issue counts (even clean cards).  
+`reports/policy_review/follow_up_effects_audit.csv` — MCQ effects coverage per card.
 
 ## 5. Reload Mongo
 
@@ -367,9 +375,9 @@ Recommendation: treat **policy + effects** as source of truth; use `draft_note` 
         encoding="utf-8",
     )
 
-    print(f"Wrote {REPORT_DIR}/review_unique_signals.csv ({len(seen_fp)} unique signals)")
-    print(f"Wrote {REPORT_DIR}/review_unique_follow_ups.csv ({len(seen_fu)} unique follow-up templates)")
-    print(f"Wrote {REPORT_DIR}/review_unique_policies.csv ({len(policy_groups)} unique policies)")
+    print(f"Wrote {REVIEW_UNIQUE_SIGNALS} ({len(seen_fp)} unique signals)")
+    print(f"Wrote {REVIEW_UNIQUE_FOLLOW_UPS} ({len(seen_fu)} unique follow-up templates)")
+    print(f"Wrote {POLICY_REVIEW_DIR}/review_unique_policies.csv ({len(policy_groups)} unique policies)")
     print(f"Wrote {workflow}")
     return 0
 

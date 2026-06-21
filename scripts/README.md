@@ -54,12 +54,40 @@ Paper manifest helpers: `validate_manifest.py`, `sync_manifest_pdfs.py`, `restor
 | `verify/audit_variable_registry.py` | Registry ↔ framework ↔ assembler ↔ cards |
 | `verify/evaluate_signal_matrix.py` | Full signal eval matrix (0 hard errors gate) |
 | `verify/spot_check_resolvers.py` | Variable resolver spot checks |
-| `verify/audit_confirmation_policy.py` | Plan 13 — policy vs signals / prose; enriched CSV for human review |
-| `verify/audit_follow_up_effects.py` | Plan 13 — MCQ `effects.signals` coverage |
+| `verify/audit_confirmation_policy.py` | Plan 13 — policy vs signals / prose; writes `reports/policy_review/policy_audit*.csv` |
+| `verify/audit_follow_up_effects.py` | Plan 13 — MCQ `effects.signals` coverage; writes `reports/policy_review/follow_up_effects_audit.csv` |
 | `verify/audit_mcq_normalized.py` | Plan 13 — MCQ `normalized` shape consistency |
 | `verify/audit_card_expressions.py` | Plan 15 — per-card expression audit CSV |
 | `verify/audit_card_schema.py` | Plan 15 — JSON Schema validate raw cards |
-| `verify/generate_review_catalog.py` | Local CSV catalogs + `REVIEW_WORKFLOW.md` (outputs gitignored) |
+| `verify/generate_review_catalog.py` | Local CSV catalogs in `reports/policy_review/` + `REVIEW_WORKFLOW.md` (gitignored) |
+
+## `eval/` — case-study diagnosis batch
+
+| Script | Purpose |
+|--------|---------|
+| `eval/run_case_study_diagnoses.py` | POST `/api/query` for each case-study MWS (initial turn only); writes CSV/JSON + replay baseline |
+| `eval/case_study_index.py` | Load flat rows from `metadata/case_study_locations_v2.json` |
+
+**Server-only batch** (creates real sessions + feedback URLs):
+
+```powershell
+.\.venv\Scripts\python.exe scripts/eval/run_case_study_diagnoses.py --dry-run
+.\.venv\Scripts\python.exe scripts/eval/run_case_study_diagnoses.py
+```
+
+**LLM reviewer batch** (same generic problem text for every MWS):
+
+```powershell
+.\.venv\Scripts\python.exe scripts/eval/run_case_study_diagnoses.py --want-llm --problem "What landscape stresses and production-system problems exist in this micro-watershed?"
+```
+
+Outputs land in `reports/case_study_eval/` including `replay_baseline_{server|llm}_{stamp}.json`. Compare with Claude via:
+
+```powershell
+.\.venv\Scripts\python.exe scripts/replay_diagnosis_runs.py replay --baseline reports/case_study_eval/replay_baseline_server_<stamp>.json
+```
+
+Requires FastAPI on `http://127.0.0.1:8000` and Mongo loaded.
 
 ## `review/` — Plan 15 Claude corpus review
 

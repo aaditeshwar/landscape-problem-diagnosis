@@ -104,10 +104,11 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Farmers report that well or tubewell depth has increased noticeably over recent years, or that pumping costs have risen due to deeper water tables, indicating that groundwater lift costs are becoming prohibitive for small and marginal farmers."
+        "qualitative_description": "Farmers report that well or tubewell depth has increased noticeably over recent years, or that pumping costs have risen due to deeper water tables, indicating that groundwater lift costs are becoming prohibitive for small and marginal farmers.",
+        "expression": ""
       },
       "severity": "moderate",
-      "direction": "amplifies",
+      "direction": "confirms",
       "explanation": "In alluvial plains, groundwater is generally accessible but deepening water tables increase energy costs for lifting, disproportionately burdening marginal farmers who cannot afford deeper borewells or higher electricity bills. This variable is not available in the framework data and must be elicited from the user. If confirmed, it strengthens the irrigation challenge diagnosis by showing that even the groundwater fallback is becoming costly or unreliable.",
       "active": true
     }
@@ -241,7 +242,8 @@
     "version": 1,
     "primary_confirm_signals": [
       "sig_01",
-      "sig_02"
+      "sig_02",
+      "sig_05"
     ],
     "confirm_when": {
       "min_confirms_true": 2,
@@ -249,7 +251,8 @@
       "min_from_set": {
         "signals": [
           "sig_01",
-          "sig_02"
+          "sig_02",
+          "sig_05"
         ],
         "min": 2
       }
@@ -260,7 +263,8 @@
         "min_from_set": {
           "signals": [
             "sig_01",
-            "sig_02"
+            "sig_02",
+            "sig_05"
           ],
           "min": 2
         },

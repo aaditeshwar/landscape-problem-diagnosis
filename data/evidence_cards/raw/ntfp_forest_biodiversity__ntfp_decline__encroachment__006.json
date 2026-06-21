@@ -329,27 +329,31 @@
       "sig_04"
     ],
     "confirm_when": {
-      "min_confirms_true": 2,
       "amplifiers_do_not_confirm": true,
-      "min_from_set": {
-        "signals": [
-          "sig_01",
-          "sig_02",
-          "sig_04"
+      "required_all": [
+        "sig_01"
+      ],
+      "required_any": [
+        [
+          "sig_02"
         ],
-        "min": 2
-      }
+        [
+          "sig_04"
+        ]
+      ]
     },
     "confidence_when": [
       {
         "level": "high",
+        "required_all": [
+          "sig_01"
+        ],
         "min_from_set": {
           "signals": [
-            "sig_01",
             "sig_02",
             "sig_04"
           ],
-          "min": 2
+          "min": 1
         },
         "min_high_severity_confirms": 2
       },

@@ -4,83 +4,17 @@
     "agriculture__water_scarcity__drought__002": {
       "card_id": "agriculture__water_scarcity__drought__002",
       "patch": {
-        "confirmation_policy": {
-          "version": 1,
-          "primary_confirm_signals": [
-            "sig_01",
-            "sig_02",
-            "sig_04"
-          ],
-          "confirm_when": {
-            "min_confirms_true": 2,
-            "amplifiers_do_not_confirm": true,
-            "min_from_set": {
-              "signals": [
-                "sig_01",
-                "sig_02",
-                "sig_04"
-              ],
-              "min": 1
-            }
-          },
-          "confidence_when": [
-            {
-              "level": "high",
-              "min_from_set": {
-                "signals": [
-                  "sig_01",
-                  "sig_02",
-                  "sig_04"
-                ],
-                "min": 2
-              },
-              "min_high_severity_confirms": 2
-            },
-            {
-              "level": "medium",
-              "min_confirms_true": 1
-            },
-            {
-              "level": "low",
-              "default": true
-            }
-          ]
-        },
         "diagnostic_signals": [
           {
             "signal_id": "sig_03",
-            "variables": [
-              "drought_mild_spi_score_latest",
-              "drought_mild_mai_score_latest",
-              "drought_mild_vci_score_latest"
-            ],
-            "severity": "high",
-            "direction": "amplifies",
-            "condition": {
-              "expression": "drought_mild_spi_score_latest >= 26 and (drought_mild_mai_score_latest >= 26 or drought_mild_vci_score_latest >= 26)",
-              "qualitative_description": "SPI below -1.0 (moderate to severe meteorological drought) combined with MAI below 0.5 (soil moisture inadequacy) or VCI below 0.35 (significant vegetation stress) confirms co-occurring meteorological and agricultural drought."
-            }
-          },
-          {
-            "signal_id": "sig_04",
-            "variables": [
-              "trend_annual_precipitation_mm",
-              "mean_annual_precipitation_mm",
-              "seasonal_precipitation_mm"
-            ],
-            "severity": "moderate",
-            "direction": "confirms",
-            "condition": {
-              "expression": "seasonal_precipitation_mm[-1].get('kharif', 9999) < 0.75 * mean_annual_precipitation_mm and trend_annual_precipitation_mm < 0",
-              "qualitative_description": "Latest kharif seasonal rainfall is below 75% of the long-term mean annual precipitation, and the multi-year annual precipitation trend is declining, confirming a structural rainfall deficit rather than a single anomalous year."
-            }
+            "active": false
           }
         ]
       },
-      "finalized_at": "2026-06-21T04:17:43+00:00",
+      "finalized_at": "2026-06-21T16:15:37+00:00",
       "reviewer": null,
-      "propagated_at": "2026-06-21T05:18:27+00:00",
-      "applied_card_digest": "73a2b2b8e78fd76e3f40d4a5205f17d86b718f24e8e63b321d9695292d7cc54b"
+      "propagated_at": "2026-06-21T16:22:25+00:00",
+      "applied_card_digest": "ea9faeb57669d6cb3a4038edf9f575263978a253bc562ebe7154897462c6fab0"
     },
     "agriculture__water_scarcity__irrigation_challenges__001": {
       "card_id": "agriculture__water_scarcity__irrigation_challenges__001",
@@ -931,374 +865,349 @@
     "agriculture__water_scarcity__drought__003": {
       "card_id": "agriculture__water_scarcity__drought__003",
       "patch": {
-        "confirmation_policy": {
-          "version": 1,
-          "primary_confirm_signals": [
-            "sig_01",
-            "sig_03",
-            "sig_04"
-          ],
-          "confirm_when": {
-            "min_confirms_true": 2,
-            "amplifiers_do_not_confirm": true,
-            "min_from_set": {
-              "signals": [
-                "sig_01",
-                "sig_03",
-                "sig_04"
-              ],
-              "min": 2
-            }
-          },
-          "confidence_when": [
-            {
-              "level": "high",
-              "min_from_set": {
-                "signals": [
-                  "sig_01",
-                  "sig_03",
-                  "sig_04"
-                ],
-                "min": 2
-              },
-              "min_high_severity_confirms": 2
-            },
-            {
-              "level": "medium",
-              "min_confirms_true": 1
-            },
-            {
-              "level": "low",
-              "default": true
-            }
-          ]
-        },
         "diagnostic_signals": [
           {
             "signal_id": "sig_02",
-            "variables": [
-              "drought_mild_vci_score_latest",
-              "drought_mild_mai_score_latest",
-              "drought_mild_spi_score_latest",
-              "drought_severe_moderate_spi_score_latest"
-            ],
-            "severity": "high",
-            "direction": "amplifies",
-            "condition": {
-              "expression": "(drought_mild_spi_score_latest >= 26 or drought_severe_moderate_spi_score_latest >= 26) or drought_mild_vci_score_latest >= 26 or drought_mild_mai_score_latest >= 26",
-              "qualitative_description": "SPI class indicates moderate to extreme meteorological drought, or VCI below 35 signals significant vegetation stress, or MAI below 0.5 indicates soil moisture inadequacy — any one of these confirms agricultural drought per the India Drought Manual classification."
-            }
-          },
-          {
-            "signal_id": "sig_04",
-            "variables": [
-              "mean_annual_precipitation_mm",
-              "trend_annual_precipitation_mm",
-              "seasonal_precipitation_mm"
-            ],
-            "severity": "moderate",
-            "direction": "confirms",
-            "condition": {
-              "expression": "seasonal_precipitation_mm[-1].get('kharif', 9999) < 0.75 * mean_annual_precipitation_mm or mean_annual_precipitation_mm < 700 or trend_annual_precipitation_mm < -5",
-              "qualitative_description": "Kharif seasonal rainfall below 75% of the long-term annual mean, or mean annual precipitation below 700 mm, or a declining trend exceeding 5 mm/year confirms structural precipitation deficit underpinning drought risk."
-            }
+            "active": false
           }
         ]
       },
-      "finalized_at": "2026-06-21T04:18:22+00:00",
+      "finalized_at": "2026-06-21T16:15:55+00:00",
       "reviewer": null,
-      "propagated_at": "2026-06-21T05:18:27+00:00",
-      "applied_card_digest": "865ef199119858303e0f4bfd16a754fcc109fe1d90e9693707c6bc70e69284e9"
+      "propagated_at": "2026-06-21T16:22:25+00:00",
+      "applied_card_digest": "e95b7f529883d1dbee312dc9fa118f382e595f65d631804b0b7581f2d02ad095"
     },
     "agriculture__water_scarcity__drought__001": {
       "card_id": "agriculture__water_scarcity__drought__001",
       "patch": {
-        "confirmation_policy": {
-          "version": 1,
-          "primary_confirm_signals": [
-            "sig_01",
-            "sig_02",
-            "sig_04"
-          ],
-          "confirm_when": {
-            "min_confirms_true": 2,
-            "amplifiers_do_not_confirm": true,
-            "min_from_set": {
-              "signals": [
-                "sig_01",
-                "sig_02",
-                "sig_04"
-              ],
-              "min": 2
-            }
-          },
-          "confidence_when": [
-            {
-              "level": "high",
-              "min_from_set": {
-                "signals": [
-                  "sig_01",
-                  "sig_02",
-                  "sig_04"
-                ],
-                "min": 2
-              },
-              "min_high_severity_confirms": 2
-            },
-            {
-              "level": "medium",
-              "min_confirms_true": 1
-            },
-            {
-              "level": "low",
-              "default": true
-            }
-          ]
-        },
         "diagnostic_signals": [
           {
             "signal_id": "sig_03",
-            "variables": [
-              "drought_mild_spi_score_latest",
-              "drought_mild_vci_score_latest"
-            ],
-            "severity": "high",
-            "direction": "amplifies",
-            "condition": {
-              "expression": "drought_mild_spi_score_latest >= 26 and drought_mild_vci_score_latest >= 26",
-              "qualitative_description": "SPI at or below -1.0 (moderate to severe meteorological drought) combined with VCI below 40 (moderate vegetation stress) confirms co-occurrence of meteorological and agricultural drought in the same kharif season."
-            }
+            "active": false
           }
         ]
       },
-      "finalized_at": "2026-06-21T04:13:47+00:00",
+      "finalized_at": "2026-06-21T16:15:19+00:00",
       "reviewer": null,
-      "propagated_at": "2026-06-21T05:18:27+00:00",
-      "applied_card_digest": "7d83fb8b6e77ee417ab260fdaa5cb0a05acedb640b33afadd83ae8a592e851a7"
+      "propagated_at": "2026-06-21T16:22:25+00:00",
+      "applied_card_digest": "6e895fcd4fa8ae35243848cacaf6b2c6e453cef5219114f4684cc299677d95bc"
     },
     "agriculture__water_scarcity__drought__004": {
       "card_id": "agriculture__water_scarcity__drought__004",
       "patch": {
-        "confirmation_policy": {
-          "version": 1,
-          "primary_confirm_signals": [
-            "sig_01",
-            "sig_02",
-            "sig_04"
-          ],
-          "confirm_when": {
-            "min_confirms_true": 2,
-            "amplifiers_do_not_confirm": true,
-            "min_from_set": {
-              "signals": [
-                "sig_01",
-                "sig_02",
-                "sig_04"
-              ],
-              "min": 2
-            }
-          },
-          "confidence_when": [
-            {
-              "level": "high",
-              "min_from_set": {
-                "signals": [
-                  "sig_01",
-                  "sig_02",
-                  "sig_04"
-                ],
-                "min": 2
-              },
-              "min_high_severity_confirms": 2
-            },
-            {
-              "level": "medium",
-              "min_confirms_true": 1
-            },
-            {
-              "level": "low",
-              "default": true
-            }
-          ]
-        },
         "diagnostic_signals": [
           {
             "signal_id": "sig_03",
-            "variables": [
-              "drought_mild_spi_score_latest",
-              "drought_mild_mai_score_latest",
-              "drought_mild_vci_score_latest"
-            ],
-            "severity": "high",
-            "direction": "amplies",
-            "condition": {
-              "expression": "drought_mild_spi_score_latest >= 26 and drought_mild_mai_score_latest >= 26 and drought_mild_vci_score_latest >= 26",
-              "qualitative_description": "SPI at or below -1.0 (moderate meteorological drought), MAI below 0.5 (soil moisture inadequacy), and VCI below 35 (significant vegetation stress) together confirm concurrent meteorological and agricultural drought per India Drought Manual classification."
-            }
-          },
-          {
-            "signal_id": "sig_04",
-            "variables": [
-              "mean_annual_precipitation_mm",
-              "seasonal_precipitation_mm"
-            ],
-            "severity": "moderate",
-            "direction": "confirms",
-            "condition": {
-              "expression": "mean_annual_precipitation_mm < 400 and seasonal_precipitation_mm[-1].get('kharif', 9999) < (0.75 * (sum(v.get('kharif', 0) for v in list(seasonal_precipitation_mm.values())[:-1]) / max(len(seasonal_precipitation_mm) - 1, 1)))",
-              "qualitative_description": "Mean annual precipitation below 400 mm (AER-2 threshold) and current kharif seasonal rainfall more than 25% below the multi-year kharif mean confirm a below-normal monsoon year in an already water-scarce baseline."
-            }
+            "active": false
           }
         ]
       },
-      "finalized_at": "2026-06-21T04:27:12+00:00",
+      "finalized_at": "2026-06-21T16:16:14+00:00",
       "reviewer": null,
-      "propagated_at": "2026-06-21T05:18:27+00:00",
-      "applied_card_digest": "8269ff2c7e84a76390a59a2a5d9705a8ca5c52652cf2945d893d25c63ad0a127"
+      "propagated_at": "2026-06-21T16:22:25+00:00",
+      "applied_card_digest": "89c900a31842b372e7c5f59c9485893051e697d93429241a769d8d23e9e93aec"
     },
     "agriculture__water_scarcity__drought__006": {
       "card_id": "agriculture__water_scarcity__drought__006",
       "patch": {
-        "confirmation_policy": {
-          "version": 1,
-          "primary_confirm_signals": [
-            "sig_01",
-            "sig_02",
-            "sig_04"
-          ],
-          "confirm_when": {
-            "min_confirms_true": 2,
-            "amplifiers_do_not_confirm": true,
-            "min_from_set": {
-              "signals": [
-                "sig_01",
-                "sig_02",
-                "sig_04"
-              ],
-              "min": 2
-            }
-          },
-          "confidence_when": [
-            {
-              "level": "high",
-              "min_from_set": {
-                "signals": [
-                  "sig_01",
-                  "sig_02",
-                  "sig_04"
-                ],
-                "min": 2
-              },
-              "min_high_severity_confirms": 2
-            },
-            {
-              "level": "medium",
-              "min_confirms_true": 1
-            },
-            {
-              "level": "low",
-              "default": true
-            }
-          ]
-        },
         "diagnostic_signals": [
           {
             "signal_id": "sig_03",
-            "variables": [
-              "drought_mild_spi_score_latest",
-              "drought_mild_mai_score_latest",
-              "drought_mild_vci_score_latest"
-            ],
-            "severity": "high",
-            "direction": "amplifies",
-            "condition": {
-              "expression": "drought_mild_spi_score_latest >= 26 and (drought_mild_mai_score_latest >= 26 or drought_mild_vci_score_latest >= 26)",
-              "qualitative_description": "SPI below -1.0 (moderate to severe meteorological drought) co-occurring with MAI below 0.75 (soil moisture inadequacy) or VCI below 40 (vegetation stress) confirms both meteorological and agricultural drought are active simultaneously."
-            }
+            "active": false
           }
         ]
       },
-      "finalized_at": "2026-06-21T04:30:21+00:00",
+      "finalized_at": "2026-06-21T16:16:44+00:00",
       "reviewer": null,
-      "propagated_at": "2026-06-21T05:18:27+00:00",
-      "applied_card_digest": "4598b03aae02293c9f63d2f4b6f61395e018389177f3131a6fb246a73d69df54"
+      "propagated_at": "2026-06-21T16:22:25+00:00",
+      "applied_card_digest": "330b3a60236c46f51d39b4a45c28c553d5742461f10bd110891d18b14b0b8ec2"
     },
     "agriculture__water_scarcity__drought__007": {
       "card_id": "agriculture__water_scarcity__drought__007",
       "patch": {
-        "confirmation_policy": {
-          "version": 1,
-          "primary_confirm_signals": [
-            "sig_01",
-            "sig_02",
-            "sig_04"
-          ],
-          "confirm_when": {
-            "min_confirms_true": 2,
-            "amplifiers_do_not_confirm": true,
-            "min_from_set": {
-              "signals": [
-                "sig_01",
-                "sig_02",
-                "sig_04"
-              ],
-              "min": 2
-            }
-          },
-          "confidence_when": [
-            {
-              "level": "high",
-              "min_from_set": {
-                "signals": [
-                  "sig_01",
-                  "sig_02",
-                  "sig_04"
-                ],
-                "min": 2
-              },
-              "min_high_severity_confirms": 2
-            },
-            {
-              "level": "medium",
-              "min_confirms_true": 1
-            },
-            {
-              "level": "low",
-              "default": true
-            }
-          ]
-        },
         "diagnostic_signals": [
           {
             "signal_id": "sig_03",
-            "variables": [
-              "drought_mild_spi_score_latest",
-              "drought_mild_mai_score_latest",
-              "drought_mild_vci_score_latest"
-            ],
-            "severity": "high",
-            "direction": "amplifies",
-            "condition": {
-              "expression": "drought_mild_spi_score_latest >= 26 and (drought_mild_mai_score_latest >= 26 or drought_mild_vci_score_latest >= 26)",
-              "qualitative_description": "SPI at or below -1.0 (moderate to severe meteorological drought) combined with MAI below 0.5 (soil moisture inadequacy) or VCI below 0.35 (significant vegetation stress) confirms co-occurring meteorological and agricultural drought."
-            }
+            "active": false
           }
         ]
       },
-      "finalized_at": "2026-06-21T04:35:57+00:00",
+      "finalized_at": "2026-06-21T16:16:59+00:00",
       "reviewer": null,
-      "propagated_at": "2026-06-21T05:18:27+00:00",
-      "applied_card_digest": "8e6f3dfa73f6a17809ee60fab7a0e3f9117e03dd6983694cdb322dfdb154c252"
+      "propagated_at": "2026-06-21T16:22:25+00:00",
+      "applied_card_digest": "3f8b535192b6617c4916734e1f55031c02342e771a22444fe08a84069ffad414"
     },
     "agriculture__water_scarcity__drought__005": {
       "card_id": "agriculture__water_scarcity__drought__005",
       "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "active": false
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T16:16:30+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T16:22:25+00:00",
+      "applied_card_digest": "3ea0cc0bd092942c4ffaa852bdbadf37234d2dd870a95163b4b9be2a296ca549"
+    },
+    "agriculture__water_scarcity__drought__008": {
+      "card_id": "agriculture__water_scarcity__drought__008",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "active": false
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T16:17:14+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T16:22:25+00:00",
+      "applied_card_digest": "24a4d334ee7b0fa7b4caa2b9f9dc4ae6309251b9a71361f25739919b666bfcf8"
+    },
+    "agriculture__water_scarcity__drought__009": {
+      "card_id": "agriculture__water_scarcity__drought__009",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "active": false
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T16:17:27+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T16:22:25+00:00",
+      "applied_card_digest": "7d54a7fb6dfc5812a63968303b68d376b4cef301f58836f3ef76b2dc892ac362"
+    },
+    "agriculture__water_scarcity__drought__010": {
+      "card_id": "agriculture__water_scarcity__drought__010",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "active": false
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T16:17:43+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T16:22:25+00:00",
+      "applied_card_digest": "affcec0a235df26de0ca0b91ae4c1a109b06cbb816f536b7b00900a0aff4e06a"
+    },
+    "agriculture__water_scarcity__drought__011": {
+      "card_id": "agriculture__water_scarcity__drought__011",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "active": false
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T16:18:00+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T16:22:25+00:00",
+      "applied_card_digest": "0f435989d0f49a32fbf980f5ce9c697205df3e416c7f4c718ea123991f024ddd"
+    },
+    "agriculture__water_scarcity__drought__012": {
+      "card_id": "agriculture__water_scarcity__drought__012",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "active": false
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T16:18:14+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T16:22:25+00:00",
+      "applied_card_digest": "911aa0458a358fcde144a64843bf8ce16eeef90cb4335207ac8ae9cb85a67d47"
+    },
+    "agriculture__water_scarcity__drought__017": {
+      "card_id": "agriculture__water_scarcity__drought__017",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "active": false
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T16:20:02+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T16:22:25+00:00",
+      "applied_card_digest": "8a9ff2e349b89f588a963bfb23cf226e86ac6b1db4eebf7ff542bcb21243c59e"
+    },
+    "agriculture__water_scarcity__drought__016": {
+      "card_id": "agriculture__water_scarcity__drought__016",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_05",
+            "active": false
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T16:19:48+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T16:22:25+00:00",
+      "applied_card_digest": "d61657ba09e3195323b9dd9c4709ff3f199df7cb41df6c455ba325e63e37982b"
+    },
+    "agriculture__water_scarcity__drought__015": {
+      "card_id": "agriculture__water_scarcity__drought__015",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "active": false
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T16:19:25+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T16:22:25+00:00",
+      "applied_card_digest": "97bcc5cfa44f78d996fe41d2a34a7fa72442a5cc4aa7353ad0bb16a50665f432"
+    },
+    "agriculture__water_scarcity__drought__014": {
+      "card_id": "agriculture__water_scarcity__drought__014",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_05",
+            "active": false
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T16:19:09+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T16:22:25+00:00",
+      "applied_card_digest": "5204a7e9638d3a8e176298a53a98516764aa6cbfdd49317dd677442db7ca4286"
+    },
+    "agriculture__water_scarcity__drought__013": {
+      "card_id": "agriculture__water_scarcity__drought__013",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "active": false
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T16:18:30+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T16:22:25+00:00",
+      "applied_card_digest": "860fdd432f5a6e08caba5169ff342be266063e394817159970d25b8732e51b39"
+    },
+    "agriculture__water_scarcity__rainfed_risk__003": {
+      "card_id": "agriculture__water_scarcity__rainfed_risk__003",
+      "patch": {
+        "missing_variable_questions": [
+          {
+            "missing_variable": "irrigated_area_ha",
+            "question_to_user": "Approximately what share of the cultivated land in your village or micro-watershed is irrigated — either by canal, tubewell, or borewell — during the rabi (winter) season? Would you say it is less than 20%, between 20% and 60%, or more than 60%?",
+            "how_answer_updates_diagnosis": "If less than 20% of land is irrigated in rabi, this strongly confirms the rainfed_risk pathway and justifies water harvesting and drought-tolerant variety recommendations. If more than 60% is irrigated, the rainfed_risk pathway is less likely and groundwater_stress or canal_failure pathways should be investigated instead.",
+            "question_mode": "magnitude",
+            "response_type": "mcq",
+            "choices": [
+              {
+                "id": "low",
+                "label": "Less than 20% of cultivated land is irrigated",
+                "normalized": {
+                  "band": "low",
+                  "present": true,
+                  "percent_upper": 10
+                },
+                "effects": {
+                  "signals": [
+                    {
+                      "signal_id": "sig_06",
+                      "result": true
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "moderate",
+                "label": "Between 20% and 60% of cultivated land is irrigated",
+                "normalized": {
+                  "band": "moderate",
+                  "present": true,
+                  "percent_lower": 10,
+                  "percent_upper": 30
+                },
+                "effects": {
+                  "signals": [
+                    {
+                      "signal_id": "sig_06",
+                      "result": true
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "high",
+                "label": "More than 60% of cultivated land is irrigated",
+                "normalized": {
+                  "band": "high",
+                  "present": true,
+                  "percent_lower": 30
+                },
+                "effects": {
+                  "signals": [
+                    {
+                      "signal_id": "sig_06",
+                      "result": false
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T08:21:05+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T09:20:18+00:00",
+      "applied_card_digest": "1d15a6d47269ee537c0442299d6931188f90fdf6471777a084099623cd402f26"
+    },
+    "agriculture__water_scarcity__rainfed_risk__007": {
+      "card_id": "agriculture__water_scarcity__rainfed_risk__007",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_05",
+            "variables": [
+              "mean_swb_rabi_kharif_ratio"
+            ],
+            "severity": "moderate",
+            "direction": "confirms",
+            "condition": {
+              "expression": "mean_swb_rabi_kharif_ratio < 0.25",
+              "qualitative_description": "Mean rabi-to-kharif surface water body area ratio below 0.25 indicates that surface water bodies largely dry up after the monsoon, leaving insufficient stored water for post-monsoon supplemental irrigation."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T19:07:52+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T19:09:47+00:00",
+      "applied_card_digest": "8aee4e9492344fafb3b696c12cd5e245581a8e50cffcc5e972674c4dc0120da3"
+    },
+    "agriculture__water_scarcity__rainfed_risk__008": {
+      "card_id": "agriculture__water_scarcity__rainfed_risk__008",
+      "patch": {
         "confirmation_policy": {
           "version": 1,
           "primary_confirm_signals": [
             "sig_01",
             "sig_02",
-            "sig_04"
+            "sig_04",
+            "sig_05",
+            "sig_06"
           ],
           "confirm_when": {
             "min_confirms_true": 2,
@@ -1307,7 +1216,9 @@
               "signals": [
                 "sig_01",
                 "sig_02",
-                "sig_04"
+                "sig_04",
+                "sig_05",
+                "sig_06"
               ],
               "min": 2
             }
@@ -1319,7 +1230,466 @@
                 "signals": [
                   "sig_01",
                   "sig_02",
-                  "sig_04"
+                  "sig_04",
+                  "sig_05",
+                  "sig_06"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-21T08:43:59+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T09:20:18+00:00",
+      "applied_card_digest": "8de682ce6e02b3ec74a1a20a65c037290a45c523baf4f6c11857a1c66d435717"
+    },
+    "agriculture__water_scarcity__rainfed_risk__009": {
+      "card_id": "agriculture__water_scarcity__rainfed_risk__009",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_05",
+            "variables": [
+              "mean_swb_rabi_kharif_ratio"
+            ],
+            "severity": "moderate",
+            "direction": "amplifies",
+            "condition": {
+              "expression": "mean_swb_rabi_kharif_ratio < 0.25",
+              "qualitative_description": "Mean rabi-to-kharif surface water body area ratio below 0.25 indicates that surface water bodies largely dry up after the monsoon, confirming limited post-monsoon water storage for rabi irrigation."
+            }
+          }
+        ],
+        "missing_variable_questions": [
+          {
+            "missing_variable": "irrigated_area_ha",
+            "question_to_user": "What share of the cultivated land in this area is irrigated during the rabi (winter) season? Would you estimate it as very little (less than 10%), some (10–40%), or most (more than 40%)? What are the main sources — tubewells, canals, ponds, or lift irrigation?",
+            "how_answer_updates_diagnosis": "If more than 40% of land is irrigated in rabi from tubewells or canals, the rainfed risk pathway is weakened and groundwater stress or canal dependency pathways should be considered instead. If irrigation is negligible or limited to small patches near ponds, the rainfed risk diagnosis is strongly confirmed. The source of irrigation also matters: tubewell-dependent rabi irrigation in alluvial plains may indicate emerging groundwater stress rather than pure rainfed vulnerability.",
+            "question_mode": "magnitude",
+            "response_type": "mcq",
+            "choices": [
+              {
+                "id": "low",
+                "label": "Less than 10% of cultivated land is irrigated",
+                "normalized": {
+                  "band": "low",
+                  "present": true,
+                  "percent_upper": 10
+                },
+                "effects": {
+                  "signals": [
+                    {
+                      "signal_id": "sig_06",
+                      "result": true
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "moderate",
+                "label": "Between 10% and 40% of cultivated land is irrigated",
+                "normalized": {
+                  "band": "moderate",
+                  "present": true,
+                  "percent_lower": 10,
+                  "percent_upper": 40
+                },
+                "effects": {
+                  "signals": [
+                    {
+                      "signal_id": "sig_06",
+                      "result": true
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "high",
+                "label": "More than 40% of cultivated land is irrigated",
+                "normalized": {
+                  "band": "high",
+                  "present": true,
+                  "percent_lower": 40
+                },
+                "effects": {
+                  "signals": [
+                    {
+                      "signal_id": "sig_06",
+                      "result": false
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T08:48:01+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T09:20:18+00:00",
+      "applied_card_digest": "99162235a0508851ce391481cd9a71f850d3566306b518884ad7c01a0a8d10a1"
+    },
+    "agriculture__water_scarcity__rainfed_risk__010": {
+      "card_id": "agriculture__water_scarcity__rainfed_risk__010",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_05",
+            "variables": [
+              "mean_swb_rabi_kharif_ratio"
+            ],
+            "severity": "moderate",
+            "direction": "amplifies",
+            "condition": {
+              "expression": "mean_swb_rabi_kharif_ratio < 0.25",
+              "qualitative_description": "The ratio of surface water body area in rabi to kharif season is below 0.25, indicating that surface water storage does not persist into the post-monsoon season and cannot support rabi irrigation."
+            }
+          }
+        ],
+        "missing_variable_questions": [
+          {
+            "missing_variable": "irrigated_area_ha",
+            "question_to_user": "What share of your village's cultivated land do you estimate is irrigated — either from canals, tubewells, or ponds — during the rabi (winter) season? Would you say it is less than 10%, between 10% and 40%, or more than 40% of total farmland?",
+            "how_answer_updates_diagnosis": "If less than 10% of land is irrigated in rabi, this strongly confirms the rainfed risk pathway and supports recommendations for farm pond construction and short-duration rabi variety promotion. If more than 40% is irrigated, the rainfed risk diagnosis should be reconsidered and groundwater or canal irrigation access pathways should be evaluated instead.",
+            "question_mode": "magnitude",
+            "response_type": "mcq",
+            "choices": [
+              {
+                "id": "low",
+                "label": "Less than 10% of cultivated land is irrigated",
+                "normalized": {
+                  "band": "low",
+                  "present": true,
+                  "percent_upper": 10
+                },
+                "effects": {
+                  "signals": [
+                    {
+                      "signal_id": "sig_06",
+                      "result": true
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "moderate",
+                "label": "Between 10% and 40% of cultivated land is irrigated",
+                "normalized": {
+                  "band": "moderate",
+                  "present": true,
+                  "percent_lower": 10,
+                  "percent_upper": 40
+                },
+                "effects": {
+                  "signals": [
+                    {
+                      "signal_id": "sig_06",
+                      "result": true
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "high",
+                "label": "More than 40% of cultivated land is irrigated",
+                "normalized": {
+                  "band": "high",
+                  "present": true,
+                  "percent_lower": 40
+                },
+                "effects": {
+                  "signals": [
+                    {
+                      "signal_id": "sig_06",
+                      "result": false
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T08:59:28+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T09:20:18+00:00",
+      "applied_card_digest": "b394996dd013e7887536754f6dcc407391f5952720f40562febd8a8a350f2970"
+    },
+    "agriculture__water_scarcity__rainfed_risk__011": {
+      "card_id": "agriculture__water_scarcity__rainfed_risk__011",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_05",
+            "sig_06"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03",
+                "sig_05",
+                "sig_06"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03",
+                  "sig_05",
+                  "sig_06"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-21T09:02:15+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T09:20:18+00:00",
+      "applied_card_digest": "602ee67e9d081908891138c13810bb81bc22446c64f60c77afe4b43329740c06"
+    },
+    "agriculture__water_scarcity__rainfed_risk__015": {
+      "card_id": "agriculture__water_scarcity__rainfed_risk__015",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_04",
+            "sig_05",
+            "sig_06"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_04",
+                "sig_05",
+                "sig_06"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_04",
+                  "sig_05",
+                  "sig_06"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-21T09:07:06+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T09:20:18+00:00",
+      "applied_card_digest": "2d7397157fe6ebb81d0d5a4aefd0eb04474aa57a37083e04b05c0a915fb3acee"
+    },
+    "agriculture__water_scarcity__rainfed_risk__017": {
+      "card_id": "agriculture__water_scarcity__rainfed_risk__017",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_05",
+            "sig_06"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03",
+                "sig_05",
+                "sig_06"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03",
+                  "sig_05",
+                  "sig_06"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "missing_variable_questions": [
+          {
+            "missing_variable": "irrigated_area_ha",
+            "question_to_user": "Do farmers in this area have access to any form of irrigation — such as pumped wells, drip systems, government canals, or community tanks — that they use during the dry season or during dry spells within the monsoon? If yes, roughly what share of cultivated land is irrigated?",
+            "how_answer_updates_diagnosis": "If irrigated area is reported as negligible (<5% of cultivated land), this strongly confirms the rainfed risk pathway. If a meaningful irrigated area exists (>20%), the diagnosis should be revisited to assess whether water scarcity is driven by irrigation system failure or groundwater stress rather than structural rainfed dependence.",
+            "question_mode": "magnitude",
+            "response_type": "mcq",
+            "choices": [
+              {
+                "id": "low",
+                "label": "Less than 5% of cultivated land is irrigated",
+                "normalized": {
+                  "band": "low",
+                  "present": true,
+                  "percent_upper": 5
+                },
+                "effects": {
+                  "signals": [
+                    {
+                      "signal_id": "sig_06",
+                      "result": true
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "moderate",
+                "label": "Between 5% and 20% of cultivated land is irrigated",
+                "normalized": {
+                  "band": "moderate",
+                  "present": true,
+                  "percent_lower": 5,
+                  "percent_upper": 20
+                },
+                "effects": {
+                  "signals": [
+                    {
+                      "signal_id": "sig_06",
+                      "result": true
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "high",
+                "label": "More than 20% of cultivated land is irrigated",
+                "normalized": {
+                  "band": "high",
+                  "present": true,
+                  "percent_lower": 20
+                },
+                "effects": {
+                  "signals": [
+                    {
+                      "signal_id": "sig_06",
+                      "result": false
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T09:19:40+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T09:20:18+00:00",
+      "applied_card_digest": "9d7b88cd12c3370d7830f094f77ff9dabca485fe247609a30755e5d830f83b89"
+    },
+    "agriculture__water_scarcity__irrigation_challenges__003": {
+      "card_id": "agriculture__water_scarcity__irrigation_challenges__003",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03"
                 ],
                 "min": 2
               },
@@ -1339,26 +1709,1320 @@
           {
             "signal_id": "sig_03",
             "variables": [
-              "drought_mild_spi_score_latest",
-              "drought_mild_mai_score_latest",
-              "drought_mild_vci_score_latest"
+              "nrega_swc_count"
             ],
-            "severity": "high",
+            "severity": "moderate",
+            "direction": "confirms",
+            "condition": {
+              "expression": "nrega_swc_count < 5",
+              "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA for the MWS, indicating historically low public investment in water harvesting infrastructure."
+            }
+          },
+          {
+            "signal_id": "sig_05",
+            "variables": [
+              "annual_well_depth_m"
+            ],
+            "severity": "moderate",
             "direction": "amplifies",
             "condition": {
-              "expression": "drought_mild_spi_score_latest >= 26 and (drought_mild_mai_score_latest >= 26 or drought_mild_vci_score_latest >= 26)",
-              "qualitative_description": "SPI at or below -1.0 (moderate to severe meteorological drought) combined with MAI below 0.5 (soil moisture inadequacy) or VCI below 40 (vegetation stress) confirms co-occurring meteorological and agricultural drought per India Drought Manual classification."
+              "expression": "",
+              "qualitative_description": "Farmers report that well or tubewell depth has increased noticeably over recent years, or that pumping costs have risen due to lower water tables, particularly during rabi and zaid seasons when surface water is unavailable."
             }
           }
         ]
       },
-      "finalized_at": "2026-06-21T04:38:49+00:00",
+      "finalized_at": "2026-06-21T11:05:54+00:00",
       "reviewer": null,
-      "propagated_at": "2026-06-21T05:18:27+00:00",
-      "applied_card_digest": "7d63be79524b60e9308860ac2943271d0ca90ccd3d1e25fdc2ccf890c526850f"
+      "propagated_at": "2026-06-21T11:49:50+00:00",
+      "applied_card_digest": "bffb1abaaca7085d05d5c8d7d464e66e200eac1fd1c44c508ff964e5186fc30d"
     },
-    "agriculture__water_scarcity__drought__008": {
-      "card_id": "agriculture__water_scarcity__drought__008",
+    "agriculture__water_scarcity__irrigation_challenges__004": {
+      "card_id": "agriculture__water_scarcity__irrigation_challenges__004",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_05"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_05"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_05"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_05",
+            "variables": [
+              "annual_well_depth_m"
+            ],
+            "severity": "moderate",
+            "direction": "comfirms",
+            "condition": {
+              "expression": "",
+              "qualitative_description": "Farmers report that well or borewell depth has increased noticeably over recent years, or that pumping costs have risen substantially, suggesting declining groundwater levels that increase the cost and difficulty of lift irrigation — particularly for marginal farmers."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T11:08:25+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T11:49:50+00:00",
+      "applied_card_digest": "48fecc78a5269272f8b3cbff0e1c5fcbdbddc9cb68fbaff4bd443bd9176ef04e"
+    },
+    "agriculture__water_scarcity__irrigation_challenges__005": {
+      "card_id": "agriculture__water_scarcity__irrigation_challenges__005",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_06"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03",
+                "sig_06"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03",
+                  "sig_06"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "variables": [
+              "nrega_swc_count"
+            ],
+            "severity": "moderate",
+            "direction": "confirms",
+            "condition": {
+              "expression": "nrega_swc_count < 10",
+              "qualitative_description": "Fewer than 10 cumulative soil and water conservation or irrigation works completed under MGNREGA in the MWS, indicating historically low investment in water harvesting infrastructure."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T11:12:25+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T11:49:50+00:00",
+      "applied_card_digest": "21b8056ee5d8de3889537084f99af1ddccafe97fab1f3500ebe2dfded8b125cd"
+    },
+    "agriculture__water_scarcity__irrigation_challenges__006": {
+      "card_id": "agriculture__water_scarcity__irrigation_challenges__006",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_05"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_05"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_05"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_05",
+            "variables": [
+              "annual_well_depth_m"
+            ],
+            "severity": "moderate",
+            "direction": "confirms",
+            "condition": {
+              "expression": "",
+              "qualitative_description": "Farmers report that open wells or shallow borewells have become unreliable or dry during rabi and zaid seasons, or that pumping costs have increased due to falling water tables — suggesting that groundwater fallback for irrigation is also constrained."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T11:13:36+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T11:49:50+00:00",
+      "applied_card_digest": "2e765985790ac44a6f7142cb35011e1c1f712b8c2534b4a176bb2738c768fc29"
+    },
+    "agriculture__water_scarcity__irrigation_challenges__008": {
+      "card_id": "agriculture__water_scarcity__irrigation_challenges__008",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_04",
+            "sig_05"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_04",
+                "sig_05"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_04",
+                  "sig_05"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-21T11:22:35+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T11:49:50+00:00",
+      "applied_card_digest": "bfea838b3047311efcef81935d785d745c5b6f4d55c5585e15d540cd4b3d45d5"
+    },
+    "agriculture__water_scarcity__irrigation_challenges__009": {
+      "card_id": "agriculture__water_scarcity__irrigation_challenges__009",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_05"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_05"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_05"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_05",
+            "variables": [
+              "annual_well_depth_m"
+            ],
+            "severity": "moderate",
+            "direction": "confirms",
+            "condition": {
+              "expression": "",
+              "qualitative_description": "Farmers report that well or tubewell depth has increased noticeably over recent years, or that pumping costs have risen due to deeper water tables, indicating that groundwater lift costs are becoming prohibitive for small and marginal farmers."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T11:28:07+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T11:49:50+00:00",
+      "applied_card_digest": "7c45d43e9718d24cdd42cd76acb9f01ce13bdd00812dafd4eee38d0f8afdaf67"
+    },
+    "agriculture__water_scarcity__irrigation_challenges__010": {
+      "card_id": "agriculture__water_scarcity__irrigation_challenges__010",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "variables": [
+              "nrega_swc_count"
+            ],
+            "severity": "moderate",
+            "direction": "confirms",
+            "condition": {
+              "expression": "nrega_swc_count < 5",
+              "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA, indicating historically low investment in water harvesting and storage maintenance."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T11:30:51+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T11:49:50+00:00",
+      "applied_card_digest": "a2770512b1abb02ff832c8360465b89bc683ddbaa96e3ecbb56ca5dbaa3432cf"
+    },
+    "agriculture__water_scarcity__irrigation_challenges__011": {
+      "card_id": "agriculture__water_scarcity__irrigation_challenges__011",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_06"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03",
+                "sig_06"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03",
+                  "sig_06"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "variables": [
+              "nrega_swc_count"
+            ],
+            "severity": "moderate",
+            "direction": "confirms",
+            "condition": {
+              "expression": "nrega_swc_count < 10",
+              "qualitative_description": "Fewer than 10 cumulative soil and water conservation or irrigation works recorded under MGNREGA, indicating historically low investment in water harvesting infrastructure relative to the irrigation needs of a hilly MWS."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T11:34:29+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T11:49:50+00:00",
+      "applied_card_digest": "fc21b80bd7a37bf85f1bc04e95b173f256615ac56b9424dd935b10cb4ac51bff"
+    },
+    "agriculture__water_scarcity__irrigation_challenges__015": {
+      "card_id": "agriculture__water_scarcity__irrigation_challenges__015",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "variables": [
+              "nrega_swc_count"
+            ],
+            "severity": "moderate",
+            "direction": "confirms",
+            "condition": {
+              "expression": "nrega_swc_count < 5",
+              "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA in the MWS, indicating low historical investment in water harvesting infrastructure."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T11:41:58+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T11:49:50+00:00",
+      "applied_card_digest": "30a45125c31f4d6bfdfc6bd9466147f04c32589ba9385ae18f84d7b638fe87ec"
+    },
+    "agriculture__water_scarcity__irrigation_challenges__017": {
+      "card_id": "agriculture__water_scarcity__irrigation_challenges__017",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "variables": [
+              "nrega_swc_count"
+            ],
+            "severity": "moderate",
+            "direction": "confirms",
+            "condition": {
+              "expression": "nrega_swc_count < 5",
+              "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA for the micro-watershed, indicating historically low investment in water harvesting infrastructure."
+            }
+          },
+          {
+            "signal_id": "sig_05",
+            "variables": [
+              "annual_well_depth_m"
+            ],
+            "severity": "moderate",
+            "direction": "amplifies",
+            "condition": {
+              "expression": "",
+              "qualitative_description": "Farmers report that wells have become shallower or saline in recent years, or that pumping costs have increased due to saltwater intrusion requiring deeper freshwater lenses — a common problem in coastal and island aquifers where over-extraction causes seawater ingress."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T11:48:23+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T11:49:50+00:00",
+      "applied_card_digest": "f897c99d6c1d93a7933e886cda0c5d55db1718bd04e5a537bd0870b7437be1ed"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__002": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__002",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_05",
+            "sig_06"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03",
+                "sig_05",
+                "sig_06"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03",
+                  "sig_05",
+                  "sig_06"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-21T12:23:09+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T12:56:00+00:00",
+      "applied_card_digest": "69da53fb3c255098a6ab7b1426b3d9a07d2ff13169c2ef74d312db9238770cab"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__003": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__003",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_05"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03",
+                "sig_05"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03",
+                  "sig_05"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-21T12:26:03+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T12:56:00+00:00",
+      "applied_card_digest": "7a615b791f2f8c4cef6d4d7abb38cdd12251893e90c67d7d65bc968421577bff"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__004": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__004",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_05"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03",
+                "sig_05"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03",
+                  "sig_05"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-21T12:27:36+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T12:56:00+00:00",
+      "applied_card_digest": "103085278f800f7a089da7ed84db0daee623ef651b53f47580e3b4b0bef548cd"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__005": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__005",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_05"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03",
+                "sig_05"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03",
+                  "sig_05"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-21T12:28:50+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T12:56:00+00:00",
+      "applied_card_digest": "96672635b05428181c480587d61ff2f67e0f20e063d810f08d90ae651039c402"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__006": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__006",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_04",
+            "sig_06"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03",
+                "sig_04",
+                "sig_06"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03",
+                  "sig_04",
+                  "sig_06"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-21T12:32:38+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T12:56:00+00:00",
+      "applied_card_digest": "a42f6301ab49a90d442c07b4eb55bab9132f6fcd1a11a426f2500cdb6df8ebb7"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__010": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__010",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_05"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03",
+                "sig_05"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03",
+                  "sig_05"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-21T12:38:37+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T12:56:00+00:00",
+      "applied_card_digest": "409b81c6b86c1a55b72a611fea097790db053bb52008d763575466620290c52d"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__011": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__011",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_05"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03",
+                "sig_05"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03",
+                  "sig_05"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-21T12:40:08+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T12:56:00+00:00",
+      "applied_card_digest": "4054634c0241c44fd2a9c485e09cec4d01513d8ab0a994f00df18a074547b441"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__012": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__012",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_05"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03",
+                "sig_05"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03",
+                  "sig_05"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-21T12:43:18+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T12:56:00+00:00",
+      "applied_card_digest": "dcd332b5eea2b055a2b267aa1a316e1a2345d6873f09a980f9af6d293da0ad9d"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__013": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__013",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_05"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03",
+                "sig_05"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03",
+                  "sig_05"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-21T12:46:18+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T12:56:00+00:00",
+      "applied_card_digest": "9e9fbb40cb12ceac363a945aa11a3ade244a9f400e7c1d78c05964b7943389ba"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__014": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__014",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_05"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03",
+                "sig_05"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03",
+                  "sig_05"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-21T12:47:35+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T12:56:00+00:00",
+      "applied_card_digest": "5d7981a465827185b671be0a5d42eaecadedea804095af4a08d6f947706ac613"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__016": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__016",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_05"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03",
+                "sig_05"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03",
+                  "sig_05"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-21T12:52:00+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T12:56:00+00:00",
+      "applied_card_digest": "5c2fb9fe7bd44c1d4e9907e12a2821d8d0b09ce12e01ae484f5aad8f70434bac"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__encroachment__003": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__003",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_07",
+            "sig_05"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_07",
+                "sig_05"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_07",
+                  "sig_05"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-21T13:35:14+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T16:22:25+00:00",
+      "applied_card_digest": "96f32a78d273ed7945b47d12c3c0a27619af1ef62787b3e30b04eadf46605201"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__encroachment__005": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__005",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_04"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 1,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_04"
+              ],
+              "min": 1
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_confirms_true": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-21T13:43:39+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T16:22:25+00:00",
+      "applied_card_digest": "735125256468c4b31d5c7f4cd2a20f3a3a806985d603afbf8509235b0b1ebd39"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__encroachment__006": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__006",
       "patch": {
         "confirmation_policy": {
           "version": 1,
@@ -1368,12 +3032,175 @@
             "sig_04"
           ],
           "confirm_when": {
+            "amplifiers_do_not_confirm": true,
+            "required_all": [
+              "sig_01"
+            ],
+            "required_any": [
+              [
+                "sig_02"
+              ],
+              [
+                "sig_04"
+              ]
+            ]
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "required_all": [
+                "sig_01"
+              ],
+              "min_from_set": {
+                "signals": [
+                  "sig_02",
+                  "sig_04"
+                ],
+                "min": 1
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-21T13:54:07+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T16:22:25+00:00",
+      "applied_card_digest": "3eccffd98c4360c25cad55372084ae91eaf28e92a86cb19cdf83ecd1681ce55a"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__encroachment__009": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__009",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "variables": [
+              "cd_urbanization_ha"
+            ],
+            "severity": "moderate",
+            "direction": "amplifies",
+            "condition": {
+              "expression": "cd_urbanization_ha > 5",
+              "qualitative_description": "Total urbanized or settled area has expanded by more than 5 ha over the record period, suggesting settlement encroachment into forest margins."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T14:05:08+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T16:22:25+00:00",
+      "applied_card_digest": "abc6ef0afc63feeba231fb9b43e6d2890826d4cf5f0706a16d98455b3db689ed"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__encroachment__010": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__010",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_04"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 1,
+            "required_any": [
+              [
+                "sig_01"
+              ],
+              [
+                "sig_04"
+              ]
+            ],
+            "amplifiers_do_not_confirm": true
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_04"
+                ],
+                "min": 1
+              },
+              "min_high_severity_confirms": 1
+            },
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_04"
+                ],
+                "min": 2
+              }
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "variables": [
+              "cd_urbanization_ha"
+            ],
+            "severity": "moderate",
+            "direction": "amplifies",
+            "condition": {
+              "expression": "cd_urbanization_ha > 20",
+              "qualitative_description": "Total urbanized or settled area has expanded by more than 20 ha over the record period, suggesting settlement encroachment into or adjacent to forest land."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T14:18:47+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T16:22:25+00:00",
+      "applied_card_digest": "9389d38b524529c8f37399b49018c645256b0d077d0f77388f205bddc12364b4"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__encroachment__011": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__011",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_04"
+          ],
+          "confirm_when": {
             "min_confirms_true": 2,
             "amplifiers_do_not_confirm": true,
+            "required_all": [
+              "sig_01"
+            ],
+            "required_any": [
+              [
+                "sig_02"
+              ],
+              [
+                "sig_03"
+              ]
+            ],
             "min_from_set": {
               "signals": [
                 "sig_01",
                 "sig_02",
+                "sig_03",
                 "sig_04"
               ],
               "min": 2
@@ -1386,7 +3213,527 @@
                 "signals": [
                   "sig_01",
                   "sig_02",
+                  "sig_03",
                   "sig_04"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-21T15:51:03+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T16:22:25+00:00",
+      "applied_card_digest": "1fb0c50896cf6d95ba6226679e88fa5ed526b1194ba11bc79cd73a75d663d25f"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__encroachment__012": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__012",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_04"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "required_all": [
+              "sig_01"
+            ],
+            "required_any": [
+              [
+                "sig_02"
+              ],
+              [
+                "sig_03"
+              ]
+            ],
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03",
+                "sig_04"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03",
+                  "sig_04"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-21T15:54:35+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T16:22:25+00:00",
+      "applied_card_digest": "9c99fd32de9a6809a43ed0ce8f19a790fd9443f241f802a4c0731f78c6a4e8d8"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__encroachment__013": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__013",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_04"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "required_all": [
+              "sig_01"
+            ],
+            "required_any": [
+              [
+                "sig_02"
+              ],
+              [
+                "sig_03"
+              ]
+            ],
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03",
+                "sig_04"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03",
+                  "sig_04"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-21T15:56:55+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T16:22:25+00:00",
+      "applied_card_digest": "db894f4d58e131e0df68f5b735b0ecc17076992d291836fef0bd199b524695c5"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__encroachment__015": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__015",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_04",
+            "sig_05",
+            "sig_06",
+            "sig_07"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_04",
+                "sig_05",
+                "sig_06",
+                "sig_07"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_04",
+                  "sig_05",
+                  "sig_06",
+                  "sig_07"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "active": false
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T16:09:23+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T16:22:25+00:00",
+      "applied_card_digest": "b682f084fe0adef7d361eab800ebce6f419cdee7f1313dd158268ca21cfe6858"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__encroachment__016": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__016",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "variables": [
+              "village_st_percent"
+            ],
+            "severity": "moderate",
+            "direction": "confirms",
+            "condition": {
+              "expression": "village_st_percent > 25",
+              "qualitative_description": "Scheduled Tribe population exceeds 25% of village population, indicating high dependence on forest resources and potential vulnerability to forest rights disputes."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T19:08:29+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T19:09:47+00:00",
+      "applied_card_digest": "c06c683d948d28ae0c445f3c45aaaad33e819c959c803337d2d81db8aa70b046"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__encroachment__017": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__017",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_04",
+            "sig_05"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_04",
+                "sig_05"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_04",
+                  "sig_05"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "active": false
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T16:13:16+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T16:22:25+00:00",
+      "applied_card_digest": "1b8a64386edd24f59df9229950a492af190ea646a99c4d8a1b2e472e6dfdb327"
+    },
+    "socio_economic__economic_hardship__multi_sector_vulnerability__003": {
+      "card_id": "socio_economic__economic_hardship__multi_sector_vulnerability__003",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_05"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03",
+                "sig_05"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03",
+                  "sig_05"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-21T16:41:26+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T17:34:37+00:00",
+      "applied_card_digest": "b100a7685c064887f416f05c6819c4fbe76b3670b9af266c4a82add813a600e4"
+    },
+    "socio_economic__economic_hardship__multi_sector_vulnerability__004": {
+      "card_id": "socio_economic__economic_hardship__multi_sector_vulnerability__004",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_03",
+            "sig_04",
+            "sig_05"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_03",
+                "sig_04",
+                "sig_05"
+              ],
+              "min": 3
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_03",
+                  "sig_04",
+                  "sig_05"
+                ],
+                "min": 3
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_01",
+            "variables": [
+              "village_sc_percent",
+              "village_st_percent"
+            ],
+            "severity": "high",
+            "direction": "confirms",
+            "condition": {
+              "expression": "(village_sc_percent + village_st_percent) > 40 and village_literacy_rate < 55",
+              "qualitative_description": "Combined SC and ST population share exceeds 40%, indicating a high proportion of socially marginalised households with limited asset base and greater livelihood vulnerability."
+            }
+          },
+          {
+            "signal_id": "sig_02",
+            "active": false
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T16:49:05+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T17:34:37+00:00",
+      "applied_card_digest": "5f58d10922ea092ce56274f030acc1cfee2d479f95c690871be4b75dc148f1b2"
+    },
+    "socio_economic__economic_hardship__multi_sector_vulnerability__007": {
+      "card_id": "socio_economic__economic_hardship__multi_sector_vulnerability__007",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_04"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 3,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03",
+                "sig_04"
+              ],
+              "min": 3
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03",
+                  "sig_04"
+                ],
+                "min": 3
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "variables": [
+              "village_literacy_rate"
+            ],
+            "severity": "moderate",
+            "direction": "confirms",
+            "condition": {
+              "expression": "village_literacy_rate < 55",
+              "qualitative_description": "Village literacy below 55% indicates limited capacity to access government welfare schemes, negotiate credit terms, or diversify livelihoods."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T16:56:54+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T17:34:37+00:00",
+      "applied_card_digest": "0bba61596bf469cd48518b77ec597cf9e8d5ff0561af065f6b987ccec3db2095"
+    },
+    "socio_economic__economic_hardship__multi_sector_vulnerability__008": {
+      "card_id": "socio_economic__economic_hardship__multi_sector_vulnerability__008",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03"
                 ],
                 "min": 2
               },
@@ -1406,42 +3753,25 @@
           {
             "signal_id": "sig_03",
             "variables": [
-              "drought_mild_vci_score_latest",
-              "drought_mild_spi_score_latest",
-              "drought_severe_moderate_spi_score_latest",
-              "drought_mild_mai_score_latest",
-              "drought_severe_moderate_path_score_latest"
+              "drought_weeks_severe",
+              "drought_severe_return_period"
             ],
             "severity": "high",
-            "direction": "amplifies",
-            "condition": {
-              "expression": "(drought_mild_spi_score_latest >= 26 or drought_severe_moderate_spi_score_latest >= 26) and (drought_mild_mai_score_latest >= 26 or drought_severe_moderate_path_score_latest >= 2) and drought_mild_vci_score_latest >= 26",
-              "qualitative_description": "Concurrent meteorological drought (SPI moderate or worse), inadequate soil moisture (MAI inadequate or highly inadequate), and vegetation stress (VCI below 35) together confirm agricultural drought affecting crop production."
-            }
-          },
-          {
-            "signal_id": "sig_04",
-            "variables": [
-              "mean_annual_precipitation_mm",
-              "trend_annual_precipitation_mm",
-              "seasonal_precipitation_mm"
-            ],
-            "severity": "moderate",
             "direction": "confirms",
             "condition": {
-              "expression": "(seasonal_precipitation_mm[-1].get('kharif', 0) < 0.75 * mean_annual_precipitation_mm * 0.85) or (mean_annual_precipitation_mm < 900 and trend_annual_precipitation_mm < -10)",
-              "qualitative_description": "Kharif seasonal rainfall below 75% of the long-term annual mean, or a declining multi-year precipitation trend below 900 mm/year, confirms meteorological drought as the primary driver of water scarcity."
+              "expression": "drought_weeks_severe[-1] > 4 or drought_severe_return_period < 5",
+              "qualitative_description": "Latest year shows more than 4 severe drought weeks, or at least 3 years in the record had more than 3 severe drought weeks, indicating recurrent agricultural income shocks."
             }
           }
         ]
       },
-      "finalized_at": "2026-06-21T04:42:44+00:00",
+      "finalized_at": "2026-06-21T17:20:29+00:00",
       "reviewer": null,
-      "propagated_at": "2026-06-21T05:18:27+00:00",
-      "applied_card_digest": "ecfef847dcfdb217db1c4dc18a041fe575c369aa796d8716942b680715654edb"
+      "propagated_at": "2026-06-21T17:34:37+00:00",
+      "applied_card_digest": "c3812ea72d10e366168ce01c40c1d00e6ccc9382419cfa59a01faab5e03fb553"
     },
-    "agriculture__water_scarcity__drought__009": {
-      "card_id": "agriculture__water_scarcity__drought__009",
+    "socio_economic__economic_hardship__multi_sector_vulnerability__009": {
+      "card_id": "socio_economic__economic_hardship__multi_sector_vulnerability__009",
       "patch": {
         "confirmation_policy": {
           "version": 1,
@@ -1487,35 +3817,683 @@
         },
         "diagnostic_signals": [
           {
+            "signal_id": "sig_01",
+            "variables": [
+              "village_sc_percent",
+              "village_st_percent"
+            ],
+            "severity": "high",
+            "direction": "confirms",
+            "condition": {
+              "expression": "(village_sc_percent + village_st_percent) > 40 and village_literacy_rate < 55",
+              "qualitative_description": "Combined SC and ST population exceeds 40% of village population, indicating a high concentration of historically marginalised communities with limited asset base and greater livelihood vulnerability."
+            }
+          },
+          {
+            "signal_id": "sig_02",
+            "active": false
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T17:05:17+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T17:34:37+00:00",
+      "applied_card_digest": "c51ffd123320531356056d28b17a21b3123668f05649b1b10c4017f553aefe7a"
+    },
+    "socio_economic__economic_hardship__multi_sector_vulnerability__010": {
+      "card_id": "socio_economic__economic_hardship__multi_sector_vulnerability__010",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_03",
+            "sig_05"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_03",
+                "sig_05"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_03",
+                  "sig_05"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_01",
+            "variables": [
+              "village_sc_percent",
+              "village_st_percent"
+            ],
+            "severity": "high",
+            "direction": "confirms",
+            "condition": {
+              "expression": "(village_sc_percent + village_st_percent) > 40 or village_literacy_rate < 55",
+              "qualitative_description": "Combined SC and ST population exceeds 40% of village population, indicating a high proportion of historically marginalised households with limited asset base and greater livelihood vulnerability."
+            }
+          },
+          {
+            "signal_id": "sig_02",
+            "active": false
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T17:15:47+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T17:34:37+00:00",
+      "applied_card_digest": "4385644d0b8c30d87c642b8f65efbc41f2bcce0c3bd5c27247a221c49ca8bc39"
+    },
+    "socio_economic__economic_hardship__multi_sector_vulnerability__012": {
+      "card_id": "socio_economic__economic_hardship__multi_sector_vulnerability__012",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_01",
+            "variables": [
+              "village_st_percent",
+              "village_sc_percent"
+            ],
+            "severity": "high",
+            "direction": "confirms",
+            "condition": {
+              "expression": "((village_st_percent > 40) or (village_sc_percent + village_st_percent > 50)) and village_literacy_rate < 60",
+              "qualitative_description": "Village has a majority or near-majority ST population, or combined SC+ST share exceeds 50%, indicating high structural vulnerability linked to forest-dependent livelihoods and limited asset base."
+            }
+          },
+          {
+            "signal_id": "sig_02",
+            "active": false
+          },
+          {
+            "signal_id": "sig_03",
+            "variables": [
+              "dist_bank_km"
+            ],
+            "severity": "high",
+            "direction": "confirms",
+            "condition": {
+              "expression": "dist_bank_km > 10 or nrega_swc_count < 5",
+              "qualitative_description": "Nearest bank branch is more than 10 km away, forcing households to rely on informal moneylenders at exploitative interest rates."
+            }
+          },
+          {
+            "signal_id": "sig_04",
+            "active": false
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T17:19:45+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T17:34:37+00:00",
+      "applied_card_digest": "77046d3ec5e8f94bd4498a6d69a003d18ff321128dd42448e81e9c6f667de3c9"
+    },
+    "socio_economic__economic_hardship__multi_sector_vulnerability__013": {
+      "card_id": "socio_economic__economic_hardship__multi_sector_vulnerability__013",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_05"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_05"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_05"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_01",
+            "variables": [
+              "village_st_percent",
+              "village_sc_percent"
+            ],
+            "severity": "high",
+            "direction": "confirms",
+            "condition": {
+              "expression": "(village_st_percent > 50 or (village_st_percent + village_sc_percent) > 60) and village_literacy_rate < 60",
+              "qualitative_description": "Villages where ST population exceeds 50% or combined SC+ST exceeds 60% face compounded livelihood vulnerability due to dependence on degrading forest commons and limited asset base."
+            }
+          },
+          {
+            "signal_id": "sig_03",
+            "active": false
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T17:24:00+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T17:34:37+00:00",
+      "applied_card_digest": "347ad62e22634d962a9b661923b5781bb9793afe87d8034aa614ad08c1c6be86"
+    },
+    "socio_economic__economic_hardship__multi_sector_vulnerability__014": {
+      "card_id": "socio_economic__economic_hardship__multi_sector_vulnerability__014",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-21T17:25:33+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T17:34:37+00:00",
+      "applied_card_digest": "33ab4656e005f1578f77cc1f1ced5013a4499ae7e36c0596076461f8fc26365d"
+    },
+    "socio_economic__economic_hardship__multi_sector_vulnerability__015": {
+      "card_id": "socio_economic__economic_hardship__multi_sector_vulnerability__015",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_01",
+            "variables": [
+              "village_sc_percent",
+              "village_st_percent"
+            ],
+            "severity": "high",
+            "direction": "confirms",
+            "condition": {
+              "expression": "(village_sc_percent + village_st_percent) > 35 and village_literacy_rate < 65",
+              "qualitative_description": "Combined SC and ST population exceeds 35% of village population, indicating a high proportion of socially marginalised households with limited asset base and greater livelihood vulnerability."
+            }
+          },
+          {
+            "signal_id": "sig_02",
+            "active": false
+          },
+          {
+            "signal_id": "sig_03",
+            "variables": [
+              "dist_bank_km"
+            ],
+            "severity": "high",
+            "direction": "confirms",
+            "condition": {
+              "expression": "dist_bank_km > 5 or nrega_swc_count < 5",
+              "qualitative_description": "Distance to nearest bank branch exceeds 5 km, indicating poor financial inclusion and likely reliance on informal moneylenders at high interest rates."
+            }
+          },
+          {
+            "signal_id": "sig_04",
+            "active": false
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T17:31:27+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T17:34:37+00:00",
+      "applied_card_digest": "fdca8902a60885ccd008dcd7a7c39d6910d66ee97c8cedcaeab12f52d44bafc8"
+    },
+    "socio_economic__economic_hardship__multi_sector_vulnerability__016": {
+      "card_id": "socio_economic__economic_hardship__multi_sector_vulnerability__016",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_01",
+            "variables": [
+              "village_st_percent",
+              "village_sc_percent"
+            ],
+            "severity": "high",
+            "direction": "confirms",
+            "condition": {
+              "expression": "(village_st_percent + village_sc_percent) > 40 and village_literacy_rate < 60",
+              "qualitative_description": "Combined SC and ST population share exceeds 40%, indicating a high proportion of socially marginalised households with limited asset base and greater dependence on degrading commons."
+            }
+          },
+          {
+            "signal_id": "sig_02",
+            "active": false
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T17:33:10+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T17:34:37+00:00",
+      "applied_card_digest": "d46c1ff6a7281757269b32096126bf99c53597571ea8a9b623bcbad356ac3649"
+    },
+    "socio_economic__low_income__small_landholding__003": {
+      "card_id": "socio_economic__low_income__small_landholding__003",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_05",
+            "sig_07"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_05",
+                "sig_07"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_05",
+                  "sig_07"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-21T18:25:09+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T18:52:09+00:00",
+      "applied_card_digest": "1d45f468a0007fb7930a0b33c368b9259b33f148fe0779c8c122330c74e87b81"
+    },
+    "socio_economic__low_income__small_landholding__004": {
+      "card_id": "socio_economic__low_income__small_landholding__004",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_05",
+            "sig_07"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_05",
+                "sig_07"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_05",
+                  "sig_07"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-21T18:26:26+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T18:52:09+00:00",
+      "applied_card_digest": "5a7b75d12da0fc11b8305954027cd0c8a757dbcb64f1759bebd6ac00f8fb38f1"
+    },
+    "socio_economic__low_income__small_landholding__005": {
+      "card_id": "socio_economic__low_income__small_landholding__005",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_05",
+            "sig_07"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_05",
+                "sig_07"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_05",
+                  "sig_07"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-21T18:27:50+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T18:52:09+00:00",
+      "applied_card_digest": "fe45a2a7913c26a2d66bc5530dc5f4b554da8aaf05893e151b638424e5d55b53"
+    },
+    "socio_economic__low_income__small_landholding__006": {
+      "card_id": "socio_economic__low_income__small_landholding__006",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_05",
+            "sig_06"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_05",
+                "sig_06"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_05",
+                  "sig_06"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-21T18:29:26+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T18:52:09+00:00",
+      "applied_card_digest": "73ad87233a38fdc7b0f0dae08221928dc3391c3438c516959a9fb3520380f473"
+    },
+    "socio_economic__low_income__small_landholding__008": {
+      "card_id": "socio_economic__low_income__small_landholding__008",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_06"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03",
+                "sig_06"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03",
+                  "sig_06"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-21T18:31:48+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T18:52:09+00:00",
+      "applied_card_digest": "64b06229e1929c2767c113470b778a0fcc0c5e727615f278263d76dcc05c1108"
+    },
+    "socio_economic__low_income__small_landholding__009": {
+      "card_id": "socio_economic__low_income__small_landholding__009",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_04",
+            "sig_05"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_04",
+                "sig_05"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_04",
+                  "sig_05"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
             "signal_id": "sig_02",
             "variables": [
-              "drought_mild_vci_score_latest",
-              "drought_mild_spi_score_latest",
-              "drought_severe_moderate_spi_score_latest"
+              "mean_cropping_intensity"
             ],
-            "severity": "high",
-            "direction": "amplifies",
+            "severity": "moderate",
+            "direction": "confirms",
             "condition": {
-              "expression": "(drought_mild_spi_score_latest >= 26 or drought_severe_moderate_spi_score_latest >= 26) and drought_mild_vci_score_latest >= 26",
-              "qualitative_description": "SPI classification of moderate or worse drought combined with VCI below 35 confirms both meteorological and agricultural drought are co-occurring, ruling out irrigation-buffered scenarios."
+              "expression": "mean_cropping_intensity <= 1.3",
+              "qualitative_description": "Mean cropping intensity at or below 1.3 indicates that double-cropping is not widespread, meaning small holders are not compensating for limited land area through intensification."
             }
           }
         ]
       },
-      "finalized_at": "2026-06-21T04:48:14+00:00",
+      "finalized_at": "2026-06-21T18:35:54+00:00",
       "reviewer": null,
-      "propagated_at": "2026-06-21T05:18:27+00:00",
-      "applied_card_digest": "be3c06be96d7aea41d9848050a34d59bbb379626d4dc6f396d3bfb28f0ba1bcc"
+      "propagated_at": "2026-06-21T18:52:09+00:00",
+      "applied_card_digest": "ac0e33d9f063e7bf53df463373d43f3f6db4c6d289d2a1db16615b8877e121ee"
     },
-    "agriculture__water_scarcity__drought__010": {
-      "card_id": "agriculture__water_scarcity__drought__010",
+    "socio_economic__low_income__small_landholding__010": {
+      "card_id": "socio_economic__low_income__small_landholding__010",
       "patch": {
         "confirmation_policy": {
           "version": 1,
           "primary_confirm_signals": [
             "sig_01",
             "sig_02",
-            "sig_04"
+            "sig_08"
           ],
           "confirm_when": {
             "min_confirms_true": 2,
@@ -1524,7 +4502,7 @@
               "signals": [
                 "sig_01",
                 "sig_02",
-                "sig_04"
+                "sig_08"
               ],
               "min": 2
             }
@@ -1536,7 +4514,417 @@
                 "signals": [
                   "sig_01",
                   "sig_02",
-                  "sig_04"
+                  "sig_08"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-21T19:09:36+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T19:09:47+00:00",
+      "applied_card_digest": "7bcc4a5eed74dd3a62a1940e79528dd7240fcc7d36dc88e58f4b51b6cd9f8dea"
+    },
+    "socio_economic__low_income__small_landholding__011": {
+      "card_id": "socio_economic__low_income__small_landholding__011",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_05"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03",
+                "sig_05"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03",
+                  "sig_05"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-21T18:41:09+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T18:52:09+00:00",
+      "applied_card_digest": "0a75b99a1f93e30ebaba5c542533837d1cb6ba2019e4ded72218972bb3ec29c5"
+    },
+    "socio_economic__low_income__small_landholding__012": {
+      "card_id": "socio_economic__low_income__small_landholding__012",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_04",
+            "sig_05"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "required_all": [
+              "sig_01"
+            ],
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_04",
+                "sig_05"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_04",
+                  "sig_05"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "variables": [
+              "mean_cropping_intensity"
+            ],
+            "severity": "moderate",
+            "direction": "confirms",
+            "condition": {
+              "expression": "mean_cropping_intensity <= 1.15",
+              "qualitative_description": "Mean cropping intensity at or below 1.15 indicates that small holders are not compensating for limited land area through double-cropping or multi-season cultivation, compounding the income constraint."
+            }
+          },
+          {
+            "signal_id": "sig_04",
+            "variables": [
+              "nrega_community_assets_count",
+              "organization_domains"
+            ],
+            "severity": "moderate",
+            "direction": "confirms",
+            "condition": {
+              "expression": "('livelihoods' not in organization_domains and 'fisheries' not in organization_domains) and nrega_community_assets_count < 10",
+              "qualitative_description": "Absence of NGO presence in livelihoods or fisheries domains combined with low MGNREGA community asset creation indicates weak institutional support for income diversification, leaving small holders with no safety net beyond subsistence farming."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T18:42:48+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T18:52:09+00:00",
+      "applied_card_digest": "cc2d3594d4390247b6faca0e4f0bfec988c416ad413a738d8dcfe26a1730ad09"
+    },
+    "socio_economic__low_income__small_landholding__013": {
+      "card_id": "socio_economic__low_income__small_landholding__013",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_07"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03",
+                "sig_07"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03",
+                  "sig_07"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-21T18:45:44+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T18:52:09+00:00",
+      "applied_card_digest": "e472d0976fb9bddb16a856410a960563d539ac7c4d895db3bbe39a729b46350f"
+    },
+    "socio_economic__low_income__small_landholding__014": {
+      "card_id": "socio_economic__low_income__small_landholding__014",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_05"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03",
+                "sig_05"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03",
+                  "sig_05"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "variables": [
+              "mean_cropping_intensity"
+            ],
+            "severity": "moderate",
+            "direction": "confirms",
+            "condition": {
+              "expression": "mean_cropping_intensity <= 1.15",
+              "qualitative_description": "Mean cropping intensity at or below 1.15 over the multi-year record indicates that small holders are not compensating for limited land area through double-cropping, compounding the income constraint."
+            }
+          },
+          {
+            "signal_id": "sig_03",
+            "variables": [
+              "dist_apmc_km",
+              "dist_dairy_km"
+            ],
+            "severity": "high",
+            "direction": "confirms",
+            "condition": {
+              "expression": "dist_apmc_km > 30 and dist_dairy_km > 20",
+              "qualitative_description": "Village is more than 30 km from the nearest APMC and more than 20 km from the nearest dairy collection centre, indicating that small holders face high transaction costs and are dependent on intermediaries for both crop and livestock income."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T18:47:23+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T18:52:09+00:00",
+      "applied_card_digest": "e98cf3eda82966a807e4941d311a183cc72d6879af7c3577dcf2c22e694919df"
+    },
+    "socio_economic__low_income__small_landholding__015": {
+      "card_id": "socio_economic__low_income__small_landholding__015",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_06",
+            "sig_08"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03",
+                "sig_06",
+                "sig_08"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03",
+                  "sig_06",
+                  "sig_08"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "variables": [
+              "mean_cropping_intensity"
+            ],
+            "severity": "moderate",
+            "direction": "confirms",
+            "condition": {
+              "expression": "mean_cropping_intensity <= 1.15",
+              "qualitative_description": "Mean cropping intensity at or below 1.15 across the available record indicates that small holders are not compensating for limited land area through double-cropping or multi-season cultivation."
+            }
+          },
+          {
+            "signal_id": "sig_03",
+            "variables": [
+              "dist_apmc_km"
+            ],
+            "severity": "moderate",
+            "direction": "confirms",
+            "condition": {
+              "expression": "dist_apmc_km > 30",
+              "qualitative_description": "Distance to nearest APMC market exceeding 30 km indicates that small holders face high transaction costs and are likely dependent on intermediaries for price discovery, reducing net farm income."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T18:49:22+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T18:52:09+00:00",
+      "applied_card_digest": "50e66e19d037dd5d237c85ddac9b324b044e773438d2ffa544242a53488b86f1"
+    },
+    "socio_economic__low_income__small_landholding__016": {
+      "card_id": "socio_economic__low_income__small_landholding__016",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_08"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03",
+                "sig_08"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03",
+                  "sig_08"
                 ],
                 "min": 2
               },
@@ -1556,498 +4944,21 @@
           {
             "signal_id": "sig_03",
             "variables": [
-              "drought_causality",
-              "drought_mild_vci_score_latest",
-              "drought_mild_spi_score_latest",
-              "drought_severe_moderate_spi_score_latest"
+              "dist_apmc_km"
             ],
-            "severity": "high",
-            "direction": "amplifies",
+            "severity": "moderate",
+            "direction": "confirms",
             "condition": {
-              "expression": "drought_causality is not None and (drought_mild_spi_score_latest >= 26 or drought_severe_moderate_spi_score_latest >= 26) and drought_mild_vci_score_latest >= 26",
-              "qualitative_description": "SPI classification of moderate drought or worse, combined with VCI below 35 (indicating significant vegetation stress), jointly confirm both meteorological and agricultural drought are active."
+              "expression": "dist_apmc_km > 50",
+              "qualitative_description": "Distance to nearest APMC market exceeding 50 km severely limits price discovery and marketable surplus realisation for small holders in remote Himalayan valleys."
             }
           }
         ]
       },
-      "finalized_at": "2026-06-21T04:50:40+00:00",
+      "finalized_at": "2026-06-21T18:51:16+00:00",
       "reviewer": null,
-      "propagated_at": "2026-06-21T05:18:27+00:00",
-      "applied_card_digest": "f395d3a4abf507646ab99e5b4a44f6dc103853f20cc3dc5a844d3c2533b1de7b"
-    },
-    "agriculture__water_scarcity__drought__011": {
-      "card_id": "agriculture__water_scarcity__drought__011",
-      "patch": {
-        "confirmation_policy": {
-          "version": 1,
-          "primary_confirm_signals": [
-            "sig_01",
-            "sig_02",
-            "sig_04"
-          ],
-          "confirm_when": {
-            "min_confirms_true": 2,
-            "amplifiers_do_not_confirm": true,
-            "min_from_set": {
-              "signals": [
-                "sig_01",
-                "sig_02",
-                "sig_04"
-              ],
-              "min": 2
-            }
-          },
-          "confidence_when": [
-            {
-              "level": "high",
-              "min_from_set": {
-                "signals": [
-                  "sig_01",
-                  "sig_02",
-                  "sig_04"
-                ],
-                "min": 2
-              },
-              "min_high_severity_confirms": 2
-            },
-            {
-              "level": "medium",
-              "min_confirms_true": 1
-            },
-            {
-              "level": "low",
-              "default": true
-            }
-          ]
-        },
-        "diagnostic_signals": [
-          {
-            "signal_id": "sig_03",
-            "variables": [
-              "drought_mild_vci_score_latest",
-              "drought_mild_spi_score_latest",
-              "drought_severe_moderate_spi_score_latest",
-              "drought_mild_mai_score_latest",
-              "drought_severe_moderate_path_score_latest"
-            ],
-            "severity": "high",
-            "direction": "amplifies",
-            "condition": {
-              "expression": "(drought_mild_spi_score_latest >= 26 or drought_severe_moderate_spi_score_latest >= 26) and (drought_mild_mai_score_latest >= 26 or drought_severe_moderate_path_score_latest >= 2) and drought_mild_vci_score_latest >= 26",
-              "qualitative_description": "Concurrent meteorological drought (SPI), soil moisture inadequacy (MAI), and vegetation stress (VCI < 35) confirm agricultural drought as per India Drought Manual classification."
-            }
-          }
-        ]
-      },
-      "finalized_at": "2026-06-21T04:53:34+00:00",
-      "reviewer": null,
-      "propagated_at": "2026-06-21T05:18:27+00:00",
-      "applied_card_digest": "544568bc27440ec19acdf34164551f32bb5c286dfbd51d6c7ee7a4b7bcfea87a"
-    },
-    "agriculture__water_scarcity__drought__012": {
-      "card_id": "agriculture__water_scarcity__drought__012",
-      "patch": {
-        "confirmation_policy": {
-          "version": 1,
-          "primary_confirm_signals": [
-            "sig_01",
-            "sig_02",
-            "sig_04"
-          ],
-          "confirm_when": {
-            "min_confirms_true": 2,
-            "amplifiers_do_not_confirm": true,
-            "min_from_set": {
-              "signals": [
-                "sig_01",
-                "sig_02",
-                "sig_04"
-              ],
-              "min": 2
-            }
-          },
-          "confidence_when": [
-            {
-              "level": "high",
-              "min_from_set": {
-                "signals": [
-                  "sig_01",
-                  "sig_02",
-                  "sig_04"
-                ],
-                "min": 2
-              },
-              "min_high_severity_confirms": 2
-            },
-            {
-              "level": "medium",
-              "min_confirms_true": 1
-            },
-            {
-              "level": "low",
-              "default": true
-            }
-          ]
-        },
-        "diagnostic_signals": [
-          {
-            "signal_id": "sig_03",
-            "variables": [
-              "drought_mild_spi_score_latest",
-              "drought_mild_mai_score_latest",
-              "drought_mild_vci_score_latest"
-            ],
-            "severity": "high",
-            "direction": "amplifies",
-            "condition": {
-              "expression": "drought_mild_spi_score_latest >= 26 or drought_mild_mai_score_latest >= 26 or drought_mild_vci_score_latest >= 26",
-              "qualitative_description": "SPI below -1.0 (moderate meteorological drought), MAI below 0.5 (soil moisture inadequacy), or VCI below 40 (moderate vegetation stress) in kharif season confirms drought causality per India Drought Manual classification."
-            }
-          }
-        ]
-      },
-      "finalized_at": "2026-06-21T04:54:44+00:00",
-      "reviewer": null,
-      "propagated_at": "2026-06-21T05:18:27+00:00",
-      "applied_card_digest": "51e16d679d5a9cbbeceeb50db81e32a7ec2b6b8b26a8018c559317feef4165f7"
-    },
-    "agriculture__water_scarcity__drought__017": {
-      "card_id": "agriculture__water_scarcity__drought__017",
-      "patch": {
-        "confirmation_policy": {
-          "version": 1,
-          "primary_confirm_signals": [
-            "sig_01",
-            "sig_02",
-            "sig_04"
-          ],
-          "confirm_when": {
-            "min_confirms_true": 2,
-            "amplifiers_do_not_confirm": true,
-            "min_from_set": {
-              "signals": [
-                "sig_01",
-                "sig_02",
-                "sig_04"
-              ],
-              "min": 2
-            }
-          },
-          "confidence_when": [
-            {
-              "level": "high",
-              "min_from_set": {
-                "signals": [
-                  "sig_01",
-                  "sig_02",
-                  "sig_04"
-                ],
-                "min": 2
-              },
-              "min_high_severity_confirms": 2
-            },
-            {
-              "level": "medium",
-              "min_confirms_true": 1
-            },
-            {
-              "level": "low",
-              "default": true
-            }
-          ]
-        },
-        "diagnostic_signals": [
-          {
-            "signal_id": "sig_03",
-            "variables": [
-              "drought_mild_vci_score_latest",
-              "drought_mild_spi_score_latest",
-              "drought_severe_moderate_spi_score_latest",
-              "drought_mild_mai_score_latest",
-              "drought_severe_moderate_path_score_latest"
-            ],
-            "severity": "high",
-            "direction": "amplifies",
-            "condition": {
-              "expression": "(drought_mild_spi_score_latest >= 26 or drought_severe_moderate_spi_score_latest >= 26) and (drought_mild_mai_score_latest >= 26 or drought_severe_moderate_path_score_latest >= 2) and drought_mild_vci_score_latest >= 26",
-              "qualitative_description": "Concurrent SPI indicating dry conditions, low MAI indicating soil moisture deficit, and VCI below 40 indicating vegetation stress together confirm meteorological drought has translated into agricultural drought."
-            }
-          }
-        ]
-      },
-      "finalized_at": "2026-06-21T04:56:05+00:00",
-      "reviewer": null,
-      "propagated_at": "2026-06-21T05:18:27+00:00",
-      "applied_card_digest": "8ac32226cd7e4d5aaf075ae0ed65986d817892457f3308d701da0cbc3adcf14a"
-    },
-    "agriculture__water_scarcity__drought__016": {
-      "card_id": "agriculture__water_scarcity__drought__016",
-      "patch": {
-        "confirmation_policy": {
-          "version": 1,
-          "primary_confirm_signals": [
-            "sig_01",
-            "sig_02",
-            "sig_03"
-          ],
-          "confirm_when": {
-            "min_confirms_true": 2,
-            "amplifiers_do_not_confirm": true,
-            "min_from_set": {
-              "signals": [
-                "sig_01",
-                "sig_02",
-                "sig_03"
-              ],
-              "min": 2
-            }
-          },
-          "confidence_when": [
-            {
-              "level": "high",
-              "min_from_set": {
-                "signals": [
-                  "sig_01",
-                  "sig_02",
-                  "sig_03"
-                ],
-                "min": 2
-              },
-              "min_high_severity_confirms": 2
-            },
-            {
-              "level": "medium",
-              "min_confirms_true": 1
-            },
-            {
-              "level": "low",
-              "default": true
-            }
-          ]
-        },
-        "diagnostic_signals": [
-          {
-            "signal_id": "sig_05",
-            "variables": [
-              "drought_mild_vci_score_latest",
-              "drought_mild_spi_score_latest",
-              "drought_severe_moderate_spi_score_latest"
-            ],
-            "severity": "high",
-            "direction": "amplifies",
-            "condition": {
-              "expression": "(drought_mild_spi_score_latest >= 26 or drought_severe_moderate_spi_score_latest >= 26) and drought_mild_vci_score_latest >= 26",
-              "qualitative_description": "SPI classification indicates at least moderate meteorological drought AND VCI below 35 confirms concurrent vegetation stress, together satisfying the India Drought Manual composite criterion for agricultural drought declaration."
-            }
-          }
-        ]
-      },
-      "finalized_at": "2026-06-21T04:58:02+00:00",
-      "reviewer": null,
-      "propagated_at": "2026-06-21T05:18:27+00:00",
-      "applied_card_digest": "4580131c5dd3a89441c70bffbc5123e9ca5aa071d5816f50387b03d1b28e07bf"
-    },
-    "agriculture__water_scarcity__drought__015": {
-      "card_id": "agriculture__water_scarcity__drought__015",
-      "patch": {
-        "confirmation_policy": {
-          "version": 1,
-          "primary_confirm_signals": [
-            "sig_01",
-            "sig_02",
-            "sig_04"
-          ],
-          "confirm_when": {
-            "min_confirms_true": 2,
-            "amplifiers_do_not_confirm": true,
-            "min_from_set": {
-              "signals": [
-                "sig_01",
-                "sig_02",
-                "sig_04"
-              ],
-              "min": 2
-            }
-          },
-          "confidence_when": [
-            {
-              "level": "high",
-              "min_from_set": {
-                "signals": [
-                  "sig_01",
-                  "sig_02",
-                  "sig_04"
-                ],
-                "min": 2
-              },
-              "min_high_severity_confirms": 2
-            },
-            {
-              "level": "medium",
-              "min_confirms_true": 1
-            },
-            {
-              "level": "low",
-              "default": true
-            }
-          ]
-        },
-        "diagnostic_signals": [
-          {
-            "signal_id": "sig_03",
-            "variables": [
-              "drought_mild_spi_score_latest",
-              "drought_mild_mai_score_latest",
-              "drought_mild_vci_score_latest"
-            ],
-            "severity": "high",
-            "direction": "amplifies",
-            "condition": {
-              "expression": "drought_mild_spi_score_latest >= 26 or drought_mild_mai_score_latest >= 26 or drought_mild_vci_score_latest >= 26",
-              "qualitative_description": "SPI below -1.0 (moderate meteorological drought), MAI below 0.5 (soil moisture inadequacy), or VCI below 35 (significant vegetation stress) in kharif season confirms drought causality."
-            }
-          }
-        ]
-      },
-      "finalized_at": "2026-06-21T04:59:28+00:00",
-      "reviewer": null,
-      "propagated_at": "2026-06-21T05:18:27+00:00",
-      "applied_card_digest": "0eadde3c7aee20055eb4bf01745ea6ad158656492a9730b8365f70f1e1a0057f"
-    },
-    "agriculture__water_scarcity__drought__014": {
-      "card_id": "agriculture__water_scarcity__drought__014",
-      "patch": {
-        "confirmation_policy": {
-          "version": 1,
-          "primary_confirm_signals": [
-            "sig_01",
-            "sig_02",
-            "sig_03"
-          ],
-          "confirm_when": {
-            "min_confirms_true": 2,
-            "amplifiers_do_not_confirm": true,
-            "min_from_set": {
-              "signals": [
-                "sig_01",
-                "sig_02",
-                "sig_03"
-              ],
-              "min": 2
-            }
-          },
-          "confidence_when": [
-            {
-              "level": "high",
-              "min_from_set": {
-                "signals": [
-                  "sig_01",
-                  "sig_02",
-                  "sig_03"
-                ],
-                "min": 2
-              },
-              "min_high_severity_confirms": 2
-            },
-            {
-              "level": "medium",
-              "min_confirms_true": 1
-            },
-            {
-              "level": "low",
-              "default": true
-            }
-          ]
-        },
-        "diagnostic_signals": [
-          {
-            "signal_id": "sig_05",
-            "variables": [
-              "drought_mild_vci_score_latest",
-              "drought_mild_spi_score_latest",
-              "drought_severe_moderate_spi_score_latest"
-            ],
-            "severity": "high",
-            "direction": "amplifies",
-            "condition": {
-              "expression": "(drought_mild_spi_score_latest >= 26 or drought_severe_moderate_spi_score_latest >= 26) and drought_mild_vci_score_latest >= 26",
-              "qualitative_description": "SPI classification of moderate drought or worse combined with VCI below 35 confirms co-occurrence of meteorological and agricultural drought, ruling out irrigation-buffered scenarios."
-            }
-          }
-        ]
-      },
-      "finalized_at": "2026-06-21T05:01:19+00:00",
-      "reviewer": null,
-      "propagated_at": "2026-06-21T05:18:27+00:00",
-      "applied_card_digest": "9c0dde00688db40692b69853e2fb55f8af19daa5e12b26cdfef9fe83a3fea26e"
-    },
-    "agriculture__water_scarcity__drought__013": {
-      "card_id": "agriculture__water_scarcity__drought__013",
-      "patch": {
-        "confirmation_policy": {
-          "version": 1,
-          "primary_confirm_signals": [
-            "sig_01",
-            "sig_02",
-            "sig_04"
-          ],
-          "confirm_when": {
-            "min_confirms_true": 2,
-            "amplifiers_do_not_confirm": true,
-            "min_from_set": {
-              "signals": [
-                "sig_01",
-                "sig_02",
-                "sig_04"
-              ],
-              "min": 2
-            }
-          },
-          "confidence_when": [
-            {
-              "level": "high",
-              "min_from_set": {
-                "signals": [
-                  "sig_01",
-                  "sig_02",
-                  "sig_04"
-                ],
-                "min": 2
-              },
-              "min_high_severity_confirms": 2
-            },
-            {
-              "level": "medium",
-              "min_confirms_true": 1
-            },
-            {
-              "level": "low",
-              "default": true
-            }
-          ]
-        },
-        "diagnostic_signals": [
-          {
-            "signal_id": "sig_03",
-            "variables": [
-              "drought_mild_vci_score_latest",
-              "drought_mild_mai_score_latest",
-              "drought_mild_spi_score_latest",
-              "drought_severe_moderate_spi_score_latest"
-            ],
-            "severity": "high",
-            "direction": "amplifies",
-            "condition": {
-              "expression": "(drought_mild_spi_score_latest >= 26 or drought_severe_moderate_spi_score_latest >= 26) or drought_mild_vci_score_latest >= 26 or drought_mild_mai_score_latest >= 26",
-              "qualitative_description": "SPI indicating moderately dry or worse, VCI below 35, or MAI below 0.5 together confirm meteorological and agricultural drought co-occurrence per the India Drought Manual classification."
-            }
-          }
-        ]
-      },
-      "finalized_at": "2026-06-21T05:03:59+00:00",
-      "reviewer": null,
-      "propagated_at": "2026-06-21T05:18:27+00:00",
-      "applied_card_digest": "8c7b905bd1ecfdd654087c05f81e59d8c73d6b1f0f7f77ad20bd00ec35094f76"
+      "propagated_at": "2026-06-21T18:52:09+00:00",
+      "applied_card_digest": "ef0933f0f26fb8a428a9359e295ec2dd3173472b85aad13391760f31d25cb1df"
     }
   }
 }

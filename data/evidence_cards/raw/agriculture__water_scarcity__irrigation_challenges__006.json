@@ -106,10 +106,11 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Farmers report that open wells or shallow borewells have become unreliable or dry during rabi and zaid seasons, or that pumping costs have increased due to falling water tables — suggesting that groundwater fallback for irrigation is also constrained."
+        "qualitative_description": "Farmers report that open wells or shallow borewells have become unreliable or dry during rabi and zaid seasons, or that pumping costs have increased due to falling water tables — suggesting that groundwater fallback for irrigation is also constrained.",
+        "expression": ""
       },
       "severity": "moderate",
-      "direction": "amplifies",
+      "direction": "confirms",
       "explanation": "In coastal alluvial plains, shallow groundwater is often the fallback when tank irrigation fails. If well depth data were available, increasing depth over years would confirm that the groundwater buffer is also under stress. Without this data, user-reported well unreliability or increased lifting costs during dry seasons is a key qualitative indicator that the irrigation challenge is compounded — surface storage is degraded and groundwater backup is also insufficient or costly. This is particularly relevant for marginal farmers who cannot afford deep borewells or solar pumps.",
       "active": true
     }
@@ -250,7 +251,8 @@
     "version": 1,
     "primary_confirm_signals": [
       "sig_01",
-      "sig_02"
+      "sig_02",
+      "sig_05"
     ],
     "confirm_when": {
       "min_confirms_true": 2,
@@ -258,7 +260,8 @@
       "min_from_set": {
         "signals": [
           "sig_01",
-          "sig_02"
+          "sig_02",
+          "sig_05"
         ],
         "min": 2
       }
@@ -269,7 +272,8 @@
         "min_from_set": {
           "signals": [
             "sig_01",
-            "sig_02"
+            "sig_02",
+            "sig_05"
           ],
           "min": 2
         },

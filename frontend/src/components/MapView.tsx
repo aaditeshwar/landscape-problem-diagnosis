@@ -27,14 +27,31 @@ function matchesTehsil(props: Record<string, unknown>, ref: TehsilRef): boolean 
   return props.state === ref.state && props.district === ref.district && props.tehsil === ref.tehsil
 }
 
-function FitBounds({ data, layerKey }: { data: GeoJSON.GeoJsonObject | null; layerKey: string }) {
+function FitBounds({
+  data,
+  layerKey,
+  focusUid,
+}: {
+  data: GeoJSON.GeoJsonObject | null
+  layerKey: string
+  focusUid?: string | null
+}) {
   const map = useMap()
   useEffect(() => {
-    if (!data) return
-    const layer = L.geoJSON(data)
+    if (!data || data.type !== 'FeatureCollection') return
+    const collection = data as GeoJSON.FeatureCollection
+    let features = collection.features
+    if (focusUid) {
+      features = features.filter(
+        (feature: GeoJSON.Feature) =>
+          (feature.properties as Record<string, unknown> | undefined)?.uid === focusUid,
+      )
+      if (features.length === 0) return
+    }
+    const layer = L.geoJSON({ type: 'FeatureCollection', features } as GeoJSON.FeatureCollection)
     const bounds = layer.getBounds()
     if (bounds.isValid()) map.fitBounds(bounds, { padding: [24, 24] })
-  }, [data, layerKey, map])
+  }, [data, layerKey, focusUid, map])
   return null
 }
 
@@ -186,7 +203,9 @@ export function MapView({
           onEachFeature={bindMwsEvents}
         />
       )}
-      {!flyTarget && <FitBounds data={visibleMws} layerKey={activeTehsilKey} />}
+      {!flyTarget && (
+        <FitBounds data={visibleMws} layerKey={activeTehsilKey} focusUid={selectedMwsUid} />
+      )}
       <FlyToTarget target={flyTarget} onComplete={onFlyComplete} />
     </MapContainer>
   )

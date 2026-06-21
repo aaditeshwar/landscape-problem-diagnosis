@@ -27,7 +27,7 @@ export function GiveFeedbackLink({
         'text-xs font-medium text-amber-800 underline decoration-amber-300 underline-offset-2 hover:text-amber-950'
       }
     >
-      Give feedback
+      See details and give feedback
     </a>
   )
 }

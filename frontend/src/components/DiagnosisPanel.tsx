@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useLayoutEffect, useRef } from 'react'
 import type { DiagnosisResponse, FollowUpExchange, PathwayResult, TehsilRef } from '../types'
 import type { FollowUpTarget } from '../utils/followUp'
 import { followUpPromptLabel } from '../utils/followUp'
@@ -70,6 +70,8 @@ export function DiagnosisPanel({
 }: Props) {
   const confirmedPathwaysRef = useRef<HTMLElement>(null)
   const followUpUpdateRefs = useRef<(HTMLDivElement | null)[]>([])
+  const latestFollowUpEntryRef = useRef<HTMLDivElement | null>(null)
+  const panelUpdateRef = useRef<HTMLElement | null>(null)
   const prevFollowUpCountRef = useRef(followUpHistory.length)
   const prevLoadingRef = useRef(loading)
   const sectionTitle = followUpPromptLabel(followUpTarget, followUpHistory.length > 0)
@@ -104,17 +106,24 @@ export function DiagnosisPanel({
     diagnosis?.llm_skipped !== true
   const canGiveFeedback = Boolean(diagnosis?.diagnosis_snapshot_id)
 
-  useEffect(() => {
-    if (prevLoadingRef.current && !loading) {
+  useLayoutEffect(() => {
+    const finishedLoading = prevLoadingRef.current && !loading
+    if (finishedLoading) {
       if (followUpHistory.length > prevFollowUpCountRef.current) {
         const latestIndex = followUpHistory.length - 1
-        followUpUpdateRefs.current[latestIndex]?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        const scrollTarget =
+          followUpUpdateRefs.current[latestIndex] ??
+          latestFollowUpEntryRef.current ??
+          panelUpdateRef.current
+        scrollTarget?.scrollIntoView({ behavior: 'smooth', block: 'start' })
       } else if (diagnosis && followUpHistory.length === 0) {
         confirmedPathwaysRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
       }
     }
     prevLoadingRef.current = loading
-    prevFollowUpCountRef.current = followUpHistory.length
+    if (!loading) {
+      prevFollowUpCountRef.current = followUpHistory.length
+    }
   }, [loading, diagnosis, followUpHistory.length])
 
   function pathwayAerLine(pathway: PathwayResult) {
@@ -374,6 +383,7 @@ export function DiagnosisPanel({
               {followUpHistory.map((entry, index) => (
                 <div
                   key={`${index}-${entry.question.slice(0, 24)}`}
+                  ref={index === followUpHistory.length - 1 ? latestFollowUpEntryRef : undefined}
                   className="rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm"
                 >
                   <div className="text-xs font-medium uppercase tracking-wide text-stone-500">
@@ -483,7 +493,7 @@ export function DiagnosisPanel({
           )}
 
           {diagnosis.panel_update_explanation?.trim() ? (
-            <section className="rounded-lg border border-sky-200 bg-sky-50/60 px-3 py-2">
+            <section ref={panelUpdateRef} className="rounded-lg border border-sky-200 bg-sky-50/60 px-3 py-2">
               <div className="flex items-start justify-between gap-2">
                 <h3 className="text-sm font-semibold text-sky-900">{summaryHeading}</h3>
                 <GiveFeedbackLink

@@ -12,6 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 RAW_DIR = ROOT / "data" / "evidence_cards" / "raw"
 REPORT_DIR = ROOT / "reports"
+POLICY_REVIEW_DIR = REPORT_DIR / "policy_review"
 PILOT_POLICIES = ROOT / "metadata" / "pilot_confirmation_policies.json"
 
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -156,7 +157,7 @@ def audit_card(card: dict, pilot_ids: set[str] | None = None) -> list[dict[str, 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--strict", action="store_true", help="Treat warnings as errors")
-    parser.add_argument("--write-report", action="store_true", help="Write reports/policy_audit.csv")
+    parser.add_argument("--write-report", action="store_true", help="Write reports/policy_review/policy_audit.csv")
     args = parser.parse_args()
 
     pilot_ids = load_pilot_card_ids()
@@ -179,8 +180,8 @@ def main() -> int:
     warns = [i for i in all_issues if i["severity"] != "error"]
 
     if args.write_report:
-        REPORT_DIR.mkdir(parents=True, exist_ok=True)
-        with (REPORT_DIR / "policy_audit.csv").open("w", encoding="utf-8", newline="") as handle:
+        POLICY_REVIEW_DIR.mkdir(parents=True, exist_ok=True)
+        with (POLICY_REVIEW_DIR / "policy_audit.csv").open("w", encoding="utf-8", newline="") as handle:
             writer = csv.DictWriter(handle, fieldnames=POLICY_AUDIT_FIELDS, extrasaction="ignore")
             writer.writeheader()
             writer.writerows(all_issues)
@@ -199,12 +200,12 @@ def main() -> int:
             "draft_note_from_policy",
             "confirmation_policy_json",
         ]
-        with (REPORT_DIR / "policy_audit_summary.csv").open("w", encoding="utf-8", newline="") as handle:
+        with (POLICY_REVIEW_DIR / "policy_audit_summary.csv").open("w", encoding="utf-8", newline="") as handle:
             writer = csv.DictWriter(handle, fieldnames=summary_fields, extrasaction="ignore")
             writer.writeheader()
             writer.writerows(all_card_rows)
-        print(f"Wrote {REPORT_DIR / 'policy_audit.csv'} ({len(all_issues)} issue row(s))")
-        print(f"Wrote {REPORT_DIR / 'policy_audit_summary.csv'} ({len(all_card_rows)} card row(s))")
+        print(f"Wrote {POLICY_REVIEW_DIR / 'policy_audit.csv'} ({len(all_issues)} issue row(s))")
+        print(f"Wrote {POLICY_REVIEW_DIR / 'policy_audit_summary.csv'} ({len(all_card_rows)} card row(s))")
 
     for item in warns[:20]:
         print(f"WARN {item['card_id']} [{item['code']}]: {item['detail']}")

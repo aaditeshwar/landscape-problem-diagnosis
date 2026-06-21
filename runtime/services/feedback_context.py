@@ -57,6 +57,24 @@ def _pathway_notes(llm_response: dict[str, Any], signal_evaluation: dict[str, An
     return notes
 
 
+def _card_diagnostic_signals(doc: dict[str, Any]) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for signal in doc.get("diagnostic_signals") or []:
+        if not isinstance(signal, dict):
+            continue
+        sig_id = str(signal.get("signal_id") or "").strip()
+        if not sig_id:
+            continue
+        rows.append(
+            {
+                "signal_id": sig_id,
+                "active": signal.get("active", True) is not False,
+                "direction": signal.get("direction"),
+            }
+        )
+    return rows
+
+
 def _retrieved_cards(db: Database, card_ids: list[str]) -> list[dict[str, Any]]:
     if not card_ids:
         return []
@@ -76,6 +94,7 @@ def _retrieved_cards(db: Database, card_ids: list[str]) -> list[dict[str, Any]]:
                 "production_system": doc.get("production_system"),
                 "observed_stress": doc.get("observed_stress"),
                 "causal_pathway": doc.get("causal_pathway"),
+                "diagnostic_signals": _card_diagnostic_signals(doc),
             }
         )
     return rows

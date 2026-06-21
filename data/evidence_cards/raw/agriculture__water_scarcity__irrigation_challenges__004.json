@@ -106,10 +106,11 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Farmers report that well or borewell depth has increased noticeably over recent years, or that pumping costs have risen substantially, suggesting declining groundwater levels that increase the cost and difficulty of lift irrigation — particularly for marginal farmers."
+        "qualitative_description": "Farmers report that well or borewell depth has increased noticeably over recent years, or that pumping costs have risen substantially, suggesting declining groundwater levels that increase the cost and difficulty of lift irrigation — particularly for marginal farmers.",
+        "expression": ""
       },
       "severity": "moderate",
-      "direction": "amplifies",
+      "direction": "comfirms",
       "explanation": "In alluvial aquifers of arid Rajasthan and Haryana, groundwater is often the fallback when surface storage fails. However, if water tables are declining — as indicated by increasing well depth — the cost of lifting groundwater rises, disadvantaging marginal and small farmers who cannot afford deeper borewells or higher energy costs. Dashora et al. (2019) noted that check dam recharge directly raised groundwater levels in proximal wells, confirming the link between surface storage infrastructure and groundwater availability for lift irrigation. Where surface infrastructure is degraded and groundwater is deepening, both irrigation pathways are simultaneously compromised.",
       "active": true
     }
@@ -243,7 +244,8 @@
     "version": 1,
     "primary_confirm_signals": [
       "sig_01",
-      "sig_02"
+      "sig_02",
+      "sig_05"
     ],
     "confirm_when": {
       "min_confirms_true": 2,
@@ -251,7 +253,8 @@
       "min_from_set": {
         "signals": [
           "sig_01",
-          "sig_02"
+          "sig_02",
+          "sig_05"
         ],
         "min": 2
       }
@@ -262,7 +265,8 @@
         "min_from_set": {
           "signals": [
             "sig_01",
-            "sig_02"
+            "sig_02",
+            "sig_05"
           ],
           "min": 2
         },

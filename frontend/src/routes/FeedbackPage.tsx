@@ -141,7 +141,7 @@ export function FeedbackPage() {
       </header>
 
       {!snapshotId ? (
-        <p className="text-sm text-stone-600">Open this page from a diagnosis “Give feedback” button.</p>
+        <p className="text-sm text-stone-600">Open this page from a diagnosis “See details and give feedback” link.</p>
       ) : loading ? (
         <p className="text-sm text-stone-500">Loading diagnosis context…</p>
       ) : error ? (

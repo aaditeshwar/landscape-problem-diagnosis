@@ -151,11 +151,11 @@
       "choices": [
         {
           "id": "low",
-          "label": "Less than 10% of cultivated land is irrigated",
+          "label": "Less than 5% of cultivated land is irrigated",
           "normalized": {
             "band": "low",
             "present": true,
-            "percent_upper": 10
+            "percent_upper": 5
           },
           "effects": {
             "signals": [
@@ -168,12 +168,12 @@
         },
         {
           "id": "moderate",
-          "label": "Between 10% and 30% of cultivated land is irrigated",
+          "label": "Between 5% and 20% of cultivated land is irrigated",
           "normalized": {
             "band": "moderate",
             "present": true,
-            "percent_lower": 10,
-            "percent_upper": 30
+            "percent_lower": 5,
+            "percent_upper": 20
           },
           "effects": {
             "signals": [
@@ -186,11 +186,11 @@
         },
         {
           "id": "high",
-          "label": "More than 30% of cultivated land is irrigated",
+          "label": "More than 20% of cultivated land is irrigated",
           "normalized": {
             "band": "high",
             "present": true,
-            "percent_lower": 30
+            "percent_lower": 20
           },
           "effects": {
             "signals": [
@@ -271,7 +271,8 @@
       "sig_01",
       "sig_02",
       "sig_03",
-      "sig_05"
+      "sig_05",
+      "sig_06"
     ],
     "confirm_when": {
       "min_confirms_true": 2,
@@ -281,7 +282,8 @@
           "sig_01",
           "sig_02",
           "sig_03",
-          "sig_05"
+          "sig_05",
+          "sig_06"
         ],
         "min": 2
       }
@@ -294,7 +296,8 @@
             "sig_01",
             "sig_02",
             "sig_03",
-            "sig_05"
+            "sig_05",
+            "sig_06"
           ],
           "min": 2
         },

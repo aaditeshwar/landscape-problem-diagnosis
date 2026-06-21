@@ -74,7 +74,7 @@
         ]
       },
       "severity": "moderate",
-      "direction": "amplifies",
+      "direction": "confirms",
       "explanation": "Low MGNREGA investment in SWC and irrigation works means that existing tanks and ponds have not been desilted or repaired through public programmes. Evidence from Rajasthan check dam studies shows that manual desilting can increase recharge and storage capacity by up to 84% over the preceding year, while neglected structures lose performance steadily. In the Bengal-Assam plains, where MGNREGA is a primary vehicle for tank desilting, a low cumulative work count signals that infrastructure deterioration has not been addressed, amplifying the storage deficit identified in sig_01 and sig_02.",
       "active": true
     },
@@ -254,7 +254,8 @@
     "version": 1,
     "primary_confirm_signals": [
       "sig_01",
-      "sig_02"
+      "sig_02",
+      "sig_03"
     ],
     "confirm_when": {
       "min_confirms_true": 2,
@@ -262,7 +263,8 @@
       "min_from_set": {
         "signals": [
           "sig_01",
-          "sig_02"
+          "sig_02",
+          "sig_03"
         ],
         "min": 2
       }
@@ -273,7 +275,8 @@
         "min_from_set": {
           "signals": [
             "sig_01",
-            "sig_02"
+            "sig_02",
+            "sig_03"
           ],
           "min": 2
         },

@@ -75,7 +75,7 @@
         ]
       },
       "severity": "moderate",
-      "direction": "amplifies",
+      "direction": "confirms",
       "explanation": "Low MGNREGA investment in SWC and irrigation structures means existing water bodies have not been desilted, repaired, or supplemented with new storage. Dashora et al. (2019) showed that manual desilting of check dams increased recharge by 84% over the preceding year, while neglected structures saw declining performance. In island contexts where institutional reach is limited, the absence of MGNREGA water works is a proxy for deferred maintenance and infrastructure gap. This signal amplifies the storage deficit identified in sig_01 and sig_02.",
       "active": true
     },
@@ -106,10 +106,11 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Farmers report that wells have become shallower or saline in recent years, or that pumping costs have increased due to saltwater intrusion requiring deeper freshwater lenses — a common problem in coastal and island aquifers where over-extraction causes seawater ingress."
+        "qualitative_description": "Farmers report that wells have become shallower or saline in recent years, or that pumping costs have increased due to saltwater intrusion requiring deeper freshwater lenses — a common problem in coastal and island aquifers where over-extraction causes seawater ingress.",
+        "expression": ""
       },
       "severity": "moderate",
-      "direction": "confirms",
+      "direction": "amplifies",
       "explanation": "Well depth data is not available from the framework for this context. However, in coastal island aquifers (volcanic and coral), the freshwater lens is thin and highly sensitive to extraction. Increased pumping for irrigation during dry spells can trigger saltwater intrusion, effectively reducing usable groundwater for irrigation even where rainfall is high. This makes groundwater an unreliable backup to surface storage failures, reinforcing the irrigation challenge pathway.",
       "active": true
     }
@@ -244,7 +245,8 @@
     "version": 1,
     "primary_confirm_signals": [
       "sig_01",
-      "sig_02"
+      "sig_02",
+      "sig_03"
     ],
     "confirm_when": {
       "min_confirms_true": 2,
@@ -252,7 +254,8 @@
       "min_from_set": {
         "signals": [
           "sig_01",
-          "sig_02"
+          "sig_02",
+          "sig_03"
         ],
         "min": 2
       }
@@ -263,7 +266,8 @@
         "min_from_set": {
           "signals": [
             "sig_01",
-            "sig_02"
+            "sig_02",
+            "sig_03"
           ],
           "min": 2
         },

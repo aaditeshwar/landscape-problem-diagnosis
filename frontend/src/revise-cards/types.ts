@@ -75,6 +75,7 @@ export type ReviewCardBundle = {
 
 export type SignalEditDraft = {
   signal_id: string
+  active: boolean
   variables: string
   expression: string
   qualitative_description: string

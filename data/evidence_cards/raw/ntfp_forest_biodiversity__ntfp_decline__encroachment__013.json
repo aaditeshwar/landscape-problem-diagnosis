@@ -324,16 +324,29 @@
     "primary_confirm_signals": [
       "sig_01",
       "sig_02",
-      "sig_03"
+      "sig_03",
+      "sig_04"
     ],
     "confirm_when": {
       "min_confirms_true": 2,
       "amplifiers_do_not_confirm": true,
+      "required_all": [
+        "sig_01"
+      ],
+      "required_any": [
+        [
+          "sig_02"
+        ],
+        [
+          "sig_03"
+        ]
+      ],
       "min_from_set": {
         "signals": [
           "sig_01",
           "sig_02",
-          "sig_03"
+          "sig_03",
+          "sig_04"
         ],
         "min": 2
       }
@@ -345,7 +358,8 @@
           "signals": [
             "sig_01",
             "sig_02",
-            "sig_03"
+            "sig_03",
+            "sig_04"
           ],
           "min": 2
         },

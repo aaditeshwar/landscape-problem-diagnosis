@@ -54,7 +54,7 @@
         ]
       },
       "severity": "moderate",
-      "direction": "confirms",
+      "direction": "amplifies",
       "explanation": "Settlement expansion into forest fringes is a secondary encroachment pathway distinct from direct agricultural conversion. In the Bengal and Assam plains, population pressure and in-migration can drive informal settlement growth at forest margins, restricting community access routes to NTFP collection zones even where the forest canopy itself remains nominally intact. A 20 ha increase in urbanized area over the observation window is a conservative threshold for plains contexts where settlement footprints are typically small but access-blocking effects are disproportionate.",
       "active": true
     },
@@ -334,21 +334,21 @@
         "level": "high",
         "min_from_set": {
           "signals": [
-            "sig_01",
-            "sig_04"
-          ],
-          "min": 2
-        }
-      },
-      {
-        "level": "high",
-        "min_from_set": {
-          "signals": [
             "sig_04"
           ],
           "min": 1
         },
         "min_high_severity_confirms": 1
+      },
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_04"
+          ],
+          "min": 2
+        }
       },
       {
         "level": "medium",

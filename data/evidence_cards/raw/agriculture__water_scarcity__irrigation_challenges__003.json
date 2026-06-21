@@ -73,7 +73,7 @@
         ]
       },
       "severity": "moderate",
-      "direction": "amplifies",
+      "direction": "confirms",
       "explanation": "Low MGNREGA investment in SWC and irrigation works means that existing tanks and ponds have not been desilted, repaired, or supplemented with new structures. Dashora et al. (2019) demonstrated that manual desilting of a check dam increased recharge by 84% over the preceding year, while neglected structures showed declining infiltration rates. In the alluvial plains context, desilting of tanks through MGNREGA is a low-cost, high-return intervention; its absence amplifies the storage deficit signalled by sig_01 and sig_02.",
       "active": true
     },
@@ -102,10 +102,11 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Farmers report that well or tubewell depth has increased noticeably over recent years, or that pumping costs have risen due to lower water tables, particularly during rabi and zaid seasons when surface water is unavailable."
+        "qualitative_description": "Farmers report that well or tubewell depth has increased noticeably over recent years, or that pumping costs have risen due to lower water tables, particularly during rabi and zaid seasons when surface water is unavailable.",
+        "expression": ""
       },
       "severity": "moderate",
-      "direction": "confirms",
+      "direction": "amplifies",
       "explanation": "In alluvial aquifer settings, well depth data are not available from the framework's remote-sensing variables. However, farmer-reported increases in pumping depth or cost during the dry season indicate that groundwater is being drawn down to compensate for failing surface irrigation infrastructure. This is a secondary stress signal: the primary pathway is irrigation infrastructure failure, but it cascades into groundwater stress when farmers over-extract to compensate. User-supplied information on well depth trends is essential to distinguish this pathway from primary groundwater depletion.",
       "active": true
     }
@@ -250,7 +251,8 @@
     "version": 1,
     "primary_confirm_signals": [
       "sig_01",
-      "sig_02"
+      "sig_02",
+      "sig_03"
     ],
     "confirm_when": {
       "min_confirms_true": 2,
@@ -258,7 +260,8 @@
       "min_from_set": {
         "signals": [
           "sig_01",
-          "sig_02"
+          "sig_02",
+          "sig_03"
         ],
         "min": 2
       }
@@ -269,7 +272,8 @@
         "min_from_set": {
           "signals": [
             "sig_01",
-            "sig_02"
+            "sig_02",
+            "sig_03"
           ],
           "min": 2
         },

@@ -12,8 +12,6 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 RAW_DIR = ROOT / "data/evidence_cards/raw"
-CSV_PATH = ROOT / "reports/review_unique_follow_ups.csv"
-REPORT = ROOT / "reports/follow_up_propagation_review.md"
 
 sys.path.insert(0, str(ROOT / "scripts"))
 from lib.follow_up_utils import (  # noqa: E402
@@ -24,7 +22,11 @@ from lib.follow_up_utils import (  # noqa: E402
     parse_choice_summary,
     sync_choices_from_template,
 )
-from lib.policy_overrides import REVIEWED_FOLLOW_UP_BY_FP  # noqa: E402
+from lib.policy_overrides import (  # noqa: E402
+    FOLLOW_UP_PROPAGATION_REVIEW,
+    REVIEWED_FOLLOW_UP_BY_FP,
+    REVIEW_UNIQUE_FOLLOW_UPS,
+)
 
 
 def build_groups() -> dict[str, list[tuple[str, dict]]]:
@@ -94,8 +96,8 @@ def main() -> int:
     parser.add_argument(
         "--csv",
         type=Path,
-        default=CSV_PATH,
-        help="Reviewed follow-up catalog (default: reports/review_unique_follow_ups.csv)",
+        default=REVIEW_UNIQUE_FOLLOW_UPS,
+        help=f"Reviewed follow-up catalog (default: {REVIEW_UNIQUE_FOLLOW_UPS.relative_to(ROOT)})",
     )
     args = parser.parse_args()
 
@@ -187,11 +189,11 @@ def main() -> int:
             handle.write("\n")
         print(f"Exported {len(templates)} template(s) to {REVIEWED_FOLLOW_UP_BY_FP}")
 
-    REPORT.parent.mkdir(parents=True, exist_ok=True)
-    REPORT.write_text("\n".join(report_lines), encoding="utf-8")
+    FOLLOW_UP_PROPAGATION_REVIEW.parent.mkdir(parents=True, exist_ok=True)
+    FOLLOW_UP_PROPAGATION_REVIEW.write_text("\n".join(report_lines), encoding="utf-8")
 
     print(f"{'Would update' if args.dry_run else 'Updated'} {len(updated_cards)} card(s) from {len(rows)} template row(s)")
-    print(f"Wrote {REPORT}")
+    print(f"Wrote {FOLLOW_UP_PROPAGATION_REVIEW}")
     return 0
 
 

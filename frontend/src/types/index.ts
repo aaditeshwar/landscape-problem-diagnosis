@@ -263,6 +263,8 @@ export interface MwsDocument {
     string,
     { total_ha?: number; kharif_ha?: number; rabi_ha?: number; zaid_ha?: number }
   >
+  swb_count?: number
+  swb_intersect?: Array<{ swb_uid?: string; name?: string; lat?: number; lon?: number }>
   lulc_ha?: Record<string, Record<string, number>>
   change_detection?: Record<string, Record<string, number>>
   intersect_villages?: {
@@ -322,6 +324,12 @@ export interface FeedbackDocument {
   sections: Record<string, FeedbackSectionDraft>
 }
 
+export interface CardDiagnosticSignal {
+  signal_id: string
+  active?: boolean
+  direction?: string
+}
+
 export interface RetrievedEvidenceCard {
   card_id: string
   pathway_id: string
@@ -329,6 +337,7 @@ export interface RetrievedEvidenceCard {
   production_system?: string
   observed_stress?: string
   causal_pathway?: string
+  diagnostic_signals?: CardDiagnosticSignal[]
 }
 
 export interface FeedbackContext {

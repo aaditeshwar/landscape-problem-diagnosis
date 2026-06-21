@@ -11,11 +11,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 RAW_DIR = ROOT / "data" / "evidence_cards" / "raw"
-REPORT_DIR = ROOT / "reports"
 
 sys.path.insert(0, str(ROOT / "scripts"))
 sys.path.insert(0, str(ROOT / "runtime"))
 from lib.card_policy_utils import signal_map  # noqa: E402
+from lib.policy_overrides import FOLLOW_UP_EFFECTS_AUDIT, POLICY_REVIEW_DIR  # noqa: E402
 from services.follow_up_mcq import mcq_confirms_result  # noqa: E402
 
 
@@ -106,8 +106,8 @@ def main() -> int:
     warns = [i for i in all_issues if i["severity"] != "error"]
 
     if args.write_report:
-        REPORT_DIR.mkdir(parents=True, exist_ok=True)
-        with (REPORT_DIR / "follow_up_effects_audit.csv").open("w", encoding="utf-8", newline="") as handle:
+        POLICY_REVIEW_DIR.mkdir(parents=True, exist_ok=True)
+        with FOLLOW_UP_EFFECTS_AUDIT.open("w", encoding="utf-8", newline="") as handle:
             writer = csv.DictWriter(handle, fieldnames=["card_id", "severity", "code", "detail"])
             writer.writeheader()
             writer.writerows(all_issues)

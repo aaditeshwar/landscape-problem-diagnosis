@@ -17,6 +17,7 @@ ROOT = Path(__file__).resolve().parents[2]
 RAW_DIR = ROOT / "data" / "evidence_cards" / "raw"
 BASELINE_DIR = ROOT / "reports" / "claude_review" / "baseline"
 REPORTS_DIR = ROOT / "reports"
+POLICY_REVIEW_DIR = REPORTS_DIR / "policy_review"
 PYTHON = sys.executable
 
 AUDIT_COMMANDS = [
@@ -26,12 +27,13 @@ AUDIT_COMMANDS = [
     ["scripts/verify/audit_card_schema.py", "--write-report"],
 ]
 
-REPORT_FILES = [
-    "policy_audit.csv",
-    "policy_audit_summary.csv",
-    "follow_up_effects_audit.csv",
-    "expression_audit.csv",
-    "schema_audit.csv",
+# (source path, baseline filename)
+REPORT_SOURCES: list[tuple[Path, str]] = [
+    (POLICY_REVIEW_DIR / "policy_audit.csv", "policy_audit.csv"),
+    (POLICY_REVIEW_DIR / "policy_audit_summary.csv", "policy_audit_summary.csv"),
+    (POLICY_REVIEW_DIR / "follow_up_effects_audit.csv", "follow_up_effects_audit.csv"),
+    (REPORTS_DIR / "expression_audit.csv", "expression_audit.csv"),
+    (REPORTS_DIR / "schema_audit.csv", "schema_audit.csv"),
 ]
 
 
@@ -80,14 +82,13 @@ def main() -> int:
 
     BASELINE_DIR.mkdir(parents=True, exist_ok=True)
     copied: list[str] = []
-    for filename in REPORT_FILES:
-        src = REPORTS_DIR / filename
+    for src, filename in REPORT_SOURCES:
         if src.exists():
             dst = BASELINE_DIR / filename
             shutil.copy2(src, dst)
             copied.append(filename)
 
-    file_pairs = [(name, BASELINE_DIR / name) for name in REPORT_FILES]
+    file_pairs = [(name, BASELINE_DIR / name) for _, name in REPORT_SOURCES]
     preflight = index_by_card(*file_pairs)
 
     all_card_ids = sorted({p.stem for p in RAW_DIR.glob("*.json")})

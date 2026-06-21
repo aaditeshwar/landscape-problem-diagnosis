@@ -170,31 +170,52 @@ export function DrySpellChart({ mws }: { mws: MwsDocument }) {
 
 export function SwbChart({ mws }: { mws: MwsDocument }) {
   const data = swbSeries(mws)
+  const swbCount = mws.swb_count
+  const countLine =
+    swbCount == null ? (
+      <p className="mt-2 text-xs text-stone-400">Water body count not available for this MWS.</p>
+    ) : (
+      <p className="mt-2 text-xs text-stone-600">
+        Water bodies intersecting MWS:{' '}
+        <span className="font-semibold text-stone-800">{swbCount}</span>
+      </p>
+    )
+
   if (data.length === 0) {
     return (
-      <ChartCard title="Surface water bodies">
-        <div className="flex h-full flex-col items-center justify-center gap-1 px-4 text-center text-sm text-stone-400">
+      <div className="rounded-lg border border-stone-200 bg-white p-3 shadow-sm">
+        <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-stone-500">
+          Surface water bodies
+        </h4>
+        <div className="flex h-44 min-h-32 flex-col items-center justify-center gap-1 px-4 text-center text-sm text-stone-400">
           <span>No surface water body time series for this MWS.</span>
           <span className="text-xs">It may be absent from the CoRE Stack SWB export sheets.</span>
         </div>
-      </ChartCard>
+        {countLine}
+      </div>
     )
   }
   return (
-    <ChartCard title="Surface water bodies">
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" />
-          <XAxis dataKey="year" tick={{ fontSize: 11 }} />
-          <YAxis tick={{ fontSize: 11 }} />
-          <Tooltip />
-          <Legend wrapperStyle={{ fontSize: 11 }} />
-          <Line type="monotone" dataKey="total" stroke="#0284c7" dot={false} name="Total ha" />
-          <Line type="monotone" dataKey="kharif" stroke="#16a34a" dot={false} name="Kharif ha" />
-          <Line type="monotone" dataKey="rabi" stroke="#ca8a04" dot={false} name="Rabi ha" />
-        </LineChart>
-      </ResponsiveContainer>
-    </ChartCard>
+    <div className="rounded-lg border border-stone-200 bg-white p-3 shadow-sm">
+      <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-stone-500">
+        Surface water bodies
+      </h4>
+      <div className="h-44 min-h-32">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" />
+            <XAxis dataKey="year" tick={{ fontSize: 11 }} />
+            <YAxis tick={{ fontSize: 11 }} />
+            <Tooltip />
+            <Legend wrapperStyle={{ fontSize: 11 }} />
+            <Line type="monotone" dataKey="total" stroke="#0284c7" dot={false} name="Total ha" />
+            <Line type="monotone" dataKey="kharif" stroke="#16a34a" dot={false} name="Kharif ha" />
+            <Line type="monotone" dataKey="rabi" stroke="#ca8a04" dot={false} name="Rabi ha" />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+      {countLine}
+    </div>
   )
 }
 

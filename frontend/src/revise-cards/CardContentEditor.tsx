@@ -7,6 +7,7 @@ function buildSignalDrafts(rawCard: Record<string, unknown> | null | undefined):
   for (const signal of indexSignals(rawCard)) {
     drafts[signal.signal_id] = {
       signal_id: signal.signal_id,
+      active: signal.active !== false,
       variables: (signal.variables ?? []).join(', '),
       expression: signal.expression ?? '',
       qualitative_description: signal.qualitative_description ?? '',
@@ -156,26 +157,33 @@ export function userCardEditToPatch(
       .split(',')
       .map((item) => item.trim())
       .filter(Boolean)
-    const changed =
+    const originalActive = original.active !== false
+    const activeChanged = edited.active !== originalActive
+    const fieldsChanged =
       edited.expression !== (original.expression ?? '')
       || edited.qualitative_description !== (original.qualitative_description ?? '')
       || edited.explanation !== (original.explanation ?? '')
       || edited.severity !== (original.severity ?? '')
       || edited.direction !== (original.direction ?? '')
       || JSON.stringify(nextVariables) !== JSON.stringify(original.variables ?? [])
-    if (!changed) continue
+    if (!activeChanged && !fieldsChanged) continue
     const signalPatch: Record<string, unknown> = {
       signal_id: original.signal_id,
-      variables: nextVariables,
-      severity: edited.severity,
-      direction: edited.direction,
-      condition: {
+    }
+    if (activeChanged) {
+      signalPatch.active = edited.active
+    }
+    if (fieldsChanged) {
+      signalPatch.variables = nextVariables
+      signalPatch.severity = edited.severity
+      signalPatch.direction = edited.direction
+      signalPatch.condition = {
         expression: edited.expression,
         qualitative_description: edited.qualitative_description,
-      },
-    }
-    if (edited.explanation !== (original.explanation ?? '')) {
-      signalPatch.explanation = edited.explanation
+      }
+      if (edited.explanation !== (original.explanation ?? '')) {
+        signalPatch.explanation = edited.explanation
+      }
     }
     signalPatches.push(signalPatch)
   }
@@ -289,11 +297,57 @@ export function CardContentEditor({ draft, disabled, onChange }: CardContentEdit
                   className="flex w-full items-center justify-between px-3 py-2 text-left text-sm font-mono font-semibold text-stone-800"
                   onClick={() => setOpenSignals((prev) => ({ ...prev, [signalId]: !expanded }))}
                 >
-                  <span>{signalId}</span>
+                  <span className="flex items-center gap-2">
+                    <span>{signalId}</span>
+                    <select
+                      className={`rounded border px-1.5 py-0.5 text-[10px] font-normal uppercase ${
+                        signal.active
+                          ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+                          : 'border-stone-200 bg-stone-100 text-stone-500'
+                      }`}
+                      disabled={disabled}
+                      value={signal.active ? 'active' : 'inactive'}
+                      onClick={(event) => event.stopPropagation()}
+                      onChange={(event) =>
+                        onChange({
+                          ...draft,
+                          dirty: true,
+                          signals: {
+                            ...draft.signals,
+                            [signalId]: { ...signal, active: event.target.value === 'active' },
+                          },
+                        })
+                      }
+                    >
+                      <option value="active">active</option>
+                      <option value="inactive">inactive</option>
+                    </select>
+                  </span>
                   <span className="text-xs font-normal text-stone-500">{expanded ? 'Hide' : 'Edit'}</span>
                 </button>
                 {expanded && (
                   <div className="space-y-3 border-t border-stone-100 p-3">
+                    <div>
+                      <label className={labelClass}>Status</label>
+                      <select
+                        className={inputClass}
+                        disabled={disabled}
+                        value={signal.active ? 'active' : 'inactive'}
+                        onChange={(event) =>
+                          onChange({
+                            ...draft,
+                            dirty: true,
+                            signals: {
+                              ...draft.signals,
+                              [signalId]: { ...signal, active: event.target.value === 'active' },
+                            },
+                          })
+                        }
+                      >
+                        <option value="active">Active — evaluated at diagnosis time</option>
+                        <option value="inactive">Inactive — skipped during evaluation</option>
+                      </select>
+                    </div>
                     <div className="grid gap-3 md:grid-cols-2">
                       <div>
                         <label className={labelClass}>Severity</label>

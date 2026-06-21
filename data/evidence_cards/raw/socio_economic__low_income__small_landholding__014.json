@@ -55,7 +55,7 @@
         ]
       },
       "severity": "moderate",
-      "direction": "amplifies",
+      "direction": "confirms",
       "explanation": "Small landholdings can partially offset their size disadvantage through higher cropping intensity (double-cropping, relay cropping). In semi-arid hard-rock aquifer zones of Malwa and Gujarat, where groundwater access is limited, cropping intensity often remains near 1.0–1.15. When mean_cropping_intensity stays at or below 1.15, the household produces only one crop per year on an already small plot, severely limiting marketable surplus and annual income. Fan and Rue (2020) note that limited access to markets, financial capital, and infrastructure are soft constraints that keep smallholders from moving up to commercially viable production.",
       "active": true
     },
@@ -75,7 +75,7 @@
         ]
       },
       "severity": "high",
-      "direction": "amplifies",
+      "direction": "confirms",
       "explanation": "Remote smallholders in semi-arid Malwa and Gujarat are doubly disadvantaged: they cannot realise fair prices for crops (exploited by intermediaries when APMC is distant) and cannot access dairy income diversification (when dairy infrastructure is far). FPO literature (Sharma et al. 2018; Singh & Singh 2019) consistently identifies market access as the primary benefit of collective action for small farmers. When both APMC and dairy are distant, the household is locked into a single, low-value livelihood with no price discovery.",
       "active": true
     },
@@ -403,6 +403,8 @@
     "version": 1,
     "primary_confirm_signals": [
       "sig_01",
+      "sig_02",
+      "sig_03",
       "sig_05"
     ],
     "confirm_when": {
@@ -411,6 +413,8 @@
       "min_from_set": {
         "signals": [
           "sig_01",
+          "sig_02",
+          "sig_03",
           "sig_05"
         ],
         "min": 2
@@ -422,6 +426,8 @@
         "min_from_set": {
           "signals": [
             "sig_01",
+            "sig_02",
+            "sig_03",
             "sig_05"
           ],
           "min": 2

@@ -72,7 +72,11 @@ export function DiagnosisApp() {
   const diagnosisLoadingRef = useRef(false)
   const analysisMwsDocRef = useRef<MwsDocument | null>(null)
   const selectedTehsilRef = useRef<TehsilRef | null>(null)
+  const selectedMwsUidRef = useRef<string | null>(null)
+  const mwsBoundariesRef = useRef<MwsFeatureCollection | null>(null)
   selectedTehsilRef.current = selectedTehsil
+  selectedMwsUidRef.current = selectedMwsUid
+  mwsBoundariesRef.current = mwsBoundaries
   diagnosisSessionMwsUidRef.current = diagnosisSessionMwsUid
   diagnosisSessionTehsilRef.current = diagnosisSessionTehsil
   diagnosisLoadingRef.current = diagnosisLoading
@@ -144,85 +148,115 @@ export function DiagnosisApp() {
     return null
   }, [])
 
-  const restoreActiveDiagnosisContext = useCallback(async () => {
-    const ctx = diagnosisContextSnapshot()
-    if (!ctx) return
+  function sameDiagnosisMapContext(
+    ctx: { mwsUid: string; tehsil: TehsilRef },
+    tehsil: TehsilRef | null,
+    mwsUid: string | null,
+  ): boolean {
+    if (!tehsil || mwsUid !== ctx.mwsUid) return false
+    return (
+      tehsil.state === ctx.tehsil.state &&
+      tehsil.district === ctx.tehsil.district &&
+      tehsil.tehsil === ctx.tehsil.tehsil
+    )
+  }
 
-    restoringDiagnosisContextRef.current = true
-    mwsSelectSeq.current += 1
-    tehsilLoadSeq.current += 1
-    const epoch = ++restoreEpoch.current
-    const restoreTehsilSeq = tehsilLoadSeq.current
-    try {
-      setMapError(null)
-      setSelectedTehsil(ctx.tehsil)
-      setMwsBoundaries(null)
-      if (showVillages) setVillageBoundaries(null)
+  function sameDiagnosisTehsil(ctx: { tehsil: TehsilRef }, tehsil: TehsilRef | null): boolean {
+    if (!tehsil) return false
+    return (
+      tehsil.state === ctx.tehsil.state &&
+      tehsil.district === ctx.tehsil.district &&
+      tehsil.tehsil === ctx.tehsil.tehsil
+    )
+  }
 
-      let restoredBoundaries: MwsFeatureCollection | null = null
-      try {
-        const boundaries = await fetchMwsBoundaries(ctx.tehsil)
-        if (restoreEpoch.current !== epoch) return
-        if (tehsilLoadSeq.current === restoreTehsilSeq) {
-          setMwsBoundaries(boundaries)
-          restoredBoundaries = boundaries
+  const restoreActiveDiagnosisContext = useCallback(
+    async (options?: { fly?: boolean }) => {
+      const ctx = diagnosisContextSnapshot()
+      if (!ctx) return
+
+      const currentTehsil = selectedTehsilRef.current
+      const currentMwsUid = selectedMwsUidRef.current
+      const sameContext = sameDiagnosisMapContext(ctx, currentTehsil, currentMwsUid)
+      const sameTehsil = sameDiagnosisTehsil(ctx, currentTehsil)
+      const boundaries = mwsBoundariesRef.current
+
+      if (sameContext && boundaries) {
+        if (options?.fly === true) {
+          flyToMwsUid(ctx.mwsUid, ctx.tehsil, boundaries)
         }
-      } catch (err) {
-        if (restoreEpoch.current !== epoch) return
-        if (tehsilLoadSeq.current === restoreTehsilSeq) {
-          setMwsBoundaries(null)
-          setMapError(err instanceof Error ? err.message : 'Failed to load tehsil layers')
-        }
+        activeDiagnosisContextRef.current = null
+        return
       }
 
-      if (restoreEpoch.current !== epoch) return
+      restoringDiagnosisContextRef.current = true
+      mwsSelectSeq.current += 1
+      const epoch = ++restoreEpoch.current
+      const restoreTehsilSeq = sameTehsil ? tehsilLoadSeq.current : ++tehsilLoadSeq.current
+      try {
+        setMapError(null)
+        setSelectedTehsil(ctx.tehsil)
+        if (!sameTehsil) {
+          setMwsBoundaries(null)
+          if (showVillages) setVillageBoundaries(null)
+        }
 
-      if (!restoredBoundaries) {
+        let restoredBoundaries: MwsFeatureCollection | null = sameTehsil ? boundaries : null
+        if (!restoredBoundaries) {
+          try {
+            const fetched = await fetchMwsBoundaries(ctx.tehsil)
+            if (restoreEpoch.current !== epoch) return
+            if (tehsilLoadSeq.current === restoreTehsilSeq) {
+              setMwsBoundaries(fetched)
+              restoredBoundaries = fetched
+            }
+          } catch (err) {
+            if (restoreEpoch.current !== epoch) return
+            if (tehsilLoadSeq.current === restoreTehsilSeq) {
+              setMwsBoundaries(null)
+              setMapError(err instanceof Error ? err.message : 'Failed to load tehsil layers')
+            }
+          }
+        }
+
+        if (restoreEpoch.current !== epoch) return
+
+        setSelectedMwsUid(ctx.mwsUid)
+        setMwsHighlightEpoch((value) => value + 1)
+        setMwsLoading(true)
+        setMapError(null)
         try {
-          const boundaries = await fetchMwsBoundaries(ctx.tehsil)
+          const doc = await fetchMws(ctx.mwsUid)
           if (restoreEpoch.current !== epoch) return
-          setMwsBoundaries(boundaries)
-          restoredBoundaries = boundaries
+          setMwsData(doc)
+          if (restoredBoundaries && options?.fly !== false) {
+            flyToMwsUid(ctx.mwsUid, ctx.tehsil, restoredBoundaries)
+          }
         } catch (err) {
           if (restoreEpoch.current !== epoch) return
-          setMapError(err instanceof Error ? err.message : 'Failed to load tehsil layers')
+          setMwsData(null)
+          setMapError(err instanceof Error ? err.message : 'Failed to load MWS')
+        } finally {
+          if (restoreEpoch.current === epoch) {
+            setMwsLoading(false)
+          }
         }
-      }
-
-      if (restoreEpoch.current !== epoch) return
-
-      setSelectedMwsUid(ctx.mwsUid)
-      setMwsHighlightEpoch((value) => value + 1)
-      setMwsLoading(true)
-      setMapError(null)
-      try {
-        const doc = await fetchMws(ctx.mwsUid)
-        if (restoreEpoch.current !== epoch) return
-        setMwsData(doc)
-        flyToMwsUid(ctx.mwsUid, ctx.tehsil, restoredBoundaries)
-      } catch (err) {
-        if (restoreEpoch.current !== epoch) return
-        setMwsData(null)
-        setMapError(err instanceof Error ? err.message : 'Failed to load MWS')
       } finally {
         if (restoreEpoch.current === epoch) {
-          setMwsLoading(false)
+          activeDiagnosisContextRef.current = null
         }
+        restoringDiagnosisContextRef.current = false
       }
-    } finally {
-      if (restoreEpoch.current === epoch) {
-        activeDiagnosisContextRef.current = null
-      }
-      restoringDiagnosisContextRef.current = false
-    }
-  }, [showVillages, diagnosisContextSnapshot])
+    },
+    [showVillages, diagnosisContextSnapshot],
+  )
 
   const focusDiagnosisMwsOnMap = useCallback(async () => {
     const mwsUid = diagnosisSessionMwsUidRef.current
     const tehsil = diagnosisSessionTehsilRef.current
     if (!mwsUid || !tehsil) return
     activeDiagnosisContextRef.current = { mwsUid, tehsil }
-    await restoreActiveDiagnosisContext()
+    await restoreActiveDiagnosisContext({ fly: true })
   }, [restoreActiveDiagnosisContext])
 
   useEffect(() => {
