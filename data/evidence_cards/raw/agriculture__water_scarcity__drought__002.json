@@ -78,7 +78,7 @@
         ]
       },
       "severity": "high",
-      "direction": "confirms",
+      "direction": "amplifies",
       "explanation": "The India Drought Manual prescribes a composite drought classification using SPI for meteorological drought, MAI for agricultural drought, and VCI for vegetation condition. Studies on kharif rice in Indian districts show SPI and VCI are both positively correlated with productivity index (r=0.61–0.70 for September SPI and VCI), confirming that co-occurrence of low SPI and low VCI reliably identifies drought-driven crop water stress. In semi-arid Deccan Plateau zones with crystalline basement aquifers, low MAI reflects rapid soil moisture depletion with no groundwater buffer, making the composite signal particularly diagnostic.",
       "active": true
     },
@@ -100,7 +100,7 @@
         ]
       },
       "severity": "moderate",
-      "direction": "amplifies",
+      "direction": "confirms",
       "explanation": "In semi-arid zones receiving 500–960 mm annually (AER-3, AER-7, AER-8), a kharif season receiving less than 75% of the long-term mean represents a significant deficit that cannot be compensated by groundwater in hard rock aquifers with low storativity. A declining multi-year precipitation trend amplifies drought risk by reducing the baseline from which deficits are measured. The water-food-energy nexus analysis for India shows that after drought years, groundwater storage drops and cannot recover even in subsequent good monsoon years, making trend confirmation critical for distinguishing chronic drought from episodic events.",
       "active": true
     },
@@ -200,18 +200,16 @@
     "primary_confirm_signals": [
       "sig_01",
       "sig_02",
-      "sig_03"
+      "sig_04"
     ],
     "confirm_when": {
       "min_confirms_true": 2,
-      "required_all": [
-        "sig_03"
-      ],
       "amplifiers_do_not_confirm": true,
       "min_from_set": {
         "signals": [
           "sig_01",
-          "sig_02"
+          "sig_02",
+          "sig_04"
         ],
         "min": 1
       }
@@ -223,7 +221,7 @@
           "signals": [
             "sig_01",
             "sig_02",
-            "sig_03"
+            "sig_04"
           ],
           "min": 2
         },

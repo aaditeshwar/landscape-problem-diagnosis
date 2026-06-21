@@ -42,6 +42,7 @@ ASSEMBLER_DERIVED_VARIABLE_NAMES = frozenset(
         "trend_swb_total_area_ha",
         "mean_swb_rabi_kharif_ratio",
         "trend_swb_rabi_kharif_ratio",
+        "tree_cover_percent_mws",
     }
 )
 
@@ -270,6 +271,40 @@ def drought_return_period(weeks_series: dict | None, *, min_weeks: float = 1.0) 
     return round(len(pairs) / event_years, 2)
 
 
+def latest_lulc_field_ha(mws_doc: dict, field: str) -> float | None:
+    """Return the latest agricultural year value for one lulc_ha class field."""
+    lulc = mws_doc.get("lulc_ha") or {}
+    latest_year: int | None = None
+    latest_val: float | None = None
+    for year, row in lulc.items():
+        if not isinstance(row, dict) or row.get(field) is None:
+            continue
+        try:
+            year_i = int(year)
+            value = float(row[field])
+        except (TypeError, ValueError):
+            continue
+        if latest_year is None or year_i > latest_year:
+            latest_year = year_i
+            latest_val = value
+    return latest_val
+
+
+def tree_cover_percent_mws(mws_doc: dict) -> float | None:
+    """Latest tree/forest LULC hectares as percent of total MWS area."""
+    area = mws_doc.get("area_ha")
+    tree_ha = latest_lulc_field_ha(mws_doc, "tree_forest")
+    if area is None or tree_ha is None:
+        return None
+    try:
+        area_f = float(area)
+        if area_f <= 0:
+            return None
+        return round(tree_ha / area_f * 100.0, 2)
+    except (TypeError, ValueError):
+        return None
+
+
 def resolve_derived(mws_doc: dict, variable: str) -> Any:
     """Resolve a derived diagnostic variable name to a scalar or series."""
     if variable == "mean_annual_precipitation_mm":
@@ -326,4 +361,6 @@ def resolve_derived(mws_doc: dict, variable: str) -> Any:
         return latest_drought_metric(mws_doc, "severe_moderate", "vci_score")
     if variable == "drought_severe_moderate_path_score_latest":
         return latest_drought_path_score(mws_doc)
+    if variable == "tree_cover_percent_mws":
+        return tree_cover_percent_mws(mws_doc)
     return None

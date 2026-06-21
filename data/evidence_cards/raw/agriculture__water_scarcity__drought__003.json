@@ -61,7 +61,7 @@
         ]
       },
       "severity": "high",
-      "direction": "confirms",
+      "direction": "amplifies",
       "explanation": "The India Drought Manual uses a composite of SPI (meteorological drought), MAI (soil moisture adequacy), and VCI (vegetation condition) to classify drought type and severity. In the sub-humid alluvial plains of Punjab, Haryana, and western UP, SPI and VCI together explain 69–76% of variability in kharif rice productivity index, making this composite the most robust confirmation of drought-driven water scarcity.",
       "active": true
     },
@@ -92,7 +92,7 @@
       ],
       "condition": {
         "type": "composite",
-        "expression": "seasonal_precipitation_mm[-1].get('kharif', 0) < 0.75 * mean_annual_precipitation_mm or mean_annual_precipitation_mm < 700 or trend_annual_precipitation_mm < -5",
+        "expression": "seasonal_precipitation_mm[-1].get('kharif', 9999) < 0.75 * mean_annual_precipitation_mm or mean_annual_precipitation_mm < 700 or trend_annual_precipitation_mm < -5",
         "qualitative_description": "Kharif seasonal rainfall below 75% of the long-term annual mean, or mean annual precipitation below 700 mm, or a declining trend exceeding 5 mm/year confirms structural precipitation deficit underpinning drought risk.",
         "variables": [
           "mean_annual_precipitation_mm",
@@ -213,7 +213,6 @@
     "version": 1,
     "primary_confirm_signals": [
       "sig_01",
-      "sig_02",
       "sig_03",
       "sig_04"
     ],
@@ -223,7 +222,6 @@
       "min_from_set": {
         "signals": [
           "sig_01",
-          "sig_02",
           "sig_03",
           "sig_04"
         ],
@@ -236,7 +234,6 @@
         "min_from_set": {
           "signals": [
             "sig_01",
-            "sig_02",
             "sig_03",
             "sig_04"
           ],

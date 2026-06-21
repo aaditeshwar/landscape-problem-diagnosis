@@ -77,6 +77,7 @@ class DiagnosisRequestTrace:
     follow_up_signal_updates: list[dict[str, Any]] = field(default_factory=list)
     want_llm_opinion: bool = False
     llm_skipped: bool = False
+    skipped_production_systems: list[dict[str, Any]] = field(default_factory=list)
     follow_up_count: int = 0
     turn_no: int | None = None
     log_index: int | None = None

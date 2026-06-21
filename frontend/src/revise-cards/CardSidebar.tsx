@@ -1,5 +1,6 @@
+import { useEffect, useLayoutEffect, useRef } from 'react'
 import type { ReviewCardSummary } from './types'
-import { severityClasses } from './utils'
+import { severityClasses, sidebarActiveClasses } from './utils'
 
 type CardSidebarProps = {
   cards: ReviewCardSummary[]
@@ -9,6 +10,30 @@ type CardSidebarProps = {
 
 export function CardSidebar({ cards, selectedCardId, onSelect }: CardSidebarProps) {
   const finalizedCount = cards.filter((card) => card.finalized).length
+  const listRef = useRef<HTMLDivElement>(null)
+  const scrollTopRef = useRef(0)
+
+  useEffect(() => {
+    const list = listRef.current
+    if (!list) return
+    const saveScroll = () => {
+      scrollTopRef.current = list.scrollTop
+    }
+    list.addEventListener('scroll', saveScroll, { passive: true })
+    return () => list.removeEventListener('scroll', saveScroll)
+  }, [])
+
+  useLayoutEffect(() => {
+    const list = listRef.current
+    if (list) list.scrollTop = scrollTopRef.current
+  }, [cards, selectedCardId])
+
+  const handleSelect = (cardId: string) => {
+    if (listRef.current) {
+      scrollTopRef.current = listRef.current.scrollTop
+    }
+    onSelect(cardId)
+  }
 
   return (
     <aside className="flex h-full w-96 shrink-0 flex-col border-r border-stone-300 bg-stone-100/80">
@@ -18,7 +43,7 @@ export function CardSidebar({ cards, selectedCardId, onSelect }: CardSidebarProp
           {finalizedCount} / {cards.length} finalized
         </p>
       </div>
-      <div className="flex-1 overflow-y-auto">
+      <div ref={listRef} className="flex-1 overflow-y-auto">
         {cards.map((card) => {
           const styles = severityClasses('', card.overall_score)
           const active = card.card_id === selectedCardId
@@ -26,27 +51,35 @@ export function CardSidebar({ cards, selectedCardId, onSelect }: CardSidebarProp
             <button
               key={card.card_id}
               type="button"
-              onClick={() => onSelect(card.card_id)}
+              onClick={() => handleSelect(card.card_id)}
               title={card.card_id}
-              className={`block w-full border-b border-stone-200 px-4 py-3 text-left transition ${
-                active ? 'bg-white shadow-inner' : 'hover:bg-white/70'
+              className={`block w-full border-b border-stone-200 px-4 py-3 text-left transition border-l-4 ${
+                active ? sidebarActiveClasses(card.overall_score) : 'border-l-transparent hover:bg-white/70'
               }`}
             >
               <div className="flex items-start justify-between gap-2">
-                <span className="min-w-0 break-all font-mono text-[11px] leading-snug text-stone-900">
+                <span
+                  className={`min-w-0 break-all font-mono text-[11px] leading-snug ${
+                    active ? 'font-semibold text-stone-950' : 'text-stone-900'
+                  }`}
+                >
                   {card.card_id}
                 </span>
-                <span
-                  className={`shrink-0 rounded border px-1.5 py-0.5 text-[10px] font-semibold uppercase ${styles.badge}`}
-                >
-                  {card.overall_score}
-                </span>
+                <div className="flex shrink-0 flex-col items-end gap-1">
+                  <span
+                    className={`rounded border px-1.5 py-0.5 text-[10px] font-semibold uppercase ${styles.badge}`}
+                  >
+                    {card.overall_score}
+                  </span>
+                  {card.finalized && (
+                    <span className="text-[10px] font-semibold uppercase tracking-wide text-emerald-800">
+                      Finalized
+                    </span>
+                  )}
+                </div>
               </div>
               <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-stone-600">
                 <span>{card.finding_count} issues</span>
-                {card.finalized && (
-                  <span className="font-medium text-emerald-700">Finalized</span>
-                )}
                 {(card.pending_count ?? 0) > 0 && (
                   <span className="font-medium text-amber-800">{card.pending_count} pending</span>
                 )}

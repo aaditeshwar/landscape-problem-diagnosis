@@ -10,6 +10,7 @@ function buildSignalDrafts(rawCard: Record<string, unknown> | null | undefined):
       variables: (signal.variables ?? []).join(', '),
       expression: signal.expression ?? '',
       qualitative_description: signal.qualitative_description ?? '',
+      explanation: signal.explanation ?? '',
       severity: signal.severity ?? '',
       direction: signal.direction ?? '',
     }
@@ -158,11 +159,12 @@ export function userCardEditToPatch(
     const changed =
       edited.expression !== (original.expression ?? '')
       || edited.qualitative_description !== (original.qualitative_description ?? '')
+      || edited.explanation !== (original.explanation ?? '')
       || edited.severity !== (original.severity ?? '')
       || edited.direction !== (original.direction ?? '')
       || JSON.stringify(nextVariables) !== JSON.stringify(original.variables ?? [])
     if (!changed) continue
-    signalPatches.push({
+    const signalPatch: Record<string, unknown> = {
       signal_id: original.signal_id,
       variables: nextVariables,
       severity: edited.severity,
@@ -171,7 +173,11 @@ export function userCardEditToPatch(
         expression: edited.expression,
         qualitative_description: edited.qualitative_description,
       },
-    })
+    }
+    if (edited.explanation !== (original.explanation ?? '')) {
+      signalPatch.explanation = edited.explanation
+    }
+    signalPatches.push(signalPatch)
   }
   if (signalPatches.length) {
     patch.diagnostic_signals = signalPatches
@@ -375,6 +381,24 @@ export function CardContentEditor({ draft, disabled, onChange }: CardContentEdit
                             signals: {
                               ...draft.signals,
                               [signalId]: { ...signal, qualitative_description: event.target.value },
+                            },
+                          })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Explanation</label>
+                      <textarea
+                        className={`${inputClass} min-h-32 font-serif leading-relaxed`}
+                        disabled={disabled}
+                        value={signal.explanation}
+                        onChange={(event) =>
+                          onChange({
+                            ...draft,
+                            dirty: true,
+                            signals: {
+                              ...draft.signals,
+                              [signalId]: { ...signal, explanation: event.target.value },
                             },
                           })
                         }

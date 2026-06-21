@@ -12,7 +12,7 @@ import {
   pathwaySectionKey,
   type AgreementValue,
 } from '../../utils/feedbackSections'
-import { formatPathwayHierarchy } from '../../utils/pathwayLabels'
+import { formatPathwayHierarchy, productionLabel } from '../../utils/pathwayLabels'
 import { AgreementControl } from './AgreementControl'
 import { SignalRichText } from '../SignalRichText'
 
@@ -124,6 +124,9 @@ export function FeedbackComparisonGrid({
   onSectionChange,
 }: Props) {
   const showLlm = context.want_llm_opinion && !context.llm_skipped
+  const skippedSystems = new Set(
+    (context.skipped_production_systems ?? []).map((skip) => skip.production_system),
+  )
   const pathways: PathwayWithStatus[] = [
     ...context.server_diagnosis.confirmed_pathways.map((pathway) => ({
       ...pathway,
@@ -133,7 +136,7 @@ export function FeedbackComparisonGrid({
       ...pathway,
       serverStatus: 'uncertain' as const,
     })),
-  ]
+  ].filter((pathway) => !pathway.production_system || !skippedSystems.has(pathway.production_system))
   const signalEvaluation = context.server_diagnosis.signal_evaluation
   const answerText =
     context.server_diagnosis.panel_update_explanation?.trim() ||
@@ -193,6 +196,20 @@ export function FeedbackComparisonGrid({
           Compare server and LLM outputs, record agreement, and link to signal edits where evidence needs changing.
         </p>
       </div>
+
+      {(context.skipped_production_systems?.length ?? 0) > 0 ? (
+        <div className="rounded-lg border border-sky-200 bg-sky-50/80 px-3 py-2 text-sm text-sky-950">
+          <div className="font-medium">Skipped at diagnosis time</div>
+          <ul className="mt-1 list-disc space-y-1 pl-5 text-sky-900">
+            {context.skipped_production_systems?.map((skip) => (
+              <li key={`${skip.production_system}-${skip.rule_id ?? 'rule'}`}>
+                <span className="font-medium">{productionLabel(skip.production_system)}</span>
+                {skip.message ? `: ${skip.message}` : null}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
 
       {pathways.map((pathway) => {
         const sectionKey = pathwaySectionKey(pathway.pathway_id)

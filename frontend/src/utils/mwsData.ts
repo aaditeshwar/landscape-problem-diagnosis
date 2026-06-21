@@ -88,6 +88,10 @@ export function droughtSeries(mws: MwsDocument): DroughtPoint[] {
   })
 }
 
+export function droughtHasChartData(mws: MwsDocument): boolean {
+  return droughtSeries(mws).some((point) => point.moderate > 0 || point.severe > 0)
+}
+
 export function drySpellSeries(mws: MwsDocument): YearPoint[] {
   const data = mws.drought_kharif ?? {}
   return sortedYears(data)
@@ -164,17 +168,17 @@ const DEGRADATION_BREAKDOWN: ChangeSegmentSpec[] = [
 ]
 
 const AFFORESTATION_BREAKDOWN: ChangeSegmentSpec[] = [
-  { key: 'barren_to_forest_ha', label: 'Barren → forest', color: '#84cc16' },
-  { key: 'built_up_to_forest_ha', label: 'Built-up → forest', color: '#65a30d' },
-  { key: 'farm_to_forest_ha', label: 'Farm → forest', color: '#15803d' },
-  { key: 'scrubland_to_forest_ha', label: 'Scrub → forest', color: '#166534' },
+  { key: 'barren_to_forest_ha', label: 'Barren → trees', color: '#84cc16' },
+  { key: 'built_up_to_forest_ha', label: 'Built-up → trees', color: '#65a30d' },
+  { key: 'farm_to_forest_ha', label: 'Farm → trees', color: '#15803d' },
+  { key: 'scrubland_to_forest_ha', label: 'Scrub → trees', color: '#166534' },
 ]
 
 const DEFORESTATION_BREAKDOWN: ChangeSegmentSpec[] = [
-  { key: 'forest_to_barren_ha', label: 'Forest → barren', color: '#78716c' },
-  { key: 'forest_to_built_up_ha', label: 'Forest → built-up', color: '#d97706' },
-  { key: 'forest_to_farm_ha', label: 'Forest → farm', color: '#ca8a04' },
-  { key: 'forest_to_scrubland_ha', label: 'Forest → scrub', color: '#a8a29e' },
+  { key: 'forest_to_barren_ha', label: 'Trees → barren', color: '#78716c' },
+  { key: 'forest_to_built_up_ha', label: 'Trees → built-up', color: '#d97706' },
+  { key: 'forest_to_farm_ha', label: 'Trees → farm', color: '#ca8a04' },
+  { key: 'forest_to_scrubland_ha', label: 'Trees → scrub', color: '#a8a29e' },
 ]
 
 const URBANIZATION_BREAKDOWN: ChangeSegmentSpec[] = [

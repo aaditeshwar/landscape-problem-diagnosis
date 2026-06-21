@@ -79,7 +79,7 @@
         ]
       },
       "severity": "high",
-      "direction": "confirms",
+      "direction": "amplies",
       "explanation": "The India Drought Manual prescribes a composite index approach combining SPI (meteorological drought), MAI (agricultural/soil moisture drought), and VCI (vegetation response) to classify drought type and severity. SPI ≤ -1.0 indicates moderate-to-severe meteorological deficit; MAI < 0.5 signals that soil moisture is less than half of crop requirement; VCI < 35 reflects vegetation stress detectable from MODIS NDVI. Studies on kharif rice in Uttar Pradesh found SPI and VCI significantly correlated with productivity index (r = 0.61–0.70), validating this composite approach for diagnosing agricultural drought impact.",
       "active": true
     },
@@ -91,7 +91,7 @@
       ],
       "condition": {
         "type": "composite",
-        "expression": "mean_annual_precipitation_mm < 400 and seasonal_precipitation_mm[-1].get('kharif', 999) < (0.75 * (sum(v.get('kharif', 0) for v in list(seasonal_precipitation_mm.values())[:-1]) / max(len(seasonal_precipitation_mm) - 1, 1)))",
+        "expression": "mean_annual_precipitation_mm < 400 and seasonal_precipitation_mm[-1].get('kharif', 9999) < (0.75 * (sum(v.get('kharif', 0) for v in list(seasonal_precipitation_mm.values())[:-1]) / max(len(seasonal_precipitation_mm) - 1, 1)))",
         "qualitative_description": "Mean annual precipitation below 400 mm (AER-2 threshold) and current kharif seasonal rainfall more than 25% below the multi-year kharif mean confirm a below-normal monsoon year in an already water-scarce baseline.",
         "variables": [
           "mean_annual_precipitation_mm",
@@ -199,7 +199,7 @@
     "primary_confirm_signals": [
       "sig_01",
       "sig_02",
-      "sig_03"
+      "sig_04"
     ],
     "confirm_when": {
       "min_confirms_true": 2,
@@ -208,7 +208,7 @@
         "signals": [
           "sig_01",
           "sig_02",
-          "sig_03"
+          "sig_04"
         ],
         "min": 2
       }
@@ -220,7 +220,7 @@
           "signals": [
             "sig_01",
             "sig_02",
-            "sig_03"
+            "sig_04"
           ],
           "min": 2
         },

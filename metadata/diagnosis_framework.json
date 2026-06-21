@@ -837,6 +837,15 @@
         }
       },
       "NTFP_Forest_Biodiversity": {
+        "eligibility": {
+          "skip_when": [
+            {
+              "id": "min_tree_cover",
+              "expression": "tree_cover_percent_mws < 10",
+              "message": "Tree cover is below 10% of MWS area — NTFP/forestry pathways skipped."
+            }
+          ]
+        },
         "observed_stresses": {
           "ntfp_decline": {
             "description": "Non-timber forest produce collection declining in quantity or quality; reduced access for dependent communities.",
@@ -848,6 +857,11 @@
                     "variable": "lulc_tree_forest_ha",
                     "rationale": "Absolute forest area and its trend over 2017–2024 measures forest cover change",
                     "availability": "available"
+                  },
+                  {
+                    "variable": "tree_cover_percent_mws",
+                    "rationale": "Latest tree/forest cover as percent of MWS area; used for production-system eligibility (skip NTFP when below 10%)",
+                    "availability": "derived"
                   },
                   {
                     "variable": "cd_total_deforestation_ha",

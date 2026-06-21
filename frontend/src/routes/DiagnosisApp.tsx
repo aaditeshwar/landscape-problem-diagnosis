@@ -472,7 +472,7 @@ export function DiagnosisApp() {
     <div className="flex h-full flex-col">
       <header className="flex items-center justify-between border-b border-stone-300 bg-[#3f2f1f] px-4 py-3 text-white shadow">
         <div>
-          <h1 className="text-lg font-semibold">Landscape Problem Diagnosis</h1>
+          <h1 className="text-lg font-semibold">CoRE Insights</h1>
           <p className="text-sm text-amber-100/80">Micro-watershed explorer · {ingestedCount} ingested tehsils</p>
         </div>
         <div className="flex items-center gap-3 text-sm">

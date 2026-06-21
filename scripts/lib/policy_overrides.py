@@ -6,9 +6,12 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+REPORTS_DIR = ROOT / "reports"
 PILOT_POLICIES = ROOT / "metadata" / "pilot_confirmation_policies.json"
-POLICY_CORRECTIONS = ROOT / "metadata" / "policy_corrections.json"
-REVIEWED_BY_FP = ROOT / "metadata" / "reviewed_policy_by_fingerprint.json"
+POLICY_CORRECTIONS = REPORTS_DIR / "policy_corrections.json"
+REVIEWED_POLICY_BY_FP = REPORTS_DIR / "reviewed_policy_by_fingerprint.json"
+REVIEWED_FOLLOW_UP_BY_FP = REPORTS_DIR / "reviewed_follow_up_by_fingerprint.json"
+REVIEWED_BY_FP = REVIEWED_POLICY_BY_FP
 RAW_DIR = ROOT / "data" / "evidence_cards" / "raw"
 
 

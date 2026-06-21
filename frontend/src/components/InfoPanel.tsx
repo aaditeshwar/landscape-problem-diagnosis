@@ -186,13 +186,13 @@ export function InfoPanel({ mws, loading, panelUpdates, activeTehsil }: Props) {
                 breakdown={landBreakdowns.degradation}
               />
               <LandChangeRow
-                label="Afforestation"
+                label="Tree cover increase"
                 value={landChange.afforestation}
                 tone="emerald"
                 breakdown={landBreakdowns.afforestation}
               />
               <LandChangeRow
-                label="Deforestation"
+                label="Tree cover decrease"
                 value={landChange.deforestation}
                 tone="red"
                 breakdown={landBreakdowns.deforestation}

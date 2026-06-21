@@ -29,7 +29,7 @@ function titleCaseWords(value: string): string {
     .join(' ')
 }
 
-function productionLabel(value: string | undefined): string | null {
+export function productionLabel(value: string | undefined): string | null {
   if (!value) return null
   return PRODUCTION_SYSTEM_LABELS[value] ?? titleCaseWords(value)
 }

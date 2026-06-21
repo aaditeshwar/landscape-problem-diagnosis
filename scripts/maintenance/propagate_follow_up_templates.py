@@ -13,7 +13,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 RAW_DIR = ROOT / "data/evidence_cards/raw"
 CSV_PATH = ROOT / "reports/review_unique_follow_ups.csv"
-REVIEWED_BY_FP = ROOT / "metadata/reviewed_follow_up_by_fingerprint.json"
 REPORT = ROOT / "reports/follow_up_propagation_review.md"
 
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -25,6 +24,7 @@ from lib.follow_up_utils import (  # noqa: E402
     parse_choice_summary,
     sync_choices_from_template,
 )
+from lib.policy_overrides import REVIEWED_FOLLOW_UP_BY_FP  # noqa: E402
 
 
 def build_groups() -> dict[str, list[tuple[str, dict]]]:
@@ -181,11 +181,11 @@ def main() -> int:
     if not args.dry_run:
         refreshed_groups = build_groups()
         templates = export_reviewed_templates(refreshed_groups)
-        REVIEWED_BY_FP.parent.mkdir(parents=True, exist_ok=True)
-        with REVIEWED_BY_FP.open("w", encoding="utf-8") as handle:
+        REVIEWED_FOLLOW_UP_BY_FP.parent.mkdir(parents=True, exist_ok=True)
+        with REVIEWED_FOLLOW_UP_BY_FP.open("w", encoding="utf-8") as handle:
             json.dump(templates, handle, indent=2, ensure_ascii=False)
             handle.write("\n")
-        print(f"Exported {len(templates)} template(s) to {REVIEWED_BY_FP}")
+        print(f"Exported {len(templates)} template(s) to {REVIEWED_FOLLOW_UP_BY_FP}")
 
     REPORT.parent.mkdir(parents=True, exist_ok=True)
     REPORT.write_text("\n".join(report_lines), encoding="utf-8")

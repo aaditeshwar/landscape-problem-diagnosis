@@ -10,13 +10,15 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 RAW_DIR = ROOT / "data" / "evidence_cards" / "raw"
-CORRECTIONS = ROOT / "metadata" / "policy_corrections.json"
-REVIEWED_BY_FP = ROOT / "metadata" / "reviewed_policy_by_fingerprint.json"
 REPORT = ROOT / "reports" / "policy_corrections_review.md"
 
 sys.path.insert(0, str(ROOT / "scripts"))
 from lib.card_policy_utils import draft_reasoning_note_from_policy, policy_fingerprint  # noqa: E402
-from lib.policy_overrides import export_reviewed_by_fingerprint  # noqa: E402
+from lib.policy_overrides import (  # noqa: E402
+    POLICY_CORRECTIONS,
+    REVIEWED_POLICY_BY_FP,
+    export_reviewed_by_fingerprint,
+)
 
 
 def load_json(path: Path) -> dict:
@@ -35,11 +37,11 @@ def main() -> int:
     parser.add_argument(
         "--no-export",
         action="store_true",
-        help="Skip rebuilding metadata/reviewed_policy_by_fingerprint.json",
+        help="Skip rebuilding reports/reviewed_policy_by_fingerprint.json",
     )
     args = parser.parse_args()
 
-    corrections = load_json(CORRECTIONS)
+    corrections = load_json(POLICY_CORRECTIONS)
     corrections.pop("_comment", None)
     by_card_id = corrections.pop("by_card_id", {}) or {}
 
@@ -81,11 +83,11 @@ def main() -> int:
 
     if not args.dry_run and not args.no_export:
         templates = export_reviewed_by_fingerprint(RAW_DIR)
-        REVIEWED_BY_FP.parent.mkdir(parents=True, exist_ok=True)
-        with REVIEWED_BY_FP.open("w", encoding="utf-8") as handle:
+        REVIEWED_POLICY_BY_FP.parent.mkdir(parents=True, exist_ok=True)
+        with REVIEWED_POLICY_BY_FP.open("w", encoding="utf-8") as handle:
             json.dump(templates, handle, indent=2, ensure_ascii=False)
             handle.write("\n")
-        print(f"Exported {len(templates)} template(s) to {REVIEWED_BY_FP}")
+        print(f"Exported {len(templates)} template(s) to {REVIEWED_POLICY_BY_FP}")
 
     lines = [
         "# Policy corrections review",

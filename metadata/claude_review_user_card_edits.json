@@ -9,18 +9,16 @@
           "primary_confirm_signals": [
             "sig_01",
             "sig_02",
-            "sig_03"
+            "sig_04"
           ],
           "confirm_when": {
             "min_confirms_true": 2,
-            "required_all": [
-              "sig_03"
-            ],
             "amplifiers_do_not_confirm": true,
             "min_from_set": {
               "signals": [
                 "sig_01",
-                "sig_02"
+                "sig_02",
+                "sig_04"
               ],
               "min": 1
             }
@@ -32,7 +30,7 @@
                 "signals": [
                   "sig_01",
                   "sig_02",
-                  "sig_03"
+                  "sig_04"
                 ],
                 "min": 2
               },
@@ -47,12 +45,42 @@
               "default": true
             }
           ]
-        }
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "variables": [
+              "drought_mild_spi_score_latest",
+              "drought_mild_mai_score_latest",
+              "drought_mild_vci_score_latest"
+            ],
+            "severity": "high",
+            "direction": "amplifies",
+            "condition": {
+              "expression": "drought_mild_spi_score_latest >= 26 and (drought_mild_mai_score_latest >= 26 or drought_mild_vci_score_latest >= 26)",
+              "qualitative_description": "SPI below -1.0 (moderate to severe meteorological drought) combined with MAI below 0.5 (soil moisture inadequacy) or VCI below 0.35 (significant vegetation stress) confirms co-occurring meteorological and agricultural drought."
+            }
+          },
+          {
+            "signal_id": "sig_04",
+            "variables": [
+              "trend_annual_precipitation_mm",
+              "mean_annual_precipitation_mm",
+              "seasonal_precipitation_mm"
+            ],
+            "severity": "moderate",
+            "direction": "confirms",
+            "condition": {
+              "expression": "seasonal_precipitation_mm[-1].get('kharif', 9999) < 0.75 * mean_annual_precipitation_mm and trend_annual_precipitation_mm < 0",
+              "qualitative_description": "Latest kharif seasonal rainfall is below 75% of the long-term mean annual precipitation, and the multi-year annual precipitation trend is declining, confirming a structural rainfall deficit rather than a single anomalous year."
+            }
+          }
+        ]
       },
-      "finalized_at": "2026-06-20T16:12:31+00:00",
+      "finalized_at": "2026-06-21T04:17:43+00:00",
       "reviewer": null,
-      "propagated_at": "2026-06-20T16:23:14+00:00",
-      "applied_card_digest": "77c0faba97f99a6b3305cfbfaeaa1f1590451222c957c254c90176bedc8e4072"
+      "propagated_at": "2026-06-21T05:18:27+00:00",
+      "applied_card_digest": "73a2b2b8e78fd76e3f40d4a5205f17d86b718f24e8e63b321d9695292d7cc54b"
     },
     "agriculture__water_scarcity__irrigation_challenges__001": {
       "card_id": "agriculture__water_scarcity__irrigation_challenges__001",
@@ -640,6 +668,1386 @@
       "reviewer": null,
       "propagated_at": "2026-06-20T19:29:16+00:00",
       "applied_card_digest": "3bccbc7544b8e8dd92011058719e7918e6dc7a0315b763177359e30bdaa0e40e"
+    },
+    "agriculture__water_scarcity__groundwater_stress__004": {
+      "card_id": "agriculture__water_scarcity__groundwater_stress__004",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_06",
+            "sig_07"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_06",
+                "sig_07"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_06",
+                  "sig_07"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-21T01:22:58+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T02:24:09+00:00",
+      "applied_card_digest": "cd6a16143cfe322ecf05ac2962868e5feb55e68baa3e615576145c61f1ee5570"
+    },
+    "agriculture__water_scarcity__groundwater_stress__006": {
+      "card_id": "agriculture__water_scarcity__groundwater_stress__006",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_06",
+            "variables": [
+              "borewell_density"
+            ],
+            "severity": "high",
+            "direction": "confirms",
+            "condition": {
+              "expression": "",
+              "qualitative_description": "Farmers report moderate-to-high borewell/tubewell density (roughly 10–50 or more than 50 within 2–3 km) in alluvium aquifers, indicating localised over-extraction not captured by block-level SOGE. Very low density or widespread borewell failure may indicate aquifer limits rather than density-driven stress."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T01:33:40+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T02:24:09+00:00",
+      "applied_card_digest": "877aee170064c1669832fc77570a7b6d2dd98f5b543c532abe8fe5cb2dd39ac4"
+    },
+    "agriculture__water_scarcity__groundwater_stress__007": {
+      "card_id": "agriculture__water_scarcity__groundwater_stress__007",
+      "patch": {
+        "missing_variable_questions": [
+          {
+            "missing_variable": "borewell_density",
+            "question_to_user": "Approximately how many borewells or tubewells are there in your village or the surrounding 2–3 km area? Would you say very few (fewer than 10), a moderate number (10–30), or a large number (more than 30)?",
+            "how_answer_updates_diagnosis": "High borewell density (>30 in a small area) in a crystalline basement aquifer with spatially limited fracture zones confirms localised over-extraction that block-level SOGE cannot capture. This would elevate diagnosis confidence to high even if block-level SOGE appears Safe, because multiple borewells competing for the same fracture network can rapidly deplete local storage.",
+            "question_mode": "magnitude",
+            "response_type": "mcq",
+            "choices": [
+              {
+                "id": "few",
+                "label": "Very few (fewer than 10 within 2–3 km)",
+                "normalized": {
+                  "band": "low",
+                  "present": true
+                },
+                "effects": {
+                  "signals": [
+                    {
+                      "signal_id": "sig_06",
+                      "result": false
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "moderate",
+                "label": "Moderate (10–30 within 2–3 km)",
+                "normalized": {
+                  "band": "moderate",
+                  "present": true
+                },
+                "effects": {
+                  "signals": [
+                    {
+                      "signal_id": "sig_06",
+                      "result": true
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "many",
+                "label": "More than 30 within 2–3 km",
+                "normalized": {
+                  "band": "high",
+                  "present": true
+                },
+                "effects": {
+                  "signals": [
+                    {
+                      "signal_id": "sig_06",
+                      "result": true
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T01:51:31+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T02:24:09+00:00",
+      "applied_card_digest": "9dde91ab76c63bd834e5904532aae9a0f71b763ba21e1d562a505a53ed5a762e"
+    },
+    "agriculture__water_scarcity__groundwater_stress__017": {
+      "card_id": "agriculture__water_scarcity__groundwater_stress__017",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_03",
+            "sig_05",
+            "sig_06",
+            "sig_07"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "required_all": [
+              "sig_01"
+            ],
+            "min_from_set": {
+              "signals": [
+                "sig_03",
+                "sig_05",
+                "sig_06",
+                "sig_07"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_03",
+                  "sig_05",
+                  "sig_06",
+                  "sig_07"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-21T01:54:56+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T02:24:09+00:00",
+      "applied_card_digest": "ff351b7489a2a2bb5bf1c83827938866a9875082efb21c5d788a04436cb56fc3"
+    },
+    "agriculture__water_scarcity__groundwater_stress__015": {
+      "card_id": "agriculture__water_scarcity__groundwater_stress__015",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_05"
+          ],
+          "confirm_when": {
+            "required_all": [
+              "sig_03"
+            ],
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_05"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_05"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        }
+      },
+      "finalized_at": "2026-06-21T02:23:31+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T02:24:09+00:00",
+      "applied_card_digest": "a52daa571748d213b0b89c4ca6278bc8dd7fcb74d5b98a61d150ff89a06f9c6f"
+    },
+    "agriculture__water_scarcity__drought__003": {
+      "card_id": "agriculture__water_scarcity__drought__003",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_03",
+            "sig_04"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_03",
+                "sig_04"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_03",
+                  "sig_04"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "variables": [
+              "drought_mild_vci_score_latest",
+              "drought_mild_mai_score_latest",
+              "drought_mild_spi_score_latest",
+              "drought_severe_moderate_spi_score_latest"
+            ],
+            "severity": "high",
+            "direction": "amplifies",
+            "condition": {
+              "expression": "(drought_mild_spi_score_latest >= 26 or drought_severe_moderate_spi_score_latest >= 26) or drought_mild_vci_score_latest >= 26 or drought_mild_mai_score_latest >= 26",
+              "qualitative_description": "SPI class indicates moderate to extreme meteorological drought, or VCI below 35 signals significant vegetation stress, or MAI below 0.5 indicates soil moisture inadequacy — any one of these confirms agricultural drought per the India Drought Manual classification."
+            }
+          },
+          {
+            "signal_id": "sig_04",
+            "variables": [
+              "mean_annual_precipitation_mm",
+              "trend_annual_precipitation_mm",
+              "seasonal_precipitation_mm"
+            ],
+            "severity": "moderate",
+            "direction": "confirms",
+            "condition": {
+              "expression": "seasonal_precipitation_mm[-1].get('kharif', 9999) < 0.75 * mean_annual_precipitation_mm or mean_annual_precipitation_mm < 700 or trend_annual_precipitation_mm < -5",
+              "qualitative_description": "Kharif seasonal rainfall below 75% of the long-term annual mean, or mean annual precipitation below 700 mm, or a declining trend exceeding 5 mm/year confirms structural precipitation deficit underpinning drought risk."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T04:18:22+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T05:18:27+00:00",
+      "applied_card_digest": "865ef199119858303e0f4bfd16a754fcc109fe1d90e9693707c6bc70e69284e9"
+    },
+    "agriculture__water_scarcity__drought__001": {
+      "card_id": "agriculture__water_scarcity__drought__001",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_04"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_04"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_04"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "variables": [
+              "drought_mild_spi_score_latest",
+              "drought_mild_vci_score_latest"
+            ],
+            "severity": "high",
+            "direction": "amplifies",
+            "condition": {
+              "expression": "drought_mild_spi_score_latest >= 26 and drought_mild_vci_score_latest >= 26",
+              "qualitative_description": "SPI at or below -1.0 (moderate to severe meteorological drought) combined with VCI below 40 (moderate vegetation stress) confirms co-occurrence of meteorological and agricultural drought in the same kharif season."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T04:13:47+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T05:18:27+00:00",
+      "applied_card_digest": "7d83fb8b6e77ee417ab260fdaa5cb0a05acedb640b33afadd83ae8a592e851a7"
+    },
+    "agriculture__water_scarcity__drought__004": {
+      "card_id": "agriculture__water_scarcity__drought__004",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_04"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_04"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_04"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "variables": [
+              "drought_mild_spi_score_latest",
+              "drought_mild_mai_score_latest",
+              "drought_mild_vci_score_latest"
+            ],
+            "severity": "high",
+            "direction": "amplies",
+            "condition": {
+              "expression": "drought_mild_spi_score_latest >= 26 and drought_mild_mai_score_latest >= 26 and drought_mild_vci_score_latest >= 26",
+              "qualitative_description": "SPI at or below -1.0 (moderate meteorological drought), MAI below 0.5 (soil moisture inadequacy), and VCI below 35 (significant vegetation stress) together confirm concurrent meteorological and agricultural drought per India Drought Manual classification."
+            }
+          },
+          {
+            "signal_id": "sig_04",
+            "variables": [
+              "mean_annual_precipitation_mm",
+              "seasonal_precipitation_mm"
+            ],
+            "severity": "moderate",
+            "direction": "confirms",
+            "condition": {
+              "expression": "mean_annual_precipitation_mm < 400 and seasonal_precipitation_mm[-1].get('kharif', 9999) < (0.75 * (sum(v.get('kharif', 0) for v in list(seasonal_precipitation_mm.values())[:-1]) / max(len(seasonal_precipitation_mm) - 1, 1)))",
+              "qualitative_description": "Mean annual precipitation below 400 mm (AER-2 threshold) and current kharif seasonal rainfall more than 25% below the multi-year kharif mean confirm a below-normal monsoon year in an already water-scarce baseline."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T04:27:12+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T05:18:27+00:00",
+      "applied_card_digest": "8269ff2c7e84a76390a59a2a5d9705a8ca5c52652cf2945d893d25c63ad0a127"
+    },
+    "agriculture__water_scarcity__drought__006": {
+      "card_id": "agriculture__water_scarcity__drought__006",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_04"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_04"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_04"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "variables": [
+              "drought_mild_spi_score_latest",
+              "drought_mild_mai_score_latest",
+              "drought_mild_vci_score_latest"
+            ],
+            "severity": "high",
+            "direction": "amplifies",
+            "condition": {
+              "expression": "drought_mild_spi_score_latest >= 26 and (drought_mild_mai_score_latest >= 26 or drought_mild_vci_score_latest >= 26)",
+              "qualitative_description": "SPI below -1.0 (moderate to severe meteorological drought) co-occurring with MAI below 0.75 (soil moisture inadequacy) or VCI below 40 (vegetation stress) confirms both meteorological and agricultural drought are active simultaneously."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T04:30:21+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T05:18:27+00:00",
+      "applied_card_digest": "4598b03aae02293c9f63d2f4b6f61395e018389177f3131a6fb246a73d69df54"
+    },
+    "agriculture__water_scarcity__drought__007": {
+      "card_id": "agriculture__water_scarcity__drought__007",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_04"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_04"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_04"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "variables": [
+              "drought_mild_spi_score_latest",
+              "drought_mild_mai_score_latest",
+              "drought_mild_vci_score_latest"
+            ],
+            "severity": "high",
+            "direction": "amplifies",
+            "condition": {
+              "expression": "drought_mild_spi_score_latest >= 26 and (drought_mild_mai_score_latest >= 26 or drought_mild_vci_score_latest >= 26)",
+              "qualitative_description": "SPI at or below -1.0 (moderate to severe meteorological drought) combined with MAI below 0.5 (soil moisture inadequacy) or VCI below 0.35 (significant vegetation stress) confirms co-occurring meteorological and agricultural drought."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T04:35:57+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T05:18:27+00:00",
+      "applied_card_digest": "8e6f3dfa73f6a17809ee60fab7a0e3f9117e03dd6983694cdb322dfdb154c252"
+    },
+    "agriculture__water_scarcity__drought__005": {
+      "card_id": "agriculture__water_scarcity__drought__005",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_04"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_04"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_04"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "variables": [
+              "drought_mild_spi_score_latest",
+              "drought_mild_mai_score_latest",
+              "drought_mild_vci_score_latest"
+            ],
+            "severity": "high",
+            "direction": "amplifies",
+            "condition": {
+              "expression": "drought_mild_spi_score_latest >= 26 and (drought_mild_mai_score_latest >= 26 or drought_mild_vci_score_latest >= 26)",
+              "qualitative_description": "SPI at or below -1.0 (moderate to severe meteorological drought) combined with MAI below 0.5 (soil moisture inadequacy) or VCI below 40 (vegetation stress) confirms co-occurring meteorological and agricultural drought per India Drought Manual classification."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T04:38:49+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T05:18:27+00:00",
+      "applied_card_digest": "7d63be79524b60e9308860ac2943271d0ca90ccd3d1e25fdc2ccf890c526850f"
+    },
+    "agriculture__water_scarcity__drought__008": {
+      "card_id": "agriculture__water_scarcity__drought__008",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_04"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_04"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_04"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "variables": [
+              "drought_mild_vci_score_latest",
+              "drought_mild_spi_score_latest",
+              "drought_severe_moderate_spi_score_latest",
+              "drought_mild_mai_score_latest",
+              "drought_severe_moderate_path_score_latest"
+            ],
+            "severity": "high",
+            "direction": "amplifies",
+            "condition": {
+              "expression": "(drought_mild_spi_score_latest >= 26 or drought_severe_moderate_spi_score_latest >= 26) and (drought_mild_mai_score_latest >= 26 or drought_severe_moderate_path_score_latest >= 2) and drought_mild_vci_score_latest >= 26",
+              "qualitative_description": "Concurrent meteorological drought (SPI moderate or worse), inadequate soil moisture (MAI inadequate or highly inadequate), and vegetation stress (VCI below 35) together confirm agricultural drought affecting crop production."
+            }
+          },
+          {
+            "signal_id": "sig_04",
+            "variables": [
+              "mean_annual_precipitation_mm",
+              "trend_annual_precipitation_mm",
+              "seasonal_precipitation_mm"
+            ],
+            "severity": "moderate",
+            "direction": "confirms",
+            "condition": {
+              "expression": "(seasonal_precipitation_mm[-1].get('kharif', 0) < 0.75 * mean_annual_precipitation_mm * 0.85) or (mean_annual_precipitation_mm < 900 and trend_annual_precipitation_mm < -10)",
+              "qualitative_description": "Kharif seasonal rainfall below 75% of the long-term annual mean, or a declining multi-year precipitation trend below 900 mm/year, confirms meteorological drought as the primary driver of water scarcity."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T04:42:44+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T05:18:27+00:00",
+      "applied_card_digest": "ecfef847dcfdb217db1c4dc18a041fe575c369aa796d8716942b680715654edb"
+    },
+    "agriculture__water_scarcity__drought__009": {
+      "card_id": "agriculture__water_scarcity__drought__009",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_03",
+            "sig_04"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_03",
+                "sig_04"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_03",
+                  "sig_04"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "variables": [
+              "drought_mild_vci_score_latest",
+              "drought_mild_spi_score_latest",
+              "drought_severe_moderate_spi_score_latest"
+            ],
+            "severity": "high",
+            "direction": "amplifies",
+            "condition": {
+              "expression": "(drought_mild_spi_score_latest >= 26 or drought_severe_moderate_spi_score_latest >= 26) and drought_mild_vci_score_latest >= 26",
+              "qualitative_description": "SPI classification of moderate or worse drought combined with VCI below 35 confirms both meteorological and agricultural drought are co-occurring, ruling out irrigation-buffered scenarios."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T04:48:14+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T05:18:27+00:00",
+      "applied_card_digest": "be3c06be96d7aea41d9848050a34d59bbb379626d4dc6f396d3bfb28f0ba1bcc"
+    },
+    "agriculture__water_scarcity__drought__010": {
+      "card_id": "agriculture__water_scarcity__drought__010",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_04"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_04"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_04"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "variables": [
+              "drought_causality",
+              "drought_mild_vci_score_latest",
+              "drought_mild_spi_score_latest",
+              "drought_severe_moderate_spi_score_latest"
+            ],
+            "severity": "high",
+            "direction": "amplifies",
+            "condition": {
+              "expression": "drought_causality is not None and (drought_mild_spi_score_latest >= 26 or drought_severe_moderate_spi_score_latest >= 26) and drought_mild_vci_score_latest >= 26",
+              "qualitative_description": "SPI classification of moderate drought or worse, combined with VCI below 35 (indicating significant vegetation stress), jointly confirm both meteorological and agricultural drought are active."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T04:50:40+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T05:18:27+00:00",
+      "applied_card_digest": "f395d3a4abf507646ab99e5b4a44f6dc103853f20cc3dc5a844d3c2533b1de7b"
+    },
+    "agriculture__water_scarcity__drought__011": {
+      "card_id": "agriculture__water_scarcity__drought__011",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_04"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_04"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_04"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "variables": [
+              "drought_mild_vci_score_latest",
+              "drought_mild_spi_score_latest",
+              "drought_severe_moderate_spi_score_latest",
+              "drought_mild_mai_score_latest",
+              "drought_severe_moderate_path_score_latest"
+            ],
+            "severity": "high",
+            "direction": "amplifies",
+            "condition": {
+              "expression": "(drought_mild_spi_score_latest >= 26 or drought_severe_moderate_spi_score_latest >= 26) and (drought_mild_mai_score_latest >= 26 or drought_severe_moderate_path_score_latest >= 2) and drought_mild_vci_score_latest >= 26",
+              "qualitative_description": "Concurrent meteorological drought (SPI), soil moisture inadequacy (MAI), and vegetation stress (VCI < 35) confirm agricultural drought as per India Drought Manual classification."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T04:53:34+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T05:18:27+00:00",
+      "applied_card_digest": "544568bc27440ec19acdf34164551f32bb5c286dfbd51d6c7ee7a4b7bcfea87a"
+    },
+    "agriculture__water_scarcity__drought__012": {
+      "card_id": "agriculture__water_scarcity__drought__012",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_04"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_04"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_04"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "variables": [
+              "drought_mild_spi_score_latest",
+              "drought_mild_mai_score_latest",
+              "drought_mild_vci_score_latest"
+            ],
+            "severity": "high",
+            "direction": "amplifies",
+            "condition": {
+              "expression": "drought_mild_spi_score_latest >= 26 or drought_mild_mai_score_latest >= 26 or drought_mild_vci_score_latest >= 26",
+              "qualitative_description": "SPI below -1.0 (moderate meteorological drought), MAI below 0.5 (soil moisture inadequacy), or VCI below 40 (moderate vegetation stress) in kharif season confirms drought causality per India Drought Manual classification."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T04:54:44+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T05:18:27+00:00",
+      "applied_card_digest": "51e16d679d5a9cbbeceeb50db81e32a7ec2b6b8b26a8018c559317feef4165f7"
+    },
+    "agriculture__water_scarcity__drought__017": {
+      "card_id": "agriculture__water_scarcity__drought__017",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_04"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_04"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_04"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "variables": [
+              "drought_mild_vci_score_latest",
+              "drought_mild_spi_score_latest",
+              "drought_severe_moderate_spi_score_latest",
+              "drought_mild_mai_score_latest",
+              "drought_severe_moderate_path_score_latest"
+            ],
+            "severity": "high",
+            "direction": "amplifies",
+            "condition": {
+              "expression": "(drought_mild_spi_score_latest >= 26 or drought_severe_moderate_spi_score_latest >= 26) and (drought_mild_mai_score_latest >= 26 or drought_severe_moderate_path_score_latest >= 2) and drought_mild_vci_score_latest >= 26",
+              "qualitative_description": "Concurrent SPI indicating dry conditions, low MAI indicating soil moisture deficit, and VCI below 40 indicating vegetation stress together confirm meteorological drought has translated into agricultural drought."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T04:56:05+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T05:18:27+00:00",
+      "applied_card_digest": "8ac32226cd7e4d5aaf075ae0ed65986d817892457f3308d701da0cbc3adcf14a"
+    },
+    "agriculture__water_scarcity__drought__016": {
+      "card_id": "agriculture__water_scarcity__drought__016",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_05",
+            "variables": [
+              "drought_mild_vci_score_latest",
+              "drought_mild_spi_score_latest",
+              "drought_severe_moderate_spi_score_latest"
+            ],
+            "severity": "high",
+            "direction": "amplifies",
+            "condition": {
+              "expression": "(drought_mild_spi_score_latest >= 26 or drought_severe_moderate_spi_score_latest >= 26) and drought_mild_vci_score_latest >= 26",
+              "qualitative_description": "SPI classification indicates at least moderate meteorological drought AND VCI below 35 confirms concurrent vegetation stress, together satisfying the India Drought Manual composite criterion for agricultural drought declaration."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T04:58:02+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T05:18:27+00:00",
+      "applied_card_digest": "4580131c5dd3a89441c70bffbc5123e9ca5aa071d5816f50387b03d1b28e07bf"
+    },
+    "agriculture__water_scarcity__drought__015": {
+      "card_id": "agriculture__water_scarcity__drought__015",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_04"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_04"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_04"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "variables": [
+              "drought_mild_spi_score_latest",
+              "drought_mild_mai_score_latest",
+              "drought_mild_vci_score_latest"
+            ],
+            "severity": "high",
+            "direction": "amplifies",
+            "condition": {
+              "expression": "drought_mild_spi_score_latest >= 26 or drought_mild_mai_score_latest >= 26 or drought_mild_vci_score_latest >= 26",
+              "qualitative_description": "SPI below -1.0 (moderate meteorological drought), MAI below 0.5 (soil moisture inadequacy), or VCI below 35 (significant vegetation stress) in kharif season confirms drought causality."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T04:59:28+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T05:18:27+00:00",
+      "applied_card_digest": "0eadde3c7aee20055eb4bf01745ea6ad158656492a9730b8365f70f1e1a0057f"
+    },
+    "agriculture__water_scarcity__drought__014": {
+      "card_id": "agriculture__water_scarcity__drought__014",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_03"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_03"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_05",
+            "variables": [
+              "drought_mild_vci_score_latest",
+              "drought_mild_spi_score_latest",
+              "drought_severe_moderate_spi_score_latest"
+            ],
+            "severity": "high",
+            "direction": "amplifies",
+            "condition": {
+              "expression": "(drought_mild_spi_score_latest >= 26 or drought_severe_moderate_spi_score_latest >= 26) and drought_mild_vci_score_latest >= 26",
+              "qualitative_description": "SPI classification of moderate drought or worse combined with VCI below 35 confirms co-occurrence of meteorological and agricultural drought, ruling out irrigation-buffered scenarios."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T05:01:19+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T05:18:27+00:00",
+      "applied_card_digest": "9c0dde00688db40692b69853e2fb55f8af19daa5e12b26cdfef9fe83a3fea26e"
+    },
+    "agriculture__water_scarcity__drought__013": {
+      "card_id": "agriculture__water_scarcity__drought__013",
+      "patch": {
+        "confirmation_policy": {
+          "version": 1,
+          "primary_confirm_signals": [
+            "sig_01",
+            "sig_02",
+            "sig_04"
+          ],
+          "confirm_when": {
+            "min_confirms_true": 2,
+            "amplifiers_do_not_confirm": true,
+            "min_from_set": {
+              "signals": [
+                "sig_01",
+                "sig_02",
+                "sig_04"
+              ],
+              "min": 2
+            }
+          },
+          "confidence_when": [
+            {
+              "level": "high",
+              "min_from_set": {
+                "signals": [
+                  "sig_01",
+                  "sig_02",
+                  "sig_04"
+                ],
+                "min": 2
+              },
+              "min_high_severity_confirms": 2
+            },
+            {
+              "level": "medium",
+              "min_confirms_true": 1
+            },
+            {
+              "level": "low",
+              "default": true
+            }
+          ]
+        },
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "variables": [
+              "drought_mild_vci_score_latest",
+              "drought_mild_mai_score_latest",
+              "drought_mild_spi_score_latest",
+              "drought_severe_moderate_spi_score_latest"
+            ],
+            "severity": "high",
+            "direction": "amplifies",
+            "condition": {
+              "expression": "(drought_mild_spi_score_latest >= 26 or drought_severe_moderate_spi_score_latest >= 26) or drought_mild_vci_score_latest >= 26 or drought_mild_mai_score_latest >= 26",
+              "qualitative_description": "SPI indicating moderately dry or worse, VCI below 35, or MAI below 0.5 together confirm meteorological and agricultural drought co-occurrence per the India Drought Manual classification."
+            }
+          }
+        ]
+      },
+      "finalized_at": "2026-06-21T05:03:59+00:00",
+      "reviewer": null,
+      "propagated_at": "2026-06-21T05:18:27+00:00",
+      "applied_card_digest": "8c7b905bd1ecfdd654087c05f81e59d8c73d6b1f0f7f77ad20bd00ec35094f76"
     }
   }
 }

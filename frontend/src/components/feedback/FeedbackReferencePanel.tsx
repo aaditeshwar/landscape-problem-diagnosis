@@ -54,8 +54,8 @@ export function FeedbackReferencePanel({ mws }: { mws: MwsDocument }) {
             <SogeGauge mws={mws} />
             <DeltaGChart mws={mws} />
             <CroppingChart mws={mws} />
-            <DroughtChart mws={mws} />
-            <LulcStackedChart mws={mws} combineWater builtUpColor="#dc2626" />
+            <DroughtChart key={`drought-${mws.uid}`} mws={mws} />
+            <LulcStackedChart mws={mws} combineWater builtUpColor="#dc2626" treeCoverSeriesName="Trees" />
           </div>
         </div>
       </details>

@@ -314,6 +314,7 @@ _BASE_VARIABLE_RESOLVERS: dict[str, Any] = {
     "trend_swb_total_area_ha": lambda m: resolve_derived(m, "trend_swb_total_area_ha"),
     "mean_swb_rabi_kharif_ratio": lambda m: resolve_derived(m, "mean_swb_rabi_kharif_ratio"),
     "trend_swb_rabi_kharif_ratio": lambda m: resolve_derived(m, "trend_swb_rabi_kharif_ratio"),
+    "tree_cover_percent_mws": lambda m: resolve_derived(m, "tree_cover_percent_mws"),
     "drought_mild_spi_score_latest": lambda m: resolve_derived(m, "drought_mild_spi_score_latest"),
     "drought_mild_mai_score_latest": lambda m: resolve_derived(m, "drought_mild_mai_score_latest"),
     "drought_mild_vci_score_latest": lambda m: resolve_derived(m, "drought_mild_vci_score_latest"),

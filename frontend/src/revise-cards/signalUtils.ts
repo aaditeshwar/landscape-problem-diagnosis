@@ -4,6 +4,7 @@ export type SignalSummary = {
   direction?: string
   expression?: string
   qualitative_description?: string
+  explanation?: string
   variables?: string[]
 }
 
@@ -21,6 +22,7 @@ export function indexSignals(rawCard: Record<string, unknown> | null | undefined
         signal_id: String(signal.signal_id || ''),
         severity: typeof signal.severity === 'string' ? signal.severity : undefined,
         direction: typeof signal.direction === 'string' ? signal.direction : undefined,
+        explanation: typeof signal.explanation === 'string' ? signal.explanation : undefined,
         expression: typeof condition.expression === 'string' ? condition.expression : undefined,
         qualitative_description:
           typeof condition.qualitative_description === 'string'

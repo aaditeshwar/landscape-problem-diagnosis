@@ -150,6 +150,15 @@ export interface ChangeReview {
   agrees_with_revision?: boolean
 }
 
+export interface SkippedProductionSystem {
+  production_system: string
+  rule_id?: string
+  message?: string
+  expression?: string
+  tree_cover_percent_mws?: number
+  [key: string]: unknown
+}
+
 export interface DiagnosisResponse {
   session_id: string
   diagnosis_snapshot_id?: string
@@ -172,6 +181,7 @@ export interface DiagnosisResponse {
   signal_evaluation?: SignalEvaluation | null
   want_llm_opinion?: boolean
   llm_skipped?: boolean
+  skipped_production_systems?: SkippedProductionSystem[]
   reviewer_commentary?: ReviewerPathwayComment[]
   change_review?: ChangeReview | null
   solutions_review_notes?: string | null
@@ -349,4 +359,5 @@ export interface FeedbackContext {
   } | null
   retrieved_cards: RetrievedEvidenceCard[]
   context_clusters: Record<string, unknown>
+  skipped_production_systems?: SkippedProductionSystem[]
 }

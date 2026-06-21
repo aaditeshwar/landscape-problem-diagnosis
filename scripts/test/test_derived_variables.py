@@ -69,6 +69,17 @@ def test_swb_ratio():
     assert resolve_derived(mws, "mean_swb_rabi_kharif_ratio") == 0.5
 
 
+def test_tree_cover_percent_mws_derived():
+    mws = {
+        "area_ha": 200.0,
+        "lulc_ha": {
+            "2022": {"tree_forest": 10.0},
+            "2024": {"tree_forest": 25.0},
+        },
+    }
+    assert resolve_derived(mws, "tree_cover_percent_mws") == 12.5
+
+
 def test_swb_ratio_zero_kharif_across_years():
     mws = {
         "swb_annual": {
@@ -114,6 +125,7 @@ def main() -> int:
         test_drought_return_period,
         test_drought_severe_return_period_with_no_events,
         test_swb_ratio,
+        test_tree_cover_percent_mws_derived,
         test_swb_ratio_zero_kharif_across_years,
         test_resolve_derived_names,
     ]

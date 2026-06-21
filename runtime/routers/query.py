@@ -13,6 +13,12 @@ from services.diagnosis_snapshot import build_snapshot_id, snapshot_fields, turn
 from services.diagnosis_trace import DiagnosisRequestTrace
 from services.llm_client import model_for_turn
 from services.mws_enrich import enrich_mws_doc
+from services.production_system_gate import (
+    evaluate_production_system_gates,
+    filter_bundle_by_eligible_systems,
+    filter_cards_by_eligible_systems,
+    filter_pathways_in_response,
+)
 from services.follow_up_mcq import attach_follow_up_mcq, normalized_answer_from_mcq_choice
 from services.reasoner import (
     DiagnosisLLMParseError,
@@ -366,6 +372,9 @@ def _run_query(
     set_session_want_llm_opinion(db, session_id, want_llm_opinion)
 
     injected = session.get("injected_variables") or {}
+    gate_result = evaluate_production_system_gates(mws_doc, injected or None)
+    eligible_production_systems = gate_result["eligible_production_systems"]
+    skipped_production_systems = gate_result["skipped_production_systems"]
     try:
         if want_llm_opinion:
             retrieval = retrieve_evidence_cards(db, retrieval_query, mws_doc)
@@ -390,6 +399,7 @@ def _run_query(
         ) from exc
 
     cards = retrieval.cards
+    cards = filter_cards_by_eligible_systems(cards, eligible_production_systems)
     t0 = time.perf_counter()
     try:
         bundle = assemble_variable_bundle(mws_doc, cards, injected=injected or None)
@@ -412,6 +422,7 @@ def _run_query(
         )
         raise HTTPException(status_code=500, detail=f"Variable assembly failed: {exc}") from exc
     assemble_ms = (time.perf_counter() - t0) * 1000
+    bundle = filter_bundle_by_eligible_systems(bundle, eligible_production_systems)
     ranks = pathway_retrieval_ranks(cards)
 
     llm_started = time.perf_counter()
@@ -472,6 +483,7 @@ def _run_query(
         raise _llm_http_exception(exc) from exc
 
     llm_response = diagnosis.response
+    llm_response = filter_pathways_in_response(llm_response, eligible_production_systems)
     llm_response = attach_follow_up_mcq(llm_response, bundle)
     total_ms = (time.perf_counter() - request_started) * 1000
     timings = {
@@ -504,6 +516,7 @@ def _run_query(
         follow_up_variable=llm_response.get("follow_up_variable"),
         want_llm_opinion=want_llm_opinion,
         llm_skipped=llm_skipped,
+        skipped_production_systems=skipped_production_systems,
         follow_up_count=follow_up_count,
         turn_no=turn_no,
         diagnosis_snapshot_id=build_snapshot_id(session_id, follow_up_count),
@@ -529,6 +542,7 @@ def _run_query(
         "signal_evaluation": summarize_evaluation_for_log(diagnosis.signal_evaluation or {}),
         "want_llm_opinion": want_llm_opinion,
         "llm_skipped": llm_skipped,
+        "skipped_production_systems": skipped_production_systems,
         **snapshot_fields(
             session_id,
             follow_up_count=follow_up_count,
@@ -714,6 +728,11 @@ def diagnosis_answer(body: AnswerRequest):
 
     injected[body.variable] = normalized_answer
 
+    gate_result = evaluate_production_system_gates(mws_doc, injected)
+    eligible_production_systems = gate_result["eligible_production_systems"]
+    skipped_production_systems = gate_result["skipped_production_systems"]
+    cards = filter_cards_by_eligible_systems(cards, eligible_production_systems)
+
     retrieval = frozen_retrieval_result(cards)
     retrieval_query = f"{problem_description} | follow-up: {body.variable}={answer_text}"
     t0 = time.perf_counter()
@@ -740,6 +759,7 @@ def diagnosis_answer(body: AnswerRequest):
         )
         raise HTTPException(status_code=500, detail=f"Variable assembly failed: {exc}") from exc
     assemble_ms = (time.perf_counter() - t0) * 1000
+    bundle = filter_bundle_by_eligible_systems(bundle, eligible_production_systems)
     ranks = pathway_retrieval_ranks(cards)
 
     follow_up_context = f"{body.variable}: {answer_text}"
@@ -827,6 +847,7 @@ def diagnosis_answer(body: AnswerRequest):
 
     t1 = time.perf_counter()
     llm_response = diagnosis.response
+    llm_response = filter_pathways_in_response(llm_response, eligible_production_systems)
     signal_updates = llm_response.get("follow_up_signal_updates") or collect_follow_up_signal_updates(
         diagnosis.signal_evaluation or {},
         body.variable,
@@ -869,6 +890,7 @@ def diagnosis_answer(body: AnswerRequest):
         follow_up_signal_updates=llm_response.get("follow_up_signal_updates") or signal_updates,
         want_llm_opinion=want_llm_opinion,
         llm_skipped=llm_skipped,
+        skipped_production_systems=skipped_production_systems,
         follow_up_count=follow_up_count,
         turn_no=turn_no,
         diagnosis_snapshot_id=build_snapshot_id(body.session_id, follow_up_count),
@@ -895,6 +917,7 @@ def diagnosis_answer(body: AnswerRequest):
         "signal_evaluation": summarize_evaluation_for_log(diagnosis.signal_evaluation or {}),
         "want_llm_opinion": want_llm_opinion,
         "llm_skipped": llm_skipped,
+        "skipped_production_systems": skipped_production_systems,
         **snapshot_fields(
             body.session_id,
             follow_up_count=follow_up_count,

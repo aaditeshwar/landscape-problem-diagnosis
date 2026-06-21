@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import type { DiagnosisResponse, FollowUpExchange, PathwayResult, TehsilRef } from '../types'
 import type { FollowUpTarget } from '../utils/followUp'
 import { followUpPromptLabel } from '../utils/followUp'
-import { formatPathwayAerContext, formatPathwayHierarchy } from '../utils/pathwayLabels'
+import { formatPathwayAerContext, formatPathwayHierarchy, productionLabel } from '../utils/pathwayLabels'
 import { formatPanelUpdateActionList } from '../utils/panelUpdates'
 import { GiveFeedbackLink } from './feedback/GiveFeedbackLink'
 import { SignalRichText } from './SignalRichText'
@@ -256,6 +256,19 @@ export function DiagnosisPanel({
               ? ` · map viewing ${mapBrowseLabel}`
               : ''}
           </p>
+          {(diagnosis.skipped_production_systems?.length ?? 0) > 0 ? (
+            <div className="rounded-lg border border-sky-200 bg-sky-50/80 px-3 py-2 text-sm text-sky-950">
+              <div className="font-medium">Production systems skipped for this MWS</div>
+              <ul className="mt-1 list-disc space-y-1 pl-5 text-sky-900">
+                {diagnosis.skipped_production_systems?.map((skip) => (
+                  <li key={`${skip.production_system}-${skip.rule_id ?? 'rule'}`}>
+                    <span className="font-medium">{productionLabel(skip.production_system)}</span>
+                    {skip.message ? `: ${skip.message}` : null}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
           <section ref={confirmedPathwaysRef}>
             <h3 className="text-sm font-semibold text-emerald-800">Confirmed pathways</h3>
             {diagnosis.confirmed_pathways.length === 0 ? (

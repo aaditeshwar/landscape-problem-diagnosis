@@ -78,6 +78,7 @@ export type SignalEditDraft = {
   variables: string
   expression: string
   qualitative_description: string
+  explanation: string
   severity: string
   direction: string
 }

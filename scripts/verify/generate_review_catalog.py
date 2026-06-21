@@ -309,7 +309,7 @@ After setting `review_decision` on each row:
 | Target | What gets updated |
 |--------|-------------------|
 | `data/evidence_cards/raw/*.json` | All cards sharing each template fingerprint |
-| `metadata/reviewed_follow_up_by_fingerprint.json` | 30 canonical MCQ templates |
+| `reports/reviewed_follow_up_by_fingerprint.json` | 30 canonical MCQ templates |
 | Mongo `evidence_cards` | Via reload script |
 
 ## 3. Unique policies — `review_unique_policies.csv`
@@ -322,7 +322,7 @@ Each row is a distinct `confirmation_policy` JSON shape.
 
 ### 3b. Propagate reviewed policies
 
-After editing `metadata/policy_corrections.json` or approving rows in the policy CSV:
+After editing `reports/policy_corrections.json` or approving rows in the policy CSV:
 
 ```powershell
 .\.venv\Scripts\python.exe scripts/maintenance/apply_policy_corrections.py
@@ -333,7 +333,7 @@ After editing `metadata/policy_corrections.json` or approving rows in the policy
 | Target | What gets updated |
 |--------|-------------------|
 | `data/evidence_cards/raw/*.json` | Cards matching fingerprint or `by_card_id` overrides |
-| `metadata/reviewed_policy_by_fingerprint.json` | Canonical policy templates per fingerprint |
+| `reports/reviewed_policy_by_fingerprint.json` | Canonical policy templates per fingerprint |
 | Mongo `evidence_cards` | Via reload script |
 
 ## 4. Audits (run after edits)

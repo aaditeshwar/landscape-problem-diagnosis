@@ -675,7 +675,8 @@
       "mean_swb_total_area_ha": {"type": "derived", "unit": "hectares", "description": "Mean total surface water body area.", "computation": "mean(swb_annual.total_ha)", "availability": "derived"},
       "trend_swb_total_area_ha": {"type": "derived", "unit": "ha/year", "description": "Linear trend slope of total SWB area.", "computation": "trend(swb_annual.total_ha)", "availability": "derived"},
       "mean_swb_rabi_kharif_ratio": {"type": "derived", "unit": "unitless ratio", "description": "Mean ratio of rabi to kharif SWB area (rabi ⊆ kharif).", "computation": "mean(rabi_ha / kharif_ha per year)", "availability": "derived"},
-      "trend_swb_rabi_kharif_ratio": {"type": "derived", "unit": "ratio/year", "description": "Linear trend slope of rabi/kharif SWB persistence ratio.", "computation": "trend(rabi_ha / kharif_ha per year)", "availability": "derived"}
+      "trend_swb_rabi_kharif_ratio": {"type": "derived", "unit": "ratio/year", "description": "Linear trend slope of rabi/kharif SWB persistence ratio.", "computation": "trend(rabi_ha / kharif_ha per year)", "availability": "derived"},
+      "tree_cover_percent_mws": {"type": "derived", "unit": "percent", "description": "Latest LULC tree/forest cover as percent of total MWS area.", "computation": "latest(lulc_ha.tree_forest) / area_ha * 100", "availability": "derived"}
     }
   }
 }

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { fetchReviewBatches, fetchReviewBatch, fetchReviewCard, finalizeReviewCard } from '../api/claudeReview'
 import { buildUserCardEditDraft, CardContentEditor, userCardEditToPatch } from '../revise-cards/CardContentEditor'
@@ -27,6 +27,8 @@ export function ReviseCardsPage() {
   const [finalizeError, setFinalizeError] = useState<string | null>(null)
   const [finalizeMessage, setFinalizeMessage] = useState<string | null>(null)
   const [finalizing, setFinalizing] = useState(false)
+  const mainPanelRef = useRef<HTMLElement>(null)
+  const mainScrollTopRef = useRef(0)
 
   useEffect(() => {
     let cancelled = false
@@ -35,7 +37,8 @@ export function ReviseCardsPage() {
       .then(({ batches: loaded }) => {
         if (cancelled) return
         setBatches(loaded)
-        const initial = params.get('batch') || loaded[0]?.batch_id || null
+        const batchParam = params.get('batch')
+        const initial = batchParam || loaded[0]?.batch_id || null
         setBatchId(initial)
       })
       .catch((err: Error) => {
@@ -47,7 +50,20 @@ export function ReviseCardsPage() {
     return () => {
       cancelled = true
     }
-  }, [params])
+    // Mount-only: do not re-fetch when card_id query param changes (that remounted the sidebar).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    const batchParam = params.get('batch')
+    if (batchParam && batchParam !== batchId) {
+      setBatchId(batchParam)
+    }
+    const cardParam = params.get('card_id')
+    if (cardParam && cardParam !== selectedCardId) {
+      setSelectedCardId(cardParam)
+    }
+  }, [params, batchId, selectedCardId])
 
   const refreshBatch = useCallback(async (id: string) => {
     const summary = await fetchReviewBatch(id)
@@ -104,9 +120,6 @@ export function ReviseCardsPage() {
     setCardLoadError(null)
     setFinalizeError(null)
     setFinalizeMessage(null)
-    setBundle(null)
-    setDrafts({})
-    setUserCardEdit(null)
     fetchReviewCard(batchId, selectedCardId)
       .then((data) => {
         if (cancelled) return
@@ -134,9 +147,18 @@ export function ReviseCardsPage() {
   }, [batchId, selectedCardId])
 
   const handleSelectCard = (cardId: string) => {
+    if (mainPanelRef.current) {
+      mainScrollTopRef.current = mainPanelRef.current.scrollTop
+    }
     setSelectedCardId(cardId)
     updateParams(cardId, batchId)
   }
+
+  useLayoutEffect(() => {
+    const panel = mainPanelRef.current
+    if (!panel) return
+    panel.scrollTop = mainScrollTopRef.current
+  }, [selectedCardId, cardLoading, bundle?.card_id])
 
   const pendingCount = useMemo(
     () => Object.values(drafts).filter((draft) => draft.decision === 'pending').length,
@@ -149,8 +171,9 @@ export function ReviseCardsPage() {
   )
 
   const outstandingCount = pendingCount + notHandledCount
+  const hasFindings = (bundle?.findings.length ?? 0) > 0
 
-  const canFinalize = bundle && pendingCount === 0 && bundle.findings.length > 0 && !finalizing
+  const canFinalize = Boolean(bundle && pendingCount === 0 && !finalizing)
 
   const handleFinalizeCard = async () => {
     if (!bundle || !batchId || !userCardEdit) return
@@ -199,7 +222,9 @@ export function ReviseCardsPage() {
         user_card_edit: Object.keys(userPatch).length ? userPatch : null,
       })
       setFinalizeMessage(
-        `Saved ${result.handled_count} handled / ${result.not_handled_count} not handled.` +
+        (hasFindings
+          ? `Saved ${result.handled_count} handled / ${result.not_handled_count} not handled.`
+          : 'Card finalized (no issues to triage).') +
           (result.user_edit_saved ? ` Your card edits → ${result.user_card_edits_path}.` : '') +
           ` Decisions → ${result.decisions_path}`,
       )
@@ -283,18 +308,20 @@ export function ReviseCardsPage() {
       <div className="flex min-h-0 flex-1">
         <CardSidebar cards={cards} selectedCardId={selectedCardId} onSelect={handleSelectCard} />
 
-        <main className="min-w-0 flex-1 overflow-y-auto p-4">
-          {cardLoading ? (
-            <div className="text-stone-600">Loading card review…</div>
-          ) : cardLoadError ? (
+        <main ref={mainPanelRef} className="relative min-w-0 flex-1 overflow-y-auto p-4">
+          {cardLoadError ? (
             <div className="rounded-lg border border-red-300 bg-red-50 p-4 text-sm text-red-900">
               <p className="font-semibold">Could not load {selectedCardId}</p>
               <p className="mt-2">{cardLoadError}</p>
             </div>
-          ) : !bundle || bundle.card_id !== selectedCardId ? (
-            <div className="text-stone-600">No review data for this card.</div>
-          ) : (
+          ) : bundle && (bundle.card_id === selectedCardId || cardLoading) ? (
             <>
+              {cardLoading && bundle.card_id !== selectedCardId && (
+                <div className="sticky top-0 z-10 mb-3 rounded-md border border-stone-300 bg-white/95 px-3 py-2 text-sm text-stone-600 shadow-sm backdrop-blur">
+                  Loading card review…
+                </div>
+              )}
+              <div className={cardLoading && bundle.card_id !== selectedCardId ? 'pointer-events-none opacity-40' : ''}>
               <div className="mb-4 rounded-lg border border-stone-300 bg-white p-4 shadow-sm">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
@@ -403,28 +430,45 @@ export function ReviseCardsPage() {
                 )}
                 {!bundle.finalized && (
                   <p className="mt-3 text-xs text-stone-600">
-                    Claude suggestions are reference only. Use the direct card editor for changes, then mark issues handled.
+                    {hasFindings
+                      ? 'Claude suggestions are reference only. Use the direct card editor for changes, then mark issues handled.'
+                      : 'No issues flagged on this card. Use the direct card editor to make changes, then finalize when ready.'}
                   </p>
                 )}
               </div>
 
               <div className="space-y-4">
-                {bundle.findings.map((finding, index) => (
-                  <IssueReviewCard
-                    key={finding.issue_id}
-                    finding={finding}
-                    index={index}
-                    total={bundle.findings.length}
-                    draft={drafts[finding.issue_id] ?? buildIssueDraft(finding)}
-                    disabled={finalizing}
-                    rawCard={bundle.raw_card}
-                    onDraftChange={(draft) =>
-                      setDrafts((prev) => ({ ...prev, [finding.issue_id]: draft }))
-                    }
-                  />
-                ))}
+                {bundle.findings.length === 0 ? (
+                  <div className="rounded-lg border border-emerald-200 bg-emerald-50/80 p-4 text-sm text-emerald-900">
+                    <p className="font-medium">No issues flagged</p>
+                    <p className="mt-1 text-emerald-800">
+                      Claude rated this card as pass with no actionable findings. Edit the note, signals, or
+                      confirmation policy above if needed, then finalize.
+                    </p>
+                  </div>
+                ) : (
+                  bundle.findings.map((finding, index) => (
+                    <IssueReviewCard
+                      key={finding.issue_id}
+                      finding={finding}
+                      index={index}
+                      total={bundle.findings.length}
+                      draft={drafts[finding.issue_id] ?? buildIssueDraft(finding)}
+                      disabled={finalizing}
+                      rawCard={bundle.raw_card}
+                      onDraftChange={(draft) =>
+                        setDrafts((prev) => ({ ...prev, [finding.issue_id]: draft }))
+                      }
+                    />
+                  ))
+                )}
+              </div>
               </div>
             </>
+          ) : cardLoading ? (
+            <div className="text-stone-600">Loading card review…</div>
+          ) : (
+            <div className="text-stone-600">No review data for this card.</div>
           )}
         </main>
       </div>

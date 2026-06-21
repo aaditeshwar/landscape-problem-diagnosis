@@ -2,7 +2,58 @@
 
 > **Purpose:** Ready reckoner for scripts — what they do, when to run them, which plan introduced them, and known gotchas.  
 > **Quick index (commands only):** [`scripts/README.md`](../scripts/README.md)  
-> **Last updated:** 2026-06-07 (minimal seed; grow when closing plans)
+> **Last updated:** 2026-06-21 (Plan 15/16 batch progress + review scripts)
+
+---
+
+## Progress tracker — evidence card review (Plans 15 & 16)
+
+| Milestone | Status | Notes |
+|-----------|--------|-------|
+| Phase 0 preflight | Done | `reports/claude_review/baseline/` (gitignored locally) |
+| **16-card pilot batch** (2 per pathway × 8 pathways) | **16/16 reviewed** | Claude results in `reports/claude_review/results/` |
+| `/revise-cards` UI + API | Done | Handled / not handled; direct card editor; Plan 16 |
+| Cards finalized in UI | **15/16** | Pending: `ntfp_forest_biodiversity__ntfp_decline__forest_degradation__002` |
+| User direct edits → raw JSON | **10 cards** | Via `apply_user_card_edits.py`; see `metadata/claude_review_user_card_edits.json` |
+| Mongo reload (edited cards) | **10/10** | 2026-06-21 |
+| Expression `variables[]` normalization | **135 cards** | `normalize_evidence_card_expressions.py` (full corpus sync) |
+| Git push (`llm-in-loop`) | Done | Commit `82018e8` (2026-06-21) |
+| **groundwater_stress full pathway** (17 cards) | **17/17 reviewed** | `__001`–`__017`; __003–__017 reviewed 2026-06-21 (15 new, 0 failed) |
+| Full corpus Claude review (136 cards) | In progress | 31 cards reviewed total (16 pilot + 15 groundwater); merge → `reports/claude_review/` (local) |
+| Phase 4 bulk apply (Claude patches) | Not started | User edits applied ad hoc; `apply_claude_review_patches.py` for remaining findings |
+| Phase 6 smoke | Not started | |
+
+### 16-card pilot — reviewed cards
+
+| Pathway | Cards reviewed | Finalized | User edit propagated |
+|---------|----------------|-----------|----------------------|
+| drought | `__001`, `__002` | both | `__002` |
+| groundwater_stress | `__001`, `__002` | both | — |
+| irrigation_challenges | `__001`, `__002` | both | both |
+| rainfed_risk | `__001`, `__002` | both | `__002` |
+| encroachment | `__001`, `__002` | both | `__002` |
+| forest_degradation | `__001`, `__002` | `__001` only | `__001` |
+| multi_sector_vulnerability | `__001`, `__002` | both | both |
+| small_landholding | `__001`, `__002` | both | both |
+
+### Commands (review workflow)
+
+```powershell
+# Preflight (after raw card edits)
+py scripts/review/run_preflight.py
+
+# Claude review — skip cards with existing results
+py scripts/review/claude_card_reviewer.py --pathway agriculture__water_scarcity__groundwater_stress --resume
+
+# Merge results → summary CSV / suggested_patches (local reports/, gitignored)
+py scripts/review/merge_claude_review_report.py
+
+# Propagate direct editor saves from /revise-cards
+py scripts/review/apply_user_card_edits.py [--card-id ...]
+
+# Push raw cards to Mongo
+py scripts/reload_evidence_cards.py --prefix <card_id>
+```
 
 ---
 
@@ -181,6 +232,15 @@
 - **Related plans:** 15, 16
 - **Gotchas:** Only finalized cards unless `--include-unfinalized`; human edits live in **separate** `claude_review_edited_patches.json` (never overwrites Claude `suggested_patches.json`); backs up to `.backup_pre_claude_review/`
 
+### `scripts/review/apply_user_card_edits.py`
+- **Category:** review
+- **Purpose:** Propagate `/revise-cards` direct editor saves from `metadata/claude_review_user_card_edits.json` → raw card JSON
+- **When:** After saving edits in the direct card editor; before `reload_evidence_cards.py`
+- **Added:** Plan 16 (~2026-06-20)
+- **Depends on:** `metadata/claude_review_user_card_edits.json`, `data/evidence_cards/raw/{card_id}.json`
+- **Related plans:** 15, 16
+- **Gotchas:** Skips entries already in sync (digest match); does not reload Mongo — run reload separately
+
 ### Revise Cards UI (`/revise-cards`)
 - **Category:** review (frontend + API)
 - **Purpose:** Card-by-card Claude finding review; structured patch edits; per-card finalize
@@ -264,6 +324,7 @@ See `scripts/README.md` **Removed** section and `scripts/archive/README.md`.
 | [05-induct-new-pathway.md](./05-induct-new-pathway.md) | ingest, generate, reload, audit gates | **Evergreen** — update inventory on change |
 | [09-excel-source-update.md](./09-excel-source-update.md) | sync, audit_excel, ingest, backfills | **Evergreen** — update inventory on change |
 | [13-confirmation-policy-and-schema.md](./13-confirmation-policy-and-schema.md) | derive_policy, policy audits, follow-up audits | Stable |
-| [15-claude-evidence-card-review.md](./15-claude-evidence-card-review.md) | `scripts/review/*`, expression/schema audits | **Active** |
+| [15-claude-evidence-card-review.md](./15-claude-evidence-card-review.md) | `scripts/review/*`, expression/schema audits | **Active** — groundwater_stress 17/17 reviewed; corpus ~31/136 |
+| [16-revise-cards-review-app.md](./16-revise-cards-review-app.md) | `/revise-cards`, `claude_review_store.py`, `apply_user_card_edits.py` | **Active** — 15/16 finalized |
 
 Plan 14 (re-ingest/tuning) is **archived** until Plan 15 completes.

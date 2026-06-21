@@ -20,6 +20,7 @@ import {
   croppingSeries,
   deforestationPair,
   droughtSeries,
+  droughtHasChartData,
   drySpellSeries,
   dualAxisSeries,
   facilityDistanceRows,
@@ -35,7 +36,7 @@ function ChartCard({ title, children }: { title: string; children: ReactNode }) 
   return (
     <div className="rounded-lg border border-stone-200 bg-white p-3 shadow-sm">
       <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-stone-500">{title}</h4>
-      <div className="h-44">{children}</div>
+      <div className="h-44 min-h-32">{children}</div>
     </div>
   )
 }
@@ -124,9 +125,18 @@ export function PrecipitationChart({ mws }: { mws: MwsDocument }) {
 
 export function DroughtChart({ mws }: { mws: MwsDocument }) {
   const data = droughtSeries(mws)
+  if (!droughtHasChartData(mws)) {
+    return (
+      <ChartCard title="Kharif drought weeks (moderate + severe)">
+        <div className="flex h-full items-center justify-center text-sm text-stone-400">
+          {data.length === 0 ? 'No kharif drought data' : 'No moderate or severe drought weeks recorded'}
+        </div>
+      </ChartCard>
+    )
+  }
   return (
     <ChartCard title="Kharif drought weeks (moderate + severe)">
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height="100%" minHeight={128}>
         <BarChart data={data}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" />
           <XAxis dataKey="year" tick={{ fontSize: 11 }} />
@@ -233,13 +243,13 @@ export function ForestTrendChart({ mws }: { mws: MwsDocument }) {
   const data = lulcForestSeries(mws)
   if (data.length === 0) {
     return (
-      <ChartCard title="Forest cover trend">
-        <div className="flex h-full items-center justify-center text-sm text-stone-400">No forest LULC data</div>
+      <ChartCard title="Tree cover trend">
+        <div className="flex h-full items-center justify-center text-sm text-stone-400">No tree cover LULC data</div>
       </ChartCard>
     )
   }
   return (
-    <ChartCard title="Forest cover trend">
+    <ChartCard title="Tree cover trend">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" />
@@ -257,10 +267,12 @@ export function LulcStackedChart({
   mws,
   combineWater = false,
   builtUpColor = '#d97706',
+  treeCoverSeriesName = 'Forest',
 }: {
   mws: MwsDocument
   combineWater?: boolean
   builtUpColor?: string
+  treeCoverSeriesName?: string
 }) {
   const data = lulcStackedSeries(mws, { combineWater })
   if (data.length === 0) {
@@ -288,7 +300,7 @@ export function LulcStackedChart({
             stroke={builtUpColor}
             name="Built-up"
           />
-          <Area type="monotone" dataKey="tree_forest" stackId="lulc" fill="#15803d" stroke="#15803d" name="Forest" />
+          <Area type="monotone" dataKey="tree_forest" stackId="lulc" fill="#15803d" stroke="#15803d" name={treeCoverSeriesName} />
           <Area type="monotone" dataKey="shrub_scrub" stackId="lulc" fill="#a3a3a3" stroke="#a3a3a3" name="Shrub/scrub" />
           <Area type="monotone" dataKey="barrenland" stackId="lulc" fill="#78716c" stroke="#78716c" name="Barren" />
           {combineWater ? (
@@ -309,11 +321,11 @@ export function LulcStackedChart({
 export function DeforestationPairChart({ mws }: { mws: MwsDocument }) {
   const pair = deforestationPair(mws)
   const data = [
-    { label: 'Deforestation', ha: pair.deforestation },
-    { label: 'Afforestation', ha: pair.afforestation },
+    { label: 'Decrease', ha: pair.deforestation },
+    { label: 'Increase', ha: pair.afforestation },
   ]
   return (
-    <ChartCard title="Forest cover change (2017–25)">
+    <ChartCard title="Tree cover change (2017–25)">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" />

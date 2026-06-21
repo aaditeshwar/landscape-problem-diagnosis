@@ -1,6 +1,6 @@
 # Claude evidence-card corpus review
 
-> **Status:** In progress — pilot Phases 0–2 complete (groundwater_stress, 17 cards); awaiting human approval (Phase 3)  
+> **Status:** In progress — 16-card cross-pathway batch reviewed + mostly finalized (Phase 3); groundwater_stress __003–__017 Claude review next; 10 cards user-edited and reloaded to Mongo  
 > **Created:** 2026-06-07  
 > **Prerequisite:** Plan 13 (confirmation policy schema + deterministic audits), Plan 11 (signal editor read-only context)  
 > **Runs before:** Plan 14 (re-ingest / tuning / query eval — **archived**, pick up after this plan completes and cards are stable)  
@@ -431,24 +431,26 @@ Update `scripts/README.md` when implemented.
 
 ### Phase 1 — Claude review (one call per card)
 - [x] Rubric + output schema committed
-- [x] Pilot: groundwater_stress pathway reviewed (17/17, 0 failed — 2026-06-20)
-- [ ] Full corpus review complete (if approved after pilot)
+- [x] **16-card pilot batch** reviewed (2/pathway × 8 pathways — 2026-06-20/21)
+- [x] groundwater_stress `__001`, `__002` (within pilot batch)
+- [x] groundwater_stress `__003`–`__017` (15 cards — 2026-06-21, 0 failed; 6 pass, 9 warn)
+- [ ] Full corpus review complete (remaining pathways after groundwater_stress)
 
 ### Phase 2 — Report
-- [x] `CARD_REVIEW_SUMMARY.md` + CSV + suggested_patches.json delivered (75 findings, 17 cards with patches)
+- [x] `CARD_REVIEW_SUMMARY.md` + CSV + suggested_patches.json for pilot batch (re-run merge after each review batch)
 
 ### Phase 3 — Approval
-- [ ] Review via `/revise-cards` app (Plan 16)
-- [ ] `claude_review_decisions.json` + `claude_review_edited_patches.json` populated per finalized card
-- [ ] Explicit sign-off recorded
+- [x] Review via `/revise-cards` app (Plan 16) — **15/16** cards finalized
+- [x] `claude_review_decisions.json` populated; user direct edits in `claude_review_user_card_edits.json`
+- [ ] `forest_degradation__002` finalize; explicit corpus sign-off still pending
 
 ### Phase 4 — Apply
-- [ ] Backup taken
-- [ ] Patches applied to raw cards (per `card_id` only)
+- [x] User direct edits applied to raw JSON for **10 cards** (`apply_user_card_edits.py`)
+- [ ] Remaining Claude suggested patches via `apply_claude_review_patches.py` (handled findings)
 
 ### Phase 5 — Verify + reload
-- [ ] Audits pass
-- [ ] Mongo evidence_cards reloaded
+- [x] Mongo reload for **10 user-edited cards** (2026-06-21)
+- [ ] Full corpus reload after bulk apply
 
 ### Phase 6 — Smoke
 - [ ] Signal eval + server diagnosis spot checks pass

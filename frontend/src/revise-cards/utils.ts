@@ -47,6 +47,20 @@ export function severityClasses(severity: string, overall?: string): {
   }
 }
 
+/** Sidebar row background when selected — deeper hue by overall score. */
+export function sidebarActiveClasses(overallScore: string): string {
+  switch (overallScore) {
+    case 'pass':
+      return 'border-l-emerald-700 bg-emerald-200/90 shadow-sm ring-1 ring-inset ring-emerald-400/50'
+    case 'warn':
+      return 'border-l-amber-700 bg-amber-200/90 shadow-sm ring-1 ring-inset ring-amber-500/40'
+    case 'fail':
+      return 'border-l-red-700 bg-red-200/90 shadow-sm ring-1 ring-inset ring-red-400/50'
+    default:
+      return 'border-l-stone-700 bg-stone-200 shadow-sm ring-1 ring-inset ring-stone-400/50'
+  }
+}
+
 export function dimensionLabel(dimension: string): string {
   return dimension.replace(/^D\d_/, '').replace(/_/g, ' ')
 }

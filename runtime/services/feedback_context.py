@@ -179,4 +179,5 @@ def build_feedback_context(
         "llm_diagnosis": llm_diagnosis,
         "retrieved_cards": _retrieved_cards(db, card_ids),
         "context_clusters": cluster_by_suffix(),
+        "skipped_production_systems": event.get("skipped_production_systems") or [],
     }
