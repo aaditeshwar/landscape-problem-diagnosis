@@ -15,6 +15,20 @@ DEFAULT_PROBLEM = (
     "What landscape stresses and production-system problems exist in this micro-watershed?"
 )
 
+# Causal pathways with evidence cards in data/evidence_cards/raw/
+BUILT_PATHWAY_IDS: frozenset[str] = frozenset(
+    {
+        "drought",
+        "groundwater_stress",
+        "rainfed_risk",
+        "irrigation_challenges",
+        "forest_degradation",
+        "encroachment",
+        "multi_sector_vulnerability",
+        "small_landholding",
+    }
+)
+
 
 def load_mws_admin_by_uid(uids: list[str]) -> dict[str, dict[str, str]]:
     """Return uid -> {state, district, tehsil} from Mongo mws_data (primary tehsil)."""

@@ -133,6 +133,17 @@ Requires FastAPI on `http://127.0.0.1:8000` and Mongo loaded.
 | `test/test_panel_updates.py` | Panel update mapping (extend for new pathways) |
 | `test/smoke_test_diagnosis.py` | Live API smoke tests |
 
+## `triage/` — case-study triaging dashboards
+
+| Script | Purpose |
+|--------|---------|
+| `triage/build_variable_dashboard.py` | Precompute global variable CDFs per `(production_system, observed_stress)` → `data/triage_dashboard/` |
+
+```powershell
+.\.venv\Scripts\python.exe scripts/triage/build_variable_dashboard.py
+.\.venv\Scripts\python.exe scripts/triage/build_variable_dashboard.py --section Agriculture/water_scarcity
+```
+
 ## `maintenance/` — occasional ops
 
 | Script | Purpose |

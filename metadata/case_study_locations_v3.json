@@ -1,0 +1,693 @@
+{
+  "meta": {
+    "description": "Case study locations organised by production system, observed stress, and causal pathway per the diagnosis framework. Each entry is a confirmed field instance of that stress-cause combination.",
+    "source": "Latlongs_V1.xlsx",
+    "normalisation_decisions": [
+      {
+        "raw": "Livestock decline | Livestock -> Livestock decline",
+        "canonical": "Livestock / livestock_decline",
+        "note": "Variant wordings collapse to the same canonical stress."
+      },
+      {
+        "raw": "Livestock decline -> Water scarcity (case 4)",
+        "canonical": "Livestock / livestock_decline / water_scarcity_livestock",
+        "note": "Water scarcity as cause under Livestock maps to water_scarcity_livestock, not Agriculture / water_scarcity."
+      },
+      {
+        "raw": "Livestock -> Encroachment of grazing land -> Fodder shortage / Pasture degradation",
+        "canonical": "Livestock / livestock_decline / fodder_shortage | pasture_degradation",
+        "note": "'Encroachment of grazing land' is an intermediate mechanism not a distinct framework cause. The causal endpoint is used."
+      },
+      {
+        "raw": "Biodiversity loss -> Collectivization (cases 25, 42)",
+        "canonical": "NTFP_Forest_Biodiversity / biodiversity_loss / genetic_erosion",
+        "note": "'Collectivization' has no direct framework equivalent. Mapped to genetic_erosion \u2014 both describe breakdown of community-managed biological and ecological commons."
+      },
+      {
+        "raw": "Biodiversity loss -> NTFP decline (case 10)",
+        "canonical": "NTFP_Forest_Biodiversity / ntfp_decline / (stress only)",
+        "note": "NTFP decline is itself a framework stress, not a causal pathway. Filed as stress-only under ntfp_decline."
+      },
+      {
+        "raw": "NTFP, Forest, Biodiversity -> Biodiveristy loss -> ...",
+        "canonical": "NTFP_Forest_Biodiversity / biodiversity_loss / ...",
+        "note": "PS label normalised. Typo 'Biodiveristy' corrected."
+      },
+      {
+        "raw": "Socio-economic -> economic harship",
+        "canonical": "Socio_Economic / economic_hardship / (stress only)",
+        "note": "Typo 'harship' corrected. No causal pathway specified; filed as stress-only."
+      },
+      {
+        "raw": "Case 42: MWS 15_30595 appears in three rows with identical mapping",
+        "canonical": "Deduplicated to one entry per (case_study_id, mws_id)",
+        "note": "MWS 15_31603 retained as a distinct entry."
+      }
+    ]
+  },
+  "diagnosis_framework": {
+    "production_systems": {
+      "Agriculture": {
+        "observed_stresses": {
+          "water_scarcity": {
+            "causal_pathways": {
+              "__stress_only__": {
+                "note": "Stress identified in source data but specific causal pathway not stated.",
+                "case_studies": [
+                  {
+                    "case_study_id": 4,
+                    "lat": 12.601025,
+                    "lng": 77.076593,
+                    "mws_id": "1_34623"
+                  },
+                  {
+                    "case_study_id": 7,
+                    "lat": 25.695552,
+                    "lng": 74.106378,
+                    "mws_id": "12_61845"
+                  },
+                  {
+                    "case_study_id": 34,
+                    "lat": 20.155162,
+                    "lng": 78.314297,
+                    "mws_id": "4_102533"
+                  },
+                  {
+                    "case_study_id": 44,
+                    "lat": 23.226154,
+                    "lng": 86.938624,
+                    "mws_id": "12_374565"
+                  },
+                  {
+                    "case_study_id": 46,
+                    "lat": 23.366647,
+                    "lng": 80.073049,
+                    "mws_id": "15_33653"
+                  }
+                ]
+              },
+              "groundwater_stress": {
+                "case_studies": []
+              },
+              "drought": {
+                "case_studies": [
+                  {
+                    "case_study_id": 34,
+                    "lat": 20.155162,
+                    "lng": 78.314297,
+                    "mws_id": "4_102533"
+                  },
+                  {
+                    "case_study_id": 263,
+                    "lat": 9.235312,
+                    "lng": 78.183271,
+                    "mws_id": "2_15086"
+                  },
+                  {
+                    "case_study_id": 343,
+                    "lat": 19.623398,
+                    "lng": 77.450118,
+                    "mws_id": "4_110551"
+                  },
+                  {
+                    "case_study_id": 342,
+                    "lat": 18.846716,
+                    "lng": 75.18664,
+                    "mws_id": "18_70995"
+                  }
+                ]
+              },
+              "rainfed_risk": {
+                "case_studies": [
+                  {
+                    "case_study_id": 5,
+                    "lat": 25.137687,
+                    "lng": 81.455364,
+                    "mws_id": "12_151409"
+                  },
+                  {
+                    "case_study_id": 30,
+                    "lat": 24.25704,
+                    "lng": 73.61241,
+                    "mws_id": "23_17585"
+                  },
+                  {
+                    "case_study_id": 263,
+                    "lat": 9.235312,
+                    "lng": 78.183271,
+                    "mws_id": "2_15086"
+                  },
+                  {
+                    "case_study_id": 262,
+                    "lat": 9.436404,
+                    "lng": 78.083022,
+                    "mws_id": "2_14342"
+                  },
+                  {
+                    "case_study_id": 292,
+                    "lat": 23.307744,
+                    "lng": 84.966149,
+                    "mws_id": "7_5618"
+                  }
+                ]
+              },
+              "irrigation_challenges": {
+                "case_studies": [
+                  {
+                    "case_study_id": 4,
+                    "lat": 12.601025,
+                    "lng": 77.076593,
+                    "mws_id": "1_34623"
+                  },
+                  {
+                    "case_study_id": 5,
+                    "lat": 25.137687,
+                    "lng": 81.455364,
+                    "mws_id": "12_151409"
+                  },
+                  {
+                    "case_study_id": 6,
+                    "lat": 22.332575,
+                    "lng": 80.418743,
+                    "mws_id": "15_35924"
+                  },
+                  {
+                    "case_study_id": 28,
+                    "lat": 22.255424,
+                    "lng": 80.427925,
+                    "mws_id": "15_44884"
+                  },
+                  {
+                    "case_study_id": 46,
+                    "lat": 23.366647,
+                    "lng": 80.073049,
+                    "mws_id": "15_33653"
+                  }
+                ]
+              }
+            }
+          },
+          "low_yield": {
+            "causal_pathways": {
+              "__stress_only__": {
+                "note": "Stress identified in source data but specific causal pathway not stated.",
+                "case_studies": [
+                  {
+                    "case_study_id": 44,
+                    "lat": 23.226154,
+                    "lng": 86.938624,
+                    "mws_id": "12_374565"
+                  },
+                  {
+                    "case_study_id": 53,
+                    "lat": 18.944067,
+                    "lng": 83.684273,
+                    "mws_id": "22_26173"
+                  },
+                  {
+                    "case_study_id": 54,
+                    "lat": 23.327165,
+                    "lng": 73.803675,
+                    "mws_id": "23_6019"
+                  }
+                ]
+              },
+              "soil_degradation": {
+                "case_studies": []
+              },
+              "monocropping": {
+                "case_studies": []
+              },
+              "seed_unavailability": {
+                "case_studies": []
+              },
+              "chemical_dependence": {
+                "case_studies": []
+              }
+            }
+          },
+          "crop_failure": {
+            "causal_pathways": {
+              "__stress_only__": {
+                "note": "Stress identified in source data but specific causal pathway not stated.",
+                "case_studies": [
+                  {
+                    "case_study_id": 55,
+                    "lat": 22.37914,
+                    "lng": 80.507724,
+                    "mws_id": "15_32886"
+                  }
+                ]
+              },
+              "soil_degradation": {
+                "case_studies": [
+                  {
+                    "case_study_id": 53,
+                    "lat": 18.944067,
+                    "lng": 83.684273,
+                    "mws_id": "22_26173"
+                  },
+                  {
+                    "case_study_id": 54,
+                    "lat": 23.327165,
+                    "lng": 73.803675,
+                    "mws_id": "23_6019"
+                  },
+                  {
+                    "case_study_id": 292,
+                    "lat": 23.307744,
+                    "lng": 84.966149,
+                    "mws_id": "7_5618"
+                  }
+                ]
+              },
+              "monocropping": {
+                "case_studies": []
+              },
+              "seed_unavailability": {
+                "case_studies": []
+              },
+              "chemical_dependence": {
+                "case_studies": [
+                  {
+                    "case_study_id": 53,
+                    "lat": 18.944067,
+                    "lng": 83.684273,
+                    "mws_id": "22_26173"
+                  },
+                  {
+                    "case_study_id": 54,
+                    "lat": 23.327165,
+                    "lng": 73.803675,
+                    "mws_id": "23_6019"
+                  }
+                ]
+              }
+            }
+          },
+          "market_access_gap": {
+            "causal_pathways": {
+              "infrastructure_gap": {
+                "case_studies": []
+              }
+            }
+          }
+        }
+      },
+      "Livestock": {
+        "observed_stresses": {
+          "livestock_decline": {
+            "causal_pathways": {
+              "__stress_only__": {
+                "note": "Stress identified in source data but specific causal pathway not stated.",
+                "case_studies": [
+                  {
+                    "case_study_id": 44,
+                    "lat": 23.226154,
+                    "lng": 86.938624,
+                    "mws_id": "12_374565"
+                  }
+                ]
+              },
+              "overgrazing": {
+                "case_studies": []
+              },
+              "fodder_shortage": {
+                "case_studies": [
+                  {
+                    "case_study_id": 1,
+                    "lat": 23.226154,
+                    "lng": 86.938624,
+                    "mws_id": "12_374565"
+                  },
+                  {
+                    "case_study_id": 7,
+                    "lat": 25.695552,
+                    "lng": 74.106378,
+                    "mws_id": "12_61845"
+                  },
+                  {
+                    "case_study_id": 23,
+                    "lat": 15.917461,
+                    "lng": 76.447632,
+                    "mws_id": "18_24160"
+                  },
+                  {
+                    "case_study_id": 41,
+                    "lat": 24.514894,
+                    "lng": 76.181272,
+                    "mws_id": "12_31793"
+                  }
+                ]
+              },
+              "pasture_degradation": {
+                "case_studies": [
+                  {
+                    "case_study_id": 7,
+                    "lat": 25.695552,
+                    "lng": 74.106378,
+                    "mws_id": "12_61845"
+                  },
+                  {
+                    "case_study_id": 23,
+                    "lat": 15.917461,
+                    "lng": 76.447632,
+                    "mws_id": "18_24160"
+                  },
+                  {
+                    "case_study_id": 41,
+                    "lat": 24.514894,
+                    "lng": 76.181272,
+                    "mws_id": "12_31793"
+                  },
+                  {
+                    "case_study_id": 44,
+                    "lat": 23.226154,
+                    "lng": 86.938624,
+                    "mws_id": "12_374565"
+                  }
+                ]
+              },
+              "water_scarcity_livestock": {
+                "normalisation_note": "Source: 'Livestock decline -> Water scarcity'. Remapped to water_scarcity_livestock (framework pathway under Livestock), not Agriculture / water_scarcity.",
+                "case_studies": [
+                  {
+                    "case_study_id": 4,
+                    "lat": 12.601025,
+                    "lng": 77.076593,
+                    "mws_id": "1_34623"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "NTFP_Forest_Biodiversity": {
+        "observed_stresses": {
+          "ntfp_decline": {
+            "causal_pathways": {
+              "__stress_only__": {
+                "note": "Stress identified in source data but specific causal pathway not stated.",
+                "case_studies": [
+                  {
+                    "case_study_id": 10,
+                    "lat": 18.565245,
+                    "lng": 82.93254,
+                    "mws_id": "4_71265"
+                  },
+                  {
+                    "case_study_id": 24,
+                    "lat": 20.842672,
+                    "lng": 82.769432,
+                    "mws_id": "5_60634"
+                  }
+                ]
+              },
+              "forest_degradation": {
+                "case_studies": [
+                  {
+                    "case_study_id": 8,
+                    "lat": 23.203719,
+                    "lng": 73.812498,
+                    "mws_id": "23_15108"
+                  },
+                  {
+                    "case_study_id": 9,
+                    "lat": 23.013744,
+                    "lng": 80.41596,
+                    "mws_id": "15_32041"
+                  },
+                  {
+                    "case_study_id": 10,
+                    "lat": 18.565245,
+                    "lng": 82.93254,
+                    "mws_id": "4_71265"
+                  },
+                  {
+                    "case_study_id": 15,
+                    "lat": 24.863215,
+                    "lng": 73.303983,
+                    "mws_id": "9_68"
+                  },
+                  {
+                    "case_study_id": 25,
+                    "lat": 23.174997,
+                    "lng": 84.21207,
+                    "mws_id": "7_1281"
+                  },
+                  {
+                    "case_study_id": 28,
+                    "lat": 22.255424,
+                    "lng": 80.427925,
+                    "mws_id": "15_44884"
+                  },
+                  {
+                    "case_study_id": 40,
+                    "lat": 21.520176,
+                    "lng": 85.509079,
+                    "mws_id": "7_25388"
+                  }
+                ]
+              },
+              "encroachment": {
+                "case_studies": [
+                  {
+                    "case_study_id": 11,
+                    "lat": 21.593656,
+                    "lng": 82.559114,
+                    "mws_id": "5_46804"
+                  },
+                  {
+                    "case_study_id": 15,
+                    "lat": 24.863215,
+                    "lng": 73.303983,
+                    "mws_id": "9_68"
+                  },
+                  {
+                    "case_study_id": 22,
+                    "lat": 13.134778,
+                    "lng": 78.300287,
+                    "mws_id": "2_31875"
+                  },
+                  {
+                    "case_study_id": 40,
+                    "lat": 21.520176,
+                    "lng": 85.509079,
+                    "mws_id": "7_25388"
+                  },
+                  {
+                    "case_study_id": 42,
+                    "lat": 22.42396,
+                    "lng": 80.668758,
+                    "mws_id": "15_31603"
+                  },
+                  {
+                    "case_study_id": 42,
+                    "lat": 22.412474,
+                    "lng": 80.674305,
+                    "mws_id": "15_30595"
+                  }
+                ]
+              },
+              "invasive_species": {
+                "case_studies": []
+              },
+              "forest_fire": {
+                "case_studies": []
+              },
+              "genetic_erosion": {
+                "case_studies": []
+              }
+            }
+          },
+          "wildlife_conflict": {
+            "causal_pathways": {
+              "habitat_loss_fragmentation": {
+                "case_studies": []
+              }
+            }
+          },
+          "biodiversity_loss": {
+            "causal_pathways": {
+              "forest_degradation": {
+                "case_studies": [
+                  {
+                    "case_study_id": 8,
+                    "lat": 23.203719,
+                    "lng": 73.812498,
+                    "mws_id": "23_15108"
+                  },
+                  {
+                    "case_study_id": 9,
+                    "lat": 23.013744,
+                    "lng": 80.41596,
+                    "mws_id": "15_32041"
+                  },
+                  {
+                    "case_study_id": 10,
+                    "lat": 18.565245,
+                    "lng": 82.93254,
+                    "mws_id": "4_71265"
+                  },
+                  {
+                    "case_study_id": 15,
+                    "lat": 24.863215,
+                    "lng": 73.303983,
+                    "mws_id": "9_68"
+                  },
+                  {
+                    "case_study_id": 25,
+                    "lat": 23.174997,
+                    "lng": 84.21207,
+                    "mws_id": "7_1281"
+                  },
+                  {
+                    "case_study_id": 28,
+                    "lat": 22.255424,
+                    "lng": 80.427925,
+                    "mws_id": "15_44884"
+                  },
+                  {
+                    "case_study_id": 40,
+                    "lat": 21.520176,
+                    "lng": 85.509079,
+                    "mws_id": "7_25388"
+                  }
+                ]
+              },
+              "encroachment": {
+                "case_studies": [
+                  {
+                    "case_study_id": 11,
+                    "lat": 21.593656,
+                    "lng": 82.559114,
+                    "mws_id": "5_46804"
+                  },
+                  {
+                    "case_study_id": 15,
+                    "lat": 24.863215,
+                    "lng": 73.303983,
+                    "mws_id": "9_68"
+                  },
+                  {
+                    "case_study_id": 22,
+                    "lat": 13.134778,
+                    "lng": 78.300287,
+                    "mws_id": "2_31875"
+                  },
+                  {
+                    "case_study_id": 40,
+                    "lat": 21.520176,
+                    "lng": 85.509079,
+                    "mws_id": "7_25388"
+                  },
+                  {
+                    "case_study_id": 42,
+                    "lat": 22.42396,
+                    "lng": 80.668758,
+                    "mws_id": "15_31603"
+                  },
+                  {
+                    "case_study_id": 42,
+                    "lat": 22.412474,
+                    "lng": 80.674305,
+                    "mws_id": "15_30595"
+                  }
+                ]
+              },
+              "invasive_species": {
+                "case_studies": []
+              },
+              "forest_fire": {
+                "case_studies": [
+                  {
+                    "case_study_id": 25,
+                    "lat": 23.174997,
+                    "lng": 84.21207,
+                    "mws_id": "7_1281"
+                  }
+                ]
+              },
+              "genetic_erosion": {
+                "normalisation_note": "Source term 'Collectivization' mapped here \u2014 describes breakdown of community-managed ecological and seed commons, which is the closest analogue to the genetic_erosion framework pathway.",
+                "case_studies": [
+                  {
+                    "case_study_id": 25,
+                    "lat": 23.174997,
+                    "lng": 84.21207,
+                    "mws_id": "7_1281"
+                  },
+                  {
+                    "case_study_id": 42,
+                    "lat": 22.42396,
+                    "lng": 80.668758,
+                    "mws_id": "15_31603"
+                  },
+                  {
+                    "case_study_id": 42,
+                    "lat": 22.412474,
+                    "lng": 80.674305,
+                    "mws_id": "15_30595"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "Fishery": {
+        "observed_stresses": {
+          "low_fish_productivity": {
+            "causal_pathways": {
+              "water_potential": {
+                "case_studies": []
+              }
+            }
+          }
+        }
+      },
+      "Socio_Economic": {
+        "observed_stresses": {
+          "economic_hardship": {
+            "causal_pathways": {
+              "__stress_only__": {
+                "note": "Stress identified in source data but specific causal pathway not stated.",
+                "case_studies": [
+                  {
+                    "case_study_id": 24,
+                    "lat": 20.842672,
+                    "lng": 82.769432,
+                    "mws_id": "5_60634"
+                  },
+                  {
+                    "case_study_id": 43,
+                    "lat": 23.320211,
+                    "lng": 73.930104,
+                    "mws_id": "23_8185"
+                  },
+                  {
+                    "case_study_id": 45,
+                    "lat": 17.724141,
+                    "lng": 82.81828,
+                    "mws_id": "22_13922"
+                  }
+                ]
+              },
+              "multi_sector_vulnerability": {
+                "case_studies": []
+              }
+            }
+          },
+          "low_income": {
+            "causal_pathways": {
+              "small_landholding": {
+                "case_studies": []
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

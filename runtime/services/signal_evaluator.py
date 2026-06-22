@@ -537,6 +537,22 @@ def _count_signal_in_summary(summary: dict[str, int], direction: str, result: bo
         summary["amplifies_true"] += 1
 
 
+def _variable_values_for_expression(expression: str, variables: dict[str, Any]) -> list[dict[str, str]]:
+    from services.expression_variable_access import (
+        expression_variable_accesses,
+        format_access_value,
+        resolve_access_value,
+    )
+
+    if not expression:
+        return []
+    rows: list[dict[str, str]] = []
+    for access in expression_variable_accesses(expression):
+        value = resolve_access_value(access, variables)
+        rows.append({"access": access, "formatted": format_access_value(value)})
+    return rows
+
+
 def evaluate_pathway_signals(
     pathway_data: dict[str, Any],
     injected: dict[str, Any] | None = None,
@@ -585,6 +601,7 @@ def evaluate_pathway_signals(
             "status": status,
             "error": error,
             "missing_vars": missing_vars,
+            "variable_values": _variable_values_for_expression(expression or raw_expr, present),
         }
         if status != "ok":
             entry["qualitative_hint"] = _signal_qualitative_hint(signal)

@@ -4,9 +4,6 @@
 For each MWS listed in metadata/case_study_locations_v2.json, writes a JSON file
 under data/raw_jsons/ containing all variables supported by the assembler (as sent
 to the reasoning LLM): raw present_variables plus derived/computed scalars.
-
-Variable names and value shapes match the diagnosis pipeline (time series as
-year-keyed dicts, static values as scalars/objects, derived as scalars).
 """
 
 from __future__ import annotations
@@ -17,56 +14,19 @@ import sys
 from pathlib import Path
 from typing import Any
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from _bootstrap import bootstrap  # noqa: E402
 
 bootstrap(runtime=True)
 
 from config import METADATA_DIR  # noqa: E402
 from db import get_db  # noqa: E402
-from services.assembler import (  # noqa: E402
-    VARIABLE_RESOLVERS,
-    location_context,
-    resolve_variable,
-)
 from services.mws_enrich import enrich_mws_doc  # noqa: E402
-from services.reasoner import DERIVED_VARIABLE_NAMES  # noqa: E402
+from services.mws_export import export_mws_variables, write_mws_export  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 CASE_STUDY_PATH = METADATA_DIR / "case_study_locations_v2.json"
 OUTPUT_DIR = ROOT / "data" / "raw_jsons"
-
-# Assembler resolver keys that return agricultural-year time series (or nested series).
-TIME_SERIES_VARIABLES = frozenset(
-    {
-        "annual_delta_g_mm",
-        "annual_precipitation_mm",
-        "annual_et_mm",
-        "annual_runoff_mm",
-        "seasonal_precipitation_mm",
-        "drought_weeks_severe",
-        "drought_weeks_moderate",
-        "dry_spell_weeks",
-        "monsoon_onset_date",
-        "kharif_cropped_area_percent",
-        "drought_causality_json",
-        "drought_causality",
-        "cropping_intensity",
-        "lulc_single_kharif_ha",
-        "lulc_double_crop_ha",
-        "lulc_cropland_ha",
-        "lulc_shrub_scrub_ha",
-        "lulc_barrenland_ha",
-        "lulc_tree_forest_ha",
-        "lulc_krz_water_ha",
-        "swb_total_area_ha",
-        "swb_kharif_area_ha",
-        "swb_rabi_area_ha",
-        "swb_zaid_area_ha",
-    }
-)
-
-EXPORT_VARIABLES = sorted(VARIABLE_RESOLVERS.keys())
 
 
 def load_case_study_mws() -> dict[str, list[dict[str, Any]]]:
@@ -108,40 +68,6 @@ def load_case_study_mws() -> dict[str, list[dict[str, Any]]]:
     return by_mws
 
 
-def variable_representation_type(name: str) -> str:
-    if name in DERIVED_VARIABLE_NAMES:
-        return "derived"
-    if name in TIME_SERIES_VARIABLES:
-        return "time_series"
-    return "static"
-
-
-def export_mws_variables(mws_doc: dict, case_study_refs: list[dict[str, Any]]) -> dict[str, Any]:
-    present: dict[str, Any] = {}
-    derived: dict[str, Any] = {}
-    missing: list[str] = []
-
-    for name in EXPORT_VARIABLES:
-        value = resolve_variable(mws_doc, name)
-        if value is None:
-            missing.append(name)
-            continue
-        if name in DERIVED_VARIABLE_NAMES:
-            derived[name] = value
-        else:
-            present[name] = value
-
-    return {
-        "uid": mws_doc.get("uid"),
-        "case_study_refs": case_study_refs,
-        "location_context": location_context(mws_doc),
-        "present_variables": present,
-        "derived_variables": derived,
-        "missing_variables": missing,
-        "variable_schema": {name: variable_representation_type(name) for name in EXPORT_VARIABLES},
-    }
-
-
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--uid", action="append", help="Export only these MWS uids (repeatable)")
@@ -169,11 +95,8 @@ def main() -> int:
             not_found.append(mws_id)
             continue
         mws = enrich_mws_doc(db, raw)
-        payload = export_mws_variables(mws, refs)
-        out_path = args.output_dir / f"{mws_id.replace('/', '_')}.json"
-        with out_path.open("w", encoding="utf-8") as fh:
-            json.dump(payload, fh, indent=2, default=str, ensure_ascii=False)
-            fh.write("\n")
+        payload = export_mws_variables(mws, case_study_refs=refs)
+        out_path = write_mws_export(payload, output_dir=args.output_dir)
         written += 1
         n_present = len(payload["present_variables"])
         n_derived = len(payload["derived_variables"])

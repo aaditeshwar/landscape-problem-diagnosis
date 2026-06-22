@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import L from 'leaflet'
 import {
@@ -27,6 +27,7 @@ function tehsilKey(ref: TehsilRef): string {
 }
 
 export function DiagnosisApp() {
+  const [searchParams] = useSearchParams()
   const [tehsils, setTehsils] = useState<TehsilFeatureCollection | null>(null)
   const [ingestedKeys, setIngestedKeys] = useState<Set<string>>(new Set())
   const [selectedTehsil, setSelectedTehsil] = useState<TehsilRef | null>(null)
@@ -74,6 +75,7 @@ export function DiagnosisApp() {
   const selectedTehsilRef = useRef<TehsilRef | null>(null)
   const selectedMwsUidRef = useRef<string | null>(null)
   const mwsBoundariesRef = useRef<MwsFeatureCollection | null>(null)
+  const deepLinkHandledRef = useRef(false)
   selectedTehsilRef.current = selectedTehsil
   selectedMwsUidRef.current = selectedMwsUid
   mwsBoundariesRef.current = mwsBoundaries
@@ -267,6 +269,39 @@ export function DiagnosisApp() {
       })
       .catch((err) => setMapError(err instanceof Error ? err.message : 'Failed to load map'))
   }, [])
+
+  useEffect(() => {
+    if (deepLinkHandledRef.current || !tehsils) return
+    const mwsUid = searchParams.get('mws') || searchParams.get('uid')
+    if (!mwsUid) return
+    deepLinkHandledRef.current = true
+
+    void (async () => {
+      let tehsil: TehsilRef | null = null
+      const state = searchParams.get('state')
+      const district = searchParams.get('district')
+      const tehsilName = searchParams.get('tehsil')
+      if (state && district && tehsilName) {
+        tehsil = { state, district, tehsil: tehsilName }
+      } else {
+        try {
+          const doc = await fetchMws(mwsUid)
+          const primary = doc.tehsils?.[0]
+          if (primary) {
+            tehsil = primary
+          } else if (doc.state && doc.district && doc.tehsil) {
+            tehsil = { state: doc.state, district: doc.district, tehsil: doc.tehsil }
+          }
+        } catch (err) {
+          setMapError(err instanceof Error ? err.message : 'Failed to open MWS deep link')
+          return
+        }
+      }
+      if (!tehsil) return
+      activeDiagnosisContextRef.current = { mwsUid, tehsil }
+      await restoreActiveDiagnosisContext({ fly: true })
+    })()
+  }, [searchParams, tehsils, restoreActiveDiagnosisContext])
 
   const resetDiagnosisForNewMws = useCallback(() => {
     setDiagnosis(null)

@@ -8,6 +8,7 @@ import { SignalLegend, SignalText } from '../revise-cards/SignalText'
 import { indexSignals } from '../revise-cards/signalUtils'
 import type { IssueDraft, ReviewBatch, ReviewCardBundle, ReviewCardSummary, UserCardEditDraft } from '../revise-cards/types'
 import { dimensionLabel, severityClasses } from '../revise-cards/utils'
+import { CommandFooter } from '../components/CommandFooter'
 
 export function ReviseCardsPage() {
   const [params, setParams] = useSearchParams()
@@ -470,6 +471,28 @@ export function ReviseCardsPage() {
           ) : (
             <div className="text-stone-600">No review data for this card.</div>
           )}
+          <CommandFooter
+            title="Push finalized edits to raw cards and MongoDB"
+            commands={[
+              {
+                label: 'Apply Claude / edited patches to raw JSON',
+                command: '.\\.venv\\Scripts\\python.exe scripts\\review\\apply_claude_review_patches.py --apply',
+              },
+              {
+                label: 'Apply direct editor saves from this app',
+                command: '.\\.venv\\Scripts\\python.exe scripts\\review\\apply_user_card_edits.py',
+              },
+              {
+                label: 'Reload one card prefix into Mongo (example)',
+                command:
+                  '.\\.venv\\Scripts\\python.exe scripts\\reload_evidence_cards.py --prefix agriculture__water_scarcity__drought',
+              },
+              {
+                label: 'Reload full raw corpus',
+                command: '.\\.venv\\Scripts\\python.exe scripts\\reload_evidence_cards.py',
+              },
+            ]}
+          />
         </main>
       </div>
     </div>

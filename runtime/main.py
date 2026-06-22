@@ -22,6 +22,7 @@ from routers import (
     map as map_router,
     mws,
     query,
+    triage,
     village,
 )
 
@@ -66,6 +67,7 @@ app.include_router(evidence_suggestions.router)
 app.include_router(config_public.router)
 app.include_router(execute.router)
 app.include_router(logs.router)
+app.include_router(triage.router)
 
 if STATIC_DIR.exists():
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")

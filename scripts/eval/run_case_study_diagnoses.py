@@ -21,6 +21,7 @@ import httpx
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
 from eval.case_study_index import (  # noqa: E402
+    BUILT_PATHWAY_IDS,
     DEFAULT_PROBLEM,
     enrich_case_study_rows,
     load_case_study_rows,
@@ -244,6 +245,172 @@ def write_outputs(
     return report_json, replay_path
 
 
+def _load_present_variables(mws_id: str, cache: dict[str, dict[str, Any]]) -> dict[str, Any]:
+    if mws_id in cache:
+        return cache[mws_id]
+    runtime_dir = ROOT / "runtime"
+    if str(runtime_dir) not in sys.path:
+        sys.path.insert(0, str(runtime_dir))
+    from services.signal_evaluator import merge_export_variables  # noqa: E402
+
+    path = ROOT / "data" / "raw_jsons" / f"{mws_id}.json"
+    if path.is_file():
+        export = json.loads(path.read_text(encoding="utf-8"))
+        cache[mws_id] = merge_export_variables(export)
+    else:
+        cache[mws_id] = {}
+    return cache[mws_id]
+
+
+def _location_label(row: dict[str, Any]) -> str:
+    parts = [
+        str(row.get("mws_id") or "").strip(),
+        str(row.get("tehsil") or "").strip(),
+        str(row.get("district") or "").strip(),
+        str(row.get("state") or "").strip(),
+    ]
+    return " · ".join(p for p in parts if p)
+
+
+def _location_link(row: dict[str, Any]) -> str:
+    label = _location_label(row)
+    url = str(row.get("feedback_url") or "").strip()
+    return f"[{label}]({url})" if url else label
+
+
+def _pathway_eval(replay_run: dict[str, Any] | None, pathway_id: str) -> dict[str, Any] | None:
+    if not replay_run or not pathway_id:
+        return None
+    signal_eval = (replay_run.get("final_response") or {}).get("signal_evaluation") or {}
+    for item in signal_eval.get("pathways") or []:
+        if isinstance(item, dict) and str(item.get("pathway_id") or "") == pathway_id:
+            return item
+    return None
+
+
+def _format_var_value(name: str, value: Any) -> str:
+    if value is None:
+        return f"`{name}`=—"
+    if isinstance(value, list):
+        if not value:
+            return f"`{name}`=[]"
+        last = value[-1]
+        return f"`{name}`[-1]={json.dumps(last, ensure_ascii=False)}"
+    if isinstance(value, dict):
+        text = json.dumps(value, ensure_ascii=False)
+        if len(text) > 72:
+            text = text[:69] + "…"
+        return f"`{name}`={text}"
+    return f"`{name}`={json.dumps(value, ensure_ascii=False) if isinstance(value, str) else value}"
+
+
+def _format_signal_line(signal: dict[str, Any], present: dict[str, Any]) -> str:
+    runtime_dir = ROOT / "runtime"
+    if str(runtime_dir) not in sys.path:
+        sys.path.insert(0, str(runtime_dir))
+    from services.signal_evaluator import expression_load_names  # noqa: E402
+
+    expr = str(signal.get("expression") or "").strip()
+    result = signal.get("result")
+    if result is True:
+        result_label = "**TRUE**"
+    elif result is False:
+        result_label = "**FALSE**"
+    else:
+        result_label = "**None**"
+    sig_id = str(signal.get("signal_id") or "?")
+    direction = str(signal.get("direction") or "")
+    status = str(signal.get("status") or "ok")
+
+    parts = [f"**{sig_id}** ({direction}) → {result_label}"]
+    if status != "ok":
+        parts.append(f"status={status}")
+    if expr:
+        parts.append(f"`{expr}`")
+    var_names = sorted(expression_load_names(expr)) if expr else []
+    if var_names:
+        var_bits = [_format_var_value(name, present.get(name)) for name in var_names]
+        parts.append("vars: " + ", ".join(var_bits))
+    return " · ".join(parts)
+
+
+def _expected_pathway_detail(
+    row: dict[str, Any],
+    replay_run: dict[str, Any] | None,
+    present_cache: dict[str, dict[str, Any]],
+) -> str:
+    expected = str(row.get("expected_pathway") or "").strip()
+    if not expected:
+        return "—"
+
+    if expected not in BUILT_PATHWAY_IDS:
+        return (
+            f"**`{expected}`** — pathway **not built** in stack "
+            f"(no evidence cards; diagnosis cannot surface this pathway)"
+        )
+
+    match = str(row.get("match_status") or "")
+    outcome = {
+        "confirmed": "confirmed",
+        "uncertain": "uncertain",
+        "miss": "miss",
+    }.get(match, match or "—")
+
+    lines = [f"**`{expected}`** · **{outcome}**"]
+    confirmed = str(row.get("confirmed_pathways") or "—")
+    uncertain = str(row.get("uncertain_pathways") or "—")
+    lines.append(f"Diagnosis lists — confirmed: {confirmed}; uncertain: {uncertain}")
+
+    pathway_eval = _pathway_eval(replay_run, expected)
+    if not pathway_eval:
+        lines.append("Pathway **not retrieved** (absent from signal evaluation bundle)")
+        return "<br>".join(lines)
+
+    summary = pathway_eval.get("summary") or {}
+    lines.append(
+        "Policy eval — "
+        f"confirms_true={summary.get('confirms_true', 0)}, "
+        f"rules_out_true={summary.get('rules_out_true', 0)}, "
+        f"amplifiers_true={summary.get('amplifies_true', 0)}, "
+        f"needs_llm={summary.get('needs_llm', 0)}"
+    )
+
+    present = _load_present_variables(str(row.get("mws_id") or ""), present_cache)
+    for signal in pathway_eval.get("signals") or []:
+        if not isinstance(signal, dict):
+            continue
+        lines.append(_format_signal_line(signal, present))
+
+    return "<br>".join(lines)
+
+
+def _render_result_table(
+    rows: list[dict[str, Any]],
+    replay_by_index: dict[int, dict[str, Any]],
+    present_cache: dict[str, dict[str, Any]],
+) -> list[str]:
+    if not rows:
+        return ["_(none)_", ""]
+    lines = [
+        "| Location | Expected pathway (signals + variables) |",
+        "|----------|----------------------------------------|",
+    ]
+    for row in sorted(
+        rows,
+        key=lambda r: (
+            r.get("state") or "",
+            r.get("district") or "",
+            r.get("tehsil") or "",
+            r.get("mws_id") or "",
+        ),
+    ):
+        run_index = int(row.get("run_index") or 0)
+        detail = _expected_pathway_detail(row, replay_by_index.get(run_index), present_cache)
+        lines.append(f"| {_location_link(row)} | {detail} |")
+    lines.append("")
+    return lines
+
+
 def write_markdown_report(
     summary: dict[str, Any],
     *,
@@ -251,11 +418,16 @@ def write_markdown_report(
     mode: str,
     stamp: str,
     replay_path: Path | None,
+    replay_runs: list[dict[str, Any]] | None = None,
 ) -> Path:
     """Write a human-readable triage summary grouped by match_status."""
     md_path = output_dir / f"case_study_diagnosis_{mode}_{stamp}.md"
     rows = summary.get("rows") or []
-    built = [r for r in rows if r.get("expected_pathway")]
+    replay_by_index = {
+        int(item.get("run_index") or 0): item for item in (replay_runs or []) if item.get("run_index")
+    }
+    present_cache: dict[str, dict[str, Any]] = {}
+
     by_status: dict[str, list[dict[str, Any]]] = {
         "confirmed": [],
         "uncertain": [],
@@ -266,12 +438,20 @@ def write_markdown_report(
         status = str(row.get("match_status") or "stress_only")
         by_status.setdefault(status, []).append(row)
 
+    misses = by_status.get("miss") or []
+    miss_built = [r for r in misses if str(r.get("expected_pathway") or "") in BUILT_PATHWAY_IDS]
+    miss_unbuilt = [r for r in misses if str(r.get("expected_pathway") or "") not in BUILT_PATHWAY_IDS]
+
+    built_list = ", ".join(f"`{p}`" for p in sorted(BUILT_PATHWAY_IDS))
+
     lines = [
         "# Case study diagnosis batch",
         "",
         f"**Generated:** {summary.get('generated_at')}",
         f"**Mode:** {mode} (`want_llm_opinion={summary.get('want_llm_opinion')}`)",
         f"**Problem text:** {summary.get('problem_description') or '*(empty — server-only)*'}",
+        "",
+        f"**Built pathways ({len(BUILT_PATHWAY_IDS)}):** {built_list}",
         "",
         "## Scorecard",
         "",
@@ -281,13 +461,15 @@ def write_markdown_report(
         f"| With expected pathway | {summary.get('built_pathway_rows', 0)} |",
         f"| Confirmed hit | {summary.get('confirmed_hits', 0)} |",
         f"| Uncertain (partial) | {summary.get('uncertain_hits', 0)} |",
-        f"| Miss | {summary.get('misses', 0)} |",
+        f"| Miss (total) | {len(misses)} |",
+        f"| Miss — built pathway | {len(miss_built)} |",
+        f"| Miss — pathway not built | {len(miss_unbuilt)} |",
         "",
         "## Triage priority",
         "",
-        "1. **`miss`** — expected pathway not in confirmed or uncertain; inspect feedback URL first.",
-        "2. **`uncertain`** — pathway surfaced but not confirmed; check signal eval + confirmation policy.",
-        "3. **`confirmed`** — spot-check only.",
+        "1. **Miss (built pathways)** — stack should surface these; inspect signal TRUE/FALSE below.",
+        "2. **Uncertain** — pathway retrieved but below confirmation threshold.",
+        "3. **Miss (not built)** — expected pathway has no cards yet; misses are expected.",
         "",
     ]
 
@@ -307,35 +489,23 @@ def write_markdown_report(
             ]
         )
 
-    for status in ("miss", "uncertain", "confirmed"):
-        group = by_status.get(status) or []
-        if not group:
-            continue
-        lines.append(f"## {status.upper()} ({len(group)})")
-        lines.append("")
-        lines.append(
-            "| State | District | Tehsil | MWS | Expected | Confirmed | Uncertain | Feedback |"
-        )
-        lines.append("|-------|----------|--------|-----|----------|-----------|-----------|----------|")
-        for row in sorted(
-            group,
-            key=lambda r: (
-                r.get("state") or "",
-                r.get("district") or "",
-                r.get("tehsil") or "",
-                r.get("mws_id") or "",
-            ),
-        ):
-            fb = row.get("feedback_url") or ""
-            fb_cell = f"[open]({fb})" if fb else "—"
-            lines.append(
-                f"| {row.get('state') or '—'} | {row.get('district') or '—'} | "
-                f"{row.get('tehsil') or '—'} | `{row.get('mws_id')}` | "
-                f"`{row.get('expected_pathway')}` | "
-                f"`{row.get('confirmed_pathways') or '—'}` | "
-                f"`{row.get('uncertain_pathways') or '—'}` | {fb_cell} |"
-            )
-        lines.append("")
+    lines.append(f"## MISS — built pathways ({len(miss_built)})")
+    lines.append("")
+    lines.extend(_render_result_table(miss_built, replay_by_index, present_cache))
+
+    lines.append(f"## MISS — pathways not built yet ({len(miss_unbuilt)})")
+    lines.append("")
+    lines.extend(_render_result_table(miss_unbuilt, replay_by_index, present_cache))
+
+    uncertain = by_status.get("uncertain") or []
+    lines.append(f"## UNCERTAIN ({len(uncertain)})")
+    lines.append("")
+    lines.extend(_render_result_table(uncertain, replay_by_index, present_cache))
+
+    confirmed = by_status.get("confirmed") or []
+    lines.append(f"## CONFIRMED ({len(confirmed)})")
+    lines.append("")
+    lines.extend(_render_result_table(confirmed, replay_by_index, present_cache))
 
     md_path.write_text("\n".join(lines), encoding="utf-8")
     return md_path
@@ -402,6 +572,7 @@ def main() -> int:
             mode=mode,
             stamp=stamp,
             replay_path=replay_path,
+            replay_runs=replay_runs,
         )
 
     print(f"Wrote {report_json}")
