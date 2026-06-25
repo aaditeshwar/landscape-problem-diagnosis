@@ -1,4 +1,4 @@
-"""Load flat case-study rows from metadata/case_study_locations_v2.json."""
+"""Load flat case-study rows from metadata/case_study_locations_v3.json."""
 
 from __future__ import annotations
 
@@ -9,25 +9,31 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
-CASE_STUDY_PATH = ROOT / "metadata" / "case_study_locations_v2.json"
+CASE_STUDY_PATH = ROOT / "metadata" / "case_study_locations_v3.json"
 
 DEFAULT_PROBLEM = (
     "What landscape stresses and production-system problems exist in this micro-watershed?"
 )
 
-# Causal pathways with evidence cards in data/evidence_cards/raw/
-BUILT_PATHWAY_IDS: frozenset[str] = frozenset(
-    {
-        "drought",
-        "groundwater_stress",
-        "rainfed_risk",
-        "irrigation_challenges",
-        "forest_degradation",
-        "encroachment",
-        "multi_sector_vulnerability",
-        "small_landholding",
-    }
-)
+# Re-export from runtime built_pathways when available; fallback for offline scripts.
+try:
+    runtime_dir = ROOT / "runtime"
+    if str(runtime_dir) not in sys.path:
+        sys.path.insert(0, str(runtime_dir))
+    from services.built_pathways import BUILT_PATHWAY_IDS  # noqa: E402
+except ImportError:
+    BUILT_PATHWAY_IDS = frozenset(
+        {
+            "drought",
+            "groundwater_stress",
+            "rainfed_risk",
+            "irrigation_challenges",
+            "forest_degradation",
+            "encroachment",
+            "multi_sector_vulnerability",
+            "small_landholding",
+        }
+    )
 
 
 def load_mws_admin_by_uid(uids: list[str]) -> dict[str, dict[str, str]]:

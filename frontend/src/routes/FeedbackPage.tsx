@@ -11,6 +11,11 @@ import { focusParamToDomId, mergeSectionDraft } from '../utils/feedbackSections'
 export function FeedbackPage() {
   const [params] = useSearchParams()
   const snapshotId = params.get('snapshot_id')
+  const logIndexParam = params.get('log_index')
+  const logIndex =
+    logIndexParam != null && logIndexParam !== '' && !Number.isNaN(Number(logIndexParam))
+      ? Number(logIndexParam)
+      : undefined
   const focus = params.get('focus')
   const pathwayId = params.get('pathway_id')
 
@@ -44,7 +49,7 @@ export function FeedbackPage() {
     let cancelled = false
     setLoading(true)
     setError(null)
-    fetchFeedbackContext(snapshotId)
+    fetchFeedbackContext(snapshotId, logIndex)
       .then((data) => {
         if (!cancelled) setContext(data)
       })
@@ -57,7 +62,7 @@ export function FeedbackPage() {
     return () => {
       cancelled = true
     }
-  }, [snapshotId])
+  }, [snapshotId, logIndex])
 
   const loadSaved = useCallback(
     async (emailToLoad: string, replaceDraft = true) => {
@@ -82,7 +87,7 @@ export function FeedbackPage() {
         setLoadError(message)
       }
     },
-    [snapshotId],
+    [snapshotId, logIndex],
   )
 
   useEffect(() => {

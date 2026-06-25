@@ -296,8 +296,8 @@ export function FeedbackComparisonGrid({
 
       {pathways.map((pathway) => {
         const sectionKey = pathwaySectionKey(pathway.pathway_id)
-        const serverNote =
-          context.server_diagnosis.pathway_notes[pathway.pathway_id] ?? pathway.reasoning ?? '—'
+        const autoReasoning = pathway.reasoning ?? '—'
+        const fullReasoningNote = context.server_diagnosis.pathway_notes[pathway.pathway_id]
         const llmItem = llmPathwayComment(context.llm_diagnosis?.reviewer_commentary, pathway.pathway_id)
         const independentItem = llmIndependentReview(
           context.llm_diagnosis?.independent_pathway_review,
@@ -318,10 +318,19 @@ export function FeedbackComparisonGrid({
           serverContent: (
             <>
               <SignalRichText
-                text={serverNote}
+                text={autoReasoning}
                 pathwayId={pathway.pathway_id}
                 signalEvaluation={signalEvaluation}
               />
+              {fullReasoningNote ? (
+                <p className="mt-2 text-sm text-stone-700">
+                  <SignalRichText
+                    text={fullReasoningNote}
+                    pathwayId={pathway.pathway_id}
+                    signalEvaluation={signalEvaluation}
+                  />
+                </p>
+              ) : null}
               <PathwaySignalStrip
                 pathwayId={pathway.pathway_id}
                 card={card}

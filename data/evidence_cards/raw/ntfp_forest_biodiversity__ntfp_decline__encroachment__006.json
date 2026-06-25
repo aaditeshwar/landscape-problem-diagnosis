@@ -105,10 +105,11 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Many pending or rejected FRA claims with reported NTFP decline and forest conversion indicate tenure insecurity confirming encroachment vulnerability; high recognition weakens encroachment as primary driver."
+        "qualitative_description": "Many pending or rejected FRA claims with reported NTFP decline and forest conversion indicate tenure insecurity confirming encroachment vulnerability; high recognition weakens encroachment as primary driver.",
+        "expression": ""
       },
       "severity": "high",
-      "direction": "confirms",
+      "direction": "amplifies",
       "explanation": "Unresolved forest rights alongside measurable conversion corroborates encroachment as a tenure and access driver of NTFP decline.",
       "signal_id": "sig_05",
       "active": true
@@ -326,7 +327,8 @@
     "primary_confirm_signals": [
       "sig_01",
       "sig_02",
-      "sig_04"
+      "sig_04",
+      "sig_06"
     ],
     "confirm_when": {
       "amplifiers_do_not_confirm": true,
@@ -339,6 +341,9 @@
         ],
         [
           "sig_04"
+        ],
+        [
+          "sig_06"
         ]
       ]
     },
@@ -351,7 +356,8 @@
         "min_from_set": {
           "signals": [
             "sig_02",
-            "sig_04"
+            "sig_04",
+            "sig_06"
           ],
           "min": 1
         },

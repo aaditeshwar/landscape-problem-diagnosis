@@ -166,7 +166,12 @@ npm run build
 cd ..
 ```
 
-Output: `frontend/dist/` (static assets). The app calls `/api/...` on the same host, so no `VITE_*` API base URL is required.
+Output: `frontend/dist/` (static assets).
+
+- **Root deploy** (`https://host/`): default build uses `base: /` and API paths `/api/...`.
+- **Subpath deploy** (`https://host/core-insights/`): `frontend/.env.production` sets `VITE_BASE_PATH=/core-insights/`. Assets, routes, and API calls are prefixed automatically. Rebuild after changing the path.
+
+To use a different subpath, edit `VITE_BASE_PATH` in `frontend/.env.production` (must start and end with `/`).
 
 ---
 
@@ -271,9 +276,39 @@ sudo certbot --apache -d your-domain.example
 
 After TLS is enabled, set `CORS_ORIGINS=https://your-domain.example` if you use it.
 
-### Subpath deployment
+### Subpath deployment (`/core-insights/`)
 
-The frontend assumes it is served from `/` (routes and `/api` paths are absolute). Prefer a dedicated subdomain (e.g. `diagnosis.example.org`) rather than mounting under `/some/path/` unless you add a Vite `base` and router `basename`.
+When the app is mounted under a path prefix (not the vhost root), use the production build (`VITE_BASE_PATH=/core-insights/` in `frontend/.env.production`) and Apache config like:
+
+```apache
+# Static SPA under /core-insights/
+Alias /core-insights /opt/landscape-diagnosis/frontend/dist
+
+<Directory /opt/landscape-diagnosis/frontend/dist>
+    Options -Indexes +FollowSymLinks
+    AllowOverride None
+    Require all granted
+
+    RewriteEngine On
+    RewriteBase /core-insights/
+    RewriteRule ^index\.html$ - [L]
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule . /core-insights/index.html [L]
+</Directory>
+
+# API under the same prefix
+ProxyPass        /core-insights/api http://127.0.0.1:8000/api retry=0 timeout=600
+ProxyPassReverse /core-insights/api http://127.0.0.1:8000/api
+
+# Optional: log dashboard
+ProxyPass        /core-insights/static http://127.0.0.1:8000/static retry=0 timeout=60
+ProxyPassReverse /core-insights/static http://127.0.0.1:8000/static
+```
+
+Open `http://your-host/core-insights/` (trailing slash optional; Apache usually redirects).
+
+For a **root** vhost (`DocumentRoot` = `frontend/dist`), keep `VITE_BASE_PATH=/` (remove or comment out `frontend/.env.production`) and use the main virtual host example above with `/api` proxy paths.
 
 ---
 

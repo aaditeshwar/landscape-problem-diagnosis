@@ -1,17 +1,4 @@
-async function api<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(path, init)
-  if (!res.ok) {
-    let detail = await res.text()
-    try {
-      const parsed = JSON.parse(detail) as { detail?: string }
-      if (typeof parsed.detail === 'string') detail = parsed.detail
-    } catch {
-      /* keep raw */
-    }
-    throw new Error(detail || `${res.status} ${res.statusText}`)
-  }
-  return res.json() as Promise<T>
-}
+import { apiFetch as api } from './http'
 
 export interface EvidenceSuggestionsDocument {
   card_id: string

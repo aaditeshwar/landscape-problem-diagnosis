@@ -5,26 +5,29 @@ import type {
   FollowUpExchange,
   MwsDocument,
 } from '../types'
+import { apiFetch as api } from './http'
 
-async function api<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(path, init)
-  if (!res.ok) {
-    let detail = await res.text()
-    try {
-      const parsed = JSON.parse(detail) as { detail?: string | Array<{ msg?: string }> }
-      if (typeof parsed.detail === 'string') detail = parsed.detail
-      else if (Array.isArray(parsed.detail)) detail = parsed.detail.map((d) => d.msg).filter(Boolean).join('; ')
-    } catch {
-      /* keep raw text */
-    }
-    throw new Error(detail || `${res.status} ${res.statusText}`)
+export function fetchFeedbackContext(snapshotId: string, logIndex?: number | null): Promise<FeedbackContext> {
+  const q = new URLSearchParams({ snapshot_id: snapshotId })
+  if (typeof logIndex === 'number' && logIndex >= 0) {
+    q.set('log_index', String(logIndex))
   }
-  return res.json() as Promise<T>
+  return api(`/api/feedback/context?${q}`)
 }
 
-export function fetchFeedbackContext(snapshotId: string): Promise<FeedbackContext> {
-  const q = new URLSearchParams({ snapshot_id: snapshotId })
-  return api(`/api/feedback/context?${q}`)
+export function buildFeedbackPageUrl(options: {
+  snapshotId: string
+  logIndex?: number | null
+  focus?: 'pathway' | 'summary' | 'solutions'
+  pathwayId?: string
+}): string {
+  const params = new URLSearchParams({ snapshot_id: options.snapshotId })
+  if (typeof options.logIndex === 'number' && options.logIndex >= 0) {
+    params.set('log_index', String(options.logIndex))
+  }
+  if (options.focus) params.set('focus', options.focus)
+  if (options.pathwayId) params.set('pathway_id', options.pathwayId)
+  return `/feedback?${params}`
 }
 
 export function fetchSavedFeedback(snapshotId: string, email: string): Promise<FeedbackDocument> {
@@ -49,17 +52,6 @@ export function saveFeedback(
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   })
-}
-
-export function buildFeedbackPageUrl(options: {
-  snapshotId: string
-  focus?: 'pathway' | 'summary' | 'solutions'
-  pathwayId?: string
-}): string {
-  const params = new URLSearchParams({ snapshot_id: options.snapshotId })
-  if (options.focus) params.set('focus', options.focus)
-  if (options.pathwayId) params.set('pathway_id', options.pathwayId)
-  return `/feedback?${params}`
 }
 
 export type { DiagnosisResponse, FollowUpExchange, MwsDocument }

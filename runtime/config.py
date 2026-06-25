@@ -7,7 +7,8 @@ ROOT = Path(__file__).resolve().parents[1]
 METADATA_DIR = ROOT / "metadata"
 load_dotenv(ROOT / ".env")
 
-LOG_DIR = os.getenv("LOG_DIR", str(ROOT / "logs"))
+_log_dir = Path(os.getenv("LOG_DIR", "logs"))
+LOG_DIR = str(_log_dir if _log_dir.is_absolute() else ROOT / _log_dir)
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/?directConnection=true")

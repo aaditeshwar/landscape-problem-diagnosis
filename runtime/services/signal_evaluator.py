@@ -768,6 +768,7 @@ def summarize_evaluation_for_log(eval_results: dict[str, dict[str, Any]]) -> dic
                         "result": signal.get("result"),
                         "status": signal.get("status"),
                         "expression": signal.get("expression") or "",
+                        "variable_values": signal.get("variable_values") or [],
                         "qualitative_hint": signal.get("qualitative_hint") or "",
                         "user_answer": signal.get("user_answer") or "",
                         "update_interpretation": signal.get("update_interpretation") or "",

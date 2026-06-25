@@ -1,17 +1,4 @@
-async function api<T>(path: string): Promise<T> {
-  const res = await fetch(path)
-  if (!res.ok) {
-    let detail = await res.text()
-    try {
-      const parsed = JSON.parse(detail) as { detail?: string }
-      if (typeof parsed.detail === 'string') detail = parsed.detail
-    } catch {
-      /* keep raw */
-    }
-    throw new Error(detail || `${res.status} ${res.statusText}`)
-  }
-  return res.json() as Promise<T>
-}
+import { apiFetch as api } from './http'
 
 export interface PublicConfig {
   cluster_cog_url?: string | null

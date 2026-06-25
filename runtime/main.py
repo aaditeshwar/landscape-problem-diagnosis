@@ -22,6 +22,7 @@ from routers import (
     map as map_router,
     mws,
     query,
+    query_eval,
     triage,
     village,
 )
@@ -58,6 +59,7 @@ app.include_router(mws.router)
 app.include_router(village.router)
 app.include_router(locate.router)
 app.include_router(query.router)
+app.include_router(query_eval.router)
 app.include_router(feedback.router)
 app.include_router(claude_review.router)
 app.include_router(context.router)

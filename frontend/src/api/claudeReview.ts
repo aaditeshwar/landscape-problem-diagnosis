@@ -1,19 +1,5 @@
 import type { ReviewBatch, ReviewCardBundle, ReviewCardSummary, FinalizeCardResponse } from '../revise-cards/types'
-
-async function api<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(path, init)
-  if (!res.ok) {
-    let detail = await res.text()
-    try {
-      const parsed = JSON.parse(detail) as { detail?: string }
-      if (typeof parsed.detail === 'string') detail = parsed.detail
-    } catch {
-      /* keep raw */
-    }
-    throw new Error(detail || `${res.status} ${res.statusText}`)
-  }
-  return res.json() as Promise<T>
-}
+import { apiFetch as api } from './http'
 
 export function fetchReviewBatches(): Promise<{ batches: ReviewBatch[] }> {
   return api('/api/claude-review/batches')

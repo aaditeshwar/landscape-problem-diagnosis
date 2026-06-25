@@ -134,6 +134,9 @@ export function TriagingPage() {
                 }}
               />
             </label>
+            <ExternalLink to="/review" className="text-sm text-amber-800 hover:underline">
+              Query eval review
+            </ExternalLink>
             <ExternalLink to="/dashboard" className="text-sm text-amber-800 hover:underline">
               Variable dashboard
             </ExternalLink>

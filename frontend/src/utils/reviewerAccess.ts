@@ -1,3 +1,5 @@
+import { appUrl } from '../appBase'
+
 export type ReviewerAccessConfig = {
   allowed_reviewers_all: boolean
   allowed_reviewers: string[]
@@ -7,7 +9,7 @@ let cachedConfig: ReviewerAccessConfig | null = null
 
 export async function fetchReviewerAccess(): Promise<ReviewerAccessConfig> {
   if (cachedConfig) return cachedConfig
-  const res = await fetch('/api/config/public')
+  const res = await fetch(appUrl('/api/config/public'))
   if (!res.ok) {
     return { allowed_reviewers_all: true, allowed_reviewers: [] }
   }

@@ -66,6 +66,12 @@ export function formatSignalTooltip(signal: PathwaySignalSummary): string {
   } else if (signal.qualitative_hint) {
     lines.push(`Hint: ${signal.qualitative_hint}`)
   }
+  if (signal.variable_values?.length) {
+    lines.push(
+      'Variables:',
+      ...signal.variable_values.map((row) => `  ${row.access} = ${row.formatted}`),
+    )
+  }
   if (signal.pathway_id) {
     lines.push(`Pathway: ${signal.pathway_id.replace(/_/g, ' ')}`)
   }

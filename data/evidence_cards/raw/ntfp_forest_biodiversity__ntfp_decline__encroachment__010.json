@@ -54,7 +54,7 @@
         ]
       },
       "severity": "moderate",
-      "direction": "amplifies",
+      "direction": "confirms",
       "explanation": "Settlement expansion into forest fringes is a secondary encroachment pathway distinct from direct agricultural conversion. In the Bengal and Assam plains, population pressure and in-migration can drive informal settlement growth at forest margins, restricting community access routes to NTFP collection zones even where the forest canopy itself remains nominally intact. A 20 ha increase in urbanized area over the observation window is a conservative threshold for plains contexts where settlement footprints are typically small but access-blocking effects are disproportionate.",
       "active": true
     },
@@ -72,7 +72,7 @@
         ]
       },
       "severity": "moderate",
-      "direction": "amplifies",
+      "direction": "confirms",
       "explanation": "High ST population share is a structural vulnerability indicator: communities with greater proportions of Scheduled Tribe members typically have deeper historical dependence on NTFP collection for subsistence and income. In the context of encroachment, high ST presence also signals that Forest Rights Act (FRA) claims may be pending or unrecognised, leaving communities without legal recourse to defend access. Research on protected area conflicts in India documents that displacement and access restriction disproportionately affect indigenous and forest-dwelling communities whose tenure rights remain unrecognised under FRA.",
       "active": true
     },
@@ -102,10 +102,11 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Many pending or rejected FRA claims with reported NTFP decline and forest conversion indicate tenure insecurity confirming encroachment vulnerability; high recognition weakens encroachment as primary driver."
+        "qualitative_description": "Many pending or rejected FRA claims with reported NTFP decline and forest conversion indicate tenure insecurity confirming encroachment vulnerability; high recognition weakens encroachment as primary driver.",
+        "expression": ""
       },
       "severity": "high",
-      "direction": "confirms",
+      "direction": "amplifies",
       "explanation": "Unresolved forest rights alongside measurable conversion corroborates encroachment as a tenure and access driver of NTFP decline.",
       "signal_id": "sig_05",
       "active": true
@@ -116,10 +117,11 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Absent or disputed forest boundary demarcation (no pillars/signage, active boundary disputes) is a precondition for encroachment; clear demarcation with no disputes weakens the pathway."
+        "qualitative_description": "Absent or disputed forest boundary demarcation (no pillars/signage, active boundary disputes) is a precondition for encroachment; clear demarcation with no disputes weakens the pathway.",
+        "expression": ""
       },
       "severity": "moderate",
-      "direction": "confirms",
+      "direction": "amplifies",
       "explanation": "Boundary ambiguity enables encroachment and restricts communities' ability to defend forest access.",
       "signal_id": "sig_06",
       "active": true
@@ -315,6 +317,8 @@
     "version": 1,
     "primary_confirm_signals": [
       "sig_01",
+      "sig_02",
+      "sig_03",
       "sig_04"
     ],
     "confirm_when": {
@@ -325,6 +329,12 @@
         ],
         [
           "sig_04"
+        ],
+        [
+          "sig_02"
+        ],
+        [
+          "sig_03"
         ]
       ],
       "amplifiers_do_not_confirm": true
@@ -334,7 +344,10 @@
         "level": "high",
         "min_from_set": {
           "signals": [
-            "sig_04"
+            "sig_04",
+            "sig_01",
+            "sig_02",
+            "sig_03"
           ],
           "min": 1
         },
@@ -345,7 +358,9 @@
         "min_from_set": {
           "signals": [
             "sig_01",
-            "sig_04"
+            "sig_04",
+            "sig_02",
+            "sig_03"
           ],
           "min": 2
         }

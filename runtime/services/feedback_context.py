@@ -36,6 +36,7 @@ from services.feedback_history import build_follow_up_history
 
 
 def _pathway_notes(llm_response: dict[str, Any], signal_evaluation: dict[str, Any] | None) -> dict[str, str]:
+    """Full card overall_reasoning_note per pathway (feedback page shows after auto-generated reasoning)."""
     notes: dict[str, str] = {}
     eval_by_pathway = {
         str(item.get("pathway_id")): item
@@ -50,10 +51,8 @@ def _pathway_notes(llm_response: dict[str, Any], signal_evaluation: dict[str, An
             if not pathway_id:
                 continue
             eval_note = (eval_by_pathway.get(pathway_id) or {}).get("evidence_note")
-            reasoning = pathway.get("reasoning")
-            note = eval_note or reasoning
-            if note:
-                notes[pathway_id] = str(note)
+            if eval_note and str(eval_note).strip():
+                notes[pathway_id] = str(eval_note).strip()
     return notes
 
 

@@ -101,6 +101,7 @@ export interface PathwaySignalSummary {
   answered_variable?: string
   inference?: string
   inference_note?: string
+  variable_values?: Array<{ access: string; formatted: string }>
 }
 
 export interface SignalEvaluationPathway {

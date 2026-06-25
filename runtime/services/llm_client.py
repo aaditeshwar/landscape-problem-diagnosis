@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import contextvars
+from contextlib import contextmanager
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Iterator
 
 from config import (
     ANTHROPIC_API_KEY,
@@ -18,6 +20,27 @@ from config import (
 from services.ollama_client import chat_json as ollama_chat_json
 
 _anthropic_client = None
+_llm_provider_override: contextvars.ContextVar[str | None] = contextvars.ContextVar(
+    "llm_provider_override",
+    default=None,
+)
+
+
+def effective_llm_provider() -> str:
+    override = _llm_provider_override.get()
+    if override in {"ollama", "anthropic"}:
+        return override
+    return LLM_PROVIDER
+
+
+@contextmanager
+def llm_provider_override(provider: str | None) -> Iterator[None]:
+    """Temporarily override LLM_PROVIDER for in-process eval / batch runs."""
+    token = _llm_provider_override.set(provider)
+    try:
+        yield
+    finally:
+        _llm_provider_override.reset(token)
 
 
 @dataclass(frozen=True)
@@ -40,7 +63,7 @@ def _get_anthropic_client():
 
 def model_for_turn(*, follow_up: bool = False) -> str:
     """Return the model name recorded in session turns for this diagnosis step."""
-    if LLM_PROVIDER == "anthropic":
+    if effective_llm_provider() == "anthropic":
         return ANTHROPIC_FOLLOWUP_MODEL if follow_up else ANTHROPIC_REASON_MODEL
     return OLLAMA_FOLLOWUP_MODEL if follow_up else OLLAMA_REASON_MODEL
 
@@ -72,7 +95,7 @@ def chat_json_result(
     reviewer: bool = False,
 ) -> LlmChatResult:
     """Run a single-turn JSON diagnosis prompt and return raw model text + metadata."""
-    if LLM_PROVIDER == "anthropic":
+    if effective_llm_provider() == "anthropic":
         chosen = model or model_for_turn(follow_up=follow_up)
         token_limit = ANTHROPIC_REVIEWER_MAX_TOKENS if reviewer else ANTHROPIC_MAX_TOKENS
         return _anthropic_chat_json(prompt, model=chosen, max_tokens=token_limit)

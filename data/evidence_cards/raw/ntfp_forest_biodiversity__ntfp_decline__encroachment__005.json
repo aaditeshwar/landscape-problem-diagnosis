@@ -71,7 +71,7 @@
         ]
       },
       "severity": "moderate",
-      "direction": "confirms",
+      "direction": "amplifies",
       "explanation": "High ST population share is a proxy for community forest dependence and vulnerability to NTFP access loss. In AER-10 (Malwa, Bundelkhand), Scheduled Tribe communities are primary NTFP collectors and their livelihoods are directly tied to forest access. Where encroachment reduces forest extent, ST communities face disproportionate livelihood impacts. Research on Forest Rights Act implementation documents that lack of tenure recognition leaves these communities exposed to displacement and access denial when encroachment disputes arise. A threshold of 25% ST population is used as an indicator of significant forest-dependent population in this ecoregion.",
       "active": true
     },
@@ -103,10 +103,11 @@
       ],
       "condition": {
         "type": "qualitative",
-        "qualitative_description": "Many pending or rejected FRA claims with reported NTFP decline and forest conversion indicate tenure insecurity confirming encroachment vulnerability; high recognition weakens encroachment as primary driver."
+        "qualitative_description": "Many pending or rejected FRA claims with reported NTFP decline and forest conversion indicate tenure insecurity confirming encroachment vulnerability; high recognition weakens encroachment as primary driver.",
+        "expression": ""
       },
       "severity": "high",
-      "direction": "confirms",
+      "direction": "amplifies",
       "explanation": "Unresolved forest rights alongside measurable conversion corroborates encroachment as a tenure and access driver of NTFP decline.",
       "signal_id": "sig_05",
       "active": true
@@ -322,7 +323,8 @@
     "version": 1,
     "primary_confirm_signals": [
       "sig_01",
-      "sig_04"
+      "sig_04",
+      "sig_06"
     ],
     "confirm_when": {
       "min_confirms_true": 1,
@@ -330,7 +332,8 @@
       "min_from_set": {
         "signals": [
           "sig_01",
-          "sig_04"
+          "sig_04",
+          "sig_06"
         ],
         "min": 1
       }
