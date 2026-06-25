@@ -39,7 +39,6 @@ export function SignalEditorPage() {
   const snapshotId = params.get('snapshot_id')
 
   const [cogUrl, setCogUrl] = useState<string | null>(null)
-  const [viewerUrl, setViewerUrl] = useState<string | null>(null)
   const [palette, setPalette] = useState<ClusterPaletteEntry[]>([])
   const [selectedSuffix, setSelectedSuffix] = useState<string | null>(initialCluster)
   const [cards, setCards] = useState<EvidenceCardSummary[]>([])
@@ -58,7 +57,6 @@ export function SignalEditorPage() {
       .then(([config, paletteResponse]) => {
         if (cancelled) return
         setCogUrl(config.cluster_cog_url ?? null)
-        setViewerUrl(config.cluster_cog_viewer_url ?? null)
         setPalette(paletteResponse.palette)
         if (!initialCluster && initialCardId) {
           setSelectedSuffix(clusterSuffixFromCardId(initialCardId))
@@ -189,7 +187,6 @@ export function SignalEditorPage() {
         <div className="self-start">
           <ClusterMap
             cogUrl={cogUrl}
-            viewerUrl={viewerUrl}
             palette={palette}
             selectedSuffix={selectedSuffix}
             onSelectSuffix={setSelectedSuffix}

@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import L from 'leaflet'
 import { MapContainer, TileLayer, useMap, useMapEvents } from 'react-leaflet'
+import { appUrl } from '../../appBase'
 import { fetchClusterRasterQuery, type ClusterPaletteEntry } from '../../api/signals'
 
 interface Props {
   cogUrl: string | null
-  viewerUrl?: string | null
   palette: ClusterPaletteEntry[]
   selectedSuffix: string | null
   onSelectSuffix: (suffix: string) => void
@@ -62,7 +62,7 @@ function ClusterRasterLayer({
           import('georaster').then((module) => module.default),
           import('georaster-layer-for-leaflet').then((module) => module.default),
         ])
-        const response = await fetch(cogUrl)
+        const response = await fetch(appUrl(cogUrl))
         if (!response.ok) throw new Error(`COG fetch failed (${response.status})`)
         const georaster = (await parseGeoraster(await response.arrayBuffer())) as GeoRasterLike
         if (cancelled) return
@@ -155,7 +155,7 @@ function ClusterMapClickHandler({
   return null
 }
 
-export function ClusterMap({ cogUrl, viewerUrl, palette, selectedSuffix, onSelectSuffix }: Props) {
+export function ClusterMap({ cogUrl, palette, selectedSuffix, onSelectSuffix }: Props) {
   const [rasterReady, setRasterReady] = useState(false)
   const [loadError, setLoadError] = useState<string | null>(null)
   const legendRefs = useRef<Record<string, HTMLButtonElement | null>>({})
@@ -182,21 +182,9 @@ export function ClusterMap({ cogUrl, viewerUrl, palette, selectedSuffix, onSelec
 
   return (
     <div className="flex flex-col rounded-lg border border-stone-200 bg-white shadow-sm">
-      <div className="flex items-center justify-between border-b border-stone-200 px-3 py-2">
-        <div>
-          <h2 className="text-sm font-semibold text-stone-800">Context clusters</h2>
-          <p className="text-xs text-stone-500">Click the map or choose a cluster below.</p>
-        </div>
-        {viewerUrl ? (
-          <a
-            href={viewerUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs font-medium text-amber-800 underline"
-          >
-            Open COG viewer
-          </a>
-        ) : null}
+      <div className="border-b border-stone-200 px-3 py-2">
+        <h2 className="text-sm font-semibold text-stone-800">Context clusters</h2>
+        <p className="text-xs text-stone-500">Click the map or choose a cluster below.</p>
       </div>
 
       <div className="cluster-map-interactive relative h-[340px] shrink-0">

@@ -1,5 +1,20 @@
 from typing import Any
 
+from shapely.geometry import mapping, shape
+from shapely.ops import unary_union
+from shapely.validation import make_valid
+
+
+def dissolve_boundary_geometry(geom: dict[str, Any]) -> dict[str, Any]:
+    """Merge internal edges in MultiPolygon tehsil geometry (dissolved MWS footprints)."""
+    try:
+        dissolved = unary_union(make_valid(shape(geom)))
+        if dissolved.is_empty:
+            return geom
+        return mapping(dissolved)
+    except Exception:
+        return geom
+
 
 def boundaries_to_feature_collection(
     docs: list[dict],

@@ -1,11 +1,14 @@
 import json
+import logging
 from pathlib import Path
 
 from fastapi import APIRouter, HTTPException, Query
 
 from db import get_db
-from services.geojson import boundaries_to_feature_collection
+from services.geojson import boundaries_to_feature_collection, dissolve_boundary_geometry
 from services.tehsil_refs import make_tehsil_ref, tehsil_membership_query
+
+log = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/map", tags=["map"])
 
@@ -18,6 +21,11 @@ def get_tehsils():
     if STATIC_GEOJSON.exists():
         return json.loads(STATIC_GEOJSON.read_text(encoding="utf-8"))
 
+    log.warning(
+        "%s is missing — serving dissolved tehsil_boundaries from MongoDB. "
+        "Run scripts/build_spatial_index.py for faster loads and SOI admin boundaries.",
+        STATIC_GEOJSON,
+    )
     db = get_db()
     docs = list(db.tehsil_boundaries.find({}, {"state": 1, "district": 1, "tehsil": 1, "geometry": 1, "mws_count": 1}))
     features = []
@@ -34,7 +42,7 @@ def get_tehsils():
                     "tehsil": doc.get("tehsil"),
                     "mws_count": doc.get("mws_count"),
                 },
-                "geometry": geom,
+                "geometry": dissolve_boundary_geometry(geom),
             }
         )
     return {"type": "FeatureCollection", "features": features}

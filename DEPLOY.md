@@ -114,10 +114,12 @@ LOG_LEVEL=INFO
 # CoRE Stack geometry fetch (ingest only)
 CORE_STACK_API_KEY=...
 
-# Cluster map (signal editor) — use local file or remote COG
-# If data/clusters.tif exists, /api/clusters/cog is served automatically
-# CLUSTER_COG_URL=https://...
-# CLUSTER_COG_VIEWER_URL=https://...
+# Cluster map (signal editor)
+# The browser always loads /api/clusters/cog; the API proxies CLUSTER_COG_URL server-side.
+# Use 127.0.0.1:10001 here — that is correct for the backend, not for the user's browser.
+# CLUSTER_COG_URL=http://127.0.0.1:10001/clusters.tif
+# CLUSTER_COG_VIEWER_URL=http://127.0.0.1:10001/raster.html
+# Or place data/clusters.tif in the repo and omit CLUSTER_COG_URL.
 ```
 
 Create the log directory:
@@ -144,8 +146,12 @@ python scripts/ingest_excel.py \
 # Evidence cards → Mongo (after raw JSON is present)
 python scripts/reload_evidence_cards.py
 
-# Optional: spatial index for map performance
+# Spatial index for map — required on production (file is not in git).
+# Without it the API falls back to MongoDB tehsil_boundaries (dissolved on the fly).
 python scripts/build_spatial_index.py
+
+# Variable dashboard (/dashboard) — precomputes CDF charts under data/triage_dashboard/
+python scripts/triage/build_variable_dashboard.py
 ```
 
 Verify Mongo before going live:
@@ -373,8 +379,9 @@ This workflow is typically run on a staging machine, not public production.
 | Diagnosis hangs then 504 | Increase Apache `ProxyTimeout` / `Timeout`; check `OLLAMA_CHAT_TIMEOUT` |
 | `Embedding/retrieval failed` | Ollama down or wrong `OLLAMA_URL`; run `ollama pull nomic-embed-text` |
 | Empty map / no tehsils | Mongo empty — re-run ingest; check `MONGO_URI` / `MONGO_DB` |
+| `/dashboard` empty | Run `python scripts/triage/build_variable_dashboard.py` (writes `data/triage_dashboard/`) |
 | `/revise-cards` empty | Missing `reports/claude_review/results/` on server |
-| Cluster map blank | Add `data/clusters.tif` or set `CLUSTER_COG_URL` in `.env` |
+| Cluster map blank | Set `CLUSTER_COG_URL` (e.g. `http://127.0.0.1:10001/clusters.tif`) or add `data/clusters.tif`; confirm COG server is up and `curl -I http://127.0.0.1:10001/clusters.tif` works on the host |
 | Permission errors | Ensure `www-data` owns `logs/` and can read repo + `.env` |
 
 API logs: `/opt/landscape-diagnosis/logs/` (see `LOG_DIR` in `.env`).

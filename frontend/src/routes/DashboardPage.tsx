@@ -69,6 +69,9 @@ function DashboardSectionPanel({
           {collapsed ? 'Expand' : 'Collapse'}
         </button>
       </div>
+      {!collapsed && groups.length === 0 ? (
+        <p className="text-sm text-stone-500">No chart data for this section.</p>
+      ) : null}
       {!collapsed
         ? groups.map((group) => (
             <div key={group.category} className="space-y-2">
@@ -155,9 +158,16 @@ export function DashboardPage() {
   }, [])
 
   useEffect(() => {
-    if (!focusKey || loading) return
-    const el = document.getElementById(focusKey)
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    if (loading) return
+    if (focusKey) {
+      const el = document.getElementById(focusKey)
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      return
+    }
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+    if (window.location.hash) {
+      window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`)
+    }
   }, [focusKey, loading, sections])
 
   return (

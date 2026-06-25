@@ -1,7 +1,9 @@
 from pathlib import Path
 
 from fastapi import APIRouter, HTTPException, Query
-from fastapi.responses import FileResponse, RedirectResponse
+from fastapi.responses import FileResponse, StreamingResponse
+
+import httpx
 
 from config import CLUSTER_COG_URL, CLUSTER_COG_VIEWER_URL
 from services.cluster_palette import load_cluster_palette, suffix_for_raster_value
@@ -15,9 +17,9 @@ LOCAL_COG_PATH = ROOT / "data" / "clusters.tif"
 
 
 def public_cluster_cog_url() -> str | None:
-    if LOCAL_COG_PATH.is_file():
+    if LOCAL_COG_PATH.is_file() or CLUSTER_COG_URL:
         return "/api/clusters/cog"
-    return CLUSTER_COG_URL or None
+    return None
 
 
 @router.get("/cog")
@@ -25,7 +27,14 @@ def cluster_cog():
     if LOCAL_COG_PATH.is_file():
         return FileResponse(LOCAL_COG_PATH, media_type="image/tiff", filename="clusters.tif")
     if CLUSTER_COG_URL:
-        return RedirectResponse(CLUSTER_COG_URL)
+        def iter_remote():
+            with httpx.Client(timeout=120.0) as client:
+                with client.stream("GET", CLUSTER_COG_URL) as response:
+                    response.raise_for_status()
+                    for chunk in response.iter_bytes():
+                        yield chunk
+
+        return StreamingResponse(iter_remote(), media_type="image/tiff")
     raise HTTPException(status_code=404, detail="Cluster COG is not configured")
 
 
