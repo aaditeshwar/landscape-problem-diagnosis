@@ -30,7 +30,7 @@
       ],
       "condition": {
         "type": "trend",
-        "expression": "trend_swb_total_area_ha < -2 or (swb_count < 3 and mean_swb_total_area_ha < 5)",
+        "expression": "trend_swb_total_area_ha < 1 or (swb_count <= 15 and mean_swb_total_area_ha < 5)",
         "qualitative_description": "Declining SWB total area (slope < -2 ha/year) or very few small water bodies relative to watershed size indicates inadequate surface storage infrastructure in hilly terrain.",
         "variables": [
           "trend_swb_total_area_ha",
@@ -68,7 +68,7 @@
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "nrega_swc_count < 5",
+        "expression": "nrega_swc_count <= 20",
         "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA indicates historically low investment in water harvesting infrastructure.",
         "variables": [
           "nrega_swc_count"

@@ -31,7 +31,7 @@
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "drought_weeks_severe[-1] >= 4 or (drought_weeks_severe[-1] >= 2 and drought_weeks_moderate[-1] >= 4)",
+        "expression": "drought_severe_return_period <= 4 or drought_moderate_return_period <= 4",
         "qualitative_description": "Four or more severe drought weeks in the latest kharif season, or a combined pattern of at least 2 severe and 4 moderate weeks, indicates persistent crop-season water deficit sufficient to cause yield loss.",
         "variables": [
           "drought_weeks_severe",
@@ -50,7 +50,7 @@
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "dry_spell_weeks[-1] >= 6",
+        "expression": "mean(dry_spell_weeks) >= 3",
         "qualitative_description": "Six or more dry spell weeks (4-week moving window with <50% historical rainfall) in the latest kharif season indicate prolonged moisture stress disrupting multiple crop growth stages.",
         "variables": [
           "dry_spell_weeks"
@@ -79,7 +79,7 @@
         ]
       },
       "severity": "high",
-      "direction": "amplies",
+      "direction": "amplifies",
       "explanation": "The India Drought Manual prescribes a composite index approach combining SPI (meteorological drought), MAI (agricultural/soil moisture drought), and VCI (vegetation response) to classify drought type and severity. SPI ≤ -1.0 indicates moderate-to-severe meteorological deficit; MAI < 0.5 signals that soil moisture is less than half of crop requirement; VCI < 35 reflects vegetation stress detectable from MODIS NDVI. Studies on kharif rice in Uttar Pradesh found SPI and VCI significantly correlated with productivity index (r = 0.61–0.70), validating this composite approach for diagnosing agricultural drought impact.",
       "active": false
     },

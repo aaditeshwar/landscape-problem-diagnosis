@@ -61,18 +61,24 @@ export function mergePathwaySignals(
     }))
 }
 
-function directionLabel(direction?: string): string {
-  if (direction === 'confirms') return 'confirm'
-  if (direction === 'amplifies') return 'amplify'
-  if (direction === 'rules_out') return 'rule out'
-  return direction ?? '—'
+function directionBorder(direction?: string): string {
+  if (direction === 'confirms') return 'border-emerald-400'
+  if (direction === 'amplifies') return 'border-sky-400'
+  if (direction === 'rules_out') return 'border-rose-400'
+  return 'border-stone-200'
 }
 
-function resultLabel(active: boolean, result?: boolean | null): string {
-  if (!active) return '—'
-  if (result === true) return 'true'
-  if (result === false) return 'false'
-  return '?'
+function resultCell(chip: PathwaySignalChip): { label: string; className: string } {
+  if (!chip.active) {
+    return { label: '—', className: 'bg-stone-100 text-stone-400' }
+  }
+  if (chip.result === true) {
+    return { label: 'T', className: 'bg-emerald-100 text-emerald-800' }
+  }
+  if (chip.result === false) {
+    return { label: 'F', className: 'bg-stone-200 text-stone-700' }
+  }
+  return { label: '?', className: 'bg-amber-100 text-amber-800' }
 }
 
 function chipTooltip(chip: PathwaySignalChip): string {
@@ -82,7 +88,7 @@ function chipTooltip(chip: PathwaySignalChip): string {
   const lines = [
     chip.signal_id,
     `Active: ${chip.active ? 'yes' : 'no'}`,
-    `Direction: ${directionLabel(chip.direction)}`,
+    `Direction: ${chip.direction ?? '—'}`,
   ]
   if (!chip.active) {
     lines.push('Not evaluated (inactive)')
@@ -109,43 +115,25 @@ export function PathwaySignalStrip({ pathwayId, card, signalEvaluation }: Props)
       <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-stone-500">
         Signal evaluation
       </div>
-      <div className="flex flex-wrap gap-1.5">
+      <div className="inline-flex flex-wrap gap-1">
         {chips.map((chip) => {
-          const result = resultLabel(chip.active, chip.result)
-          const resultTone =
-            !chip.active
-              ? 'text-stone-400'
-              : chip.result === true
-                ? 'text-emerald-700'
-                : chip.result === false
-                  ? 'text-stone-600'
-                  : 'text-amber-700'
-
+          const cell = resultCell(chip)
+          const tooltip = chipTooltip(chip)
           return (
-            <div
-              key={chip.signal_id}
-              className={`group relative rounded-md border px-2 py-1 text-[10px] leading-tight ${
-                chip.active
-                  ? 'border-stone-200 bg-white text-stone-800'
-                  : 'border-stone-100 bg-stone-50/80 text-stone-500'
-              }`}
-            >
-              <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
-                <span className="cursor-help font-mono font-semibold text-amber-900">{chip.signal_id}</span>
-                <span className="text-stone-400">·</span>
-                <span className={chip.active ? 'text-emerald-700' : 'text-stone-400'}>
-                  {chip.active ? 'active' : 'inactive'}
-                </span>
-                <span className="text-stone-400">·</span>
-                <span className="text-stone-600">{directionLabel(chip.direction)}</span>
-                <span className="text-stone-400">·</span>
-                <span className={`font-medium ${resultTone}`}>{result}</span>
+            <div key={chip.signal_id} className="group relative flex flex-col items-center">
+              <span className="mb-0.5 font-mono text-[8px] leading-none text-stone-400">
+                {chip.signal_id.replace(/^sig_/, '')}
+              </span>
+              <div
+                className={`flex h-5 w-5 items-center justify-center rounded border text-[10px] font-bold ${directionBorder(chip.direction)} ${cell.className}`}
+              >
+                {cell.label}
               </div>
               <span
                 role="tooltip"
-                className="pointer-events-none absolute bottom-full left-0 z-30 mb-1 hidden w-max max-w-xs rounded-md border border-stone-700 bg-stone-900 px-2.5 py-2 text-left text-xs leading-relaxed whitespace-pre-wrap text-stone-100 shadow-lg group-hover:block"
+                className="pointer-events-none absolute left-0 top-full z-30 mt-1 hidden w-max max-w-[min(18rem,calc(100vw-2rem))] rounded-md border border-stone-700 bg-stone-900 px-2.5 py-2 text-left text-xs leading-relaxed break-words whitespace-pre-wrap text-stone-100 shadow-lg group-hover:block"
               >
-                {chipTooltip(chip)}
+                {tooltip}
               </span>
             </div>
           )

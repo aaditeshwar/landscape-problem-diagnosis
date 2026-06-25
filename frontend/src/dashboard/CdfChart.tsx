@@ -1,38 +1,40 @@
 import { useMemo, useState, type MouseEvent } from 'react'
+import {
+  cdfVariantKey,
+  type DashboardChartDefaults,
+  type CdfVariant,
+} from '../api/triage'
 import { ExternalLink } from '../components/ExternalLink'
 
 export type CdfSample = { mws_id: string; value: number }
 
-export type CdfChartDefaults = {
-  remove_zeros?: boolean
-  log_scale?: boolean
-  trim_top?: boolean
-  trim_bottom?: boolean
-}
-
 type Props = {
   title: string
-  cdf: [number, number][]
+  cdfVariants?: Record<string, CdfVariant>
+  cdf?: [number, number][]
   samples?: CdfSample[]
   sampleCount?: number
   xMax?: number | null
   unit?: string
-  defaults?: CdfChartDefaults
+  defaults?: DashboardChartDefaults
 }
 
 const Y_TICKS = [0, 0.1, 0.2, 0.5, 0.8, 0.9, 0.95, 1]
-const TRIM_FRACTION = 0.001 // 0.1 percentile each tail
+const TRIM_FRACTION = 0.001
+const CDF_CENTILES = 100
 
 type HoverPoint = { x: number; p: number; svgX: number; svgY: number }
 
-function buildCdfFromValues(values: number[]): [number, number][] {
+function buildCdfFromValues(values: number[], centiles = CDF_CENTILES): [number, number][] {
   if (!values.length) return []
   const ordered = [...values].sort((a, b) => a - b)
   const n = ordered.length
+  const steps = Math.max(1, Math.min(centiles, n))
   const points: [number, number][] = []
-  for (let idx = 0; idx < n; idx += 1) {
+  for (let i = 1; i <= steps; i += 1) {
+    const percentile = Math.round((i / steps) * 1_000_000) / 1_000_000
+    const idx = Math.min(n - 1, Math.max(0, Math.ceil(percentile * n) - 1))
     const value = ordered[idx]
-    const percentile = Math.round(((idx + 1) / n) * 1_000_000) / 1_000_000
     const last = points[points.length - 1]
     if (last && last[0] === value) {
       last[1] = percentile
@@ -91,19 +93,20 @@ function removalPct(count: number, total: number): string {
 
 const MAX_REMOVED_MWS_LINKS = 20
 
-function limitedMwsLinks(items: CdfSample[], label: string) {
-  const shown = items.slice(0, MAX_REMOVED_MWS_LINKS)
-  const extra = items.length - shown.length
+function limitedMwsLinks(items: CdfSample[] | string[], label: string) {
+  const ids = items.map((item) => (typeof item === 'string' ? item : item.mws_id))
+  const shown = ids.slice(0, MAX_REMOVED_MWS_LINKS)
+  const extra = ids.length - shown.length
   return (
     <div>
       {label}:{' '}
-      {shown.map((item) => (
+      {shown.map((mwsId) => (
         <ExternalLink
-          key={`${label}-${item.mws_id}`}
-          to={`/?mws=${encodeURIComponent(item.mws_id)}`}
+          key={`${label}-${mwsId}`}
+          to={`/?mws=${encodeURIComponent(mwsId)}`}
           className="mr-1 text-amber-800 hover:underline"
         >
-          {item.mws_id}
+          {mwsId}
         </ExternalLink>
       ))}
       {extra > 0 ? <span className="text-stone-500">…and {extra} more</span> : null}
@@ -125,7 +128,8 @@ function rawTicks(minRaw: number, maxRaw: number, logScale: boolean): number[] {
 
 export function CdfChart({
   title,
-  cdf,
+  cdfVariants,
+  cdf = [],
   samples = [],
   sampleCount,
   xMax,
@@ -139,17 +143,44 @@ export function CdfChart({
   const [hover, setHover] = useState<HoverPoint | null>(null)
 
   const totalSamples = sampleCount ?? samples.length
+  const hasPrecomputed = Boolean(cdfVariants && Object.keys(cdfVariants).length)
 
   const {
     chartCdf,
     chartMinAxis,
     chartMaxAxis,
+    chartXMax,
     removedTop,
     removedBottom,
     removedZeros,
     displayedCount,
-    hasSamples,
+    removedTopCount,
+    removedBottomCount,
+    removedZerosCount,
   } = useMemo(() => {
+    if (hasPrecomputed && cdfVariants) {
+      const key = cdfVariantKey(trimTop, trimBottom, removeZeros, logScale)
+      const variant = cdfVariants[key] ?? cdfVariants['0000']
+      const rawCdf = variant?.cdf ?? []
+      const rawXs = rawCdf.map(([x]) => x)
+      const minRaw = rawXs.length ? Math.min(...rawXs) : 0
+      const maxRaw = variant?.x_max ?? xMax ?? (rawXs.length ? Math.max(...rawXs) : 1)
+      const removed = variant?.removed
+      return {
+        chartCdf: rawCdf,
+        chartMinAxis: axisX(minRaw, logScale),
+        chartMaxAxis: axisX(maxRaw, logScale),
+        chartXMax: maxRaw,
+        removedTop: removed?.top.mws_ids ?? [],
+        removedBottom: removed?.bottom.mws_ids ?? [],
+        removedZeros: removed?.zeros.mws_ids ?? [],
+        removedTopCount: removed?.top.count ?? 0,
+        removedBottomCount: removed?.bottom.count ?? 0,
+        removedZerosCount: removed?.zeros.count ?? 0,
+        displayedCount: variant?.sample_count ?? totalSamples,
+      }
+    }
+
     const needsSampleRebuild = trimTop || trimBottom || removeZeros
     let removedZeroSamples: CdfSample[] = []
     let removedTopSamples: CdfSample[] = []
@@ -194,13 +225,27 @@ export function CdfChart({
       chartCdf: rawCdf,
       chartMinAxis: axisX(minRaw, logScale),
       chartMaxAxis: axisX(maxRaw, logScale),
-      removedTop: removedTopSamples,
-      removedBottom: removedBottomSamples,
-      removedZeros: removedZeroSamples,
+      chartXMax: maxRaw,
+      removedTop: removedTopSamples.map((item) => item.mws_id),
+      removedBottom: removedBottomSamples.map((item) => item.mws_id),
+      removedZeros: removedZeroSamples.map((item) => item.mws_id),
+      removedTopCount: removedTopSamples.length,
+      removedBottomCount: removedBottomSamples.length,
+      removedZerosCount: removedZeroSamples.length,
       displayedCount: shown,
-      hasSamples: samples.length > 0,
     }
-  }, [cdf, samples, trimTop, trimBottom, removeZeros, logScale, xMax, totalSamples])
+  }, [
+    cdf,
+    cdfVariants,
+    hasPrecomputed,
+    logScale,
+    removeZeros,
+    samples,
+    totalSamples,
+    trimBottom,
+    trimTop,
+    xMax,
+  ])
 
   const width = 320
   const height = 160
@@ -235,7 +280,7 @@ export function CdfChart({
 
   const rawMin = chartCdf[0][0]
   const rawMax = chartCdf[chartCdf.length - 1][0]
-  const xTicks = rawTicks(rawMin, xMax ?? rawMax, logScale)
+  const xTicks = rawTicks(rawMin, chartXMax ?? rawMax, logScale)
 
   const onChartMouseMove = (event: MouseEvent<SVGRectElement>) => {
     const rect = event.currentTarget.getBoundingClientRect()
@@ -249,7 +294,8 @@ export function CdfChart({
     setHover({ x, p, svgX: toX(x), svgY: toY(p) })
   }
 
-  const hasRemovals = removedZeros.length > 0 || removedTop.length > 0 || removedBottom.length > 0
+  const hasRemovals = removedZerosCount > 0 || removedTopCount > 0 || removedBottomCount > 0
+  const showAllToggles = hasPrecomputed || samples.length > 0
 
   return (
     <div className="rounded border border-stone-200 bg-white p-2">
@@ -257,7 +303,7 @@ export function CdfChart({
         {title}
         {unit ? <span className="ml-1 font-normal text-stone-400">({unit})</span> : null}
       </div>
-      {hasSamples ? (
+      {showAllToggles ? (
         <div className="mb-1 flex flex-wrap gap-x-2 gap-y-1 text-[10px] text-stone-600">
           <label className="inline-flex items-center gap-1">
             <input type="checkbox" checked={trimTop} onChange={(e) => setTrimTop(e.target.checked)} />
@@ -374,28 +420,28 @@ export function CdfChart({
           Samples: {displayedCount}
           {hasRemovals && displayedCount !== totalSamples ? ` of ${totalSamples}` : null}
         </div>
-        {removedZeros.length > 0 ? (
+        {removeZeros && removedZerosCount > 0 ? (
           <div>
-            Removed zeros: {removedZeros.length} ({removalPct(removedZeros.length, totalSamples)} of {totalSamples})
+            Removed zeros: {removedZerosCount} ({removalPct(removedZerosCount, totalSamples)} of {totalSamples})
           </div>
         ) : null}
-        {removedBottom.length > 0 ? (
+        {trimBottom && removedBottomCount > 0 ? (
           <div>
-            Removed bottom 0.1%: {removedBottom.length} ({removalPct(removedBottom.length, totalSamples)} of{' '}
+            Removed bottom 0.1%: {removedBottomCount} ({removalPct(removedBottomCount, totalSamples)} of{' '}
             {totalSamples})
           </div>
         ) : null}
-        {removedTop.length > 0 ? (
+        {trimTop && removedTopCount > 0 ? (
           <div>
-            Removed top 0.1%: {removedTop.length} ({removalPct(removedTop.length, totalSamples)} of {totalSamples})
+            Removed top 0.1%: {removedTopCount} ({removalPct(removedTopCount, totalSamples)} of {totalSamples})
           </div>
         ) : null}
       </div>
-      {hasSamples && hasRemovals ? (
+      {hasRemovals ? (
         <div className="mt-1 space-y-1 text-[10px] text-stone-600">
-          {removedZeros.length > 0 ? limitedMwsLinks(removedZeros, 'Zero MWS') : null}
-          {removedBottom.length > 0 ? limitedMwsLinks(removedBottom, 'Bottom trim MWS') : null}
-          {removedTop.length > 0 ? limitedMwsLinks(removedTop, 'Top trim MWS') : null}
+          {removeZeros && removedZerosCount > 0 ? limitedMwsLinks(removedZeros, 'Zero MWS') : null}
+          {trimBottom && removedBottomCount > 0 ? limitedMwsLinks(removedBottom, 'Bottom trim MWS') : null}
+          {trimTop && removedTopCount > 0 ? limitedMwsLinks(removedTop, 'Top trim MWS') : null}
         </div>
       ) : null}
     </div>

@@ -48,7 +48,7 @@
       ],
       "condition": {
         "type": "trend",
-        "expression": "trend_annual_delta_g_mm < 0 and mean_annual_delta_g_mm < 0",
+        "expression": "mean_annual_delta_g_mm < 0",
         "qualitative_description": "The linear trend in annual groundwater recharge (P - ET - Runoff) is negative and the multi-year mean is also negative, indicating chronic depletion rather than a single drought year anomaly.",
         "variables": [
           "trend_annual_delta_g_mm",
@@ -68,7 +68,7 @@
       ],
       "condition": {
         "type": "composite",
-        "expression": "aquifer_class == 'sedimentary_soft_rock' and acwadam_class_percent.get('alluvium', 0) < 30",
+        "expression": "aquifer_class in ['sedimentary_soft_rock'] and acwadam_class_percent.get('alluvium', 0) < 30",
         "qualitative_description": "Aquifer is classified as sedimentary soft rock (consistent with Vindhyan sandstone and Deccan trap margins in Bundelkhand/Malwa) with less than 30% alluvial lithology, indicating limited recharge capacity and moderate-to-low storativity.",
         "variables": [
           "aquifer_class",

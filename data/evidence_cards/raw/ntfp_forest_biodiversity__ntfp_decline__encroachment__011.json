@@ -30,7 +30,7 @@
       ],
       "condition": {
         "type": "trend",
-        "expression": "cd_forest_to_farm_ha > 50",
+        "expression": "cd_forest_to_farm_ha > 29",
         "qualitative_description": "Cumulative forest-to-farm conversion has increased by more than 50 ha over the available record, indicating active encroachment of forest land for agriculture.",
         "variables": [
           "cd_forest_to_farm_ha"
@@ -67,7 +67,7 @@
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "village_st_percent > 25 and cd_forest_to_farm_ha > 30",
+        "expression": "village_st_percent > 25 and cd_forest_to_farm_ha > 29",
         "qualitative_description": "Village has a significant Scheduled Tribe population (>25%) coinciding with measurable forest-to-farm conversion, suggesting forest rights disputes or displacement of traditional NTFP collectors.",
         "variables": [
           "village_st_percent",
@@ -88,7 +88,7 @@
       ],
       "condition": {
         "type": "composite",
-        "expression": "cd_forest_to_farm_ha > 30 and cd_urbanization_ha > 10 and terrain_cluster_id != 1",
+        "expression": "cd_forest_to_farm_ha > 29 and cd_urbanization_ha > 10 and terrain_cluster_id != 1",
         "qualitative_description": "Both forest-to-farm conversion and settlement expansion are occurring simultaneously in non-plains terrain, indicating compound encroachment pressure on hilly forest landscapes.",
         "variables": [
           "cd_forest_to_farm_ha",

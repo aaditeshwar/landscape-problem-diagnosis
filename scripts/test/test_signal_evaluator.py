@@ -91,6 +91,19 @@ def test_drought_composite_signals_eval_on_case_study_export():
     assert errors == [], errors[:5]
 
 
+def test_aquifer_class_percent_expression_with_missing_stored_percent():
+    expr = (
+        "(aquifer_class in ['volcanic', 'crystalline_basement', 'sedimentary_hard_rock']) "
+        "and (acwadam_class_percent.get('alluvium', 0) < 20)"
+    )
+    result, error = evaluate_expression(
+        expr,
+        {"aquifer_class": "volcanic", "acwadam_class_percent": None},
+    )
+    assert error is None
+    assert result is True
+
+
 def test_drought_week_signals_use_year_indexing():
     sample_path = CASE_STUDY_DIR / "1_34623.json"
     if not sample_path.exists():

@@ -9,6 +9,14 @@ import { indexSignals } from '../revise-cards/signalUtils'
 import type { IssueDraft, ReviewBatch, ReviewCardBundle, ReviewCardSummary, UserCardEditDraft } from '../revise-cards/types'
 import { dimensionLabel, severityClasses } from '../revise-cards/utils'
 import { CommandFooter } from '../components/CommandFooter'
+import {
+  fetchReviewerAccess,
+  isReviewerAllowed,
+  loadStoredReviewerName,
+  reviewerAccessHint,
+  storeReviewerName,
+  type ReviewerAccessConfig,
+} from '../utils/reviewerAccess'
 
 export function ReviseCardsPage() {
   const [params, setParams] = useSearchParams()
@@ -20,7 +28,8 @@ export function ReviseCardsPage() {
   const [drafts, setDrafts] = useState<Record<string, IssueDraft>>({})
   const [userCardEdit, setUserCardEdit] = useState<UserCardEditDraft | null>(null)
   const [showCardEditor, setShowCardEditor] = useState(true)
-  const [reviewer, setReviewer] = useState('')
+  const [reviewer, setReviewer] = useState(loadStoredReviewerName)
+  const [reviewerAccess, setReviewerAccess] = useState<ReviewerAccessConfig | null>(null)
   const [loading, setLoading] = useState(true)
   const [cardLoading, setCardLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -30,17 +39,33 @@ export function ReviseCardsPage() {
   const [finalizing, setFinalizing] = useState(false)
   const mainPanelRef = useRef<HTMLElement>(null)
   const mainScrollTopRef = useRef(0)
+  const activeBatchRef = useRef<string | null>(batchId)
 
   useEffect(() => {
+    activeBatchRef.current = batchId
+  }, [batchId])
+
+  const sortBatches = useCallback((rows: ReviewBatch[]) => {
+    return [...rows].sort((a, b) => b.batch_id.localeCompare(a.batch_id))
+  }, [])
+
+  useEffect(() => {
+    fetchReviewerAccess().then(setReviewerAccess).catch(() => {
+      setReviewerAccess({ allowed_reviewers_all: true, allowed_reviewers: [] })
+    })
     let cancelled = false
     setLoading(true)
     fetchReviewBatches()
       .then(({ batches: loaded }) => {
         if (cancelled) return
-        setBatches(loaded)
-        const batchParam = params.get('batch')
-        const initial = batchParam || loaded[0]?.batch_id || null
-        setBatchId(initial)
+        const sorted = sortBatches(loaded)
+        setBatches(sorted)
+        const urlBatch = new URLSearchParams(window.location.search).get('batch')
+        setBatchId((current) => {
+          if (urlBatch && sorted.some((batch) => batch.batch_id === urlBatch)) return urlBatch
+          if (current && sorted.some((batch) => batch.batch_id === current)) return current
+          return sorted[0]?.batch_id ?? null
+        })
       })
       .catch((err: Error) => {
         if (!cancelled) setError(err.message || 'Failed to load review batches')
@@ -51,9 +76,7 @@ export function ReviseCardsPage() {
     return () => {
       cancelled = true
     }
-    // Mount-only: do not re-fetch when card_id query param changes (that remounted the sidebar).
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [sortBatches])
 
   useEffect(() => {
     const batchParam = params.get('batch')
@@ -68,6 +91,7 @@ export function ReviseCardsPage() {
 
   const refreshBatch = useCallback(async (id: string) => {
     const summary = await fetchReviewBatch(id)
+    if (activeBatchRef.current !== id) return summary.cards
     setCards(summary.cards)
     return summary.cards
   }, [])
@@ -86,15 +110,16 @@ export function ReviseCardsPage() {
     if (!batchId) return
     let cancelled = false
     setError(null)
+    setCards([])
     refreshBatch(batchId)
       .then((loadedCards) => {
-        if (cancelled) return
-        const paramCard = params.get('card_id')
+        if (cancelled || activeBatchRef.current !== batchId) return
+        const paramCard = new URLSearchParams(window.location.search).get('card_id')
         const validParam =
           paramCard && loadedCards.some((card) => card.card_id === paramCard)
-        if (validParam && paramCard !== selectedCardId) {
+        if (validParam) {
           setSelectedCardId(paramCard)
-        } else if (!validParam && loadedCards[0]?.card_id) {
+        } else if (loadedCards[0]?.card_id) {
           const fallback = loadedCards[0].card_id
           setSelectedCardId(fallback)
           updateParams(fallback, batchId)
@@ -131,7 +156,7 @@ export function ReviseCardsPage() {
           nextDrafts[finding.issue_id] = buildIssueDraft(finding)
         }
         setDrafts(nextDrafts)
-        setUserCardEdit(buildUserCardEditDraft(data.raw_card, null, data.user_card_edit))
+        setUserCardEdit(buildUserCardEditDraft(data.raw_card, null, data.user_card_edit ?? null))
       })
       .catch((err: Error) => {
         if (!cancelled) {
@@ -173,11 +198,57 @@ export function ReviseCardsPage() {
 
   const outstandingCount = pendingCount + notHandledCount
   const hasFindings = (bundle?.findings.length ?? 0) > 0
+  const activeBatch = batches.find((batch) => batch.batch_id === batchId)
+  const isTriageBatch = activeBatch?.source === 'triaging'
+  const reviewerValid = reviewerAccess ? isReviewerAllowed(reviewer, reviewerAccess) : Boolean(reviewer.trim())
 
-  const canFinalize = Boolean(bundle && pendingCount === 0 && !finalizing)
+  const hasSaveableDirectEdits = useMemo(() => {
+    if (!userCardEdit || !bundle?.raw_card) return false
+    if (userCardEdit.dirty) return true
+    try {
+      return Object.keys(userCardEditToPatch(userCardEdit, bundle.raw_card)).length > 0
+    } catch {
+      return false
+    }
+  }, [userCardEdit, bundle?.raw_card])
+
+  const canFinalize = Boolean(
+    bundle &&
+    !finalizing &&
+    reviewerValid &&
+    pendingCount === 0 &&
+    (!bundle.finalized || hasSaveableDirectEdits || isTriageBatch),
+  )
+
+  const finalizeDisabledReason = useMemo(() => {
+    if (!bundle) return 'Loading card…'
+    if (finalizing) return 'Saving…'
+    if (!reviewerValid) {
+      return reviewerAccess ? reviewerAccessHint(reviewerAccess) : 'Enter a reviewer name to save.'
+    }
+    if (pendingCount > 0) {
+      return `Mark ${pendingCount} issue(s) as handled or not handled before saving.`
+    }
+    if (bundle.finalized && !hasSaveableDirectEdits && !isTriageBatch) {
+      return 'Make a direct card edit to save updates on an already-finalized card.'
+    }
+    return null
+  }, [
+    bundle,
+    finalizing,
+    reviewerValid,
+    reviewerAccess,
+    pendingCount,
+    hasSaveableDirectEdits,
+    isTriageBatch,
+  ])
 
   const handleFinalizeCard = async () => {
     if (!bundle || !batchId || !userCardEdit) return
+    if (!reviewerValid) {
+      setFinalizeError(reviewerAccess ? reviewerAccessHint(reviewerAccess) : 'Reviewer name is required.')
+      return
+    }
     if (pendingCount > 0) {
       setFinalizeError('Mark every issue as handled or not handled before finalizing.')
       return
@@ -207,6 +278,17 @@ export function ReviseCardsPage() {
     setFinalizeMessage(null)
     try {
       const userPatch = userCardEditToPatch(userCardEdit, bundle.raw_card)
+      const patchToSave =
+        Object.keys(userPatch).length > 0
+          ? userPatch
+          : bundle.user_card_edit && Object.keys(bundle.user_card_edit).length > 0
+            ? bundle.user_card_edit
+            : null
+      if (isTriageBatch && !patchToSave) {
+        setFinalizeError('No triaging patch to finalize for this card.')
+        setFinalizing(false)
+        return
+      }
       const issues = bundle.findings.map((finding) => {
         const draft = drafts[finding.issue_id]
         return {
@@ -218,14 +300,16 @@ export function ReviseCardsPage() {
       })
       const result = await finalizeReviewCard(bundle.card_id, {
         batch_id: batchId,
-        reviewer: reviewer.trim() || undefined,
+        reviewer: reviewer.trim(),
         issues,
-        user_card_edit: Object.keys(userPatch).length ? userPatch : null,
+        user_card_edit: patchToSave,
       })
       setFinalizeMessage(
         (hasFindings
           ? `Saved ${result.handled_count} handled / ${result.not_handled_count} not handled.`
-          : 'Card finalized (no issues to triage).') +
+          : isTriageBatch
+            ? 'Triaging patch finalized.'
+            : 'Card finalized (no issues to triage).') +
           (result.user_edit_saved ? ` Your card edits → ${result.user_card_edits_path}.` : '') +
           ` Decisions → ${result.decisions_path}`,
       )
@@ -239,9 +323,21 @@ export function ReviseCardsPage() {
     }
   }
 
-  const activeBatch = batches.find((batch) => batch.batch_id === batchId)
-  const headerStyles = severityClasses('', bundle?.overall_score)
   const signalSummaries = useMemo(() => indexSignals(bundle?.raw_card), [bundle?.raw_card])
+  const triageChangedSummary = useMemo(() => {
+    const changed = bundle?.triage_changed_fields
+    if (!changed) return []
+    const labels: string[] = []
+    for (const [signalId, fields] of Object.entries(changed.signals || {})) {
+      const parts: string[] = []
+      if (fields.expression) parts.push('expression')
+      if (fields.direction) parts.push('direction')
+      if (fields.active) parts.push('active')
+      if (parts.length) labels.push(`${signalId}: ${parts.join(', ')}`)
+    }
+    if (changed.confirmation_policy) labels.push('confirmation policy')
+    return labels
+  }, [bundle?.triage_changed_fields])
   const signalsById = useMemo(
     () => Object.fromEntries(signalSummaries.map((signal) => [signal.signal_id, signal])),
     [signalSummaries],
@@ -256,9 +352,11 @@ export function ReviseCardsPage() {
       <div className="mx-auto max-w-2xl p-8">
         <h1 className="text-2xl font-semibold text-stone-900">Revise Cards</h1>
         <p className="mt-3 text-stone-700">
-          No Claude review results found. Run{' '}
-          <code className="rounded bg-stone-200 px-1">scripts/review/claude_card_reviewer.py</code> and{' '}
-          <code className="rounded bg-stone-200 px-1">merge_claude_review_report.py</code> first.
+          No review batches found. Run Claude review scripts, or save patches from the{' '}
+          <Link to="/triaging" className="text-amber-800 underline-offset-2 hover:underline">
+            triaging app
+          </Link>
+          .
         </p>
       </div>
     )
@@ -277,6 +375,15 @@ export function ReviseCardsPage() {
             </div>
             <p className="text-sm text-stone-600">
               {activeBatch?.pathway_filter || 'Review batch'} · {activeBatch?.card_count ?? 0} cards
+              {isTriageBatch ? (
+                <>
+                  {' '}
+                  ·{' '}
+                  <Link to="/triaging" className="text-amber-800 underline-offset-2 hover:underline">
+                    triaging app
+                  </Link>
+                </>
+              ) : null}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -285,13 +392,19 @@ export function ReviseCardsPage() {
               className="rounded-md border border-stone-300 bg-white px-2 py-1 text-sm"
               value={batchId ?? ''}
               onChange={(event) => {
-                setBatchId(event.target.value)
-                updateParams(null, event.target.value)
+                const nextBatchId = event.target.value
+                setBatchId(nextBatchId)
+                setSelectedCardId(null)
+                setBundle(null)
+                updateParams(null, nextBatchId)
               }}
             >
               {batches.map((batch) => (
                 <option key={batch.batch_id} value={batch.batch_id}>
-                  {batch.batch_id} ({batch.finalized_card_count}/{batch.card_count} finalized)
+                  {batch.source === 'triaging'
+                    ? `Triaging: ${batch.catalog_filename || batch.batch_id}`
+                    : `Claude: ${batch.batch_id}`}{' '}
+                  ({batch.finalized_card_count}/{batch.card_count} finalized)
                 </option>
               ))}
             </select>
@@ -299,11 +412,17 @@ export function ReviseCardsPage() {
               className="rounded-md border border-stone-300 bg-white px-2 py-1 text-sm"
               placeholder="Reviewer name"
               value={reviewer}
-              onChange={(event) => setReviewer(event.target.value)}
+              onChange={(event) => {
+                setReviewer(event.target.value)
+                storeReviewerName(event.target.value)
+              }}
             />
           </div>
         </div>
         {error && <p className="mt-2 text-sm text-red-700">{error}</p>}
+        {reviewerAccess && !reviewerValid ? (
+          <p className="mt-2 text-xs text-red-700">{reviewerAccessHint(reviewerAccess)}</p>
+        ) : null}
       </header>
 
       <div className="flex min-h-0 flex-1">
@@ -328,22 +447,48 @@ export function ReviseCardsPage() {
                   <div className="min-w-0 flex-1">
                     <h2 className="font-mono text-sm font-semibold text-stone-900">{bundle.card_id}</h2>
                     {bundle.summary && <p className="mt-2 text-sm text-stone-700">{bundle.summary}</p>}
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      <span className={`rounded border px-2 py-0.5 text-xs font-semibold uppercase ${headerStyles.badge}`}>
-                        {bundle.overall_score}
-                      </span>
-                      {Object.entries(bundle.dimensions).map(([key, dim]) => {
-                        const dimStyles = severityClasses('', dim.score)
-                        return (
-                          <span
-                            key={key}
-                            className={`rounded border px-2 py-0.5 text-[11px] font-medium ${dimStyles.badge}`}
-                          >
-                            {dimensionLabel(key)}: {dim.score}
+                    {isTriageBatch ? (
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        <span className="rounded border border-amber-300 bg-amber-50 px-2 py-0.5 text-xs font-semibold uppercase text-amber-900">
+                          Triaging patch
+                        </span>
+                        {activeBatch?.catalog_filename ? (
+                          <span className="rounded border border-stone-200 bg-stone-50 px-2 py-0.5 font-mono text-[11px] text-stone-700">
+                            {activeBatch.catalog_filename}
                           </span>
-                        )
-                      })}
-                    </div>
+                        ) : null}
+                      </div>
+                    ) : (
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        <span
+                          className={`rounded border px-2 py-0.5 text-xs font-semibold uppercase ${severityClasses('', bundle.overall_score).badge}`}
+                        >
+                          {bundle.overall_score}
+                        </span>
+                        {Object.entries(bundle.dimensions).map(([key, dim]) => {
+                          const dimStyles = severityClasses('', dim.score)
+                          return (
+                            <span
+                              key={key}
+                              className={`rounded border px-2 py-0.5 text-[11px] font-medium ${dimStyles.badge}`}
+                            >
+                              {dimensionLabel(key)}: {dim.score}
+                            </span>
+                          )
+                        })}
+                      </div>
+                    )}
+                    {isTriageBatch && triageChangedSummary.length > 0 ? (
+                      <p className="mt-2 text-xs text-amber-900">
+                        Changed in triaging: {triageChangedSummary.join(' · ')}
+                      </p>
+                    ) : null}
+                    {isTriageBatch && bundle.patch_stale ? (
+                      <p className="mt-2 text-xs text-red-800">
+                        Saved triaging patch was discarded because the raw card changed after the patch was saved.
+                        Edit from current card content; saving will write a new patch.
+                      </p>
+                    ) : null}
                   </div>
                   <div className="text-right">
                     {bundle.finalized && (
@@ -356,9 +501,19 @@ export function ReviseCardsPage() {
                       disabled={!canFinalize}
                       onClick={() => void handleFinalizeCard()}
                       className="rounded-md bg-stone-900 px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-stone-400"
+                      title={finalizeDisabledReason ?? undefined}
                     >
-                      {finalizing ? 'Saving…' : bundle.finalized ? 'Save updates' : 'Finalize card'}
+                      {finalizing
+                        ? 'Saving…'
+                        : bundle.finalized
+                          ? 'Save updates'
+                          : isTriageBatch
+                            ? 'Finalize patch'
+                            : 'Finalize card'}
                     </button>
+                    {!canFinalize && finalizeDisabledReason ? (
+                      <p className="mt-2 text-xs text-amber-800">{finalizeDisabledReason}</p>
+                    ) : null}
                     {outstandingCount > 0 && (
                       <p className="mt-2 text-xs text-amber-800">
                         {pendingCount > 0 && `${pendingCount} issue(s) still need a handled/not handled mark`}
@@ -431,20 +586,23 @@ export function ReviseCardsPage() {
                 )}
                 {!bundle.finalized && (
                   <p className="mt-3 text-xs text-stone-600">
-                    {hasFindings
-                      ? 'Claude suggestions are reference only. Use the direct card editor for changes, then mark issues handled.'
-                      : 'No issues flagged on this card. Use the direct card editor to make changes, then finalize when ready.'}
+                    {isTriageBatch
+                      ? 'Triaging patch items are reference only. The direct card editor shows the raw card; finalize promotes your edits.'
+                      : hasFindings
+                        ? 'Claude suggestions are reference only. Use the direct card editor for changes, then mark issues handled.'
+                        : 'No issues flagged on this card. Use the direct card editor to make changes, then finalize when ready.'}
                   </p>
                 )}
               </div>
 
               <div className="space-y-4">
                 {bundle.findings.length === 0 ? (
-                  <div className="rounded-lg border border-emerald-200 bg-emerald-50/80 p-4 text-sm text-emerald-900">
-                    <p className="font-medium">No issues flagged</p>
-                    <p className="mt-1 text-emerald-800">
-                      Claude rated this card as pass with no actionable findings. Edit the note, signals, or
-                      confirmation policy above if needed, then finalize.
+                  <div className="rounded-lg border border-stone-200 bg-stone-50 p-4 text-sm text-stone-700">
+                    <p className="font-medium">No patch items for this card</p>
+                    <p className="mt-1">
+                      {isTriageBatch
+                        ? 'This triaging batch has no saved signal or confirmation-policy changes for this card.'
+                        : 'Claude rated this card as pass with no actionable findings. Use the direct card editor if you still need changes.'}
                     </p>
                   </div>
                 ) : (
@@ -457,6 +615,7 @@ export function ReviseCardsPage() {
                       draft={drafts[finding.issue_id] ?? buildIssueDraft(finding)}
                       disabled={finalizing}
                       rawCard={bundle.raw_card}
+                      patchSource={isTriageBatch ? 'triaging' : 'claude'}
                       onDraftChange={(draft) =>
                         setDrafts((prev) => ({ ...prev, [finding.issue_id]: draft }))
                       }

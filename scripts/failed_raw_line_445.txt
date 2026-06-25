@@ -1,0 +1,201 @@
+{
+  "server_review": [
+    {
+      "pathway_id": "groundwater_stress",
+      "agreement": "agree",
+      "signal_notes": [
+        {
+          "signal_id": "sig_01",
+          "server_result": false,
+          "comment": "SOGE at 62.83% is classified 'Safe' by CGWB — well below the Critical/Over-exploited threshold. This correctly returns FALSE."
+        },
+        {
+          "signal_id": "sig_02",
+          "server_result": false,
+          "comment": "Mean annual delta_g is +44.4 mm and the trend slope is +19.2 mm/year — both positive, indicating net recharge surplus over the period. FALSE is correct."
+        },
+        {
+          "signal_id": "sig_03",
+          "server_result": false,
+          "comment": "Aquifer is volcanic (Basalt 100%), not crystalline basement. The amplifier condition requires 'crystalline_basement' class, so FALSE is correct. However, Deccan basalt is also a hard rock aquifer with low primary porosity — the structural vulnerability is real even if this specific signal expression does not fire."
+        },
+        {
+          "signal_id": "sig_04",
+          "server_result": false,
+          "comment": "nrega_swc_count = 78, well above the <10 threshold. FALSE is correct and actually indicates meaningful SWC investment."
+        },
+        {
+          "signal_id": "sig_05",
+          "server_result": "NEEDS_LLM",
+          "comment": "No farmer data on well deepening available. Given positive delta_g trend and safe SOGE, prior probability of this being TRUE is low, but cannot be ruled out at micro-watershed scale."
+        },
+        {
+          "signal_id": "sig_06",
+          "server_result": "NEEDS_LLM",
+          "comment": "Borewell density unknown. Absence of confirming landscape signals reduces urgency of this follow-up."
+        },
+        {
+          "signal_id": "sig_07",
+          "server_result": "NEEDS_LLM",
+          "comment": "No salinity data. Low prior given positive water balance."
+        }
+      ],
+      "pathway_comment": "The server correctly holds this at low-confidence uncertain. The landscape data — safe SOGE, positive mean delta_g, positive trend, and high SWC investment — collectively argue against active groundwater stress. For the user's question about stresses, groundwater stress is not currently a confirmed stress in this watershed; it remains a watch item pending farmer-level well depth data, particularly given the hard rock basalt aquifer context where block-level SOGE can mask localised depletion."
+    },
+    {
+      "pathway_id": "multi_sector_vulnerability",
+      "agreement": "agree",
+      "signal_notes": [
+        {
+          "signal_id": "sig_01",
+          "server_result": false,
+          "comment": "SC+ST = 18.8%, well below the 40% threshold. FALSE is correct."
+        },
+        {
+          "signal_id": "sig_02",
+          "server_result": false,
+          "comment": "Literacy rate 73.8% (above 55%) and bank distance 0.18 km (essentially co-located). Both conditions fail. FALSE is correct and actually indicates relatively good structural access."
+        },
+        {
+          "signal_id": "sig_03",
+          "server_result": false,
+          "comment": "Severe drought return period = 8 years, above the <=4 threshold. FALSE is correct."
+        },
+        {
+          "signal_id": "sig_04",
+          "server_result": false,
+          "comment": "nrega_swc_count = 78, far above the <5 amplifier threshold. FALSE is correct."
+        },
+        {
+          "signal_id": "sig_05",
+          "server_result": "NEEDS_LLM",
+          "comment": "Migration data unavailable. However, given that all four structural signals are FALSE, even a positive migration report would be insufficient to confirm this pathway per the evidence note requiring at least three signals."
+        },
+        {
+          "signal_id": "sig_06",
+          "server_result": "NEEDS_LLM",
+          "comment": "Income data unavailable. Same caveat — structural signals are absent."
+        }
+      ],
+      "pathway_comment": "For the user's question about stresses, multi-sector vulnerability appears unlikely based on available data. Literacy is relatively high, bank access is excellent (0.18 km), SC/ST share is modest, drought frequency is low, and MGNREGA investment is substantial. The server's low-confidence uncertain classification is appropriate but the weight of evidence leans toward this pathway being absent rather than merely unconfirmed."
+    },
+    {
+      "pathway_id": "irrigation_challenges",
+      "agreement": "agree",
+      "signal_notes": [
+        {
+          "signal_id": "sig_01",
+          "server_result": false,
+          "comment": "trend_swb_total_area_ha = +20.1 ha/year (positive, not declining) and swb_count = 51 (well above <=15). Both conditions fail. FALSE is correct and actually indicates expanding surface water body coverage."
+        },
+        {
+          "signal_id": "sig_02",
+          "server_result": false,
+          "comment": "mean_swb_rabi_kharif_ratio = 0.993 — extremely high, indicating that surface water bodies retain nearly as much area in rabi as kharif. This is the opposite of rapid post-monsoon drying. FALSE is correct."
+        },
+        {
+          "signal_id": "sig_03",
+          "server_result": false,
+          "comment": "nrega_swc_count = 78, well above <=20. FALSE is correct. High SWC investment is consistent with the expanding SWB trend."
+        },
+        {
+          "signal_id": "sig_04",
+          "server_result": true,
+          "comment": "river_name is null and dist_cooperative_km = 59.9 km (>15). TRUE is correct. The absence of a perennial river and remote cooperative access are structural constraints, but with all three primary signals FALSE, this amplifier alone cannot confirm the pathway."
+        },
+        {
+          "signal_id": "sig_05",
+          "server_result": "NEEDS_LLM",
+          "comment": "Well depth data unavailable. However, given expanding SWB area and high SWC investment, the prior for this being TRUE is low."
+        }
+      ],
+      "pathway_comment": "For the user's question, irrigation challenges as a confirmed stress is not supported by the data. Surface water body area is growing (+20 ha/year trend), rabi retention is excellent (ratio ~1.0), and SWC investment is high. The one amplifier that fires (no perennial river, remote cooperative) reflects a structural context rather than active infrastructure failure. The server's low-confidence uncertain classification is appropriate; if anything, the evidence leans toward this pathway being absent."
+    },
+    {
+      "pathway_id": "drought",
+      "agreement": "partial",
+      "signal_notes": [
+        {
+          "signal_id": "sig_01",
+          "server_result": false,
+          "comment": "Severe and moderate drought return periods are both 8 years — above the <=4 threshold. FALSE is correct. Severe drought is infrequent."
+        },
+        {
+          "signal_id": "sig_02",
+          "server_result": true,
+          "comment": "Mean dry_spell_weeks across available years: (6+7+0+0+5+6+8+6)/8 = 4.75 weeks, clearly above the >=3 threshold. TRUE is correct and meaningful — intra-seasonal dry spells are a recurring feature even in years with adequate total rainfall."
+        },
+        {
+          "signal_id": "sig_04",
+          "server_result": false,
+          "comment": "mean_kharif_precipitation = 783.2 mm vs 75% of mean_annual = 835.4 mm. The kharif mean is below 75% of annual mean, which would suggest TRUE, but trend_annual_precipitation_mm = +0.24 (positive, not negative). The signal requires BOTH conditions — kharif below 75% of annual AND negative precipitation trend. With a positive trend, FALSE is correct per the expression, though the kharif/annual ratio alone is worth noting."
+        },
+        {
+          "signal_id": "sig_05",
+          "server_result": true,
+          "comment": "Monsoon onset dates are essentially identical across all years (June 11-12), with no meaningful delay trend. The server marks this TRUE — I would note this is a borderline call; the onset dates show no progressive delay. However, I defer to the server's ok-status evaluation."
+        }
+      ],
+      "pathway_comment": "Partial agreement: the server correctly identifies dry spells (sig_02 TRUE) as the most relevant confirmed signal, and the amplifier (sig_05 TRUE) adds context. However, I note that the drought pathway evidence is mixed — total annual rainfall averages ~1114 mm (well above semi-arid norms), severe drought is rare (8-year return), and precipitation trend is slightly positive. The recurring dry spells (averaging ~4.75 weeks/kharif season) represent the most credible stress signal for this landscape. For the user's question, intra-seasonal dry spells during kharif are a genuine and recurring stress, even if outright meteorological drought is infrequent. The server's low-confidence uncertain classification is reasonable given that only one of two required confirming signals is TRUE, but dry spell stress deserves emphasis in the answer."
+    }
+  ],
+  "independent_pathway_review": [
+    {
+      "pathway_id": "groundwater_stress",
+      "pathway_present": "uncertain",
+      "confidence": "medium",
+      "reasoning": "The watershed sits entirely on Deccan Basalt (100% basalt lithology), a hard rock aquifer with low primary porosity and storage dependent on fractures and weathered zones. This is structurally vulnerable to localised depletion. However, the available water balance data does not support active stress: SOGE is 62.83% (Safe class), mean annual delta_g is +44.4 mm (net positive recharge), and the 8-year trend slope is +19.2 mm/year (improving). Annual delta_g shows high inter-annual variability — ranging from -148.7 mm (2017) to +318 mm (2019) — which is characteristic of hard rock basalt systems with episodic recharge. Critically, 78 MGNREGA SWC works have been implemented, which is substantial investment that likely supports recharge. Mean annual precipitation of 1114 mm is relatively high for the AER-10 context. The absence of farmer-reported well deepening data leaves micro-watershed heterogeneity unresolved, but the weight of landscape evidence does not support active groundwater stress at present.",
+      "key_datapoints": [
+        "soge_dev_percent: 62.83 (Safe class)",
+        "mean_annual_delta_g_mm: +44.4 mm (positive)",
+        "trend_annual_delta_g_mm: +19.2 mm/year (positive slope)",
+        "aquifer: 100% Basalt (hard rock, low primary porosity)",
+        "nrega_swc_count: 78 (high investment)",
+        "mean_annual_precipitation_mm: 1113.9 mm"
+      ]
+    },
+    {
+      "pathway_id": "multi_sector_vulnerability",
+      "pathway_present": "no",
+      "confidence": "medium",
+      "reasoning": "The structural indicators for multi-sector vulnerability are largely absent. SC+ST population share is 18.8%, well below levels associated with compounded social vulnerability in semi-arid India. Literacy rate of 73.8% is above the district average for many MP districts and indicates reasonable human capital. Bank distance of 0.18 km is negligible — formal financial services are essentially co-located with the watershed villages, which is a strong protective factor against poverty trap dynamics. Severe drought return period of 8 years means crop failure shocks are infrequent. MGNREGA investment is high (78 SWC works), providing both wage employment and productive infrastructure. The AER-10 (Malwa) context is a relatively productive agricultural zone compared to AER-5 (Gujarat plains) where this card was calibrated. The combination of good literacy, bank access, low drought frequency, and high public investment makes structural multi-sector vulnerability unlikely, though transient agricultural stress in poor rainfall years cannot be excluded.",
+      "key_datapoints": [
+        "village_sc_percent + village_st_percent: 18.8%",
+        "village_literacy_rate: 73.8%",
+        "dist_bank_km: 0.18 km",
+        "drought_severe_return_period: 8 years",
+        "nrega_swc_count: 78",
+        "Card calibrated for AER-5; this MWS is AER-10"
+      ]
+    },
+    {
+      "pathway_id": "irrigation_challenges",
+      "pathway_present": "no",
+      "confidence": "medium",
+      "reasoning": "The surface water body data presents a picture of relatively healthy and expanding irrigation infrastructure. Total SWB area has grown at +20.1 ha/year over the observation period, reaching 368 ha in 2024 from 153 ha in 2017 — a more than doubling. The rabi-to-kharif SWB ratio of 0.993 is exceptionally high, indicating that water bodies retain nearly full area through the rabi season, which is the opposite of the rapid post-monsoon drying that characterises irrigation infrastructure failure in hard rock settings. With 51 water bodies and 78 MGNREGA SWC works, both the stock and investment in surface water infrastructure appear adequate. The absence of a perennial river (river_name null) and remote cooperative (59.9 km) are structural constraints but are offset by the strong surface storage performance. No confirming signals are present; the single amplifier (sig_04) reflects geography rather than active failure.",
+      "key_datapoints": [
+        "trend_swb_total_area_ha: +20.1 ha/year (strongly positive)",
+        "mean_swb_rabi_kharif_ratio: 0.993 (near-perfect rabi retention)",
+        "swb_count: 51",
+        "nrega_swc_count: 78",
+        "river_name: null",
+        "dist_cooperative_km: 59.9 km"
+      ]
+    },
+    {
+      "pathway_id": "drought",
+      "pathway_present": "uncertain",
+      "confidence": "medium",
+      "reasoning": "The drought picture is nuanced. Total annual rainfall averages 1114 mm, which is above the semi-arid threshold, and severe drought is rare (8-year return period). However, intra-seasonal dry spells are a persistent feature: dry_spell_weeks averaged approximately 4.75 weeks per kharif season across 2017-2024, with non-zero values in 6 of 8 years (0 only in 2019 and 2020, which were high-rainfall years). The drought_causality data shows moderate drought path scores (drought_path1) in 2021, 2022, 2023, and 2024, suggesting that agricultural stress from within-season moisture deficits is becoming more frequent in recent years even as total rainfall remains adequate. Kharif precipitation of 783 mm is only 70% of mean annual precipitation, indicating that the monsoon season itself is not capturing the full rainfall — a meaningful proportion falls outside the kharif window. The 2021 kharif was notably low at 603 mm. The pattern suggests episodic agricultural drought stress driven by dry spell distribution rather than meteorological drought in the classical sense. This is a real but moderate stress.",
+      "key_datapoints": [
+        "mean dry_spell_weeks: ~4.75 weeks/year (non-zero in 6/8 years)",
+        "drought_severe_return_period: 8 years (infrequent)",
+        "mean_annual_precipitation_mm: 1113.9 mm (above semi-arid threshold)",
+        "mean_kharif_precipitation: 783.2 mm (70% of annual mean)",
+        "drought_path1 scores in 2021, 2022, 2023, 2024 (increasing frequency)",
+        "2021 kharif precipitation: 602.7 mm (lowest in series)"
+      ]
+    }
+  ],
+  "change_review": null,
+  "panel_update_explanation": "This landscape's most credible active stress is intra-seasonal dry spells during the kharif cro

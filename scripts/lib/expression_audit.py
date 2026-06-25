@@ -49,7 +49,7 @@ def extract_ast_names(expression: str) -> set[str]:
     except SyntaxError:
         return set()
     allowed_builtins = {
-        "abs", "min", "max", "len", "sum", "sorted", "round", "float", "int", "str",
+        "abs", "min", "max", "mean", "len", "sum", "sorted", "round", "float", "int", "str",
         "list", "dict", "any", "all", "set", "tuple", "range", "enumerate", "zip",
     }
     bound: set[str] = set()

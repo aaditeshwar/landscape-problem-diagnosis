@@ -42,22 +42,57 @@ def _location_context(location: dict[str, Any] | None, *, include_villages: bool
     return " · ".join(parts)
 
 
-def _true_confirming_signals(pathway_eval: dict[str, Any]) -> list[str]:
+def _true_signals(pathway_eval: dict[str, Any], direction: str) -> list[str]:
     lines: list[str] = []
     for signal in pathway_eval.get("signals") or []:
         if not isinstance(signal, dict):
             continue
-        if signal.get("direction") != "confirms":
+        if signal.get("direction") != direction:
             continue
         if signal.get("result") is not True:
             continue
         sig_id = str(signal.get("signal_id") or "?")
         status = signal.get("status")
         if status == "user_provided":
-            lines.append(f"{sig_id} TRUE (your answer)")
+            lines.append(f"{sig_id} (your answer)")
         else:
-            lines.append(f"{sig_id} TRUE")
+            lines.append(sig_id)
     return lines
+
+
+def _true_confirming_signals(pathway_eval: dict[str, Any]) -> list[str]:
+    return _true_signals(pathway_eval, "confirms")
+
+
+def _pathway_signal_totals(bundle: dict[str, dict] | None, pathway_id: str) -> dict[str, int]:
+    card = card_from_bundle(bundle, pathway_id) if bundle else {}
+    totals = {"confirms": 0, "amplifies": 0, "rules_out": 0, "active": 0}
+    for signal in card.get("diagnostic_signals") or []:
+        if not isinstance(signal, dict):
+            continue
+        if signal.get("active") is False:
+            continue
+        direction = str(signal.get("direction") or "")
+        totals["active"] += 1
+        if direction in totals:
+            totals[direction] += 1
+    return totals
+
+
+def _format_signal_tally(
+    pathway_eval: dict[str, Any],
+    *,
+    direction: str,
+    total: int,
+) -> str:
+    true_ids = _true_signals(pathway_eval, direction)
+    label = {
+        "confirms": "confirming",
+        "amplifies": "amplifying",
+        "rules_out": "rules-out",
+    }.get(direction, direction)
+    true_text = ", ".join(true_ids) if true_ids else "none"
+    return f"{len(true_ids)}/{total} {label} signals TRUE ({true_text})"
 
 
 def _has_evaluated_confirms_false(pathway_eval: dict[str, Any]) -> bool:
@@ -127,27 +162,41 @@ def format_pathway_reasoning(
     label = _humanize_pathway(pathway_id)
     summary = pathway_eval.get("summary") or {}
     confirms_true = int(summary.get("confirms_true") or 0)
+    amplifies_true = int(summary.get("amplifies_true") or 0)
+    totals = _pathway_signal_totals(bundle, pathway_id)
     loc = _location_context(location)
     parts: list[str] = []
 
     if loc:
         parts.append(f"For {loc},")
     if status == "confirmed":
-        parts.append(f"{label} is supported by landscape data")
-        true_signals = _true_confirming_signals(pathway_eval)
-        if true_signals:
-            parts.append(f"({', '.join(true_signals[:4])})")
-        parts.append(f"with {confirms_true} confirming signal(s) TRUE.")
+        parts.append(f"{label} is supported by landscape data.")
+        tally_parts: list[str] = []
+        if totals["confirms"]:
+            tally_parts.append(_format_signal_tally(pathway_eval, direction="confirms", total=totals["confirms"]))
+        if totals["amplifies"]:
+            tally_parts.append(_format_signal_tally(pathway_eval, direction="amplifies", total=totals["amplifies"]))
+        if tally_parts:
+            parts.append(" ".join(tally_parts) + ".")
+        else:
+            parts.append(f"{confirms_true} confirming and {amplifies_true} amplifying signal(s) evaluated TRUE.")
     else:
-        parts.append(f"{label} remains uncertain:")
+        parts.append(f"{label} remains uncertain.")
+        tally_parts = []
+        if totals["confirms"]:
+            tally_parts.append(_format_signal_tally(pathway_eval, direction="confirms", total=totals["confirms"]))
+        if totals["amplifies"]:
+            tally_parts.append(_format_signal_tally(pathway_eval, direction="amplifies", total=totals["amplifies"]))
+        if tally_parts:
+            parts.append(" ".join(tally_parts) + ".")
         missing = []
         if bundle:
             data = bundle.get(pathway_id) or {}
             missing = list(data.get("missing_variables") or [])[:4]
         if missing:
-            parts.append(f"follow-up needed on {', '.join(missing)}.")
+            parts.append(f"Follow-up needed on {', '.join(missing)}.")
         else:
-            parts.append("key diagnostic variables are not yet available.")
+            parts.append("Key diagnostic variables are not yet available.")
 
     note = pathway_eval.get("evidence_note") or _pathway_evidence_note(bundle, pathway_id)
     excerpt = _truncate_note(str(note))

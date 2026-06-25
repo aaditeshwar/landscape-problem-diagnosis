@@ -29,7 +29,7 @@
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "drought_weeks_severe[-1] >= 3 or (drought_weeks_severe[-1] >= 1 and drought_weeks_moderate[-1] >= 4)",
+        "expression": "drought_severe_return_period <= 4 or drought_moderate_return_period <= 4",
         "qualitative_description": "Three or more severe drought weeks in the latest kharif season, or a combination of at least one severe week and four or more moderate weeks, indicates persistent crop-season water deficit sufficient to cause yield loss.",
         "variables": [
           "drought_weeks_severe",
@@ -48,7 +48,7 @@
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "dry_spell_weeks[-1] >= 4",
+        "expression": "mean(dry_spell_weeks) >= 3",
         "qualitative_description": "Four or more dry spell weeks (4-week moving window with <50% historical rainfall) in the latest kharif season indicate prolonged rainfall gaps that disrupt critical crop growth stages.",
         "variables": [
           "dry_spell_weeks"
@@ -67,7 +67,7 @@
       ],
       "condition": {
         "type": "composite",
-        "expression": "mean_annual_precipitation_mm < 600 and seasonal_precipitation_mm[-1]['kharif'] < (0.75 * mean_annual_precipitation_mm)",
+        "expression": "mean_annual_precipitation_mm < 600 and mean_kharif_precipitation < (0.75 * mean_annual_precipitation_mm)",
         "qualitative_description": "Long-run mean annual precipitation below 600 mm combined with a kharif season receiving less than 75% of the long-run annual mean confirms a below-normal monsoon year in an already moisture-limited zone.",
         "variables": [
           "mean_annual_precipitation_mm",

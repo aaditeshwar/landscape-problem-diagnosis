@@ -369,6 +369,32 @@ export function DiagnosisPanel({
                   </li>
                 ))}
               </ul>
+              {diagnosis.independent_pathway_review?.length ? (
+                <div className="mt-3 border-t border-violet-200 pt-2">
+                  <h4 className="text-xs font-semibold uppercase tracking-wide text-violet-900">
+                    Independent assessment (no signal expressions)
+                  </h4>
+                  <ul className="mt-2 space-y-2">
+                    {diagnosis.independent_pathway_review.map((item) => (
+                      <li key={`indep-${item.pathway_id}`} className="text-sm text-stone-800">
+                        <div className="font-medium">
+                          {formatPathwayHierarchy({ pathway_id: item.pathway_id })}
+                          <span className="ml-2 text-xs uppercase text-violet-800">
+                            {item.pathway_present}
+                            {item.confidence ? ` · ${item.confidence}` : ''}
+                          </span>
+                        </div>
+                        {item.reasoning ? <p className="mt-1 text-stone-700">{item.reasoning}</p> : null}
+                        {item.key_datapoints?.length ? (
+                          <p className="mt-1 text-xs text-stone-600">
+                            Datapoints: {item.key_datapoints.join(' · ')}
+                          </p>
+                        ) : null}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
               {diagnosis.change_review?.summary ? (
                 <p className="mt-2 text-sm text-stone-700">
                   <span className="font-medium text-violet-900">Change review: </span>

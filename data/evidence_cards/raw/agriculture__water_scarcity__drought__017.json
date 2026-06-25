@@ -29,7 +29,7 @@
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "drought_weeks_severe[-1] >= 3 or drought_weeks_moderate[-1] >= 6",
+        "expression": "drought_severe_return_period <= 4 or drought_moderate_return_period <= 4",
         "qualitative_description": "Three or more severe drought weeks, or six or more moderate drought weeks in the latest kharif season, indicate significant meteorological drought stress even in a normally humid island ecoregion.",
         "variables": [
           "drought_weeks_severe",
@@ -51,7 +51,7 @@
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "dry_spell_weeks[-1] >= 4",
+        "expression": "mean(dry_spell_weeks) >= 3",
         "qualitative_description": "Four or more dry spell weeks (4-week moving window with <50% historical rainfall) in the latest kharif season indicate a prolonged moisture deficit disrupting critical crop growth stages.",
         "variables": [
           "dry_spell_weeks"

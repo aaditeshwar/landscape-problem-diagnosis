@@ -56,6 +56,9 @@ STATIC_CD_VARIABLES = frozenset(
 
 DROUGHT_CAUSALITY_ALIASES = frozenset({"drought_causality", "drought_causality_json"})
 
+# Entire drought_causality sheet (SPI/MAI/VCI, drought paths, cropping_area_sown_score, etc.)
+# is omitted from diagnosis LLM prompts — use drought_weeks, dry_spell_weeks, precipitation, etc.
+DROUGHT_LLM_EXCLUDED_DERIVED_VARIABLES = DROUGHT_DERIVED_VARIABLE_NAMES
 
 @lru_cache
 def load_registry() -> dict:
@@ -287,6 +290,25 @@ def normalize_drought_causality(causality: dict | None) -> dict:
     return normalized
 
 
+def sanitize_drought_causality_for_llm(causality: dict | None) -> dict[str, Any]:
+    """drought_causality is not passed to diagnosis LLM prompts (sheet data is unreliable)."""
+    return {}
+
+
+def sanitize_present_variables_for_llm(present: dict[str, Any] | None) -> dict[str, Any]:
+    """Remove drought_causality sheet variables from diagnosis prompt payloads."""
+    if not present:
+        return {}
+    out: dict[str, Any] = {}
+    for name, value in present.items():
+        if name in DROUGHT_CAUSALITY_ALIASES:
+            continue
+        if name in DROUGHT_LLM_EXCLUDED_DERIVED_VARIABLES:
+            continue
+        out[name] = value
+    return out
+
+
 def collect_drought_nested_keys(causality: dict | None) -> set[str]:
     keys: set[str] = set()
     if not isinstance(causality, dict):
@@ -450,19 +472,27 @@ def rewrite_drought_causality_expression(expression: str) -> str:
     return expr
 
 
-def registry_excerpt_block() -> str:
+def registry_excerpt_block(*, for_diagnosis: bool = False) -> str:
     """Human-readable registry excerpt for card-generation prompts."""
     lines = ["Variable registry policy (canonical names and shapes):"]
     policy = load_registry().get("expression_access", {})
     for key, text in policy.items():
         lines.append(f"  {key}: {text}")
-    lines.append("  drought derived scalars (latest agricultural year, India Drought Manual trigger scores):")
-    for name in sorted(DROUGHT_DERIVED_VARIABLE_NAMES):
-        lines.append(f"    {name}: compare directly, e.g. {name} >= 26")
-    lines.append("  drought_causality nested access example:")
-    lines.append(
-        "    drought_causality[sorted(drought_causality.keys())[-1]]['mild']['spi_score']"
-    )
+    drought_derived = sorted(DROUGHT_DERIVED_VARIABLE_NAMES)
+    if for_diagnosis:
+        lines.append(
+            "  drought_causality and drought_causality-derived scalars are omitted from diagnosis prompts "
+            "(unreliable sheet data). Use drought_weeks, dry_spell_weeks, kharif_drought_total_weeks, "
+            "precipitation_mm, kharif_cropped_area_percent, and drought_severe_return_period instead."
+        )
+    else:
+        lines.append("  drought derived scalars (latest agricultural year, India Drought Manual trigger scores):")
+        for name in drought_derived:
+            lines.append(f"    {name}: compare directly, e.g. {name} >= 26")
+        lines.append("  drought_causality nested access example:")
+        lines.append(
+            "    drought_causality[sorted(drought_causality.keys())[-1]]['mild']['spi_score']"
+        )
     lines.append("  Do NOT use invented flat keys: spi_class, spi_kharif, mai_kharif, vci_kharif.")
     return "\n".join(lines)
 

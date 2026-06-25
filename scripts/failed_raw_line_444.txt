@@ -1,0 +1,103 @@
+{
+  "server_review": [
+    {
+      "pathway_id": "groundwater_stress",
+      "agreement": "agree",
+      "signal_notes": [
+        {"signal_id": "sig_01", "server_result": true, "comment": "soge_dev_percent at 82.96% clearly exceeds the 70% threshold and SOGE class is Semi-Critical — strong primary confirmation."},
+        {"signal_id": "sig_02", "server_result": true, "comment": "mean_annual_delta_g_mm of -63.06 mm confirms a structurally negative water balance across the 8-year record; 6 of 8 years show negative annual delta_g."},
+        {"signal_id": "sig_03", "server_result": true, "comment": "100% basalt aquifer (volcanic hard rock) is a well-established structural amplifier for groundwater stress in Malwa — low primary porosity limits storage and recharge."},
+        {"signal_id": "sig_04", "server_result": false, "comment": "nrega_swc_count of 7 is above the <5 threshold, so this amplifier does not fire. However, 7 structures for a 1629 ha watershed is still modest and the recharge deficit persists regardless."}
+      ],
+      "pathway_comment": "For this question (what stresses is this landscape facing?): groundwater stress is the most data-supported agricultural water stress in this watershed. Two independent primary signals — SOGE Semi-Critical classification and a chronic negative delta_g mean — confirm structural over-extraction or recharge deficit in a 100% basalt aquifer. This directly threatens rabi and zaid irrigation and drinking water security for Kesoon village. The server's high-confidence classification is well-justified."
+    },
+    {
+      "pathway_id": "encroachment",
+      "agreement": "agree",
+      "signal_notes": [
+        {"signal_id": "sig_01", "server_result": true, "comment": "cd_forest_to_farm_ha of 38.61 ha exceeds the 29 ha threshold — measurable forest-to-agriculture conversion is confirmed by remote sensing."},
+        {"signal_id": "sig_02", "server_result": false, "comment": "cd_total_urbanization_ha of 0.95 ha is far below the 50 ha threshold — settlement expansion is negligible and not a driver here."},
+        {"signal_id": "sig_03", "server_result": true, "comment": "village_st_percent of 89.26% combined with cd_forest_to_farm_ha > 29 ha is a strong composite signal. High ST dependence on forest commons makes this conversion particularly impactful for livelihoods."},
+        {"signal_id": "sig_04", "server_result": true, "comment": "village_st_percent of 89.26% far exceeds the 40% amplifier threshold, reinforcing vulnerability of forest-dependent tribal households to encroachment-driven NTFP loss."}
+      ],
+      "pathway_comment": "For this question: encroachment is the primary forest-sector stress identified. Nearly 39 ha of forest has been converted to farmland, in a watershed where 89% of the population is Scheduled Tribe and forest-dependent. This creates a direct NTFP decline stress and tenure insecurity risk. The server's high-confidence classification is appropriate given two confirmed signals and one amplifier."
+    },
+    {
+      "pathway_id": "multi_sector_vulnerability",
+      "agreement": "partial",
+      "signal_notes": [
+        {"signal_id": "sig_01", "server_result": true, "comment": "SC+ST combined at ~92.4% is far above the 40% threshold — this is an exceptionally high tribal share and is the strongest structural vulnerability indicator available."},
+        {"signal_id": "sig_02", "server_result": false, "comment": "Literacy rate of 44.57% is below 55% (confirming), but dist_bank_km of 0.15 km means a bank is essentially in the village — the compound condition fails. However, the very low literacy alone is a meaningful structural disadvantage even without banking remoteness."},
+        {"signal_id": "sig_03", "server_result": false, "comment": "drought_severe_return_period of 8 years means severe drought is infrequent — this is not a chronic drought-stress landscape by the signal threshold. Correct."},
+        {"signal_id": "sig_04", "server_result": false, "comment": "nrega_swc_count of 7 exceeds the <5 threshold, so MGNREGA provision is not flagged as inadequate. Correct per signal logic."}
+      ],
+      "pathway_comment": "For this question: multi-sector vulnerability is uncertain but the ST population share of 89% and literacy rate of 44.6% are genuinely concerning structural indicators. The server correctly flags this as low-confidence given only 1 of 4 confirming signals fires. However, the near-bank proximity (0.15 km) that suppresses sig_02 may mask functional exclusion — low literacy can prevent effective bank use even when a branch is nearby. The two missing variables (migrant_household_percent, household_income_inr) are critical to resolving this pathway. The server's low-confidence uncertain classification is appropriate but the pathway should not be dismissed."
+    },
+    {
+      "pathway_id": "forest_degradation",
+      "agreement": "agree",
+      "signal_notes": [
+        {"signal_id": "sig_01", "server_result": false, "comment": "lulc_tree_forest_ha in 2024 (682.37 ha) is higher than in 2017 (618.7 ha) — net forest cover has increased over the monitoring period. This correctly suppresses the primary degradation signal."},
+        {"signal_id": "sig_02", "server_result": false, "comment": "cd_afforestation_ha (108.99) exceeds cd_total_deforestation_ha (73) — afforestation outpaces deforestation, so the net deficit condition is not met. Correct."},
+        {"signal_id": "sig_03", "server_result": true, "comment": "cd_total_deforestation_ha of 73 ha exceeds the 30 ha threshold — absolute deforestation is substantial even if offset by afforestation. This is a valid partial signal."},
+        {"signal_id": "sig_04", "server_result": true, "comment": "No NTFP/Forest/Agroforestry organisations are present (organization_domains is empty) — absence of institutional forest governance support is a real amplifier of degradation risk."}
+      ],
+      "pathway_comment": "For this question: forest degradation as a stress pathway is uncertain. The net forest cover trend is actually positive (2017–2024), and afforestation exceeds deforestation in cumulative terms. However, 73 ha of gross deforestation has occurred, and the quality and species composition of new cover (afforestation vs. natural forest) is unknown. The server's low-confidence uncertain classification is appropriate. The key unresolved question is whether NTFP-bearing species are present in the new cover or whether afforestation represents monoculture plantations that do not restore NTFP value."
+    },
+    {
+      "pathway_id": "irrigation_challenges",
+      "agreement": "agree",
+      "signal_notes": [
+        {"signal_id": "sig_01", "server_result": true, "comment": "trend_swb_total_area_ha of -0.003 ha/year is declining and swb_count of 4 is very low for a 1629 ha watershed — surface water infrastructure is minimal and shrinking."},
+        {"signal_id": "sig_02", "server_result": false, "comment": "mean_swb_rabi_kharif_ratio of 0.375 is above the 0.35 threshold — post-monsoon retention is marginally adequate by this metric, though the absolute SWB area is tiny."},
+        {"signal_id": "sig_03", "server_result": true, "comment": "nrega_swc_count of 7 is below the ≤20 amplifier threshold — SWC investment is limited relative to watershed size."},
+        {"signal_id": "sig_04", "server_result": true, "comment": "dist_cooperative_km of 55.44 km far exceeds the 15 km threshold — institutional credit and input access is severely constrained, amplifying irrigation investment barriers."}
+      ],
+      "pathway_comment": "For this question: irrigation infrastructure stress is uncertain but plausible. Only 4 surface water bodies covering a mean of 0.04 ha serve a 1629 ha watershed — this is structurally inadequate regardless of the rabi/kharif ratio signal. The cooperative distance of 55 km is a significant barrier to farmers investing in irrigation improvements. The server's low-confidence uncertain classification is defensible given only 1 confirming signal, but the absolute infrastructure scarcity warrants attention."
+    },
+    {
+      "pathway_id": "drought",
+      "agreement": "agree",
+      "signal_notes": [
+        {"signal_id": "sig_01", "server_result": false, "comment": "Both severe and moderate drought return periods are 8 years — well above the ≤4 year threshold. Severe drought is not a recurring feature of this landscape."},
+        {"signal_id": "sig_02", "server_result": true, "comment": "Mean dry_spell_weeks across 2017–2024 is approximately 3.75 weeks — above the ≥3 threshold. Intra-seasonal dry spells are a consistent feature even in non-drought years."},
+        {"signal_id": "sig_03", "server_result": false, "comment": "mean_annual_precipitation_mm of 866.82 mm is well above the 600 mm threshold — this is not a rainfall-deficient landscape in aggregate terms."},
+        {"signal_id": "sig_04", "server_result": true, "comment": "Monsoon onset dates are consistent across years (June 11–12) with no meaningful delay trend — this amplifier appears to fire based on server evaluation but the onset data shows minimal variation. Worth noting as a marginal amplifier."}
+      ],
+      "pathway_comment": "For this question: meteorological drought is not a primary stress in this watershed. Annual rainfall averages 867 mm and severe drought has occurred only once in 8 years. However, intra-seasonal dry spells averaging ~3.75 weeks are a consistent feature that can cause crop stress even in adequate rainfall years. The server's low-confidence uncertain classification is appropriate — drought is a background risk rather than a confirmed active stress."
+    }
+  ],
+  "independent_pathway_review": [
+    {
+      "pathway_id": "groundwater_stress",
+      "pathway_present": "yes",
+      "confidence": "high",
+      "reasoning": "The watershed sits entirely on Deccan Trap basalt, a hard-rock volcanic aquifer with inherently low primary porosity and limited storage capacity. SOGE development at 82.96% places the block in Semi-Critical status, indicating extraction is approaching or exceeding sustainable recharge. The 8-year delta_g record shows a mean annual deficit of -63 mm, with 6 of 8 years negative. Even in relatively wet years (2019: 1108 mm, 2022: 1050 mm), the annual balance recovered only modestly (+89 mm, +90 mm) and returned to deficit the following year. The rabi and zaid seasonal water balances are consistently negative across all years, confirming that post-monsoon groundwater drawdown is structural rather than episodic. Mean annual precipitation of 867 mm is adequate for recharge in principle, but the basalt aquifer's low permeability limits infiltration. With only 7 MGNREGA SWC structures for 1629 ha, recharge augmentation infrastructure is insufficient. This is the most robustly supported stress in the watershed.",
+      "key_datapoints": ["soge_dev_percent: 82.96 (Semi-Critical)", "mean_annual_delta_g_mm: -63.06 mm", "annual_delta_g_mm: negative in 6/8 years", "aquifer_class: volcanic (100% basalt)", "rabi delta_g consistently negative across all 8 years", "nrega_swc_count: 7 for 1629 ha watershed"]
+    },
+    {
+      "pathway_id": "encroachment",
+      "pathway_present": "yes",
+      "confidence": "high",
+      "reasoning": "Remote sensing confirms 38.61 ha of forest-to-farm conversion — a meaningful area in a watershed of 1629 ha (approximately 2.4% of total area converted). The village has an ST population of 89.26%, indicating near-total tribal composition with high forest dependency for livelihoods, food, and cultural practices. In the Central Malwa Highlands context, tribal communities historically depend on mahua, tendu, and achar as primary income sources. Forest conversion in this context directly reduces the NTFP resource base available to these communities. Urbanisation is negligible (0.95 ha), so the conversion is agricultural rather than settlement-driven. The absence of any forest or NTFP-focused organisations means there is no institutional check on further encroachment. FRA claim status is unknown but the high ST share suggests significant potential for both legitimate rights claims and unresolved tenure conflicts.",
+      "key_datapoints": ["cd_forest_to_farm_ha: 38.61 ha", "village_st_percent: 89.26%", "cd_total_urbanization_ha: 0.95 ha (negligible)", "organization_domains: empty", "terrain_cluster_id: 1 (plains — accessible for agricultural expansion)"]
+    },
+    {
+      "pathway_id": "multi_sector_vulnerability",
+      "pathway_present": "uncertain",
+      "confidence": "medium",
+      "reasoning": "The ST population share of 89.26% is exceptionally high and represents the strongest structural vulnerability indicator in the dataset. Literacy at 44.57% is low and limits access to government welfare schemes, market information, and financial services. However, the bank distance of 0.15 km suggests physical banking access is not a barrier — though functional financial inclusion may still be limited by literacy and awareness. Severe drought is infrequent (return period 8 years), so the primary trigger for debt accumulation and multi-sector collapse is not active. MGNREGA provision (7 structures) is modest but not critically low. The key uncertainty is whether the high ST share combined with low literacy translates into actual income hardship — this requires migrant household data and income estimates. The cooperative distance of 55.44 km is a significant barrier to market access and agricultural income diversification that is not captured in the current signal set but is relevant to economic vulnerability.",
+      "key_datapoints": ["village_st_percent: 89.26%", "village_literacy_rate: 44.57%", "dist_bank_km: 0.15 km (nearby but functional access uncertain)", "drought_severe_return_period: 8 years (infrequent)", "dist_cooperative_km: 55.44 km (very remote from markets)", "nrega_swc_count: 7"]
+    },
+    {
+      "pathway_id": "forest_degradation",
+      "pathway_present": "uncertain",
+      "confidence": "medium",
+      "reasoning": "The net forest cover trend is positive: lulc_tree_forest_ha increased from 618.7 ha in 2017 to 682.37 ha in 2024, and cumulative afforestation (108.99 ha) exceeds deforestation (73 ha). This argues against active forest degradation in area terms. However, 73 ha of gross deforestation has occurred, and the quality of replacement cover is unknown — afforestation in semi-arid Malwa often involves exotic or monoculture species that do not support NTFP production. Tree cover at 41.89% of the watershed is relatively high for AER-5, suggesting the forest resource base is not critically depleted. The absence of any forest governance organisations is a risk factor for future degradation. The key unresolved question is whether the new afforested area contains NTFP-bearing indigenous species (mahua, tendu, achar) or represents non-productive plantation cover. Without NTFP species presence data or fire frequency information, degradation cannot be confirmed or ruled out.",
+      "key_datapoints": ["lulc_tree_forest_ha: 618.7 (2017) to 682.37 (2024) — net increase", "cd_total_deforestation_ha: 73 ha", "cd_total_afforestation_ha: 108.99 ha (net positive)", "tree_cover_percent_mws: 41.89%", "organization_domains: empty (no forest governance support)"]
+    },
+    {
+      "pathway_id": "irrigation_challenges",
+      "pathway_present": "uncertain",
+      "confidence": "medium",
+      "reasoning

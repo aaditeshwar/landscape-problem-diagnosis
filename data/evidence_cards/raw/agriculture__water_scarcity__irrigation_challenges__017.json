@@ -30,7 +30,7 @@
       ],
       "condition": {
         "type": "trend",
-        "expression": "trend_swb_total_area_ha < -2 or (swb_count < 3 and mean_swb_total_area_ha < 10)",
+        "expression": "trend_swb_total_area_ha < 1 or (swb_count <= 15 and mean_swb_total_area_ha < 10)",
         "qualitative_description": "Declining surface water body area (more than 2 ha/year loss) or very few small water bodies relative to the micro-watershed, indicating insufficient or shrinking storage infrastructure on these small island territories.",
         "variables": [
           "trend_swb_total_area_ha",
@@ -68,7 +68,7 @@
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "nrega_swc_count < 5",
+        "expression": "nrega_swc_count <= 20",
         "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA for the micro-watershed, indicating historically low investment in water harvesting infrastructure.",
         "variables": [
           "nrega_swc_count"

@@ -22,17 +22,55 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from lib.expression_audit import validate_card_expressions  # noqa: E402
 
 
-def load_finalized_card_ids() -> set[str]:
+def load_finalized_card_ids(batch_id: str | None = None) -> set[str]:
     if not DECISIONS_PATH.exists():
         return set()
     with DECISIONS_PATH.open(encoding="utf-8") as handle:
         data = json.load(handle)
+
+    finalized: set[str] = set()
+    if data.get("schema_version", 1) >= 2 and isinstance(data.get("batches"), dict):
+        batches = data["batches"]
+        selected = {batch_id: batches[batch_id]} if batch_id and batch_id in batches else batches
+        for batch in selected.values():
+            if not isinstance(batch, dict):
+                continue
+            card_status = batch.get("card_status") or {}
+            for card_id, entry in card_status.items():
+                if isinstance(entry, dict) and entry.get("status") == "finalized":
+                    finalized.add(str(card_id))
+        return finalized
+
     card_status = data.get("card_status") or {}
     return {
         str(card_id)
         for card_id, entry in card_status.items()
         if isinstance(entry, dict) and entry.get("status") == "finalized"
     }
+
+
+def iter_user_edits(doc: dict, batch_id: str | None = None):
+    if doc.get("schema_version", 1) >= 2 and isinstance(doc.get("batches"), dict):
+        batches = doc["batches"]
+        items = (
+            [(batch_id, batches[batch_id])]
+            if batch_id and batch_id in batches
+            else list(batches.items())
+        )
+        for bid, batch in items:
+            if not isinstance(batch, dict):
+                continue
+            edits = batch.get("edits") or {}
+            if not isinstance(edits, dict):
+                continue
+            for card_id, entry in edits.items():
+                yield str(bid), str(card_id), entry
+        return
+
+    edits = doc.get("edits") or {}
+    if isinstance(edits, dict):
+        for card_id, entry in edits.items():
+            yield None, str(card_id), entry
 
 
 def utc_now_iso() -> str:
@@ -129,6 +167,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--card-id", action="append", dest="card_ids")
+    parser.add_argument("--batch-id", dest="batch_id", help="Apply edits from one revise-cards batch only")
     parser.add_argument("--include-unfinalized", action="store_true")
     args = parser.parse_args()
 
@@ -138,23 +177,25 @@ def main() -> int:
 
     with EDITS_PATH.open(encoding="utf-8") as handle:
         doc = json.load(handle)
-    edits = doc.get("edits") or {}
-    if not isinstance(edits, dict) or not edits:
+
+    edit_rows = list(iter_user_edits(doc, args.batch_id))
+    if not edit_rows:
         print("No user card edits to apply.")
         return 0
 
-    finalized = load_finalized_card_ids()
+    finalized = load_finalized_card_ids(args.batch_id)
     selected = set(args.card_ids or [])
     applied = 0
     skipped = 0
     metadata_updated = False
 
     now = utc_now_iso()
-    for card_id, entry in sorted(edits.items()):
+    for source_batch, card_id, entry in edit_rows:
         if selected and card_id not in selected:
             continue
         if not args.include_unfinalized and card_id not in finalized:
-            print(f"SKIP {card_id} (not finalized)")
+            label = f"{source_batch}:" if source_batch else ""
+            print(f"SKIP {label}{card_id} (not finalized in batch)")
             skipped += 1
             continue
         if not isinstance(entry, dict):
@@ -205,7 +246,7 @@ def main() -> int:
         applied += 1
 
     if metadata_updated and not args.dry_run:
-        doc["schema_version"] = 1
+        doc["schema_version"] = doc.get("schema_version", 2)
         EDITS_PATH.write_text(json.dumps(doc, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
     print(f"Done: applied={applied} skipped={skipped} dry_run={args.dry_run}")

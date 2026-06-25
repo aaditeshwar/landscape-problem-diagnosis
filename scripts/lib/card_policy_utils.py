@@ -132,6 +132,33 @@ def min_confirms_from_note(note: str) -> int:
     return 1
 
 
+def policy_referenced_signal_ids(policy: dict | None) -> set[str]:
+    """All signal ids explicitly named in confirmation_policy rules."""
+    if not policy:
+        return set()
+    refs = set(policy_primary_set(policy))
+    confirm_when = policy.get("confirm_when") or {}
+    for signal_id in confirm_when.get("required_all") or []:
+        if isinstance(signal_id, str) and signal_id.strip():
+            refs.add(signal_id.strip())
+    for groups in confirm_when.get("required_any") or []:
+        if isinstance(groups, list):
+            refs |= {str(s) for s in groups if str(s).strip()}
+    for rule in policy.get("confidence_when") or []:
+        if not isinstance(rule, dict):
+            continue
+        min_from = rule.get("min_from_set") or {}
+        refs |= {str(s) for s in (min_from.get("signals") or []) if str(s).strip()}
+    return refs
+
+
+def unused_confirm_signals(card: dict) -> list[str]:
+    """Active confirms-direction signals not explicitly referenced in confirmation_policy."""
+    policy = card.get("confirmation_policy") or {}
+    referenced = policy_referenced_signal_ids(policy)
+    return [sig_id for sig_id in confirm_signal_ids(card) if sig_id not in referenced]
+
+
 def policy_primary_set(policy: dict | None) -> set[str]:
     if not policy:
         return set()

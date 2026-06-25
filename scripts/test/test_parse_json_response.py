@@ -76,6 +76,24 @@ def test_repair_does_not_break_closing_quote_at_eof():
         assert "solutions\\" not in exc.raw
 
 
+def test_repair_truncated_reviewer_json():
+    text = Path(__file__).resolve().parent / "failed_raw_line_444.txt"
+    if text.is_file():
+        raw = text.read_text(encoding="utf-8")
+        parsed = parse_json_response(raw)
+        assert isinstance(parsed.get("server_review"), list)
+        assert isinstance(parsed.get("independent_pathway_review"), list)
+
+
+def test_repair_truncated_reviewer_json_panel_explanation():
+    text = Path(__file__).resolve().parent / "failed_raw_line_445.txt"
+    if text.is_file():
+        raw = text.read_text(encoding="utf-8")
+        parsed = parse_json_response(raw)
+        assert isinstance(parsed.get("independent_pathway_review"), list)
+        assert parsed.get("panel_update_explanation")
+
+
 if __name__ == "__main__":
     test_parse_valid_json()
     test_parse_strips_markdown_fence()
@@ -83,5 +101,7 @@ if __name__ == "__main__":
     test_repair_unescaped_quotes_in_reasoning()
     test_repair_truncated_diagnosis_json()
     test_repair_does_not_break_closing_quote_at_eof()
+    test_repair_truncated_reviewer_json()
+    test_repair_truncated_reviewer_json_panel_explanation()
     test_parse_error_includes_raw_and_position()
     print("All parse_json_response tests passed.")

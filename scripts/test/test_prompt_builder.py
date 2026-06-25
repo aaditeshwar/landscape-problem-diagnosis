@@ -17,6 +17,7 @@ from services.reasoner import (  # noqa: E402
     _null_if_placeholder,
     _split_present_variables,
 )
+from services.variable_registry import sanitize_drought_causality_for_llm  # noqa: E402
 
 
 SAMPLE_BUNDLE = {
@@ -116,6 +117,8 @@ def test_ollama_prompt_has_signal_results_and_json_fence():
     assert "Derived/computed:" in prompt
     _assert_shared_prompt_blocks(prompt)
     assert "first character of your response must be '{'" in prompt
+    assert "INDEPENDENT PATHWAY ASSESSMENT" in prompt
+    assert "independent_pathway_review" in prompt
     assert "interaction_with" not in _format_bundle(SAMPLE_BUNDLE, "ollama")
 
 
@@ -133,6 +136,8 @@ def test_claude_prompt_reasons_signals_without_server_eval():
     assert "For this question:" in claude
     assert "name each confirmed pathway_id" in claude
     assert "Do NOT assume server-side TRUE/FALSE" in claude
+    assert "INDEPENDENT PATHWAY ASSESSMENT" in claude
+    assert "independent_pathway_review" in claude
     assert "sig_01" in claude
     assert "expert agro-ecological diagnostician" in claude
     assert "Signals:" in claude
@@ -214,6 +219,8 @@ def test_reviewer_prompt_includes_server_diagnosis_and_signal_results():
     assert "[SIGNAL EVALUATION RESULTS" in prompt
     assert "server-computed" in prompt
     assert "Do NOT output confirmed_pathways" in prompt
+    assert "INDEPENDENT PATHWAY ASSESSMENT" in prompt
+    assert "independent_pathway_review" in prompt
     assert "Community pond repair" in prompt
     assert "server owns confirmed_pathways" in prompt.lower() or "server owns" in prompt
     assert '"change_review": null' in prompt
@@ -254,6 +261,15 @@ def test_normalize_and_merge_reviewer_preserves_server_pathways():
                 "pathway_comment": "Matches the user's concern.",
             }
         ],
+        "independent_pathway_review": [
+            {
+                "pathway_id": "agriculture/water_scarcity/groundwater_stress",
+                "pathway_present": "yes",
+                "confidence": "high",
+                "reasoning": "Declining delta_g and high SOGE support groundwater stress.",
+                "key_datapoints": ["soge_dev_percent=56.86"],
+            }
+        ],
         "change_review": None,
         "panel_update_explanation": "Groundwater decline is the main issue here.",
         "solutions_review": {
@@ -268,10 +284,55 @@ def test_normalize_and_merge_reviewer_preserves_server_pathways():
     assert merged["uncertain_pathways"] == server["uncertain_pathways"]
     assert len(merged["reviewer_commentary"]) == 1
     assert merged["reviewer_commentary"][0]["agreement"] == "agree"
+    assert len(merged["independent_pathway_review"]) == 1
+    assert merged["independent_pathway_review"][0]["pathway_present"] == "yes"
     assert merged["panel_update_explanation"] == reviewer_raw["panel_update_explanation"]
     assert merged["solutions_review_notes"] == "Prioritise recharge structures."
     assert merged["solutions"][0] == "Check dam construction"
     assert merged["solutions"][1] == "Community pond repair"
+
+
+def test_prompt_omits_drought_causality_sheet_from_present_variables():
+    bundle = {
+        "drought": {
+            **SAMPLE_BUNDLE["groundwater_stress"],
+            "present_variables": {
+                "drought_causality": {
+                    "2024": {
+                        "mild": {
+                            "spi_score": 99.0,
+                            "mai_score": 88.0,
+                            "vci_score": 77.0,
+                            "dryspell_score": 4.0,
+                            "cropping_area_sown_score": 2.0,
+                        },
+                        "severe_moderate": {
+                            "spi_score": 55.0,
+                            "drought_path1": 3.0,
+                            "cropping_area_sown_score": 1.0,
+                        },
+                    }
+                },
+                "drought_mild_spi_score_latest": 99.0,
+                "drought_severe_moderate_path_score_latest": 5.0,
+                "drought_weeks_severe": {"2024": 2},
+                "soge_dev_percent": 56.86,
+            },
+        }
+    }
+    text = _format_bundle(bundle, "claude")
+    assert "drought_weeks_severe" in text
+    assert "soge_dev_percent" in text
+    assert "drought_causality" not in text
+    assert "spi_score" not in text
+    assert "mai_score" not in text
+    assert "vci_score" not in text
+    assert "dryspell_score" not in text
+    assert "drought_path1" not in text
+    assert "cropping_area_sown_score" not in text
+    assert "drought_mild_spi_score_latest" not in text
+    assert "drought_severe_moderate_path_score_latest" not in text
+    assert sanitize_drought_causality_for_llm(bundle["drought"]["present_variables"]["drought_causality"]) == {}
 
 
 def test_prompt_includes_reasoning_wording_rules():
@@ -297,6 +358,7 @@ def main() -> int:
     test_reviewer_prompt_includes_server_diagnosis_and_signal_results()
     test_reviewer_prompt_revision_includes_change_review_task()
     test_normalize_and_merge_reviewer_preserves_server_pathways()
+    test_prompt_omits_drought_causality_sheet_from_present_variables()
     test_prompt_includes_reasoning_wording_rules()
     print("All prompt builder tests passed.")
     return 0

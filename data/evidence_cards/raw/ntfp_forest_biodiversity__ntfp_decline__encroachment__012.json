@@ -28,7 +28,7 @@
       ],
       "condition": {
         "type": "trend",
-        "expression": "cd_forest_to_farm_ha > 50",
+        "expression": "cd_forest_to_farm_ha > 29",
         "qualitative_description": "Cumulative forest-to-farm conversion has increased by more than 50 ha over the available record, indicating active encroachment of forest land for agriculture.",
         "variables": [
           "cd_forest_to_farm_ha"
@@ -65,7 +65,7 @@
       ],
       "condition": {
         "type": "composite",
-        "expression": "(village_st_percent > 40) and cd_forest_to_farm_ha > 30",
+        "expression": "(village_st_percent > 40) and cd_forest_to_farm_ha > 29",
         "qualitative_description": "Village has a high Scheduled Tribe population (>40%) combined with measurable forest-to-farm conversion, indicating that forest-dependent indigenous communities are likely experiencing reduced NTFP access due to encroachment.",
         "variables": [
           "village_st_percent",
@@ -86,7 +86,7 @@
       ],
       "condition": {
         "type": "composite",
-        "expression": "(cd_forest_to_farm_ha > 50) and (cd_urbanization_ha > 20) and (terrain_cluster_id != 1)",
+        "expression": "(cd_forest_to_farm_ha > 29) and (cd_urbanization_ha > 20) and (terrain_cluster_id != 1)",
         "qualitative_description": "Both agricultural and settlement encroachment are increasing simultaneously in non-plains terrain, indicating compound pressure on forest extent from multiple encroachment vectors.",
         "variables": [
           "cd_forest_to_farm_ha",

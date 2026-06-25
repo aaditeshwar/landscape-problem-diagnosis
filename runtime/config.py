@@ -27,7 +27,8 @@ _ANTHROPIC_DEFAULT_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-6")
 ANTHROPIC_MODEL = _ANTHROPIC_DEFAULT_MODEL
 ANTHROPIC_REASON_MODEL = os.getenv("ANTHROPIC_REASON_MODEL", _ANTHROPIC_DEFAULT_MODEL)
 ANTHROPIC_FOLLOWUP_MODEL = os.getenv("ANTHROPIC_FOLLOWUP_MODEL", _ANTHROPIC_DEFAULT_MODEL)
-ANTHROPIC_MAX_TOKENS = int(os.getenv("ANTHROPIC_MAX_TOKENS", "4096"))
+ANTHROPIC_MAX_TOKENS = int(os.getenv("ANTHROPIC_MAX_TOKENS", "8192"))
+ANTHROPIC_REVIEWER_MAX_TOKENS = int(os.getenv("ANTHROPIC_REVIEWER_MAX_TOKENS", "16384"))
 CORS_ORIGINS = [
     o.strip()
     for o in os.getenv("CORS_ORIGINS", "http://localhost:5173,http://localhost:3000").split(",")
@@ -37,3 +38,11 @@ CORS_ORIGINS = [
 # Context cluster raster (signal editor) — see .env.example
 CLUSTER_COG_URL = os.getenv("CLUSTER_COG_URL", "").strip()
 CLUSTER_COG_VIEWER_URL = os.getenv("CLUSTER_COG_VIEWER_URL", "").strip()
+
+_allowed_reviewers_raw = os.getenv("ALLOWED_REVIEWERS", "ALL").strip()
+ALLOWED_REVIEWERS_ALL = not _allowed_reviewers_raw or _allowed_reviewers_raw.upper() == "ALL"
+ALLOWED_REVIEWERS = (
+    []
+    if ALLOWED_REVIEWERS_ALL
+    else [name.strip() for name in _allowed_reviewers_raw.split(",") if name.strip()]
+)

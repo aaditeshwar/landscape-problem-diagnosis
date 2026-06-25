@@ -1,7 +1,16 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { ExternalLink } from '../components/ExternalLink'
 import { CommandFooter } from '../components/CommandFooter'
-import { fetchVariableCatalog, type VariableCatalogEntry, type VariableCatalogSection } from '../api/triage'
+import { MwsLocationPicker, type MwsLocationSelection } from '../components/MwsLocationPicker'
+import { VariableValueCell } from '../components/VariableValueCell'
+import {
+  fetchMwsVariableValues,
+  fetchVariableCatalog,
+  type MwsVariableValuesPayload,
+  type VariableCatalogEntry,
+  type VariableCatalogSection,
+} from '../api/triage'
 
 function typeLabel(variable: VariableCatalogEntry): string {
   return variable.display_type || variable.shape?.replace(/_/g, ' ') || variable.type || '—'
@@ -23,12 +32,26 @@ function matchesQuery(variable: VariableCatalogEntry, query: string): boolean {
   )
 }
 
+function selectionFromParams(params: URLSearchParams): MwsLocationSelection | null {
+  const mws_id = params.get('mws') || ''
+  const state = params.get('state') || ''
+  const district = params.get('district') || ''
+  const tehsil = params.get('tehsil') || ''
+  if (!mws_id && !state) return null
+  return { state, district, tehsil, mws_id }
+}
+
 export function VariablesPage() {
+  const [searchParams, setSearchParams] = useSearchParams()
   const [sections, setSections] = useState<VariableCatalogSection[]>([])
   const [variableCount, setVariableCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState('')
+  const [location, setLocation] = useState<MwsLocationSelection | null>(() => selectionFromParams(searchParams))
+  const [mwsValues, setMwsValues] = useState<MwsVariableValuesPayload | null>(null)
+  const [valuesLoading, setValuesLoading] = useState(false)
+  const [valuesError, setValuesError] = useState<string | null>(null)
 
   useEffect(() => {
     fetchVariableCatalog()
@@ -39,6 +62,54 @@ export function VariablesPage() {
       .catch((err: Error) => setError(err.message || 'Failed to load variable catalog'))
       .finally(() => setLoading(false))
   }, [])
+
+  useEffect(() => {
+    if (!location?.mws_id) {
+      setMwsValues(null)
+      setValuesError(null)
+      return
+    }
+    let cancelled = false
+    setValuesLoading(true)
+    setValuesError(null)
+    fetchMwsVariableValues(location.mws_id)
+      .then((data) => {
+        if (!cancelled) setMwsValues(data)
+      })
+      .catch((err: Error) => {
+        if (!cancelled) {
+          setMwsValues(null)
+          setValuesError(err.message || 'Failed to load MWS values')
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setValuesLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [location?.mws_id])
+
+  const handleLocationChange = (next: MwsLocationSelection | null) => {
+    setLocation(next)
+    const params = new URLSearchParams(searchParams)
+    if (!next?.mws_id && !next?.state) {
+      params.delete('mws')
+      params.delete('state')
+      params.delete('district')
+      params.delete('tehsil')
+    } else {
+      if (next.state) params.set('state', next.state)
+      else params.delete('state')
+      if (next.district) params.set('district', next.district)
+      else params.delete('district')
+      if (next.tehsil) params.set('tehsil', next.tehsil)
+      else params.delete('tehsil')
+      if (next.mws_id) params.set('mws', next.mws_id)
+      else params.delete('mws')
+    }
+    setSearchParams(params, { replace: true })
+  }
 
   const filteredSections = useMemo(
     () =>
@@ -52,6 +123,8 @@ export function VariablesPage() {
   )
 
   const visibleCount = filteredSections.reduce((n, s) => n + s.variables.length, 0)
+  const showMwsColumn = Boolean(location?.mws_id)
+  const valueColumnLabel = showMwsColumn ? `MWS ${location!.mws_id}` : 'MWS value'
 
   return (
     <div className="min-h-screen bg-stone-100">
@@ -60,7 +133,7 @@ export function VariablesPage() {
           <div>
             <h1 className="text-xl font-semibold text-stone-900">Variable catalog</h1>
             <p className="text-sm text-stone-500">
-              Data dictionary, types, and signal-expression references from evidence cards
+              Data dictionary, types, signal-expression references, and per-MWS resolved values
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
@@ -79,6 +152,17 @@ export function VariablesPage() {
               Triaging
             </ExternalLink>
           </div>
+        </div>
+        <div className="mx-auto mt-3 max-w-[1400px]">
+          <MwsLocationPicker value={location} onChange={handleLocationChange} />
+          {valuesLoading ? <p className="mt-2 text-xs text-stone-500">Loading MWS variable values…</p> : null}
+          {valuesError ? <p className="mt-2 text-xs text-red-700">{valuesError}</p> : null}
+          {mwsValues ? (
+            <p className="mt-2 text-xs text-stone-500">
+              Showing values for {mwsValues.mws_id}
+              {mwsValues.tehsil ? ` · ${mwsValues.state}/${mwsValues.district}/${mwsValues.tehsil}` : null}
+            </p>
+          ) : null}
         </div>
       </header>
 
@@ -107,6 +191,9 @@ export function VariablesPage() {
                     <th className="whitespace-nowrap px-2 py-1.5 font-medium">Units</th>
                     <th className="whitespace-nowrap px-2 py-1.5 font-medium">Source</th>
                     <th className="min-w-[180px] px-2 py-1.5 font-medium">Signal usage (≤3)</th>
+                    {showMwsColumn ? (
+                      <th className="min-w-[160px] px-2 py-1.5 font-medium">{valueColumnLabel}</th>
+                    ) : null}
                     <th className="min-w-[280px] px-2 py-1.5 font-medium">Explanation</th>
                   </tr>
                 </thead>
@@ -145,6 +232,11 @@ export function VariablesPage() {
                           <span className="text-stone-400">not in cards</span>
                         )}
                       </td>
+                      {showMwsColumn ? (
+                        <td className="px-2 py-1.5">
+                          <VariableValueCell entry={mwsValues?.variables[variable.name]} />
+                        </td>
+                      ) : null}
                       <td className="px-2 py-1.5 text-stone-700">{variable.description || '—'}</td>
                     </tr>
                   ))}

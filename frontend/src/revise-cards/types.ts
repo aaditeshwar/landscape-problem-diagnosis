@@ -28,6 +28,7 @@ export type ReviewFinding = {
     decided_at?: string
   } | null
   edited_patch?: Record<string, unknown> | null
+  source?: 'triaging' | 'claude_review'
 }
 
 export type ReviewBatch = {
@@ -35,6 +36,8 @@ export type ReviewBatch = {
   generated_at?: string
   pathway_filter?: string
   model?: string
+  source?: 'claude_review' | 'triaging'
+  catalog_filename?: string
   card_count: number
   finalized_card_count: number
 }
@@ -71,6 +74,12 @@ export type ReviewCardBundle = {
   }
   finalized: boolean
   finalized_at?: string | null
+  triage_changed_fields?: {
+    signals?: Record<string, { expression?: boolean; direction?: boolean; active?: boolean }>
+    confirmation_policy?: boolean
+  }
+  patch_stale?: boolean
+  patch_discarded_reason?: string | null
 }
 
 export type SignalEditDraft = {

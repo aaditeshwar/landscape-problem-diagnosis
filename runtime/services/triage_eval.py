@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import copy
+import logging
+import time
 from typing import Any
 
 from pymongo.database import Database
@@ -20,11 +22,25 @@ from services.expression_variable_access import (
     format_access_value,
     resolve_access_value,
 )
+from services.follow_up_mcq import normalized_answer_from_mcq_choice
 from services.mws_export import ensure_mws_export
 from services.production_system_gate import evaluate_production_system_gates
 from services.reasoner import pathways_ruled_out_from_signal_evaluation
 from services.signal_evaluator import evaluate_bundle_signals, merge_export_variables
 from services.triage_card_map import load_mws_doc, resolve_cards_for_mws
+
+log = logging.getLogger(__name__)
+
+
+def _card_edit_kwargs(edits: dict[str, Any]) -> dict[str, Any]:
+    out: dict[str, Any] = {}
+    if edits.get("diagnostic_signals") is not None:
+        out["diagnostic_signals"] = edits.get("diagnostic_signals")
+    if edits.get("confirmation_policy") is not None:
+        out["confirmation_policy"] = edits.get("confirmation_policy")
+    if edits.get("missing_variable_questions") is not None:
+        out["missing_variable_questions"] = edits.get("missing_variable_questions")
+    return out
 
 
 def apply_card_edits(
@@ -32,12 +48,15 @@ def apply_card_edits(
     *,
     diagnostic_signals: list[dict[str, Any]] | None = None,
     confirmation_policy: dict[str, Any] | None = None,
+    missing_variable_questions: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     out = copy.deepcopy(card)
     if diagnostic_signals is not None:
         out["diagnostic_signals"] = diagnostic_signals
     if confirmation_policy is not None:
         out["confirmation_policy"] = confirmation_policy
+    if missing_variable_questions is not None:
+        out["missing_variable_questions"] = missing_variable_questions
     return out
 
 
@@ -128,6 +147,23 @@ def _matrix_match(instance: dict[str, Any], predicted_pathway: str, predicted_st
     return actual == predicted_pathway
 
 
+def build_injected_from_choices(
+    cards: list[dict[str, Any]],
+    choice_by_variable: dict[str, str] | None,
+) -> dict[str, Any]:
+    """Resolve per-variable MCQ choice_id values into injected-variable payloads."""
+    injected: dict[str, Any] = {}
+    for variable, choice_id in (choice_by_variable or {}).items():
+        key = str(variable or "").strip()
+        cid = str(choice_id or "").strip()
+        if not key or not cid:
+            continue
+        payload = normalized_answer_from_mcq_choice(cards, key, cid)
+        if payload:
+            injected[key] = payload
+    return injected
+
+
 def evaluate_mws_prediction(
     db: Database,
     mws_doc: dict,
@@ -136,6 +172,7 @@ def evaluate_mws_prediction(
     production_system: str,
     section_pathways: list[str] | None = None,
     for_triage: bool = False,
+    follow_up_choices: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     gate = evaluate_production_system_gates(mws_doc)
     eligible = set(gate.get("eligible_production_systems") or [])
@@ -162,24 +199,20 @@ def evaluate_mws_prediction(
             continue
         card_id = str(card.get("card_id") or "")
         edits = card_edits.get(card_id) or {}
-        edited_cards.append(
-            apply_card_edits(
-                card,
-                diagnostic_signals=edits.get("diagnostic_signals"),
-                confirmation_policy=edits.get("confirmation_policy"),
-            )
-        )
+        edited_cards.append(apply_card_edits(card, **_card_edit_kwargs(edits)))
 
-    bundle = assemble_variable_bundle(mws_doc, edited_cards)
+    injected = build_injected_from_choices(edited_cards, follow_up_choices)
+    bundle = assemble_variable_bundle(mws_doc, edited_cards, injected=injected or None)
     if section_pathway_set:
         bundle = {pid: data for pid, data in bundle.items() if pid in section_pathway_set}
-    signal_eval = evaluate_bundle_signals(bundle)
+    signal_eval = evaluate_bundle_signals(bundle, injected=injected or None)
     ruled_out = pathways_ruled_out_from_signal_evaluation(signal_eval)
     status = pathway_status_from_evaluation(
         signal_eval,
         bundle,
         location=location_context(mws_doc),
         ruled_out_ids=ruled_out,
+        injected_variables=injected or None,
     )
     predicted_pathway, predicted_status = _pick_predicted_pathway(
         signal_eval,
@@ -212,11 +245,7 @@ def _instance_column_card(
         return None
     card_id = str(card.get("card_id") or "")
     edits = card_edits.get(card_id) or {}
-    return apply_card_edits(
-        card,
-        diagnostic_signals=edits.get("diagnostic_signals"),
-        confirmation_policy=edits.get("confirmation_policy"),
-    )
+    return apply_card_edits(card, **_card_edit_kwargs(edits))
 
 
 def _signal_results_for_instance(
@@ -249,11 +278,7 @@ def _instance_accesses_and_card(
                 continue
             card_id = str(card.get("card_id") or "")
             edits = card_edits.get(card_id) or {}
-            edited = apply_card_edits(
-                card,
-                diagnostic_signals=edits.get("diagnostic_signals"),
-                confirmation_policy=edits.get("confirmation_policy"),
-            )
+            edited = apply_card_edits(card, **_card_edit_kwargs(edits))
             if card_id:
                 card_ids.append(card_id)
             for key in accesses_from_card(edited):
@@ -530,6 +555,24 @@ def signal_grid_for_section(
     return {"pathways": pathways_out}
 
 
+def _section_card_ids_for_instances(
+    db: Database,
+    instances: list[dict[str, Any]],
+    section_pathways: list[str],
+) -> set[str]:
+    card_ids: set[str] = set()
+    for mws_id in {str(item.get("mws_id") or "") for item in instances if item.get("mws_id")}:
+        mws_doc = load_mws_doc(db, mws_id)
+        if not mws_doc:
+            continue
+        cards = resolve_cards_for_mws(db, mws_doc)
+        for pathway in section_pathways:
+            card = cards.get(pathway)
+            if isinstance(card, dict) and card.get("card_id"):
+                card_ids.add(str(card["card_id"]))
+    return card_ids
+
+
 def evaluate_section(
     db: Database,
     *,
@@ -537,14 +580,22 @@ def evaluate_section(
     observed_stress: str,
     instances: list[dict[str, Any]],
     card_edits: dict[str, dict[str, Any]],
+    follow_up_by_mws: dict[str, dict[str, str]] | None = None,
 ) -> dict[str, Any]:
+    started = time.perf_counter()
     section_pathways = built_pathways_for_section(production_system, observed_stress)
-    card_edits = card_edits or {}
+    section_card_ids = _section_card_ids_for_instances(db, instances, section_pathways)
+    card_edits = {
+        card_id: edits
+        for card_id, edits in (card_edits or {}).items()
+        if card_id in section_card_ids
+    }
     predictions_by_mws: dict[str, dict[str, Any]] = {}
     cards_by_mws: dict[str, dict[str, dict[str, Any]]] = {}
     exports_by_mws: dict[str, dict[str, Any]] = {}
 
     unique_mws = sorted({str(item.get("mws_id") or "") for item in instances if item.get("mws_id")})
+    mws_started = time.perf_counter()
     for mws_id in unique_mws:
         export = ensure_mws_export(db, mws_id)
         if export:
@@ -559,10 +610,12 @@ def evaluate_section(
             production_system=production_system,
             section_pathways=section_pathways,
             for_triage=True,
+            follow_up_choices=(follow_up_by_mws or {}).get(mws_id),
         )
         predictions_by_mws[mws_id] = prediction
         cards_by_mws[mws_id] = prediction.get("cards") or resolve_cards_for_mws(db, mws_doc)
 
+    mws_elapsed = time.perf_counter() - mws_started
     instance_results: list[dict[str, Any]] = []
 
     for instance in instances:
@@ -632,6 +685,17 @@ def evaluate_section(
         instances,
         cards_by_mws=cards_by_mws,
         predictions_by_mws=predictions_by_mws,
+    )
+
+    total_elapsed = time.perf_counter() - started
+    log.info(
+        "triage evaluate_section %s/%s: %s MWS in %.2fs (mws loop %.2fs), %s instances",
+        production_system,
+        observed_stress,
+        len(unique_mws),
+        total_elapsed,
+        mws_elapsed,
+        len(instances),
     )
 
     return {

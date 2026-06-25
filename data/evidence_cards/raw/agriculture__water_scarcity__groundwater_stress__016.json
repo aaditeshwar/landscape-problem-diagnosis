@@ -29,7 +29,7 @@
       ],
       "condition": {
         "type": "composite",
-        "expression": "aquifer_class == 'himalayan_and_sub_himalayan' and acwadam_class_percent.get('alluvium', 0) < 20",
+        "expression": "aquifer_class in ['himalayan_and_sub_himalayan'] and acwadam_class_percent.get('alluvium', 0) < 20",
         "qualitative_description": "Aquifer classified as Himalayan/sub-Himalayan with less than 20% alluvial lithology, indicating dominance of fractured crystalline or glaciofluvial hard rock with very low storativity.",
         "variables": [
           "aquifer_class",
@@ -49,7 +49,7 @@
       ],
       "condition": {
         "type": "composite",
-        "expression": "mean_annual_delta_g_mm < 0 and trend_annual_delta_g_mm < 0",
+        "expression": "mean_annual_delta_g_mm < 0",
         "qualitative_description": "Mean annual groundwater balance (P - ET - Runoff) is negative across the multi-year record and the trend is declining, confirming chronic recharge deficit.",
         "variables": [
           "mean_annual_delta_g_mm",

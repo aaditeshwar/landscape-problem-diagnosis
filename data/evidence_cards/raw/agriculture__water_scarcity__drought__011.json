@@ -31,7 +31,7 @@
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "drought_weeks_severe[-1] >= 3 or drought_weeks_moderate[-1] >= 5",
+        "expression": "drought_severe_return_period <= 4 or drought_moderate_return_period <= 4",
         "qualitative_description": "Three or more severe drought weeks, or five or more moderate drought weeks in the most recent kharif season, indicate persistent crop-season water deficit sufficient to cause yield loss.",
         "variables": [
           "drought_weeks_severe",
@@ -96,7 +96,7 @@
       ],
       "condition": {
         "type": "trend",
-        "expression": "trend_annual_precipitation_mm < -5 and (seasonal_precipitation_mm[-1].get('kharif', 9999) < 0.75 * mean_annual_precipitation_mm * 0.8)",
+        "expression": "trend_annual_precipitation_mm < -5 and (mean_kharif_precipitation < 0.75 * mean_annual_precipitation_mm * 0.8)",
         "qualitative_description": "A declining multi-year precipitation trend (>5 mm/year reduction) combined with a below-normal kharif season rainfall (less than 75% of expected kharif share) confirms a structural rainfall deficit driving drought.",
         "variables": [
           "trend_annual_precipitation_mm",

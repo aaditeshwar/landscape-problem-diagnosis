@@ -145,6 +145,14 @@ export interface ReviewerPathwayComment {
   pathway_comment?: string
 }
 
+export interface IndependentPathwayReview {
+  pathway_id: string
+  pathway_present: 'yes' | 'no' | 'uncertain' | string
+  confidence?: string
+  reasoning?: string
+  key_datapoints?: string[]
+}
+
 export interface ChangeReview {
   summary?: string
   agrees_with_revision?: boolean
@@ -183,6 +191,7 @@ export interface DiagnosisResponse {
   llm_skipped?: boolean
   skipped_production_systems?: SkippedProductionSystem[]
   reviewer_commentary?: ReviewerPathwayComment[]
+  independent_pathway_review?: IndependentPathwayReview[]
   change_review?: ChangeReview | null
   solutions_review_notes?: string | null
 }
@@ -363,6 +372,7 @@ export interface FeedbackContext {
   }
   llm_diagnosis?: {
     reviewer_commentary?: ReviewerPathwayComment[]
+    independent_pathway_review?: IndependentPathwayReview[]
     change_review?: ChangeReview | null
     solutions_review_notes?: string | null
   } | null

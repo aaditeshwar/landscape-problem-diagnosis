@@ -15,15 +15,18 @@ from services.diagnosis_revision import (
     pathways_ruled_out_from_signal_evaluation,
 )
 from services.diagnosis_trace import DiagnosisRun
-from services.llm_client import chat_json, model_for_turn
+from services.llm_client import chat_json_result, model_for_turn
 from services.panel_updates import apply_panel_updates_from_standards
 from services.signal_evaluator import evaluate_bundle_signals
-from services.variable_registry import registry_excerpt_block
+from services.variable_registry import registry_excerpt_block, sanitize_present_variables_for_llm
 
 DERIVED_VARIABLE_NAMES = frozenset(
     {
         "mean_annual_precipitation_mm",
         "trend_annual_precipitation_mm",
+        "mean_kharif_precipitation",
+        "mean_rabi_precipitation",
+        "mean_zaid_precipitation",
         "mean_annual_et_mm",
         "trend_annual_et_mm",
         "mean_annual_runoff_mm",
@@ -63,6 +66,9 @@ DERIVED_VARIABLE_HINTS: dict[str, str] = {
     "trend_swb_total_area_ha": "linear slope of SWB total area (ha/year)",
     "trend_swb_rabi_kharif_ratio": "linear slope of SWB rabi/kharif ratio",
     "mean_annual_delta_g_mm": "mean of annual groundwater recharge balance P−ET−Runoff",
+    "mean_kharif_precipitation": "mean kharif-season precipitation (mm/agricultural year)",
+    "mean_rabi_precipitation": "mean rabi-season precipitation (mm/agricultural year)",
+    "mean_zaid_precipitation": "mean zaid-season precipitation (mm/agricultural year)",
     "drought_moderate_return_period": "average years between moderate drought kharif seasons",
     "drought_severe_return_period": "average years between severe drought kharif seasons",
     "drought_mild_spi_score_latest": "latest-year mild drought SPI trigger score (India Drought Manual)",
@@ -81,6 +87,8 @@ class DiagnosisLLMParseError(Exception):
         *,
         raw: str = "",
         decode_error: json.JSONDecodeError | None = None,
+        llm_stop_reason: str | None = None,
+        llm_max_tokens: int | None = None,
     ):
         super().__init__(message)
         self.raw = raw
@@ -88,6 +96,8 @@ class DiagnosisLLMParseError(Exception):
         self.pos = decode_error.pos if decode_error else None
         self.prompt = ""
         self.prompt_profile = ""
+        self.llm_stop_reason = llm_stop_reason
+        self.llm_max_tokens = llm_max_tokens
 
     def context_snippet(self, *, radius: int = 100) -> str:
         if not self.raw or self.pos is None:
@@ -164,6 +174,69 @@ def _repair_truncated_diagnosis_json(text: str) -> str:
     return repaired + ': [], "panel_update_explanation": null, "follow_up_question": null}'
 
 
+def _close_truncated_json(text: str) -> str:
+    """Close JSON objects/arrays/strings cut off by max_tokens or stream end."""
+    repaired = text.rstrip()
+    if not repaired.startswith("{"):
+        return text
+
+    in_string = False
+    escape = False
+    for char in repaired:
+        if in_string:
+            if escape:
+                escape = False
+            elif char == "\\":
+                escape = True
+            elif char == '"':
+                in_string = False
+            continue
+        if char == '"':
+            in_string = True
+
+    if in_string:
+        repaired += '"'
+
+    repaired = re.sub(r',\s*"[^"\n]*$', "", repaired)
+    repaired = re.sub(r'\{\s*"[^"\n]*$', "{", repaired)
+    if re.search(r":\s*$", repaired):
+        repaired += " null"
+
+    stack: list[str] = []
+    in_string = False
+    escape = False
+    for char in repaired:
+        if in_string:
+            if escape:
+                escape = False
+            elif char == "\\":
+                escape = True
+            elif char == '"':
+                in_string = False
+            continue
+        if char == '"':
+            in_string = True
+        elif char == "{":
+            stack.append("}")
+        elif char == "[":
+            stack.append("]")
+        elif char in "}]" and stack and stack[-1] == char:
+            stack.pop()
+
+    while stack:
+        repaired += stack.pop()
+    return repaired
+
+
+def _should_attempt_truncation_close(text: str) -> bool:
+    stripped = text.rstrip()
+    if len(stripped) < 1000:
+        return False
+    if "server_review" in stripped or "independent_pathway_review" in stripped:
+        return True
+    return len(stripped) >= 12_000
+
+
 def _repair_json_text(text: str) -> str:
     repaired = _repair_truncated_diagnosis_json(text)
     repaired = re.sub(r",\s*([}\]])", r"\1", repaired)
@@ -171,6 +244,8 @@ def _repair_json_text(text: str) -> str:
     repaired = re.sub(r"\bFalse\b", "false", repaired)
     repaired = re.sub(r"\bNone\b", "null", repaired)
     repaired = _fix_unescaped_quotes_in_strings(repaired)
+    if _should_attempt_truncation_close(repaired):
+        repaired = _close_truncated_json(repaired)
     return repaired
 
 
@@ -665,6 +740,7 @@ def _split_present_variables(present: dict[str, Any]) -> tuple[dict[str, Any], d
 
 
 def _format_present_variables_block(present: dict[str, Any]) -> list[str]:
+    present = sanitize_present_variables_for_llm(present)
     raw, derived = _split_present_variables(present)
     lines: list[str] = []
     if raw:
@@ -931,7 +1007,19 @@ def _registry_excerpt_if_needed(eval_results: dict[str, dict[str, Any]]) -> str:
     needs = any((data.get("summary") or {}).get("needs_llm", 0) > 0 for data in eval_results.values())
     if not needs:
         return ""
-    return f"\n[VARIABLE REGISTRY — for NEEDS_LLM signals only]\n{registry_excerpt_block()}\n"
+    return f"\n[VARIABLE REGISTRY — for NEEDS_LLM signals only]\n{registry_excerpt_block(for_diagnosis=True)}\n"
+
+
+def _independent_pathway_assessment_rules() -> str:
+    return """
+[INDEPENDENT PATHWAY ASSESSMENT — expression-blind]
+In addition to server_review, assess each candidate pathway independently of signal expressions:
+- Use ONLY [LOCATION CONTEXT], present/derived variable values in the bundle, evidence card overall_reasoning_note prose, confounders, and your domain knowledge of Indian watershed hydrology, aquifers, cropping systems, and rural livelihoods.
+- Do NOT use diagnostic signal expressions, per-signal qualitative descriptions, or [SIGNAL EVALUATION RESULTS] for this section.
+- For every pathway_id in the bundle, judge whether that causal pathway plausibly exists in this micro-watershed (yes | no | uncertain), with confidence high|medium|low.
+- Reasoning must cite specific datapoints (variable names and values), not signal IDs or expression outcomes.
+- This assessment may disagree with the server; explain when landscape datapoints support a different conclusion than server_review.
+"""
 
 
 def _reasoning_wording_rules() -> str:
@@ -962,15 +1050,18 @@ def _ollama_signal_interpretation_task(uid: str | None, *, is_revision: bool = F
     return f"""[TASK]
 0. Answer [USER PROBLEM] first in your own reasoning: what is the user asking, and what would a useful direct response look like for this MWS?
 1. Use [SIGNAL EVALUATION RESULTS] for status=ok and evaluated user_provided — do NOT contradict TRUE/FALSE. For user_provided_unresolved, you MUST interpret the raw answer using update_rule and set pathway status accordingly.
-2. Apply each pathway's evidence note using the summary counts: ≥2 confirming TRUE → high confidence in confirmed_pathways; exactly 1 confirming TRUE → medium confidence in confirmed_pathways (do NOT demote single-confirm pathways to uncertain_pathways unless confirms_true=0); confirms_true=0 with missing data still needed → uncertain_pathways; confirms_true=0 with confirms-direction signals FALSE → do not confirm.
-3. For NEEDS_LLM signals only: use qualitative_hint and signal explanations; do not invent numeric values.
+2. In confirmed_pathways / uncertain_pathways, state your opinion of the server evaluation: note agreement or disagreement with server pathway status where [SIGNAL EVALUATION RESULTS] is provided.
+3. Apply each pathway's evidence note using the summary counts: ≥2 confirming TRUE → high confidence in confirmed_pathways; exactly 1 confirming TRUE → medium confidence in confirmed_pathways (do NOT demote single-confirm pathways to uncertain_pathways unless confirms_true=0); confirms_true=0 with missing data still needed → uncertain_pathways; confirms_true=0 with confirms-direction signals FALSE → do not confirm.
+4. For NEEDS_LLM signals only: use qualitative_hint and signal explanations; do not invent numeric values.
 {_reasoning_wording_rules()}
-4. Put confirmed pathways in confirmed_pathways with confidence high/medium/low. Each reasoning string must cite signal IDs with TRUE/FALSE outcomes from [SIGNAL EVALUATION RESULTS] AND include an explicit "For this question:" clause linking that pathway to [USER PROBLEM].
-5. In each confirmed_pathways and uncertain_pathways reasoning string, mention MWS UID {uid}, relevant intersecting village names, and how this pathway bears on the user's question — not only landscape stress in the abstract.
-6. CRITICAL — do not re-ask for data already in the prompt. Before writing follow_up_question or uncertain_pathways, check every variable against present_variables, derived/computed values, and [DATA ALREADY PROVIDED BY USER]. Put a pathway in uncertain_pathways only when genuinely required variables remain in missing_variables; uncertain reasoning must also state what remains unknown for answering [USER PROBLEM].
-7. List solutions from the framework for confirmed pathways only; prefer solutions that directly help answer [USER PROBLEM].
-8. Set panel_update_explanation to 2–4 sentences: (a) a direct answer to [USER PROBLEM], (b) name each confirmed pathway_id and the key evidence behind it, (c) why the highlighted charts help verify those pathways. Do not include a panel_updates field.
-9. Set follow_up_question ONLY from the pathway's "Authorized follow-up questions" list in the bundle above — copy the question text exactly and use the listed variable. Do NOT ask about variables listed under "Missing signal/derived variables". Never repeat a question from [QUESTIONS ALREADY ASKED].{revision_rules}
+5. Put confirmed pathways in confirmed_pathways with confidence high/medium/low. Each reasoning string must cite signal IDs with TRUE/FALSE outcomes from [SIGNAL EVALUATION RESULTS] AND include an explicit "For this question:" clause linking that pathway to [USER PROBLEM].
+6. In each confirmed_pathways and uncertain_pathways reasoning string, mention MWS UID {uid}, relevant intersecting village names, and how this pathway bears on the user's question — not only landscape stress in the abstract.
+7. CRITICAL — do not re-ask for data already in the prompt. Before writing follow_up_question or uncertain_pathways, check every variable against present_variables, derived/computed values, and [DATA ALREADY PROVIDED BY USER]. Put a pathway in uncertain_pathways only when genuinely required variables remain in missing_variables; uncertain reasoning must also state what remains unknown for answering [USER PROBLEM].
+8. List solutions from the framework for confirmed pathways only; prefer solutions that directly help answer [USER PROBLEM].
+9. Set panel_update_explanation to 2–4 sentences: (a) a direct answer to [USER PROBLEM], (b) name each confirmed pathway_id and the key evidence behind it, (c) why the highlighted charts help verify those pathways. Do not include a panel_updates field.
+10. Set follow_up_question ONLY from the pathway's "Authorized follow-up questions" list in the bundle above — copy the question text exactly and use the listed variable. Do NOT ask about variables listed under "Missing signal/derived variables". Never repeat a question from [QUESTIONS ALREADY ASKED].{revision_rules}
+{_independent_pathway_assessment_rules()}
+11. Populate independent_pathway_review for every pathway in the bundle (expression-blind assessment per rules above).
 """
 
 
@@ -1010,15 +1101,18 @@ def _claude_interpretation_task(uid: str | None, *, is_revision: bool = False) -
     return f"""[TASK]
 0. Answer [USER PROBLEM] first in your own reasoning: what is the user asking, and what would a useful direct response look like for this MWS?
 1. Evaluate each pathway's diagnostic signals yourself using present variable values, signal expressions, qualitative descriptions, and your domain knowledge of Indian watershed hydrology, aquifers, cropping systems, and rural livelihoods. Do NOT assume server-side TRUE/FALSE results — you must reason them out.
-2. Apply each pathway's evidence note from your signal assessment: ≥2 confirming signals supported → high confidence in confirmed_pathways; exactly 1 confirming signal supported → medium confidence in confirmed_pathways; insufficient support with missing data still needed → uncertain_pathways; confirming signals clearly contradicted by available data → do not confirm.
-3. When a signal expression references variables in missing_variables, treat the signal as unevaluated and rely on qualitative_description only; do not invent numeric values.
+2. In confirmed_pathways / uncertain_pathways reasoning, state how your signal-based assessment compares to any server evaluation when [SIGNAL EVALUATION RESULTS] is present.
+3. Apply each pathway's evidence note from your signal assessment: ≥2 confirming signals supported → high confidence in confirmed_pathways; exactly 1 confirming signal supported → medium confidence in confirmed_pathways; insufficient support with missing data still needed → uncertain_pathways; confirming signals clearly contradicted by available data → do not confirm.
+4. When a signal expression references variables in missing_variables, treat the signal as unevaluated and rely on qualitative_description only; do not invent numeric values.
 {_reasoning_wording_rules()}
-4. Put confirmed pathways in confirmed_pathways with confidence high/medium/low. Each reasoning string must cite signal IDs with your TRUE/FALSE assessment AND include an explicit "For this question:" clause linking that pathway to [USER PROBLEM].
-5. In each confirmed_pathways and uncertain_pathways reasoning string, mention MWS UID {uid}, relevant intersecting village names, and how this pathway bears on the user's question — not only landscape stress in the abstract.
-6. CRITICAL — do not re-ask for data already in the prompt. Before writing follow_up_question or uncertain_pathways, check every variable against present_variables, derived/computed values, and [DATA ALREADY PROVIDED BY USER]. Put a pathway in uncertain_pathways only when genuinely required variables remain in missing_variables; uncertain reasoning must also state what remains unknown for answering [USER PROBLEM].
-7. List solutions from the framework for confirmed pathways only; prefer solutions that directly help answer [USER PROBLEM].
-8. Set panel_update_explanation to 2–4 sentences: (a) a direct answer to [USER PROBLEM], (b) name each confirmed pathway_id and the key evidence behind it, (c) why the highlighted charts help verify those pathways. Do not include a panel_updates field.
-9. Set follow_up_question ONLY from the pathway's "Authorized follow-up questions" list in the bundle above — copy the question text exactly and use the listed variable. Do NOT ask about variables listed under "Missing signal/derived variables". Never repeat a question from [QUESTIONS ALREADY ASKED].{revision_rules}
+5. Put confirmed pathways in confirmed_pathways with confidence high/medium/low. Each reasoning string must cite signal IDs with your TRUE/FALSE assessment AND include an explicit "For this question:" clause linking that pathway to [USER PROBLEM].
+6. In each confirmed_pathways and uncertain_pathways reasoning string, mention MWS UID {uid}, relevant intersecting village names, and how this pathway bears on the user's question — not only landscape stress in the abstract.
+7. CRITICAL — do not re-ask for data already in the prompt. Before writing follow_up_question or uncertain_pathways, check every variable against present_variables, derived/computed values, and [DATA ALREADY PROVIDED BY USER]. Put a pathway in uncertain_pathways only when genuinely required variables remain in missing_variables; uncertain reasoning must also state what remains unknown for answering [USER PROBLEM].
+8. List solutions from the framework for confirmed pathways only; prefer solutions that directly help answer [USER PROBLEM].
+9. Set panel_update_explanation to 2–4 sentences: (a) a direct answer to [USER PROBLEM], (b) name each confirmed pathway_id and the key evidence behind it, (c) why the highlighted charts help verify those pathways. Do not include a panel_updates field.
+10. Set follow_up_question ONLY from the pathway's "Authorized follow-up questions" list in the bundle above — copy the question text exactly and use the listed variable. Do NOT ask about variables listed under "Missing signal/derived variables". Never repeat a question from [QUESTIONS ALREADY ASKED].{revision_rules}
+{_independent_pathway_assessment_rules()}
+11. Populate independent_pathway_review for every pathway in the bundle (expression-blind assessment per rules above).
 """
 
 
@@ -1034,6 +1128,7 @@ Return JSON with exactly these keys:
 {
   "confirmed_pathways": [{"pathway_id": "...", "confidence": "high|medium|low", "reasoning": "..."}],
   "uncertain_pathways": [{"pathway_id": "...", "confidence": "high|medium|low", "reasoning": "...", "missing_variable_questions": [{"variable": "...", "question": "..."}]}],
+  "independent_pathway_review": [{"pathway_id": "...", "pathway_present": "yes|no|uncertain", "confidence": "high|medium|low", "reasoning": "...", "key_datapoints": ["..."]}],
   "solutions": ["..."],
   "panel_update_explanation": null,
   "follow_up_question": null
@@ -1089,15 +1184,17 @@ def _reviewer_task_section(*, is_revision: bool = False) -> str:
 1. Read [SERVER DIAGNOSIS] and [SIGNAL EVALUATION RESULTS]. Do NOT output confirmed_pathways or uncertain_pathways.
 2. For each pathway in confirmed_pathways or uncertain_pathways, add a server_review entry with:
    pathway_id, agreement (agree|partial|disagree), optional signal_notes (signal_id, server_result, comment),
-   and pathway_comment linking the pathway to [USER PROBLEM] when relevant.
-3. Set panel_update_explanation to 2–4 sentences: (a) direct answer to [USER PROBLEM] first,
+   and pathway_comment linking the pathway to [USER PROBLEM] when relevant. This is your opinion of the server's pathway evaluation.
+3. Separately complete independent_pathway_review for every pathway in the bundle — expression-blind assessment per rules below.
+4. Set panel_update_explanation to 2–4 sentences: (a) direct answer to [USER PROBLEM] first,
    (b) how server-confirmed pathways address it with pathway_id names and key signals,
    (c) why [SERVER DIAGNOSIS].panel_updates charts help verify that answer,
    (d) note any partial disagreement in server_review without contradicting server TRUE/FALSE for status=ok signals.
-4. Optionally set solutions_review with notes and priority_order — priority_order must be a reordering
+5. Optionally set solutions_review with notes and priority_order — priority_order must be a reordering
    of items from [SERVER DIAGNOSIS].solutions only (subset allowed).
-5. Set follow_up_question to null — the server selects follow-up questions.
+6. Set follow_up_question to null — the server selects follow-up questions.
 {change_task}
+{_independent_pathway_assessment_rules()}
 {_reviewer_user_query_directive()}
 Return JSON with exactly these keys:
 {{
@@ -1107,6 +1204,15 @@ Return JSON with exactly these keys:
       "agreement": "agree|partial|disagree",
       "signal_notes": [{{"signal_id": "...", "server_result": true, "comment": "..."}}],
       "pathway_comment": "..."
+    }}
+  ],
+  "independent_pathway_review": [
+    {{
+      "pathway_id": "...",
+      "pathway_present": "yes|no|uncertain",
+      "confidence": "high|medium|low",
+      "reasoning": "...",
+      "key_datapoints": ["variable_or_fact", "..."]
     }}
   ],
   "change_review": null,
@@ -1201,6 +1307,32 @@ def _normalize_reviewer_response(parsed: dict[str, Any]) -> dict[str, Any]:
             normalized_reviews.append(entry)
     out["server_review"] = normalized_reviews
 
+    independent: list[dict[str, Any]] = []
+    for item in parsed.get("independent_pathway_review") or []:
+        if not isinstance(item, dict):
+            continue
+        pathway_id = str(item.get("pathway_id") or "").strip()
+        if not pathway_id:
+            continue
+        present = str(item.get("pathway_present") or "uncertain").lower()
+        if present not in {"yes", "no", "uncertain"}:
+            present = "uncertain"
+        confidence = str(item.get("confidence") or "medium").lower()
+        if confidence not in {"low", "medium", "high"}:
+            confidence = "medium"
+        entry: dict[str, Any] = {
+            "pathway_id": pathway_id,
+            "pathway_present": present,
+            "confidence": confidence,
+        }
+        if item.get("reasoning"):
+            entry["reasoning"] = str(item.get("reasoning")).strip()
+        datapoints = _as_str_list(item.get("key_datapoints"))
+        if datapoints:
+            entry["key_datapoints"] = datapoints
+        independent.append(entry)
+    out["independent_pathway_review"] = independent
+
     change = parsed.get("change_review")
     out["change_review"] = change if isinstance(change, dict) else None
 
@@ -1224,6 +1356,7 @@ def _merge_reviewer_into_response(
 ) -> dict[str, Any]:
     out = dict(server_response)
     out["reviewer_commentary"] = reviewer.get("server_review") or []
+    out["independent_pathway_review"] = reviewer.get("independent_pathway_review") or []
 
     panel = reviewer.get("panel_update_explanation")
     if panel:
@@ -1438,7 +1571,8 @@ def run_diagnosis(
     )
     chosen_model = model_for_turn(follow_up=follow_up)
     t0 = time.perf_counter()
-    raw = chat_json(prompt, model=chosen_model, follow_up=follow_up)
+    chat = chat_json_result(prompt, model=chosen_model, follow_up=follow_up)
+    raw = chat.text
     llm_ms = (time.perf_counter() - t0) * 1000
 
     t1 = time.perf_counter()
@@ -1447,6 +1581,8 @@ def run_diagnosis(
     except DiagnosisLLMParseError as exc:
         exc.prompt = prompt
         exc.prompt_profile = profile
+        exc.llm_stop_reason = chat.stop_reason
+        exc.llm_max_tokens = chat.max_tokens
         raise
     response = normalize_diagnosis_response(
         parsed,
@@ -1696,7 +1832,8 @@ def run_llm_reviewer_diagnosis(
     )
     chosen_model = model_for_turn(follow_up=follow_up)
     t0 = time.perf_counter()
-    raw = chat_json(prompt, model=chosen_model, follow_up=follow_up)
+    chat = chat_json_result(prompt, model=chosen_model, follow_up=follow_up, reviewer=True)
+    raw = chat.text
     llm_ms = (time.perf_counter() - t0) * 1000
 
     t1 = time.perf_counter()
@@ -1705,6 +1842,8 @@ def run_llm_reviewer_diagnosis(
     except DiagnosisLLMParseError as exc:
         exc.prompt = prompt
         exc.prompt_profile = f"{profile}_reviewer"
+        exc.llm_stop_reason = chat.stop_reason
+        exc.llm_max_tokens = chat.max_tokens
         raise
     reviewer = _normalize_reviewer_response(parsed)
     response = _merge_reviewer_into_response(server_run.response, reviewer)

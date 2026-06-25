@@ -29,11 +29,12 @@
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "drought_weeks_severe[-1] >= 3 or (drought_weeks_severe[-1] >= 1 and drought_weeks_moderate[-1] >= 4)",
+        "expression": "drought_severe_return_period <= 4 or drought_moderate_return_period <= 4",
         "variables": [
           "drought_weeks_severe",
           "drought_weeks_moderate"
-        ]
+        ],
+        "qualitative_description": ""
       },
       "severity": "high",
       "direction": "confirms",
@@ -47,10 +48,11 @@
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "dry_spell_weeks[-1] >= 4",
+        "expression": "mean(dry_spell_weeks) >= 3",
         "variables": [
           "dry_spell_weeks"
-        ]
+        ],
+        "qualitative_description": ""
       },
       "severity": "high",
       "direction": "confirms",

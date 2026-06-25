@@ -29,7 +29,7 @@
       ],
       "condition": {
         "type": "trend",
-        "expression": "trend_swb_total_area_ha < -5 and swb_count < 3",
+        "expression": "trend_swb_total_area_ha < 1 and swb_count <= 15",
         "qualitative_description": "Total surface water body area is declining at more than 5 ha/year and fewer than 3 distinct SWBs are present in the MWS, indicating contraction of storage infrastructure.",
         "variables": [
           "trend_swb_total_area_ha",
@@ -66,7 +66,7 @@
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "nrega_swc_count < 10",
+        "expression": "nrega_swc_count <= 20",
         "qualitative_description": "Fewer than 10 cumulative soil and water conservation or irrigation works recorded under MGNREGA for the MWS, indicating historically low investment in water harvesting infrastructure.",
         "variables": [
           "nrega_swc_count"

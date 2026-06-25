@@ -22,6 +22,10 @@ TIME_SERIES_VARIABLES = frozenset(
         "annual_et_mm",
         "annual_runoff_mm",
         "seasonal_precipitation_mm",
+        "seasonal_et_mm",
+        "seasonal_runoff_mm",
+        "seasonal_delta_g_mm",
+        "drought_weeks",
         "drought_weeks_severe",
         "drought_weeks_moderate",
         "dry_spell_weeks",
@@ -30,6 +34,7 @@ TIME_SERIES_VARIABLES = frozenset(
         "drought_causality_json",
         "drought_causality",
         "cropping_intensity",
+        "crop_type_area_ha",
         "lulc_single_kharif_ha",
         "lulc_double_crop_ha",
         "lulc_cropland_ha",
@@ -37,10 +42,13 @@ TIME_SERIES_VARIABLES = frozenset(
         "lulc_barrenland_ha",
         "lulc_tree_forest_ha",
         "lulc_krz_water_ha",
+        "lulc_ha",
+        "swb_area_ha",
         "swb_total_area_ha",
         "swb_kharif_area_ha",
         "swb_rabi_area_ha",
         "swb_zaid_area_ha",
+        "nrega_mws",
     }
 )
 

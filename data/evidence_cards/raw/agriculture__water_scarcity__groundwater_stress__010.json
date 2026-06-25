@@ -50,7 +50,7 @@
       ],
       "condition": {
         "type": "trend",
-        "expression": "trend_annual_delta_g_mm < 0 and mean_annual_delta_g_mm < 0",
+        "expression": "mean_annual_delta_g_mm < 0",
         "qualitative_description": "The linear trend in annual groundwater recharge (P - ET - Runoff) is negative and the multi-year mean is also negative, indicating chronic depletion of the alluvial aquifer despite high rainfall.",
         "variables": [
           "trend_annual_delta_g_mm",
@@ -70,7 +70,7 @@
       ],
       "condition": {
         "type": "composite",
-        "expression": "aquifer_class == 'alluvium' and acwadam_class_percent.get('alluvium', 0) > 60",
+        "expression": "aquifer_class in ['alluvium'] and acwadam_class_percent.get('alluvium', 0) > 60",
         "qualitative_description": "The dominant aquifer class is alluvium and more than 60% of the micro-watershed area is underlain by alluvial lithology, confirming the hydrogeological setting where cumulative depletion dynamics apply.",
         "variables": [
           "aquifer_class",

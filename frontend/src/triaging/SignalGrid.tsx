@@ -1,18 +1,52 @@
 import { Fragment, useEffect, useMemo, useState } from 'react'
-import type { DiagnosticSignal, EvaluateSectionResult, TriageSection } from '../api/triage'
+import type { DiagnosticSignal, EvaluateSectionResult, MissingVariableQuestion, TriageChangedFields, TriageSection } from '../api/triage'
 import { diagnosisMwsUrl, pathwayLabel } from '../api/triage'
 import { ExternalLink } from '../components/ExternalLink'
 import {
+  CLASSIFICATION_CHIP_STYLES,
   CLASSIFICATION_HEADER_STYLES,
+  CLASSIFICATION_LABELS,
   type PathwayClassification,
   classificationTitle,
 } from './pathwayClassification'
+import {
+  mcqQuestionForSignal,
+  signalResultFromChoice,
+  type MissingVariableQuestion as McqQuestion,
+} from './mcqFollowUp'
+
+const ALL_CLASSIFICATIONS: PathwayClassification[] = ['tp', 'fp', 'tn', 'fn']
+
+function defaultClassificationFilter(): Set<PathwayClassification> {
+  return new Set(ALL_CLASSIFICATIONS)
+}
+
+function filterMwsColumns(
+  mwsColumns: MwsColumn[],
+  selected: Set<PathwayClassification>,
+): MwsColumn[] {
+  if (!mwsColumns.length) return mwsColumns
+  return mwsColumns.filter((mws) => !mws.classification || selected.has(mws.classification))
+}
+
+function toggleClassification(
+  selected: Set<PathwayClassification>,
+  key: PathwayClassification,
+): Set<PathwayClassification> {
+  const next = new Set(selected)
+  if (next.has(key)) next.delete(key)
+  else next.add(key)
+  return next
+}
 
 export type CardEditState = {
   card_id: string
   diagnostic_signals: DiagnosticSignal[]
   confirmation_policy: Record<string, unknown>
+  missing_variable_questions?: MissingVariableQuestion[]
 }
+
+export type FollowUpChoicesByMws = Record<string, Record<string, string>>
 
 type MwsColumn = {
   mws_id: string
@@ -51,7 +85,29 @@ type Props = {
   section: TriageSection
   cardEdits: Record<string, CardEditState>
   evalResult: EvaluateSectionResult | null
+  changedFields?: Record<string, TriageChangedFields>
+  followUpChoices: FollowUpChoicesByMws
+  onFollowUpChoiceChange: (mwsId: string, variable: string, choiceId: string) => void
   onEditChange: (cardId: string, edit: CardEditState) => void
+}
+
+function changedFieldClass(changed: boolean): string {
+  return changed ? 'ring-2 ring-amber-400 ring-offset-1' : ''
+}
+
+function signalFieldChanged(
+  changedFields: Record<string, TriageChangedFields> | undefined,
+  cardId: string,
+  signalId: string,
+  field: 'expression' | 'direction' | 'active',
+): boolean {
+  const cardChanged = changedFields?.[cardId]
+  if (!cardChanged) return false
+  return (cardChanged.signals?.[signalId] || []).includes(field)
+}
+
+function policyChanged(changedFields: Record<string, TriageChangedFields> | undefined, cardId: string): boolean {
+  return Boolean(changedFields?.[cardId]?.confirmation_policy)
 }
 
 function signalExpression(signal: DiagnosticSignal): string {
@@ -73,7 +129,8 @@ function signalIdSort(a: string, b: string): number {
 function resultChar(result: unknown, status?: unknown): string {
   if (result === true) return 'T'
   if (result === false) return 'F'
-  if (status === 'needs_llm') return '?'
+  if (status === 'needs_llm' || status === 'no_expression' || status === 'name_error') return '?'
+  if (status === 'user_provided' || status === 'user_provided_unresolved') return '?'
   return '—'
 }
 
@@ -186,16 +243,79 @@ function mwsHeaderTone(mws: MwsColumn): string {
   return 'bg-stone-100 text-stone-700 border-stone-200'
 }
 
+function McqDefinitionPanel({
+  question,
+  signalId,
+  onQuestionChange,
+}: {
+  question: McqQuestion
+  signalId: string
+  onQuestionChange: (next: McqQuestion) => void
+}) {
+  return (
+    <div className="space-y-2 rounded border border-amber-200 bg-amber-50/40 p-2">
+      <div className="text-[9px] font-semibold uppercase tracking-wide text-amber-900">Follow-up MCQ</div>
+      <textarea
+        className="w-full rounded border border-stone-200 bg-white p-1 text-[10px] leading-tight"
+        rows={3}
+        value={question.question_to_user || ''}
+        onChange={(event) => onQuestionChange({ ...question, question_to_user: event.target.value })}
+      />
+      <ul className="space-y-1">
+        {(question.choices || []).map((choice, idx) => {
+          const effect = (choice.effects?.signals || []).find((row) => row.signal_id === signalId)
+          return (
+            <li key={choice.id} className="rounded border border-stone-200 bg-white p-1">
+              <input
+                className="mb-1 w-full rounded border border-stone-100 p-0.5 font-mono text-[10px]"
+                value={choice.label}
+                onChange={(event) => {
+                  const choices = [...(question.choices || [])]
+                  choices[idx] = { ...choice, label: event.target.value }
+                  onQuestionChange({ ...question, choices })
+                }}
+              />
+              <div className="flex items-center justify-between gap-1 text-[9px] text-stone-500">
+                <span className="font-mono">{choice.id}</span>
+                <select
+                  className="rounded border border-stone-200 p-0.5 text-[9px]"
+                  value={effect?.result === false ? 'false' : effect?.result === true ? 'true' : ''}
+                  onChange={(event) => {
+                    const val = event.target.value
+                    const choices = [...(question.choices || [])]
+                    const signals = [...(choice.effects?.signals || [])].filter((row) => row.signal_id !== signalId)
+                    if (val === 'true' || val === 'false') {
+                      signals.push({ signal_id: signalId, result: val === 'true' })
+                    }
+                    choices[idx] = { ...choice, effects: { signals } }
+                    onQuestionChange({ ...question, choices })
+                  }}
+                >
+                  <option value="">— effect —</option>
+                  <option value="true">T for signal</option>
+                  <option value="false">F for signal</option>
+                </select>
+              </div>
+            </li>
+          )
+        })}
+      </ul>
+    </div>
+  )
+}
+
 function PolicyTextarea({
   cardId,
   policy,
   onEditChange,
   edit,
+  highlight = false,
 }: {
   cardId: string
   policy: Record<string, unknown>
   edit: CardEditState
   onEditChange: (cardId: string, edit: CardEditState) => void
+  highlight?: boolean
 }) {
   const [draft, setDraft] = useState(() => JSON.stringify(policy || {}, null, 2))
 
@@ -205,7 +325,7 @@ function PolicyTextarea({
 
   return (
     <textarea
-      className="w-full max-w-xl rounded border border-stone-200 p-1 font-mono text-[10px]"
+      className={`w-full max-w-xl rounded border border-stone-200 p-1 font-mono text-[10px] ${changedFieldClass(highlight)}`}
       rows={14}
       value={draft}
       onChange={(event) => {
@@ -224,16 +344,32 @@ function PolicyTextarea({
 
 function PathwaySignalTable({
   group,
+  changedFields,
+  followUpChoices,
+  onFollowUpChoiceChange,
   onEditChange,
 }: {
   group: PathwayGroup
+  changedFields?: Record<string, TriageChangedFields>
+  followUpChoices: FollowUpChoicesByMws
+  onFollowUpChoiceChange: (mwsId: string, variable: string, choiceId: string) => void
   onEditChange: (cardId: string, edit: CardEditState) => void
 }) {
-  const [collapsed, setCollapsed] = useState(false)
+  const [collapsed, setCollapsed] = useState(true)
+  const [selectedClasses, setSelectedClasses] = useState(defaultClassificationFilter)
   const signalIds = mergedSignalIds(group.columns)
+  const visibleColumns = useMemo(
+    () =>
+      group.columns.map((col) => ({
+        ...col,
+        mwsColumns: filterMwsColumns(col.mwsColumns, selectedClasses),
+      })),
+    [group.columns, selectedClasses],
+  )
+  const visibleMwsCount = visibleColumns.reduce((sum, col) => sum + col.mwsColumns.length, 0)
 
   return (
-    <div className="overflow-auto rounded-lg border border-stone-200 bg-white">
+    <div className="overflow-auto overscroll-x-contain rounded-lg border border-stone-200 bg-white">
       <div className="flex flex-wrap items-center gap-2 border-b border-stone-200 bg-stone-100 px-3 py-2">
         <button
           type="button"
@@ -245,16 +381,32 @@ function PathwaySignalTable({
         </button>
         <div className="text-sm font-semibold text-stone-800">{pathwayLabel(group.pathwayId)}</div>
         {!collapsed ? (
-          <span className="text-[10px] font-normal text-stone-500">
-            <span className="mr-1 inline-block rounded bg-emerald-100 px-1 text-emerald-900">green</span>
-            TP
-            <span className="mx-1 inline-block rounded bg-amber-100 px-1 text-amber-900">yellow</span>
-            FP
-            <span className="mx-1 inline-block rounded bg-blue-100 px-1 text-blue-900">blue</span>
-            TN
-            <span className="mx-1 inline-block rounded bg-red-100 px-1 text-red-900">red</span>
-            FN
-          </span>
+          <div className="flex flex-wrap items-center gap-1.5 text-[10px] font-normal text-stone-600">
+            <span className="text-stone-500">MWS:</span>
+            {ALL_CLASSIFICATIONS.map((key) => {
+              const active = selectedClasses.has(key)
+              return (
+                <label
+                  key={key}
+                  className={`inline-flex cursor-pointer items-center gap-1 rounded border px-1.5 py-0.5 ${
+                    active ? CLASSIFICATION_CHIP_STYLES[key] : 'border-stone-200 bg-stone-50 text-stone-400'
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    className="sr-only"
+                    checked={active}
+                    onChange={() => setSelectedClasses((value) => toggleClassification(value, key))}
+                  />
+                  {key.toUpperCase()}
+                  <span className="hidden sm:inline">({CLASSIFICATION_LABELS[key]})</span>
+                </label>
+              )
+            })}
+            {visibleMwsCount === 0 ? (
+              <span className="text-amber-800">No MWS columns match the current filter.</span>
+            ) : null}
+          </div>
         ) : null}
       </div>
       {!collapsed ? (
@@ -264,7 +416,7 @@ function PathwaySignalTable({
             <th rowSpan={2} className="sticky left-0 z-20 min-w-[72px] border-r border-stone-200 bg-amber-50/60 px-2 py-1 text-left align-bottom">
               Signal
             </th>
-            {group.columns.map((col) => (
+            {visibleColumns.map((col) => (
               <th
                 key={`card-${col.cardId}`}
                 colSpan={1 + col.mwsColumns.length}
@@ -281,7 +433,7 @@ function PathwaySignalTable({
             ))}
           </tr>
           <tr className="border-b border-stone-300 bg-stone-50">
-            {group.columns.map((col) => (
+            {visibleColumns.map((col) => (
               <Fragment key={`hdr-${col.cardId}`}>
                 <th className="min-w-[220px] border-l border-stone-200 px-1 py-1 text-left font-normal text-stone-600">
                   Definition
@@ -324,7 +476,7 @@ function PathwaySignalTable({
                 >
                   {signalId}
                 </td>
-                {group.columns.map((col) => {
+                {visibleColumns.map((col) => {
                   const found = findSignal(col.edit, signalId)
                   if (!found) {
                     return (
@@ -337,26 +489,104 @@ function PathwaySignalTable({
                     )
                   }
                   const { signal, idx } = found
+                  const expr = signalExpression(signal)
+                  const hasExpr = Boolean(expr.trim())
+                  const mcqQuestion = mcqQuestionForSignal(
+                    col.edit.missing_variable_questions,
+                    signalId,
+                    signal.variables || [],
+                    hasExpr,
+                  )
+                  const isMcq = mcqQuestion !== null
                   return (
                     <Fragment key={`${col.cardId}-${signalId}`}>
                       <td rowSpan={2} className="border-l border-b border-stone-200 px-1 py-1 align-top">
-                        <textarea
-                          className="w-full rounded border border-stone-200 p-1 font-mono text-[10px] leading-tight"
-                          rows={4}
-                          value={signalExpression(signal)}
-                          onChange={(event) =>
-                            updateSignal(col.edit, idx, { expression: event.target.value }, onEditChange)
-                          }
-                        />
+                        {isMcq && mcqQuestion ? (
+                          <McqDefinitionPanel
+                            question={mcqQuestion}
+                            signalId={signalId}
+                            onQuestionChange={(next) => {
+                              const questions = [...(col.edit.missing_variable_questions || [])]
+                              const qIdx = questions.findIndex(
+                                (item) => item.missing_variable === mcqQuestion.missing_variable,
+                              )
+                              if (qIdx >= 0) questions[qIdx] = next
+                              else questions.push(next)
+                              onEditChange(col.cardId, {
+                                ...col.edit,
+                                missing_variable_questions: questions,
+                              })
+                            }}
+                          />
+                        ) : (
+                          <textarea
+                            className={`w-full rounded border border-stone-200 p-1 font-mono text-[10px] leading-tight ${changedFieldClass(
+                              signalFieldChanged(changedFields, col.cardId, signalId, 'expression'),
+                            )}`}
+                            rows={4}
+                            value={expr}
+                            title={
+                              signalFieldChanged(changedFields, col.cardId, signalId, 'expression')
+                                ? 'Saved patch changed this expression'
+                                : undefined
+                            }
+                            onChange={(event) =>
+                              updateSignal(col.edit, idx, { expression: event.target.value }, onEditChange)
+                            }
+                          />
+                        )}
                       </td>
                       {col.mwsColumns.map((mws) => {
                         const evalSignal = mws.signals[signalId]
+                        const choiceId =
+                          isMcq && mcqQuestion
+                            ? followUpChoices[mws.mws_id]?.[mcqQuestion.missing_variable]
+                            : undefined
+                        const preview =
+                          isMcq && mcqQuestion
+                            ? signalResultFromChoice(mcqQuestion, signalId, choiceId)
+                            : null
+                        const displayResult = evalSignal?.result ?? preview
+                        const displayStatus = evalSignal?.status ?? (preview !== null ? 'user_provided' : undefined)
                         return (
                           <td
                             key={`${col.cardId}-${mws.mws_id}-${signalId}`}
                             className="border-l border-stone-100 px-1 py-1 align-top"
                           >
-                            {evalSignal ? (
+                            {isMcq && mcqQuestion ? (
+                              <div className="space-y-1">
+                                <select
+                                  className="w-full max-w-[120px] rounded border border-stone-200 p-0.5 text-[9px]"
+                                  value={choiceId || ''}
+                                  onChange={(event) =>
+                                    onFollowUpChoiceChange(
+                                      mws.mws_id,
+                                      mcqQuestion.missing_variable,
+                                      event.target.value,
+                                    )
+                                  }
+                                >
+                                  <option value="">Select answer…</option>
+                                  {(mcqQuestion.choices || []).map((choice) => (
+                                    <option key={choice.id} value={choice.id}>
+                                      {choice.label}
+                                    </option>
+                                  ))}
+                                </select>
+                                {displayResult !== null && displayResult !== undefined ? (
+                                  <span
+                                    className={`mx-auto block min-w-[1.25rem] rounded border px-1 py-0.5 text-center font-mono font-semibold ${resultTone(
+                                      displayResult,
+                                      displayStatus,
+                                    )}`}
+                                  >
+                                    {resultChar(displayResult, displayStatus)}
+                                  </span>
+                                ) : (
+                                  <span className="block text-center text-stone-300">—</span>
+                                )}
+                              </div>
+                            ) : evalSignal ? (
                               <span
                                 className={`mx-auto block min-w-[1.25rem] rounded border px-1 py-0.5 text-center font-mono font-semibold ${resultTone(
                                   evalSignal.result,
@@ -377,7 +607,7 @@ function PathwaySignalTable({
                 })}
               </tr>
               <tr className="border-b border-stone-200 align-top">
-                {group.columns.map((col) => {
+                {visibleColumns.map((col) => {
                   const found = findSignal(col.edit, signalId)
                   if (!found) return null
                   const { signal, idx } = found
@@ -390,7 +620,9 @@ function PathwaySignalTable({
                     >
                       <div className="flex justify-center gap-1">
                         <select
-                          className="min-w-0 flex-1 max-w-[88px] rounded border border-stone-200 p-0.5 text-[9px]"
+                          className={`min-w-0 flex-1 max-w-[88px] rounded border border-stone-200 p-0.5 text-[9px] ${changedFieldClass(
+                            signalFieldChanged(changedFields, col.cardId, signalId, 'direction'),
+                          )}`}
                           value={signal.direction || 'confirms'}
                           onChange={(event) =>
                             updateSignal(col.edit, idx, { direction: event.target.value }, onEditChange)
@@ -401,7 +633,9 @@ function PathwaySignalTable({
                           <option value="rules_out">rules_out</option>
                         </select>
                         <select
-                          className="min-w-0 flex-1 max-w-[88px] rounded border border-stone-200 p-0.5 text-[9px]"
+                          className={`min-w-0 flex-1 max-w-[88px] rounded border border-stone-200 p-0.5 text-[9px] ${changedFieldClass(
+                            signalFieldChanged(changedFields, col.cardId, signalId, 'active'),
+                          )}`}
                           value={signal.active !== false ? 'active' : 'inactive'}
                           onChange={(event) =>
                             updateSignal(
@@ -426,7 +660,7 @@ function PathwaySignalTable({
             <td className="sticky left-0 z-10 border-r border-stone-100 bg-white px-2 py-1 font-medium">
               policy
             </td>
-            {group.columns.map((col) => (
+            {visibleColumns.map((col) => (
               <td
                 key={`policy-${col.cardId}`}
                 colSpan={1 + col.mwsColumns.length}
@@ -438,6 +672,7 @@ function PathwaySignalTable({
                   policy={col.edit.confirmation_policy || {}}
                   edit={col.edit}
                   onEditChange={onEditChange}
+                  highlight={policyChanged(changedFields, col.cardId)}
                 />
               </td>
             ))}
@@ -449,7 +684,15 @@ function PathwaySignalTable({
   )
 }
 
-export function SignalGrid({ section, cardEdits, evalResult, onEditChange }: Props) {
+export function SignalGrid({
+  section,
+  cardEdits,
+  evalResult,
+  changedFields,
+  followUpChoices,
+  onFollowUpChoiceChange,
+  onEditChange,
+}: Props) {
   const cardColumns = useMemo(
     () => buildCardColumns(section, cardEdits, evalResult),
     [section, cardEdits, evalResult],
@@ -464,7 +707,14 @@ export function SignalGrid({ section, cardEdits, evalResult, onEditChange }: Pro
   return (
     <div className="space-y-4">
       {pathwayGroups.map((group) => (
-        <PathwaySignalTable key={group.pathwayId} group={group} onEditChange={onEditChange} />
+        <PathwaySignalTable
+          key={group.pathwayId}
+          group={group}
+          changedFields={changedFields}
+          followUpChoices={followUpChoices}
+          onFollowUpChoiceChange={onFollowUpChoiceChange}
+          onEditChange={onEditChange}
+        />
       ))}
       {!evalResult ? (
         <p className="text-[11px] text-stone-500">Run Play to populate MWS signal cells.</p>

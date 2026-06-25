@@ -24,6 +24,9 @@ ASSEMBLER_DERIVED_VARIABLE_NAMES = frozenset(
     {
         "mean_annual_precipitation_mm",
         "trend_annual_precipitation_mm",
+        "mean_kharif_precipitation",
+        "mean_rabi_precipitation",
+        "mean_zaid_precipitation",
         "mean_annual_et_mm",
         "trend_annual_et_mm",
         "mean_annual_runoff_mm",
@@ -110,6 +113,19 @@ def delta_g_series(mws_doc: dict) -> dict[str, float] | None:
 
 def precipitation_series(mws_doc: dict) -> dict[str, float] | None:
     return _annual_field_series(mws_doc, "precipitation_mm")
+
+
+def seasonal_precipitation_series(mws_doc: dict, season: str) -> dict[str, float] | None:
+    """Per-agricultural-year precipitation_mm for one season (kharif, rabi, zaid)."""
+    seasonal = mws_doc.get("hydrological_seasonal") or {}
+    out: dict[str, float] = {}
+    for year, row in seasonal.items():
+        if not isinstance(row, dict):
+            continue
+        block = row.get(season)
+        if isinstance(block, dict) and block.get("precipitation_mm") is not None:
+            out[str(year)] = float(block["precipitation_mm"])
+    return out or None
 
 
 def et_series(mws_doc: dict) -> dict[str, float] | None:
@@ -311,6 +327,12 @@ def resolve_derived(mws_doc: dict, variable: str) -> Any:
         return mean(precipitation_series(mws_doc))
     if variable == "trend_annual_precipitation_mm":
         return trend(precipitation_series(mws_doc))
+    if variable == "mean_kharif_precipitation":
+        return mean(seasonal_precipitation_series(mws_doc, "kharif"))
+    if variable == "mean_rabi_precipitation":
+        return mean(seasonal_precipitation_series(mws_doc, "rabi"))
+    if variable == "mean_zaid_precipitation":
+        return mean(seasonal_precipitation_series(mws_doc, "zaid"))
     if variable == "mean_annual_et_mm":
         return mean(et_series(mws_doc))
     if variable == "trend_annual_et_mm":

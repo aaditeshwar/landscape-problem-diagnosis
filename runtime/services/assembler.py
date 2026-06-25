@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from config import METADATA_DIR
+from services.aquifer_classification import compute_acwadam_class_percent
 from services.derived_variables import resolve_derived
 from services.tehsil_refs import format_tehsil_list, normalize_tehsils, resolve_active_tehsil
 from services.variable_registry import (
@@ -45,6 +46,17 @@ def _nrega_category_total(mws: dict, category_key: str) -> int | float | None:
 
 def _nrega_swc_count(mws: dict) -> int | float | None:
     return _nrega_category_total(mws, "soil_and_water_conservation")
+
+
+def _acwadam_class_percent(mws: dict) -> dict[str, float] | None:
+    aquifer = mws.get("aquifer") or {}
+    stored = aquifer.get("acwadam_class_percent")
+    if isinstance(stored, dict):
+        return stored
+    lithology = aquifer.get("lithology_percent")
+    if lithology:
+        return compute_acwadam_class_percent(lithology, mws.get("nbss_lup_aer_code"))
+    return None
 
 
 def _annual_series(mws: dict, field: str) -> dict | None:
@@ -231,12 +243,114 @@ def _stream_order_n_percent(mws: dict) -> dict | None:
     return data if data else None
 
 
+def _elevation_m(mws: dict, field: str) -> float | None:
+    return (mws.get("elevation") or {}).get(field)
+
+
+def _terrain_area_percent(mws: dict) -> dict[str, float | None] | None:
+    terrain = mws.get("terrain") or {}
+    if not terrain:
+        return None
+    out = {
+        "hill_slope": terrain.get("hill_slope_percent"),
+        "plain": terrain.get("plain_percent"),
+        "ridge": terrain.get("ridge_percent"),
+        "slopy": terrain.get("slopy_percent"),
+        "valley": terrain.get("valley_percent"),
+    }
+    return out if any(v is not None for v in out.values()) else None
+
+
+def _terrain_lulc_percent_dict(mws: dict, terrain_type: str) -> dict[str, float | None] | None:
+    raw = mws.get(f"terrain_lulc_{terrain_type}") or {}
+    if not raw:
+        return None
+    out = {
+        "barren": raw.get("barren_percent"),
+        "forest": raw.get("forest_percent"),
+        "shrub_scrub": raw.get("shrub_scrub_percent"),
+        "single_kharif": raw.get("single_kharif_percent"),
+        "single_non_kharif": raw.get("single_non_kharif_percent"),
+        "double_crop": raw.get("double_crop_percent"),
+        "triple_crop": raw.get("triple_crop_percent"),
+    }
+    return out if any(v is not None for v in out.values()) else None
+
+
+def _drought_weeks_nested(mws: dict) -> dict[str, dict[str, Any]] | None:
+    drought = mws.get("drought_kharif") or {}
+    if not drought:
+        return None
+    out: dict[str, dict[str, Any]] = {}
+    for year, row in drought.items():
+        if not isinstance(row, dict):
+            continue
+        out[str(year)] = {
+            "no_drought": row.get("no_drought_weeks"),
+            "mild": row.get("mild_weeks"),
+            "moderate": row.get("moderate_weeks"),
+            "severe": row.get("severe_weeks"),
+        }
+    return out or None
+
+
+def _cropping_type_area_ha(mws: dict) -> dict[str, dict[str, Any]] | None:
+    ci = mws.get("cropping_intensity") or {}
+    if not ci:
+        return None
+    out: dict[str, dict[str, Any]] = {}
+    for year, row in ci.items():
+        if not isinstance(row, dict):
+            continue
+        out[str(year)] = {
+            "single_kharif": row.get("single_kharif_ha"),
+            "single_non_kharif": row.get("single_non_kharif_ha"),
+            "double": row.get("double_crop_ha"),
+            "triple": row.get("triple_crop_ha"),
+        }
+    return out or None
+
+
+def _drainage_density_km_per_km2(mws: dict) -> float | None:
+    drainage = mws.get("drainage_density") or {}
+    return drainage.get("corrected_km_per_km2")
+
+
 _BASE_VARIABLE_RESOLVERS: dict[str, Any] = {
+    "uid": lambda m: m.get("uid"),
+    "mws_area_ha": lambda m: m.get("area_ha"),
+    "watershed_code": lambda m: m.get("watershed_code"),
+    "basin_code": lambda m: m.get("basin_code"),
+    "flow_direction": lambda m: m.get("flow_direction"),
+    "downstream_uid": lambda m: m.get("downstream_uid"),
+    "upstream_uids": lambda m: m.get("upstream_uids"),
+    "elevation_min_m": lambda m: _elevation_m(m, "min_m"),
+    "elevation_max_m": lambda m: _elevation_m(m, "max_m"),
+    "elevation_mean_m": lambda m: _elevation_m(m, "mean_m"),
+    "nbss_lup_aer_code": lambda m: m.get("nbss_lup_aer_code"),
+    "nbss_lup_aer_name": lambda m: m.get("nbss_lup_aer_name"),
+    "aquifer_raw_class": lambda m: (m.get("aquifer") or {}).get("raw_class"),
+    "aquifer_dominant_lithology": lambda m: (m.get("aquifer") or {}).get("dominant_lithology"),
+    "terrain_area_percent": _terrain_area_percent,
+    "terrain_lulc_plain_percent": lambda m: _terrain_lulc_percent_dict(m, "plain"),
+    "terrain_lulc_slope_percent": lambda m: _terrain_lulc_percent_dict(m, "slope"),
+    "facility_distances_km": lambda m: m.get("facility_distances") or None,
+    "stream_order_area_percent": lambda m: m.get("stream_order_area_percent"),
+    "drainage_density_km_per_km2": _drainage_density_km_per_km2,
+    "drought_weeks": _drought_weeks_nested,
+    "seasonal_et_mm": lambda m: m.get("hydrological_seasonal"),
+    "seasonal_runoff_mm": lambda m: m.get("hydrological_seasonal"),
+    "seasonal_delta_g_mm": lambda m: m.get("hydrological_seasonal"),
+    "swb_area_ha": lambda m: m.get("swb_annual"),
+    "lulc_ha": lambda m: m.get("lulc_ha"),
+    "nrega_mws": lambda m: m.get("nrega_mws"),
+    "crop_type_area_ha": _cropping_type_area_ha,
+    "village_population": lambda m: _village_aggregate(m, "village_total_population"),
     "soge_dev_percent": lambda m: (m.get("soge") or {}).get("dev_percent"),
     "soge_class_name": lambda m: (m.get("soge") or {}).get("class_name"),
     "aquifer_class": lambda m: (m.get("aquifer") or {}).get("acwadam_class"),
     "aquifer_lithology_percent": lambda m: (m.get("aquifer") or {}).get("lithology_percent"),
-    "acwadam_class_percent": lambda m: (m.get("aquifer") or {}).get("acwadam_class_percent"),
+    "acwadam_class_percent": _acwadam_class_percent,
     "annual_delta_g_mm": lambda m: _annual_series(m, "delta_g_mm"),
     "delta_g_mm": lambda m: _annual_series(m, "delta_g_mm"),
     "annual_precipitation_mm": lambda m: _annual_series(m, "precipitation_mm"),
@@ -289,6 +403,9 @@ _BASE_VARIABLE_RESOLVERS: dict[str, Any] = {
     "single_non_kharif_area_ha": lambda m: _cropping_field_series(m, "single_non_kharif_ha"),
     "double_crop_area_ha": lambda m: _cropping_field_series(m, "double_crop_ha"),
     "triple_crop_area_ha": lambda m: _cropping_field_series(m, "triple_crop_ha"),
+    "cd_degradation_ha": lambda m: (m.get("change_detection") or {}).get("degradation"),
+    "cd_deforestation_ha": lambda m: (m.get("change_detection") or {}).get("deforestation"),
+    "cd_crop_intensity_ha": lambda m: (m.get("change_detection") or {}).get("crop_intensity"),
     **_change_detection_resolvers(),
     "stream_order_N_area_percent": _stream_order_n_percent,
     "terrain_cluster_id": lambda m: (m.get("terrain") or {}).get("cluster_id"),
@@ -296,6 +413,9 @@ _BASE_VARIABLE_RESOLVERS: dict[str, Any] = {
     "organization_domains": lambda m: m.get("organisation_domains") or m.get("organization_domains"),
     "mean_annual_precipitation_mm": lambda m: resolve_derived(m, "mean_annual_precipitation_mm"),
     "trend_annual_precipitation_mm": lambda m: resolve_derived(m, "trend_annual_precipitation_mm"),
+    "mean_kharif_precipitation": lambda m: resolve_derived(m, "mean_kharif_precipitation"),
+    "mean_rabi_precipitation": lambda m: resolve_derived(m, "mean_rabi_precipitation"),
+    "mean_zaid_precipitation": lambda m: resolve_derived(m, "mean_zaid_precipitation"),
     "mean_annual_et_mm": lambda m: resolve_derived(m, "mean_annual_et_mm"),
     "trend_annual_et_mm": lambda m: resolve_derived(m, "trend_annual_et_mm"),
     "mean_annual_runoff_mm": lambda m: resolve_derived(m, "mean_annual_runoff_mm"),
@@ -504,10 +624,10 @@ def _resolve_signal_expression_variables(
     injected: dict | None,
 ) -> dict[str, Any]:
     """Resolve derived/list variables referenced in signal expressions but absent from present_variables."""
-    from services.signal_evaluator import expression_load_names
+    from services.expression_variable_access import expression_dependencies_from_card
 
     out = dict(present)
-    for name in sorted(expression_load_names(card)):
+    for name in sorted(expression_dependencies_from_card(card)):
         if name in out:
             continue
         slot = _resolved_bundle_value(name, resolve_variable(mws_doc, name, injected))
@@ -577,6 +697,7 @@ def assemble_variable_bundle(
                 "card_id": card.get("card_id"),
                 "aer_tags": card.get("aer_tags", []),
                 "overall_reasoning_note": card.get("overall_reasoning_note"),
+                "confirmation_policy": card.get("confirmation_policy"),
                 "diagnostic_signals": card.get("diagnostic_signals", []),
                 "missing_variable_questions": card.get("missing_variable_questions", []),
                 "confounders": card.get("confounders", []),

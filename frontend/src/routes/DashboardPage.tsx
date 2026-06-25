@@ -32,6 +32,9 @@ function matchesQuery(variable: DashboardVariable, query: string): boolean {
 
 function hasChartData(variable: DashboardVariable): boolean {
   if (variable.chart_type === 'categorical') return (variable.distribution?.length ?? 0) > 0
+  if (variable.cdf_variants && Object.values(variable.cdf_variants).some((variant) => variant.cdf?.length)) {
+    return true
+  }
   return (variable.cdf?.length ?? 0) > 0
 }
 
@@ -74,7 +77,10 @@ function DashboardSectionPanel({
                 {group.variables.map((variable) => {
                   const isCategorical =
                     variable.chart_type === 'categorical' ||
-                    (!variable.chart_type && (variable.distribution?.length ?? 0) > 0 && !variable.cdf?.length)
+                    (!variable.chart_type &&
+                      (variable.distribution?.length ?? 0) > 0 &&
+                      !variable.cdf?.length &&
+                      !variable.cdf_variants)
                   return isCategorical ? (
                     <CategoryBarChart
                       key={variable.access}
@@ -88,7 +94,8 @@ function DashboardSectionPanel({
                       key={variable.access}
                       title={variable.access}
                       unit={variable.unit}
-                      cdf={variable.cdf || []}
+                      cdfVariants={variable.cdf_variants}
+                      cdf={variable.cdf}
                       samples={variable.samples}
                       sampleCount={variable.sample_count}
                       xMax={variable.x_max}

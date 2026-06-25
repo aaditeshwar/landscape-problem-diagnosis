@@ -1,4 +1,5 @@
 import type { MwsDocument, TehsilRef } from '../types'
+import { ExternalLink } from './ExternalLink'
 import { formatMwsTehsilLabel } from '../utils/tehsilRefs'
 import {
   facilityDistanceTable,
@@ -107,6 +108,8 @@ export function InfoPanel({ mws, loading, panelUpdates, activeTehsil }: Props) {
   const showHighlights = hasPanelHighlights(highlights)
   const showLivelihoods = villages.length > 0 || facilities.length > 0 || hasNregaData(mws)
 
+  const variablesCatalogUrl = `/variables?mws=${encodeURIComponent(mws.uid)}&state=${encodeURIComponent(mws.state || '')}&district=${encodeURIComponent(mws.district || '')}&tehsil=${encodeURIComponent(mws.tehsil || '')}`
+
   return (
     <div className="flex h-full flex-col overflow-y-auto">
       <div className="border-b border-stone-200 bg-stone-50 px-4 py-3">
@@ -134,6 +137,11 @@ export function InfoPanel({ mws, loading, panelUpdates, activeTehsil }: Props) {
                   .join(', ') || null
               }
             />
+            <div className="border-b border-stone-100 py-2">
+              <ExternalLink to={variablesCatalogUrl} className="text-sm font-medium text-amber-800 hover:underline">
+                Detailed MWS variables →
+              </ExternalLink>
+            </div>
           </div>
         </section>
 

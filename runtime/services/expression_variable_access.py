@@ -74,6 +74,16 @@ def expression_variable_accesses(expression: str) -> list[str]:
     bound = _bound_names(tree)
     keys: list[str] = []
     seen: set[str] = set()
+    agg_wrapped_bases: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id in _AGG_FUNCS:
+            if not node.args:
+                continue
+            arg0 = node.args[0]
+            if isinstance(arg0, ast.Name):
+                agg_wrapped_bases.add(arg0.id)
+            elif isinstance(arg0, ast.Subscript) and isinstance(arg0.value, ast.Name):
+                agg_wrapped_bases.add(arg0.value.id)
 
     def add(key: str) -> None:
         if key and key not in seen:
@@ -84,9 +94,15 @@ def expression_variable_accesses(expression: str) -> list[str]:
         if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load) and node.id not in _SAFE_BUILTINS:
             if node.id in bound:
                 continue
+            if node.id in _AGG_FUNCS:
+                continue
+            if node.id in agg_wrapped_bases:
+                continue
             add(node.id)
         elif isinstance(node, ast.Subscript) and isinstance(node.value, ast.Name):
             if node.value.id in bound:
+                continue
+            if node.value.id in agg_wrapped_bases:
                 continue
             key = _subscript_key(node.value.id, node.slice)
             if key:
@@ -108,8 +124,52 @@ def expression_variable_accesses(expression: str) -> list[str]:
                 arg0 = node.args[0]
                 if isinstance(arg0, ast.Name) and arg0.id not in bound:
                     add(f"{func_name}({arg0.id})")
+                elif isinstance(arg0, ast.Subscript) and isinstance(arg0.value, ast.Name) and arg0.value.id not in bound:
+                    inner = _subscript_key(arg0.value.id, arg0.slice)
+                    if inner:
+                        add(f"{func_name}({inner})")
 
     return keys
+
+
+def expression_dependency_names(expression: str) -> set[str]:
+    """Base variable names required to evaluate a signal expression."""
+    names: set[str] = set()
+    for access in expression_variable_accesses(expression):
+        for func in ("mean", "min", "max", "sum", "len", "sorted"):
+            prefix = f"{func}("
+            if access.startswith(prefix) and access.endswith(")"):
+                inner = access[len(prefix) : -1]
+                if "[" in inner:
+                    inner = inner.split("[", 1)[0]
+                names.add(inner)
+                break
+        else:
+            if "[" in access:
+                names.add(access.split("[", 1)[0])
+            else:
+                names.add(access)
+    return names
+
+
+def expression_dependencies_from_card(card: dict[str, Any]) -> set[str]:
+    names: set[str] = set()
+    for signal in card.get("diagnostic_signals") or []:
+        if not isinstance(signal, dict):
+            continue
+        condition = signal.get("condition") or {}
+        expression = str(condition.get("expression") or signal.get("expression") or "").strip()
+        if expression:
+            names.update(expression_dependency_names(expression))
+    return names
+
+
+def numeric_series_values(value: Any) -> list[float]:
+    if value is None:
+        return []
+    if hasattr(value, "_data"):
+        value = getattr(value, "_data")
+    return _numeric_series_values(value)
 
 
 def accesses_from_card(card: dict[str, Any]) -> list[str]:

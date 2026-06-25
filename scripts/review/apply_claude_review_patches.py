@@ -58,7 +58,7 @@ def merge_patch(card: dict, patch: dict, field_path: str) -> None:
             card[key] = copy.deepcopy(value)
 
 
-def load_decisions(path: Path) -> tuple[dict[str, str], set[str]]:
+def load_decisions(path: Path, batch_id: str | None = None) -> tuple[dict[str, str], set[str]]:
     if not path.exists():
         return {}, set()
     with path.open(encoding="utf-8") as handle:
@@ -68,6 +68,35 @@ def load_decisions(path: Path) -> tuple[dict[str, str], set[str]]:
 
     out: dict[str, str] = {}
     finalized_cards: set[str] = set()
+
+    if data.get("schema_version", 1) >= 2 and isinstance(data.get("batches"), dict):
+        batches = data["batches"]
+        selected = (
+            {batch_id: batches[batch_id]}
+            if batch_id and batch_id in batches
+            else batches
+        )
+        for batch in selected.values():
+            if not isinstance(batch, dict):
+                continue
+            card_status = batch.get("card_status") or {}
+            if isinstance(card_status, dict):
+                for card_id, entry in card_status.items():
+                    if isinstance(entry, dict) and entry.get("status") == "finalized":
+                        finalized_cards.add(str(card_id))
+            decisions = batch.get("decisions") or {}
+            if isinstance(decisions, dict):
+                for key, decision in decisions.items():
+                    if isinstance(decision, dict):
+                        issue_decision = str(
+                            decision.get("decision") or decision.get("status") or "reject"
+                        )
+                        card_id = str(decision.get("card_id") or "")
+                        issue_id = str(decision.get("issue_id") or "")
+                        if card_id and issue_id:
+                            out[composite_key(card_id, issue_id)] = issue_decision
+        return out, finalized_cards
+
     card_status = data.get("card_status") or {}
     if isinstance(card_status, dict):
         for card_id, entry in card_status.items():

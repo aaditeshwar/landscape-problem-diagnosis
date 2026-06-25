@@ -50,7 +50,7 @@
       ],
       "condition": {
         "type": "trend",
-        "expression": "trend_annual_delta_g_mm < 0 and mean_annual_delta_g_mm < 0",
+        "expression": "mean_annual_delta_g_mm < 0",
         "qualitative_description": "The linear trend in annual groundwater recharge (P - ET - Runoff) is negative and the multi-year mean is also negative, indicating chronic depletion rather than a single drought year anomaly.",
         "variables": [
           "trend_annual_delta_g_mm",
@@ -70,7 +70,7 @@
       ],
       "condition": {
         "type": "composite",
-        "expression": "aquifer_class == 'crystalline_basement' and acwadam_class_percent.get('alluvium', 0) < 20",
+        "expression": "aquifer_class in ['crystalline_basement'] and acwadam_class_percent.get('alluvium', 0) < 20",
         "qualitative_description": "The dominant aquifer class is crystalline basement (granite/gneiss) with less than 20% alluvial lithology, confirming low storativity and poor natural recharge capacity.",
         "variables": [
           "aquifer_class",

@@ -48,7 +48,7 @@
       ],
       "condition": {
         "type": "trend",
-        "expression": "trend_annual_delta_g_mm < 0 and mean_annual_delta_g_mm < 0",
+        "expression": "mean_annual_delta_g_mm < 0",
         "qualitative_description": "The linear trend in annual groundwater recharge (P - ET - Runoff) is negative and the multi-year mean is also negative, indicating chronic depletion where outflows persistently exceed precipitation-driven recharge.",
         "variables": [
           "trend_annual_delta_g_mm",
@@ -68,7 +68,7 @@
       ],
       "condition": {
         "type": "composite",
-        "expression": "aquifer_class == 'volcanic' and acwadam_class_percent.get('alluvium', 0) < 20",
+        "expression": "aquifer_class in ['volcanic'] and acwadam_class_percent.get('alluvium', 0) < 20",
         "qualitative_description": "Dominant volcanic (basaltic Deccan Trap) aquifer lithology with less than 20% alluvial cover indicates low storativity and limited natural recharge capacity, amplifying vulnerability to extraction pressure.",
         "variables": [
           "aquifer_class",

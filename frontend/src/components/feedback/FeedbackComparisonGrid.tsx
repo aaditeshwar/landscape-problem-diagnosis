@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import type {
   FeedbackContext,
   FeedbackSectionDraft,
+  IndependentPathwayReview,
   PathwayResult,
   ReviewerPathwayComment,
 } from '../../types'
@@ -101,6 +102,87 @@ function llmPathwayComment(
   pathwayId: string,
 ): ReviewerPathwayComment | undefined {
   return commentary?.find((item) => item.pathway_id === pathwayId)
+}
+
+function llmIndependentReview(
+  reviews: IndependentPathwayReview[] | undefined,
+  pathwayId: string,
+): IndependentPathwayReview | undefined {
+  return reviews?.find((item) => item.pathway_id === pathwayId)
+}
+
+function LlmPathwayOpinion({
+  pathwayId,
+  reviewerItem,
+  independentItem,
+  signalEvaluation,
+}: {
+  pathwayId: string
+  reviewerItem?: ReviewerPathwayComment
+  independentItem?: IndependentPathwayReview
+  signalEvaluation: FeedbackContext['server_diagnosis']['signal_evaluation']
+}) {
+  const hasServerReview = Boolean(reviewerItem?.pathway_comment || reviewerItem?.agreement)
+  const hasIndependent = Boolean(
+    independentItem?.reasoning || independentItem?.pathway_present || independentItem?.key_datapoints?.length,
+  )
+
+  if (!hasServerReview && !hasIndependent) {
+    return <span className="text-stone-500">No LLM commentary for this pathway.</span>
+  }
+
+  return (
+    <div className="space-y-3">
+      <div>
+        <div className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-violet-800">
+          Server evaluation review
+        </div>
+        {hasServerReview ? (
+          <div>
+            {reviewerItem?.agreement ? (
+              <div className="mb-1 text-xs uppercase text-violet-800">{reviewerItem.agreement}</div>
+            ) : null}
+            {reviewerItem?.pathway_comment ? (
+              <SignalRichText
+                text={reviewerItem.pathway_comment}
+                pathwayId={pathwayId}
+                signalEvaluation={signalEvaluation}
+              />
+            ) : (
+              <span className="text-stone-500">No server-evaluation commentary.</span>
+            )}
+          </div>
+        ) : (
+          <span className="text-stone-500">No server-evaluation commentary.</span>
+        )}
+      </div>
+      <div className="border-t border-violet-200/80 pt-2">
+        <div className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-violet-800">
+          Independent assessment
+        </div>
+        {hasIndependent ? (
+          <div>
+            {independentItem?.pathway_present ? (
+              <div className="mb-1 text-xs uppercase text-violet-800">
+                {independentItem.pathway_present}
+                {independentItem.confidence ? ` · ${independentItem.confidence}` : ''}
+              </div>
+            ) : null}
+            {independentItem?.reasoning ? (
+              <p className="text-sm text-stone-800">{independentItem.reasoning}</p>
+            ) : null}
+            {independentItem?.key_datapoints?.length ? (
+              <p className="mt-1 text-xs text-stone-600">
+                Datapoints: {independentItem.key_datapoints.join(' · ')}
+              </p>
+            ) : null}
+          </div>
+        ) : (
+          <span className="text-stone-500">No independent assessment.</span>
+        )}
+      </div>
+    </div>
+  )
 }
 
 function PathwayStatusBadge({ status }: { status: 'confirmed' | 'uncertain' }) {
@@ -217,6 +299,10 @@ export function FeedbackComparisonGrid({
         const serverNote =
           context.server_diagnosis.pathway_notes[pathway.pathway_id] ?? pathway.reasoning ?? '—'
         const llmItem = llmPathwayComment(context.llm_diagnosis?.reviewer_commentary, pathway.pathway_id)
+        const independentItem = llmIndependentReview(
+          context.llm_diagnosis?.independent_pathway_review,
+          pathway.pathway_id,
+        )
         const card = cardForPathway(context.retrieved_cards, pathway.pathway_id)
 
         return renderSectionGrid({
@@ -243,19 +329,13 @@ export function FeedbackComparisonGrid({
               />
             </>
           ),
-          llmContent: llmItem?.pathway_comment ? (
-            <div>
-              {llmItem.agreement ? (
-                <div className="mb-2 text-xs uppercase text-violet-800">{llmItem.agreement}</div>
-              ) : null}
-              <SignalRichText
-                text={llmItem.pathway_comment}
-                pathwayId={pathway.pathway_id}
-                signalEvaluation={signalEvaluation}
-              />
-            </div>
-          ) : (
-            <span className="text-stone-500">No LLM commentary for this pathway.</span>
+          llmContent: (
+            <LlmPathwayOpinion
+              pathwayId={pathway.pathway_id}
+              reviewerItem={llmItem}
+              independentItem={independentItem}
+              signalEvaluation={signalEvaluation}
+            />
           ),
         })
       })}

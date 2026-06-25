@@ -71,7 +71,7 @@
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "aquifer_class == 'alluvium' and acwadam_class_percent.get('alluvium', 0) > 40",
+        "expression": "aquifer_class in ['alluvium'] and acwadam_class_percent.get('alluvium', 0) > 40",
         "qualitative_description": "Dominant alluvial aquifer with more than 40% of the micro-watershed area underlain by alluvial lithology, confirming the aquifer type context and its recharge-discharge dynamics.",
         "variables": [
           "aquifer_class",

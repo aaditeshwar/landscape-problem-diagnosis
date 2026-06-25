@@ -12,11 +12,14 @@ from pydantic import BaseModel, Field
 from config import ROOT
 from db import get_db
 from services import triage_draft_store as draft_store
+from services import triage_patch_store as patch_store
+from services.reviewer_access import ReviewerNotAllowedError, validate_reviewer_name
 from services.built_pathways import BUILT_PATHWAY_IDS, NONE_OF_THESE_PATHWAY
 from services.triage_card_map import card_map_payload, load_card_with_fallback
 from services.triage_eval import evaluate_section
 from services.triage_index import list_case_study_catalogs, load_catalog_bundle, section_key
 from services.variable_catalog import build_variable_catalog
+from services.mws_variable_values import mws_variable_values_payload
 
 router = APIRouter(prefix="/api/triage", tags=["triage"])
 
@@ -28,6 +31,7 @@ class CardEditPayload(BaseModel):
     card_id: str = Field(min_length=1)
     diagnostic_signals: list[dict[str, Any]] | None = None
     confirmation_policy: dict[str, Any] | None = None
+    missing_variable_questions: list[dict[str, Any]] | None = None
 
 
 class EvaluateInstancePayload(BaseModel):
@@ -42,12 +46,27 @@ class EvaluateSectionBody(BaseModel):
     observed_stress: str = Field(min_length=1)
     instances: list[EvaluateInstancePayload] = Field(min_length=1)
     card_edits: list[CardEditPayload] = Field(default_factory=list)
+    follow_up_by_mws: dict[str, dict[str, str]] = Field(
+        default_factory=dict,
+        description="Per MWS uid: missing_variable -> MCQ choice_id",
+    )
 
 
 class SaveDraftBody(BaseModel):
     diagnostic_signals: list[dict[str, Any]] = Field(default_factory=list)
     confirmation_policy: dict[str, Any] | None = None
     section: dict[str, str] | None = None
+
+
+class CatalogPatchCardBody(BaseModel):
+    card_id: str = Field(min_length=1)
+    diagnostic_signals: list[dict[str, Any]] = Field(default_factory=list)
+    confirmation_policy: dict[str, Any] | None = None
+
+
+class SaveCatalogPatchesBody(BaseModel):
+    reviewer: str = Field(min_length=1)
+    cards: list[CatalogPatchCardBody] = Field(default_factory=list)
 
 
 @router.get("/catalogs")
@@ -85,15 +104,38 @@ def triage_card_map(mws_id: str = Query(min_length=1)):
 
 
 @router.get("/card/{card_id:path}")
-def triage_card(card_id: str):
+def triage_card(card_id: str, catalog: str | None = Query(default=None)):
     db = get_db()
     card = load_card_with_fallback(db, card_id)
     if not card:
         raise HTTPException(status_code=404, detail=f"Card not found: {card_id}")
-    draft = draft_store.load_draft(card_id)
-    if draft:
-        card = draft_store.apply_draft_to_card(card, draft)
-    return {"card": card, "draft": draft}
+    raw_card = dict(card)
+    catalog_patch = None
+    changed_fields = None
+    patch_stale = False
+    patch_discarded_reason = None
+    if catalog:
+        doc = patch_store.load_catalog_doc(catalog)
+        entry = (doc.get("cards") or {}).get(card_id)
+        if isinstance(entry, dict):
+            patch_view = patch_store.catalog_patch_view(entry, raw_card, card_id)
+            catalog_patch = patch_view.get("patch")
+            changed_fields = patch_view.get("changed_fields")
+            patch_stale = bool(patch_view.get("patch_stale"))
+            patch_discarded_reason = patch_view.get("patch_discarded_reason")
+    else:
+        draft = draft_store.load_draft(card_id)
+        if draft:
+            card = draft_store.apply_draft_to_card(card, draft)
+    return {
+        "card": raw_card,
+        "raw_card": raw_card,
+        "catalog_patch": catalog_patch,
+        "changed_fields": changed_fields,
+        "patch_stale": patch_stale,
+        "patch_discarded_reason": patch_discarded_reason,
+        "batch_id": patch_store.batch_id_for_catalog(catalog) if catalog else None,
+    }
 
 
 @router.post("/evaluate-section")
@@ -103,9 +145,12 @@ def triage_evaluate_section(body: EvaluateSectionBody):
         item.card_id: {
             "diagnostic_signals": item.diagnostic_signals,
             "confirmation_policy": item.confirmation_policy,
+            "missing_variable_questions": item.missing_variable_questions,
         }
         for item in body.card_edits
-        if item.diagnostic_signals is not None or item.confirmation_policy is not None
+        if item.diagnostic_signals is not None
+        or item.confirmation_policy is not None
+        or item.missing_variable_questions is not None
     }
     instances = [item.model_dump() for item in body.instances]
     return evaluate_section(
@@ -114,6 +159,7 @@ def triage_evaluate_section(body: EvaluateSectionBody):
         observed_stress=body.observed_stress,
         instances=instances,
         card_edits=card_edits,
+        follow_up_by_mws=body.follow_up_by_mws,
     )
 
 
@@ -135,9 +181,38 @@ def triage_save_draft(card_id: str, body: SaveDraftBody):
     )
 
 
+@router.get("/patches/{catalog_filename}")
+def triage_get_catalog_patches(catalog_filename: str):
+    doc = patch_store.load_catalog_doc(catalog_filename, prune_stale=True)
+    return patch_store.enrich_catalog_doc(doc)
+
+
+@router.post("/patches/{catalog_filename}")
+def triage_save_catalog_patches(catalog_filename: str, body: SaveCatalogPatchesBody):
+    db = get_db()
+    try:
+        return patch_store.save_catalog_patches(
+            db,
+            catalog_filename,
+            reviewer=body.reviewer,
+            cards=[item.model_dump() for item in body.cards],
+        )
+    except ReviewerNotAllowedError as exc:
+        raise HTTPException(status_code=403, detail=str(exc)) from exc
+
+
 @router.get("/variable-catalog")
 def triage_variable_catalog():
     return build_variable_catalog()
+
+
+@router.get("/mws-variable-values/{mws_id}")
+def triage_mws_variable_values(mws_id: str):
+    db = get_db()
+    payload = mws_variable_values_payload(db, mws_id)
+    if not payload:
+        raise HTTPException(status_code=404, detail=f"MWS not found: {mws_id}")
+    return payload
 
 
 @router.get("/dashboard/chart-defaults")

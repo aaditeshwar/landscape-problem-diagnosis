@@ -50,8 +50,22 @@ export type DiagnosticSignal = {
   signal_id: string
   direction?: string
   active?: boolean
-  condition?: { expression?: string }
+  variables?: string[]
+  condition?: { expression?: string; qualitative_description?: string }
   expression?: string
+}
+
+export type MissingVariableQuestion = {
+  missing_variable: string
+  question_to_user?: string
+  how_answer_updates_diagnosis?: string
+  response_type?: string
+  choices?: Array<{
+    id: string
+    label: string
+    normalized?: Record<string, unknown>
+    effects?: { signals?: Array<{ signal_id: string; result: boolean }> }
+  }>
 }
 
 export type EvidenceCard = {
@@ -59,6 +73,7 @@ export type EvidenceCard = {
   causal_pathway?: string
   diagnostic_signals?: DiagnosticSignal[]
   confirmation_policy?: Record<string, unknown>
+  missing_variable_questions?: MissingVariableQuestion[]
 }
 
 export type CardMapResponse = {
@@ -130,11 +145,68 @@ export type EvaluateSectionResult = {
   }
 }
 
+export type TriageChangedFields = {
+  signals: Record<string, Array<'expression' | 'direction' | 'active'>>
+  confirmation_policy?: boolean
+}
+
+export type TriageCatalogPatches = {
+  schema_version: number
+  catalog_filename: string
+  batch_id: string
+  updated_at?: string | null
+  reviewer?: string | null
+  cards: Record<
+    string,
+    {
+      card_id: string
+      patch: Record<string, unknown>
+      changed_fields?: TriageChangedFields
+      updated_at?: string
+      reviewer?: string
+      finalized?: boolean
+      finalized_at?: string | null
+      patch_stale?: boolean
+      patch_discarded_reason?: string | null
+      effective_changed_fields?: TriageChangedFields | null
+    }
+  >
+}
+
 export type DashboardChartDefaults = {
   remove_zeros?: boolean
   log_scale?: boolean
   trim_top?: boolean
   trim_bottom?: boolean
+}
+
+export type CdfRemovedBucket = {
+  count: number
+  mws_ids: string[]
+}
+
+export type CdfVariant = {
+  trim_top: boolean
+  trim_bottom: boolean
+  remove_zeros: boolean
+  log_scale: boolean
+  cdf: [number, number][]
+  sample_count: number
+  x_max?: number | null
+  removed: {
+    zeros: CdfRemovedBucket
+    top: CdfRemovedBucket
+    bottom: CdfRemovedBucket
+  }
+}
+
+export function cdfVariantKey(
+  trimTop: boolean,
+  trimBottom: boolean,
+  removeZeros: boolean,
+  logScale: boolean,
+): string {
+  return `${Number(trimTop)}${Number(trimBottom)}${Number(removeZeros)}${Number(logScale)}`
 }
 
 export type DashboardChartDefaultsManifest = {
@@ -148,6 +220,7 @@ export type DashboardVariable = {
   unit?: string
   sample_count?: number
   cdf?: [number, number][]
+  cdf_variants?: Record<string, CdfVariant>
   x_max?: number | null
   samples?: Array<{ mws_id: string; value: number }>
   distribution?: Array<{ label: string; count: number; percent: number }>
@@ -179,10 +252,46 @@ export function fetchCardMap(mwsId: string) {
   return api<CardMapResponse>(`/api/triage/card-map?mws_id=${encodeURIComponent(mwsId)}`)
 }
 
-export function fetchTriageCard(cardId: string) {
-  return api<{ card: EvidenceCard; draft: Record<string, unknown> | null }>(
-    `/api/triage/card/${encodeURIComponent(cardId)}`,
-  )
+export function fetchTriageCard(cardId: string, catalogFilename?: string) {
+  const query = catalogFilename ? `?catalog=${encodeURIComponent(catalogFilename)}` : ''
+  return api<{
+    card: EvidenceCard
+    raw_card: EvidenceCard
+    catalog_patch?: Record<string, unknown> | null
+    changed_fields?: TriageChangedFields | null
+    patch_stale?: boolean
+    patch_discarded_reason?: string | null
+    batch_id?: string | null
+  }>(`/api/triage/card/${encodeURIComponent(cardId)}${query}`)
+}
+
+export function fetchTriageCatalogPatches(catalogFilename: string) {
+  return api<TriageCatalogPatches>(`/api/triage/patches/${encodeURIComponent(catalogFilename)}`)
+}
+
+export function saveTriageCatalogPatches(
+  catalogFilename: string,
+  body: {
+    reviewer: string
+    cards: Array<{
+      card_id: string
+      diagnostic_signals: DiagnosticSignal[]
+      confirmation_policy?: Record<string, unknown>
+    }>
+  },
+) {
+  return api<{
+    catalog_filename: string
+    batch_id: string
+    saved_count: number
+    card_count: number
+    updated_at: string
+    reviewer: string
+  }>(`/api/triage/patches/${encodeURIComponent(catalogFilename)}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
 }
 
 export function evaluateTriageSection(body: {
@@ -194,6 +303,7 @@ export function evaluateTriageSection(body: {
     diagnostic_signals?: DiagnosticSignal[]
     confirmation_policy?: Record<string, unknown>
   }>
+  follow_up_by_mws?: Record<string, Record<string, string>>
 }) {
   return api<EvaluateSectionResult>('/api/triage/evaluate-section', {
     method: 'POST',
@@ -259,6 +369,31 @@ export function fetchVariableCatalog() {
     variable_count: number
     sections: VariableCatalogSection[]
   }>('/api/triage/variable-catalog')
+}
+
+export type MwsVariableValueEntry = {
+  name: string
+  kind: 'scalar' | 'derived' | 'time_series' | 'static_dict' | 'list' | 'missing'
+  formatted: string
+  raw?: unknown
+  series?: Array<{ year: number; value: unknown }>
+  nested_series?: Array<{ year: string; series: string; value: unknown }>
+  display_profile?: {
+    type: string
+    field?: string
+  }
+}
+
+export type MwsVariableValuesPayload = {
+  mws_id: string
+  state?: string
+  district?: string
+  tehsil?: string
+  variables: Record<string, MwsVariableValueEntry>
+}
+
+export function fetchMwsVariableValues(mwsId: string) {
+  return api<MwsVariableValuesPayload>(`/api/triage/mws-variable-values/${encodeURIComponent(mwsId)}`)
 }
 
 export const NONE_OF_THESE = '__none_of_these__'

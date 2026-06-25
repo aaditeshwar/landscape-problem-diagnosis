@@ -49,7 +49,7 @@
       ],
       "condition": {
         "type": "composite",
-        "expression": "trend_annual_delta_g_mm < 0 and mean_annual_delta_g_mm < 0",
+        "expression": "mean_annual_delta_g_mm < 0",
         "qualitative_description": "Both the linear trend slope of annual groundwater balance (P - ET - Runoff) is negative and the multi-year mean is negative, confirming chronic depletion rather than a single drought year anomaly.",
         "variables": [
           "trend_annual_delta_g_mm",
@@ -69,7 +69,7 @@
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "aquifer_class == 'alluvium' and acwadam_class_percent.get('alluvium', 0) > 60",
+        "expression": "aquifer_class in ['alluvium'] and acwadam_class_percent.get('alluvium', 0) > 60",
         "qualitative_description": "Dominant alluvial aquifer with more than 60% of MWS area underlain by alluvial lithology, confirming the high-storage but over-exploited aquifer type characteristic of the Indo-Gangetic Plain.",
         "variables": [
           "aquifer_class",

@@ -61,6 +61,12 @@ def _llm_failure_hint() -> str:
 def _format_llm_error(exc: Exception) -> str:
     msg = str(exc).strip() or exc.__class__.__name__
     lower = msg.lower()
+    if isinstance(exc, DiagnosisLLMParseError) and exc.llm_stop_reason == "max_tokens":
+        limit = exc.llm_max_tokens or "configured"
+        msg = (
+            f"{msg} (Claude hit max_tokens={limit}; reviewer JSON was truncated — "
+            f"raise ANTHROPIC_REVIEWER_MAX_TOKENS or shorten reviewer comments)"
+        )
     if isinstance(exc, httpx.TimeoutException) or "timed out" in lower or "timeout" in lower:
         return (
             f"Ollama generation timed out after {OLLAMA_CHAT_TIMEOUT:.0f}s "

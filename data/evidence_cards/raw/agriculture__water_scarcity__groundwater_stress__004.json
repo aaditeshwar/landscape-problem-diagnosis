@@ -51,7 +51,7 @@
       ],
       "condition": {
         "type": "trend",
-        "expression": "trend_annual_delta_g_mm < -2 and mean_annual_delta_g_mm < 0",
+        "expression": "mean_annual_delta_g_mm < 0",
         "qualitative_description": "The linear trend in annual groundwater balance (P - ET - Runoff) is declining at more than 2 mm/year and the multi-year mean is negative, confirming chronic depletion exceeding recharge in the arid zone.",
         "variables": [
           "trend_annual_delta_g_mm",
@@ -71,7 +71,7 @@
       ],
       "condition": {
         "type": "composite",
-        "expression": "aquifer_class == 'alluvium' and mean_annual_precipitation_mm < 450",
+        "expression": "aquifer_class in ['alluvium'] and mean_annual_precipitation_mm < 450",
         "qualitative_description": "Alluvial aquifer confirmed with mean annual precipitation below 450 mm, indicating that despite high storage capacity, recharge is severely limited by aridity — a combination that amplifies depletion risk from irrigation extraction.",
         "variables": [
           "aquifer_class",

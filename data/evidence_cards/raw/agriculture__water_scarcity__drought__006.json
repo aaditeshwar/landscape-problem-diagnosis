@@ -50,7 +50,7 @@
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "dry_spell_weeks[-1] >= 4",
+        "expression": "mean(dry_spell_weeks) >= 3",
         "qualitative_description": "Four or more dry spell weeks (4-week moving window with <50% historical rainfall) in the latest kharif season indicate prolonged moisture deficit disrupting critical crop growth stages.",
         "variables": [
           "dry_spell_weeks"
@@ -91,7 +91,7 @@
       ],
       "condition": {
         "type": "trend",
-        "expression": "mean_annual_precipitation_mm < 1000 or (seasonal_precipitation_mm[-1].get('kharif', 9999) < 0.65 * (sum(v.get('kharif', 0) for v in seasonal_precipitation_mm.values()) / max(len(seasonal_precipitation_mm), 1)))",
+        "expression": "mean_annual_precipitation_mm < 1000 or (seasonal_precipitation_mm[-1].get('kharif', 9999) < 0.65 * mean_kharif_precipitation)",
         "qualitative_description": "Mean annual precipitation below 1000 mm (lower bound of AER-18 normal range of 900–1400 mm) or current kharif seasonal rainfall below 65% of the long-term kharif mean indicates a below-normal rainfall year consistent with meteorological drought.",
         "variables": [
           "mean_annual_precipitation_mm",

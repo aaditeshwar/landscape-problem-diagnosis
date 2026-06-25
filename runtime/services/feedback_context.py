@@ -168,6 +168,7 @@ def build_feedback_context(
     if want_llm and not llm_skipped:
         llm_diagnosis = {
             "reviewer_commentary": llm_response.get("reviewer_commentary"),
+            "independent_pathway_review": llm_response.get("independent_pathway_review"),
             "change_review": llm_response.get("change_review"),
             "solutions_review_notes": llm_response.get("solutions_review_notes"),
         }

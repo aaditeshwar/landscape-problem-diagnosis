@@ -29,7 +29,7 @@
       ],
       "condition": {
         "type": "composite",
-        "expression": "aquifer_class == 'himalayan_and_sub_himalayan' and acwadam_class_percent.get('crystalline_basement', 0) + acwadam_class_percent.get('sedimentary_hard_rock', 0) > 40",
+        "expression": "aquifer_class in ['himalayan_and_sub_himalayan'] and acwadam_class_percent.get('crystalline_basement', 0) + acwadam_class_percent.get('sedimentary_hard_rock', 0) > 40",
         "qualitative_description": "Aquifer classified as Himalayan and sub-Himalayan with significant crystalline or hard-rock lithology fraction, indicating low storativity and limited recharge capacity despite high rainfall.",
         "variables": [
           "aquifer_class",
@@ -69,7 +69,7 @@
       ],
       "condition": {
         "type": "trend",
-        "expression": "trend_annual_delta_g_mm < 0 and mean_annual_delta_g_mm < 0",
+        "expression": "mean_annual_delta_g_mm < 0",
         "qualitative_description": "Declining trend in annual groundwater recharge balance (P - ET - Runoff) with a low mean recharge value, indicating that despite high rainfall, net groundwater replenishment is diminishing over time.",
         "variables": [
           "trend_annual_delta_g_mm",

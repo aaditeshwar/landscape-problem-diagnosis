@@ -157,23 +157,21 @@ def load_suggested_patches_index() -> dict[str, dict[str, dict[str, Any]]]:
 
 
 def load_decisions_doc() -> dict[str, Any]:
-    return load_json(
-        DECISIONS_PATH,
-        {"schema_version": 1, "decisions": {}, "card_status": {}},
-    )
+    from services.review_batch_store import load_batch_decisions_doc
+
+    return load_batch_decisions_doc()
+
+
+def load_user_card_edits_doc() -> dict[str, Any]:
+    from services.review_batch_store import load_batch_user_edits_doc
+
+    return load_batch_user_edits_doc()
 
 
 def load_edited_patches_doc() -> dict[str, Any]:
     return load_json(
         EDITED_PATCHES_PATH,
         {"schema_version": 1, "patches": {}},
-    )
-
-
-def load_user_card_edits_doc() -> dict[str, Any]:
-    return load_json(
-        USER_CARD_EDITS_PATH,
-        {"schema_version": 1, "edits": {}},
     )
 
 
@@ -196,29 +194,36 @@ def variable_registry_payload() -> dict[str, Any]:
 
 
 def list_batches() -> list[dict[str, Any]]:
+    from services.review_batch_store import batch_card_status, claude_batch_card_ids
+    from services.triage_patch_store import list_triage_batches
+
+    batches: list[dict[str, Any]] = []
     manifest = load_manifest()
-    card_ids = list_result_card_ids()
-    if not card_ids:
-        return []
-    batch_id = batch_id_from_manifest(manifest)
-    decisions_doc = load_decisions_doc()
-    card_status = decisions_doc.get("card_status") or {}
-    finalized = sum(
-        1
-        for card_id in card_ids
-        if isinstance(card_status.get(card_id), dict)
-        and card_status[card_id].get("status") == "finalized"
-    )
-    return [
-        {
-            "batch_id": batch_id,
-            "generated_at": manifest.get("generated_at"),
-            "pathway_filter": manifest.get("pathway_filter"),
-            "model": manifest.get("model"),
-            "card_count": len(card_ids),
-            "finalized_card_count": finalized,
-        }
-    ]
+    review_card_ids = claude_batch_card_ids()
+    if review_card_ids:
+        batch_id = batch_id_from_manifest(manifest)
+        decisions_doc = load_decisions_doc()
+        card_status = batch_card_status(decisions_doc, batch_id)
+        finalized = sum(
+            1
+            for card_id in review_card_ids
+            if isinstance(card_status.get(card_id), dict)
+            and card_status[card_id].get("status") == "finalized"
+        )
+        batches.append(
+            {
+                "batch_id": batch_id,
+                "generated_at": manifest.get("generated_at"),
+                "pathway_filter": manifest.get("pathway_filter"),
+                "model": manifest.get("model"),
+                "source": "claude_review",
+                "card_count": len(review_card_ids),
+                "finalized_card_count": finalized,
+            }
+        )
+    batches.extend(list_triage_batches())
+    batches.sort(key=lambda row: str(row.get("batch_id") or ""), reverse=True)
+    return batches
 
 
 def load_card_result(card_id: str) -> dict[str, Any] | None:
@@ -245,19 +250,25 @@ def enrich_findings(card_id: str, result: dict[str, Any]) -> list[dict[str, Any]
 
 
 def batch_summary(batch_id: str) -> dict[str, Any]:
+    from services.review_batch_store import batch_card_status, batch_decisions, claude_batch_card_ids
+    from services.triage_patch_store import is_triage_batch, triage_batch_summary
+
+    if is_triage_batch(batch_id):
+        return triage_batch_summary(batch_id)
+
     manifest = load_manifest()
     expected_id = batch_id_from_manifest(manifest)
     if batch_id != expected_id:
         raise KeyError(f"Unknown review batch: {batch_id}")
 
     decisions_doc = load_decisions_doc()
-    card_status = decisions_doc.get("card_status") or {}
-    decisions = decisions_doc.get("decisions") or {}
+    card_status = batch_card_status(decisions_doc, batch_id)
+    decisions = batch_decisions(decisions_doc, batch_id)
     edited_doc = load_edited_patches_doc()
     edited = edited_doc.get("patches") or {}
 
     cards: list[dict[str, Any]] = []
-    for card_id in list_result_card_ids():
+    for card_id in claude_batch_card_ids():
         result = load_card_result(card_id)
         if not result:
             continue
@@ -315,6 +326,12 @@ def batch_summary(batch_id: str) -> dict[str, Any]:
 
 
 def load_card_bundle(batch_id: str, card_id: str) -> dict[str, Any]:
+    from services.review_batch_store import batch_card_status, batch_decisions, batch_user_edits
+    from services.triage_patch_store import is_triage_batch, triage_load_card_bundle
+
+    if is_triage_batch(batch_id):
+        return triage_load_card_bundle(batch_id, card_id)
+
     manifest = load_manifest()
     if batch_id != batch_id_from_manifest(manifest):
         raise KeyError(f"Unknown review batch: {batch_id}")
@@ -330,10 +347,12 @@ def load_card_bundle(batch_id: str, card_id: str) -> dict[str, Any]:
             raw_card = json.load(handle)
 
     decisions_doc = load_decisions_doc()
+    user_edits_doc = load_user_card_edits_doc()
     edited_doc = load_edited_patches_doc()
-    decisions = decisions_doc.get("decisions") or {}
+    decisions = batch_decisions(decisions_doc, batch_id)
     edited = edited_doc.get("patches") or {}
-    card_status = decisions_doc.get("card_status") or {}
+    card_status = batch_card_status(decisions_doc, batch_id)
+    user_edits = batch_user_edits(user_edits_doc, batch_id)
 
     findings: list[dict[str, Any]] = []
     for finding in enrich_findings(card_id, result):
@@ -371,7 +390,6 @@ def load_card_bundle(batch_id: str, card_id: str) -> dict[str, Any]:
         findings.append(finding_out)
 
     status_entry = card_status.get(card_id) if isinstance(card_status, dict) else None
-    user_edits = load_user_card_edits_doc().get("edits") or {}
     user_edit_entry = user_edits.get(card_id) if isinstance(user_edits, dict) else None
     user_card_edit = None
     user_card_edit_status: dict[str, Any] | None = None
@@ -416,7 +434,30 @@ def finalize_card(
     issues: list[dict[str, Any]],
     reviewer: str | None = None,
     user_card_edit: dict[str, Any] | None = None,
+    *,
+    batch_id: str | None = None,
 ) -> dict[str, Any]:
+    from services.review_batch_store import (
+        batch_card_status,
+        batch_decisions,
+        batch_user_edits,
+        save_batch_decisions_doc,
+        save_batch_user_edits_doc,
+    )
+    from services.triage_patch_store import finalize_triage_card, is_triage_batch
+
+    if batch_id and is_triage_batch(batch_id):
+        return finalize_triage_card(
+            batch_id,
+            card_id,
+            reviewer=reviewer,
+            user_card_edit=user_card_edit,
+            issues=issues,
+        )
+
+    if not batch_id:
+        batch_id = batch_id_from_manifest(load_manifest())
+
     result = load_card_result(card_id)
     if not result:
         raise KeyError(f"No review result for card: {card_id}")
@@ -431,10 +472,10 @@ def finalize_card(
     decisions_doc = load_decisions_doc()
     edited_doc = load_edited_patches_doc()
     user_edits_doc = load_user_card_edits_doc()
-    decisions = decisions_doc.setdefault("decisions", {})
-    card_status = decisions_doc.setdefault("card_status", {})
+    decisions = batch_decisions(decisions_doc, batch_id)
+    card_status = batch_card_status(decisions_doc, batch_id)
+    user_edits = batch_user_edits(user_edits_doc, batch_id)
     patches = edited_doc.setdefault("patches", {})
-    user_edits = user_edits_doc.setdefault("edits", {})
     now = utc_now_iso()
 
     handled = 0
@@ -470,6 +511,7 @@ def finalize_card(
             "patch": user_card_edit,
             "finalized_at": now,
             "reviewer": reviewer or None,
+            "source_batch_id": batch_id,
             "propagated_at": None,
             "applied_card_digest": None,
         }
@@ -481,14 +523,16 @@ def finalize_card(
         "reviewer": reviewer or None,
         "handled_count": handled,
         "not_handled_count": not_handled,
+        "batch_id": batch_id,
+        "source": "claude_review",
     }
 
-    decisions_doc["schema_version"] = 1
+    decisions_doc["schema_version"] = 2
     edited_doc["schema_version"] = 1
-    user_edits_doc["schema_version"] = 1
-    atomic_write_json(DECISIONS_PATH, decisions_doc)
+    user_edits_doc["schema_version"] = 2
+    save_batch_decisions_doc(decisions_doc)
     atomic_write_json(EDITED_PATCHES_PATH, edited_doc)
-    atomic_write_json(USER_CARD_EDITS_PATH, user_edits_doc)
+    save_batch_user_edits_doc(user_edits_doc)
 
     return {
         "card_id": card_id,

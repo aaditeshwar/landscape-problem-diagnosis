@@ -50,7 +50,7 @@
       ],
       "condition": {
         "type": "trend",
-        "expression": "mean_cropping_intensity <= 1.15 and trend_cropping_intensity <= 0.01",
+        "expression": "mean_cropping_intensity <= 1.15 and trend_cropping_intensity <= 0.05",
         "qualitative_description": "Mean cropping intensity at or below 1.15 with no upward trend over the multi-year record indicates persistent single-season rainfed farming with no expansion of irrigated double-cropping.",
         "variables": [
           "mean_cropping_intensity",
@@ -70,7 +70,7 @@
       ],
       "condition": {
         "type": "composite",
-        "expression": "canal_name is None and nrega_irrigation_count < 3",
+        "expression": "canal_name is None and nrega_irrigation_count <= 35",
         "qualitative_description": "No irrigation canal intersects the micro-watershed AND fewer than 3 MGNREGA irrigation works have been constructed, jointly confirming absence of both surface irrigation infrastructure and public investment in water access.",
         "variables": [
           "canal_name",

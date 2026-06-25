@@ -50,7 +50,7 @@
       ],
       "condition": {
         "type": "composite",
-        "expression": "trend_annual_delta_g_mm < 0 and mean_annual_delta_g_mm < 0",
+        "expression": "mean_annual_delta_g_mm < 0",
         "qualitative_description": "Both the linear trend and the multi-year mean of annual groundwater recharge (P - ET - Runoff) are negative, indicating chronic depletion rather than a single drought year anomaly.",
         "variables": [
           "trend_annual_delta_g_mm",
@@ -70,7 +70,7 @@
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "aquifer_class == 'alluvium' and acwadam_class_percent.get('alluvium', 0) > 50",
+        "expression": "aquifer_class in ['alluvium'] and acwadam_class_percent.get('alluvium', 0) > 50",
         "qualitative_description": "Dominant alluvial aquifer lithology (>50% of MWS area) in a coastal plain setting confirms high recharge potential but also high extraction vulnerability due to ease of borewell installation and intensive irrigation demand.",
         "variables": [
           "aquifer_class",

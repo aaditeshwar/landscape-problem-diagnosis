@@ -2,6 +2,7 @@ from fastapi import APIRouter, Query
 
 from config import CLUSTER_COG_URL, CLUSTER_COG_VIEWER_URL
 from routers.clusters import public_cluster_cog_url
+from services.reviewer_access import reviewer_access_payload
 from services.variable_search import search_variables
 
 router = APIRouter(prefix="/api", tags=["config"])
@@ -13,6 +14,7 @@ def public_config():
         "cluster_cog_url": public_cluster_cog_url(),
         "cluster_cog_viewer_url": CLUSTER_COG_VIEWER_URL,
         "remote_cluster_cog_url": CLUSTER_COG_URL,
+        **reviewer_access_payload(),
     }
 
 

@@ -6,6 +6,8 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
 from services import claude_review_store as store
+from services import triage_patch_store as patch_store
+from services.reviewer_access import ReviewerNotAllowedError, validate_reviewer_name
 
 router = APIRouter(prefix="/api/claude-review", tags=["claude-review"])
 
@@ -54,12 +56,19 @@ def claude_review_finalize_card(card_id: str, body: FinalizeCardBody):
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
     try:
+        if body.user_card_edit or patch_store.is_triage_batch(body.batch_id):
+            reviewer = validate_reviewer_name(body.reviewer)
+        else:
+            reviewer = body.reviewer
         return store.finalize_card(
             card_id,
             [issue.model_dump() for issue in body.issues],
-            reviewer=body.reviewer,
+            reviewer=reviewer,
             user_card_edit=body.user_card_edit,
+            batch_id=body.batch_id,
         )
+    except ReviewerNotAllowedError as exc:
+        raise HTTPException(status_code=403, detail=str(exc)) from exc
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 

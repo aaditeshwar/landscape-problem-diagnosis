@@ -47,7 +47,7 @@
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "aquifer_class == 'volcanic' or aquifer_class == 'crystalline_basement'",
+        "expression": "aquifer_class in ['volcanic', 'crystalline_basement']",
         "qualitative_description": "Aquifer classified as volcanic or crystalline basement, indicating low storativity and limited lateral recharge typical of island geology in Andaman & Nicobar and Lakshadweep.",
         "variables": [
           "aquifer_class"
@@ -66,7 +66,7 @@
       ],
       "condition": {
         "type": "trend",
-        "expression": "trend_annual_delta_g_mm < 0 and mean_annual_delta_g_mm < 20",
+        "expression": "mean_annual_delta_g_mm < 20",
         "qualitative_description": "Linear trend in annual groundwater recharge (P - ET - Runoff) is negative and mean annual recharge surplus is below 20 mm, indicating that despite high rainfall, effective recharge to the aquifer is declining or marginal.",
         "variables": [
           "trend_annual_delta_g_mm",

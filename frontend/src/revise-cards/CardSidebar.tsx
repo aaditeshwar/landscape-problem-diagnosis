@@ -45,7 +45,8 @@ export function CardSidebar({ cards, selectedCardId, onSelect }: CardSidebarProp
       </div>
       <div ref={listRef} className="flex-1 overflow-y-auto">
         {cards.map((card) => {
-          const styles = severityClasses('', card.overall_score)
+          const isTriageCard = card.overall_score === 'triaging'
+          const styles = severityClasses('', isTriageCard ? 'pass' : card.overall_score)
           const active = card.card_id === selectedCardId
           return (
             <button
@@ -54,7 +55,11 @@ export function CardSidebar({ cards, selectedCardId, onSelect }: CardSidebarProp
               onClick={() => handleSelect(card.card_id)}
               title={card.card_id}
               className={`block w-full border-b border-stone-200 px-4 py-3 text-left transition border-l-4 ${
-                active ? sidebarActiveClasses(card.overall_score) : 'border-l-transparent hover:bg-white/70'
+                active
+                  ? isTriageCard
+                    ? 'border-l-amber-600 bg-amber-50/80'
+                    : sidebarActiveClasses(card.overall_score)
+                  : 'border-l-transparent hover:bg-white/70'
               }`}
             >
               <div className="flex items-start justify-between gap-2">
@@ -69,7 +74,7 @@ export function CardSidebar({ cards, selectedCardId, onSelect }: CardSidebarProp
                   <span
                     className={`rounded border px-1.5 py-0.5 text-[10px] font-semibold uppercase ${styles.badge}`}
                   >
-                    {card.overall_score}
+                    {isTriageCard ? 'patch' : card.overall_score}
                   </span>
                   {card.finalized && (
                     <span className="text-[10px] font-semibold uppercase tracking-wide text-emerald-800">
@@ -79,19 +84,28 @@ export function CardSidebar({ cards, selectedCardId, onSelect }: CardSidebarProp
                 </div>
               </div>
               <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-stone-600">
-                <span>{card.finding_count} issues</span>
-                {(card.pending_count ?? 0) > 0 && (
-                  <span className="font-medium text-amber-800">{card.pending_count} pending</span>
-                )}
-                {(card.not_handled_count ?? 0) > 0 && (
-                  <span className="font-medium text-amber-800">
-                    {card.not_handled_count} not handled
-                  </span>
-                )}
-                {!card.finalized
-                  && (card.pending_count ?? 0) === 0
-                  && (card.not_handled_count ?? 0) === 0 && (
-                  <span className="text-stone-500">ready to finalize</span>
+                {isTriageCard ? (
+                  <>
+                    <span>{card.has_edits ? 'has edits' : 'no edits'}</span>
+                    {!card.finalized && <span className="text-stone-500">ready to finalize</span>}
+                  </>
+                ) : (
+                  <>
+                    <span>{card.finding_count} issues</span>
+                    {(card.pending_count ?? 0) > 0 && (
+                      <span className="font-medium text-amber-800">{card.pending_count} pending</span>
+                    )}
+                    {(card.not_handled_count ?? 0) > 0 && (
+                      <span className="font-medium text-amber-800">
+                        {card.not_handled_count} not handled
+                      </span>
+                    )}
+                    {!card.finalized
+                      && (card.pending_count ?? 0) === 0
+                      && (card.not_handled_count ?? 0) === 0 && (
+                      <span className="text-stone-500">ready to finalize</span>
+                    )}
+                  </>
                 )}
               </div>
             </button>

@@ -12,6 +12,7 @@ type IssueReviewCardProps = {
   draft: IssueDraft
   disabled: boolean
   rawCard?: Record<string, unknown> | null
+  patchSource?: 'claude' | 'triaging'
   onDraftChange: (draft: IssueDraft) => void
 }
 
@@ -28,8 +29,11 @@ export function IssueReviewCard({
   draft,
   disabled,
   rawCard,
+  patchSource = 'claude',
   onDraftChange,
 }: IssueReviewCardProps) {
+  const isTriagePatch = patchSource === 'triaging'
+  const suggestionLabel = isTriagePatch ? 'Triaging patch (reference only)' : 'Claude suggestion (reference only)'
   const styles = severityClasses(finding.severity)
   const suggested = finding.suggested_patch ?? null
   const policyIssue = isPolicyFinding(finding.field_path, finding.dimension)
@@ -53,20 +57,26 @@ export function IssueReviewCard({
           {styles.label}
         </span>
         <span className="rounded bg-white/70 px-2 py-0.5 text-[11px] font-medium text-stone-700">
-          {dimensionLabel(finding.dimension)}
+          {isTriagePatch ? 'Triaging patch' : dimensionLabel(finding.dimension)}
         </span>
-        {finding.reviewer_confidence && (
+        {!isTriagePatch && finding.reviewer_confidence && (
           <span className="text-[11px] text-stone-600">confidence: {finding.reviewer_confidence}</span>
         )}
       </div>
 
       <h3 className="font-mono text-sm font-semibold text-stone-900">{finding.issue_id}</h3>
-      <SignalText
-        text={finding.explanation}
-        signalsById={signalsById}
-        as="p"
-        className="mt-2 text-sm leading-relaxed text-stone-800"
-      />
+      {finding.explanation ? (
+        <SignalText
+          text={finding.explanation}
+          signalsById={signalsById}
+          as="p"
+          className="mt-2 text-sm leading-relaxed text-stone-800"
+        />
+      ) : isTriagePatch ? (
+        <p className="mt-2 text-sm text-stone-600">
+          Field changed in triaging: <span className="font-mono">{finding.field_path}</span>
+        </p>
+      ) : null}
 
       {(finding.dict_key_issues?.length ?? 0) > 0 && (
         <div className="mt-3 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-950">
@@ -90,7 +100,7 @@ export function IssueReviewCard({
                 left={currentPolicy}
                 right={suggestedPolicy}
                 leftLabel={`Current — ${finding.field_path || 'confirmation_policy'}`}
-                rightLabel="Claude suggestion (reference only)"
+                rightLabel={suggestionLabel}
               />
             </>
           ) : (
@@ -138,7 +148,7 @@ export function IssueReviewCard({
 
           <div className="flex min-h-0 flex-col">
             <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-stone-600">
-              Claude suggestion (reference only)
+              {suggestionLabel}
             </div>
             {suggested ? (
               <pre className="min-h-[12rem] flex-1 overflow-auto rounded-md border border-stone-300 bg-white/80 p-3 text-xs">

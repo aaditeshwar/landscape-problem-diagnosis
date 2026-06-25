@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import ast
+import statistics
 from datetime import date, datetime
 from typing import Any
 
@@ -13,6 +14,9 @@ from services.variable_registry import list_type_variables, presence_categorical
 _NUMERIC_DERIVED_DEFAULTS = DROUGHT_DERIVED_VARIABLE_NAMES | {
     "mean_annual_precipitation_mm",
     "trend_annual_precipitation_mm",
+    "mean_kharif_precipitation",
+    "mean_rabi_precipitation",
+    "mean_zaid_precipitation",
     "mean_annual_et_mm",
     "trend_annual_et_mm",
     "mean_annual_runoff_mm",
@@ -62,12 +66,53 @@ _TIME_SERIES_WHEN_NULL = frozenset(
     }
 )
 
+def _agg_series_values(value: Any) -> list[float]:
+    from services.expression_variable_access import numeric_series_values
+
+    return numeric_series_values(value)
+
+
+def _eval_mean(value: Any) -> float:
+    nums = _agg_series_values(value)
+    if not nums:
+        raise TypeError("mean() argument is empty")
+    return float(statistics.mean(nums))
+
+
+def _eval_min(*args: Any) -> Any:
+    if len(args) == 1:
+        nums = _agg_series_values(args[0])
+        if nums:
+            return float(min(nums))
+    if not args:
+        raise TypeError("min expected at least 1 argument")
+    return min(*args)
+
+
+def _eval_max(*args: Any) -> Any:
+    if len(args) == 1:
+        nums = _agg_series_values(args[0])
+        if nums:
+            return float(max(nums))
+    if not args:
+        raise TypeError("max expected at least 1 argument")
+    return max(*args)
+
+
+def _eval_sum(value: Any) -> float:
+    nums = _agg_series_values(value)
+    if not nums:
+        return 0.0
+    return float(sum(nums))
+
+
 _SAFE_BUILTINS = {
     "abs": abs,
-    "min": min,
-    "max": max,
+    "min": _eval_min,
+    "max": _eval_max,
     "len": len,
-    "sum": sum,
+    "sum": _eval_sum,
+    "mean": _eval_mean,
     "sorted": sorted,
     "round": round,
     "float": float,
@@ -277,6 +322,13 @@ _CATEGORICAL_WHEN_NULL = frozenset(
     }
 )
 
+_STATIC_DICT_WHEN_NULL = frozenset(
+    {
+        "acwadam_class_percent",
+        "aquifer_lithology_percent",
+    }
+)
+
 
 def _looks_like_year_series(data: dict[Any, Any]) -> bool:
     if not data:
@@ -337,6 +389,9 @@ def eval_context(present_variables: dict[str, Any], injected: dict[str, Any] | N
         ctx.setdefault(name, [])
     for name in presence_categorical_variables():
         ctx.setdefault(name, None)
+    for name in _STATIC_DICT_WHEN_NULL:
+        if ctx.get(name) is None:
+            ctx[name] = {}
     for name in _NUMERIC_DERIVED_DEFAULTS:
         if name in ctx:
             continue
@@ -355,6 +410,8 @@ def eval_context(present_variables: dict[str, Any], injected: dict[str, Any] | N
             ctx[key] = SafeYearIndexedMapping({})
         elif key in _CATEGORICAL_WHEN_NULL:
             continue
+        elif key in _STATIC_DICT_WHEN_NULL:
+            ctx[key] = {}
         elif key in _NUMERIC_DERIVED_DEFAULTS or key.startswith(
             ("dist_", "cd_", "nrega_", "village_", "soge_", "mean_", "trend_", "drought_", "swb_", "slopy_")
         ):
@@ -537,6 +594,21 @@ def _count_signal_in_summary(summary: dict[str, int], direction: str, result: bo
         summary["amplifies_true"] += 1
 
 
+def present_variables_for_access_resolution(present_variables: dict[str, Any]) -> dict[str, Any]:
+    """Merge pathway present_variables with eval-context scalars for display/access lookup."""
+    merged = dict(present_variables or {})
+    ctx = eval_context(present_variables)
+    for key, value in ctx.items():
+        if key in merged and merged[key] is not None:
+            continue
+        if isinstance(value, (YearIndexedMapping, SafeYearIndexedMapping)):
+            if key not in merged:
+                merged[key] = value._data if hasattr(value, "_data") else value
+            continue
+        merged[key] = value
+    return merged
+
+
 def _variable_values_for_expression(expression: str, variables: dict[str, Any]) -> list[dict[str, str]]:
     from services.expression_variable_access import (
         expression_variable_accesses,
@@ -546,9 +618,10 @@ def _variable_values_for_expression(expression: str, variables: dict[str, Any]) 
 
     if not expression:
         return []
+    lookup = present_variables_for_access_resolution(variables)
     rows: list[dict[str, str]] = []
     for access in expression_variable_accesses(expression):
-        value = resolve_access_value(access, variables)
+        value = resolve_access_value(access, lookup)
         rows.append({"access": access, "formatted": format_access_value(value)})
     return rows
 
@@ -739,37 +812,14 @@ def summarize_pathway_evidence(
 
 def expression_load_names(card_or_expression: Any) -> set[str]:
     """Return identifier names referenced in a card's signal expressions or a single expression."""
-    names: set[str] = set()
+    from services.expression_variable_access import (
+        expression_dependencies_from_card,
+        expression_dependency_names,
+    )
+
     if isinstance(card_or_expression, str):
-        expressions = [card_or_expression]
-    else:
-        expressions = [
-            str((signal.get("condition") or {}).get("expression") or "").strip()
-            for signal in (card_or_expression.get("diagnostic_signals") or [])
-            if isinstance(signal, dict)
-        ]
-    for expression in expressions:
-        if not expression:
-            continue
-        try:
-            tree = ast.parse(expression, mode="eval")
-        except SyntaxError:
-            continue
-        bound: set[str] = set()
-        for node in ast.walk(tree):
-            if isinstance(node, ast.comprehension):
-                for sub in ast.walk(node.target):
-                    if isinstance(sub, ast.Name):
-                        bound.add(sub.id)
-        names.update(
-            node.id
-            for node in ast.walk(tree)
-            if isinstance(node, ast.Name)
-            and isinstance(node.ctx, ast.Load)
-            and node.id not in _SAFE_BUILTINS
-            and node.id not in bound
-        )
-    return names
+        return expression_dependency_names(card_or_expression)
+    return expression_dependencies_from_card(card_or_expression)
 
 
 def missing_context_keys(expression: str, present_variables: dict[str, Any]) -> set[str]:

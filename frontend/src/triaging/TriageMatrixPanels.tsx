@@ -43,7 +43,7 @@ export function ConfusionMatrix({ matrixColumns, evalResult }: Props) {
   const predictedCols = [...matrixColumns, NONE_OF_THESE]
 
   return (
-    <div className="overflow-auto rounded-lg border border-stone-200 bg-white">
+    <div className="overflow-auto overscroll-x-contain rounded-lg border border-stone-200 bg-white">
       <div className="border-b border-stone-100 px-2 py-1 text-[10px] text-stone-600">
         Each row is a one-vs-rest classifier for that pathway (all section MWS). Green=TP, yellow=FP,
         blue=TN, red=FN.
@@ -124,7 +124,7 @@ export function VariableTable({
   const columnByMws = new Map(table.columns.map((col) => [col.mws_id, col]))
 
   return (
-    <div className="overflow-auto rounded-lg border border-stone-200 bg-white">
+    <div className="overflow-auto overscroll-x-contain rounded-lg border border-stone-200 bg-white">
       <table className="min-w-full text-xs">
         <thead>
           <tr className="border-b border-stone-200 bg-stone-50">

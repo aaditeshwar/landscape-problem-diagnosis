@@ -94,6 +94,26 @@ def test_swb_ratio_zero_kharif_across_years():
     assert resolve_derived(mws, "trend_swb_rabi_kharif_ratio") == 0.0
 
 
+def test_seasonal_precipitation_means():
+    mws = {
+        "hydrological_seasonal": {
+            "2017": {
+                "kharif": {"precipitation_mm": 800.0},
+                "rabi": {"precipitation_mm": 100.0},
+                "zaid": {"precipitation_mm": 50.0},
+            },
+            "2018": {
+                "kharif": {"precipitation_mm": 900.0},
+                "rabi": {"precipitation_mm": 120.0},
+                "zaid": {"precipitation_mm": 30.0},
+            },
+        }
+    }
+    assert resolve_derived(mws, "mean_kharif_precipitation") == 850.0
+    assert resolve_derived(mws, "mean_rabi_precipitation") == 110.0
+    assert resolve_derived(mws, "mean_zaid_precipitation") == 40.0
+
+
 def test_resolve_derived_names():
     mws = {
         "hydrological_annual": {
@@ -127,6 +147,7 @@ def main() -> int:
         test_swb_ratio,
         test_tree_cover_percent_mws_derived,
         test_swb_ratio_zero_kharif_across_years,
+        test_seasonal_precipitation_means,
         test_resolve_derived_names,
     ]
     failed = 0

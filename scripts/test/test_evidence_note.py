@@ -28,7 +28,11 @@ SAMPLE_BUNDLE = {
         ],
         "evidence_card": {
             "overall_reasoning_note": "Confirm with at least two primary signals.",
-            "diagnostic_signals": [],
+            "diagnostic_signals": [
+                {"signal_id": "sig_1", "direction": "confirms", "active": True},
+                {"signal_id": "sig_2", "direction": "confirms", "active": True},
+                {"signal_id": "sig_3", "direction": "amplifies", "active": True},
+            ],
         },
     },
     "drought": {
@@ -168,7 +172,8 @@ def test_format_pathway_reasoning_includes_mws():
         status="confirmed",
     )
     assert "4_91594" in reasoning
-    assert "sig_1 TRUE" in reasoning
+    assert "1/2 confirming signals TRUE (sig_1)" in reasoning
+    assert "0/1 amplifying signals TRUE (none)" in reasoning
 
 
 def test_solutions_dedup_and_order():

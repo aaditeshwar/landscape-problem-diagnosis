@@ -50,7 +50,7 @@
       ],
       "condition": {
         "type": "trend",
-        "expression": "trend_annual_delta_g_mm < 0 and mean_annual_delta_g_mm < 0",
+        "expression": "mean_annual_delta_g_mm < 0",
         "qualitative_description": "Both the linear trend and the multi-year mean of annual groundwater balance (P - ET - Runoff) are negative, indicating that recharge is chronically insufficient despite high rainfall.",
         "variables": [
           "trend_annual_delta_g_mm",
@@ -70,7 +70,7 @@
       ],
       "condition": {
         "type": "composite",
-        "expression": "aquifer_class == 'sedimentary_soft_rock' and acwadam_class_percent.get('alluvium', 0) < 20",
+        "expression": "aquifer_class in ['sedimentary_soft_rock'] and acwadam_class_percent.get('alluvium', 0) < 20",
         "qualitative_description": "Aquifer is classified as sedimentary soft rock with less than 20% alluvial lithology, indicating limited storage capacity and poor lateral recharge connectivity in hilly terrain.",
         "variables": [
           "aquifer_class",

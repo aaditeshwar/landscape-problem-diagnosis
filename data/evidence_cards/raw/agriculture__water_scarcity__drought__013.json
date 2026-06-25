@@ -30,7 +30,7 @@
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "drought_weeks_severe[-1] >= 2 or drought_weeks_moderate[-1] >= 4",
+        "expression": "drought_severe_return_period <= 4 or drought_moderate_return_period <= 4",
         "qualitative_description": "Two or more severe drought weeks, or four or more moderate drought weeks in the latest kharif season, indicate meaningful crop-season water deficit even in a perhumid zone.",
         "variables": [
           "drought_weeks_severe",
@@ -93,7 +93,7 @@
       ],
       "condition": {
         "type": "trend",
-        "expression": "trend_annual_precipitation_mm < -30 or (seasonal_precipitation_mm[-1].get('kharif', 9999) < 0.75 * mean_annual_precipitation_mm)",
+        "expression": "trend_annual_precipitation_mm < -30 or (mean_kharif_precipitation < 0.75 * mean_annual_precipitation_mm)",
         "qualitative_description": "A declining trend in annual precipitation exceeding 30 mm/year, or a kharif seasonal total below 75% of the long-term mean annual precipitation, confirms a below-normal rainfall year driving drought stress.",
         "variables": [
           "trend_annual_precipitation_mm",
