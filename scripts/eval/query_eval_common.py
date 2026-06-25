@@ -26,6 +26,7 @@ def feedback_url(frontend_base: str, diagnosis: dict[str, Any]) -> str:
     log_index = diagnosis.get("log_index")
     if isinstance(log_index, int) and log_index >= 0:
         params["log_index"] = str(log_index)
+    # frontend_base must include any Apache subpath (e.g. http://host/core-insights)
     base = frontend_base.rstrip("/")
     return f"{base}/feedback?{urlencode(params)}"
 

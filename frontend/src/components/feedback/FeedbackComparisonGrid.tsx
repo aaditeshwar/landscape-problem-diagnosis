@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { Link } from 'react-router-dom'
 import type {
   FeedbackContext,
   FeedbackSectionDraft,
@@ -83,14 +84,14 @@ function FeedbackColumn({
           />
         </label>
         {signalEditorUrl ? (
-          <a
-            href={signalEditorUrl}
+          <Link
+            to={signalEditorUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex text-xs font-medium text-amber-900 underline decoration-amber-400 underline-offset-2 hover:text-amber-950"
           >
             See details and edit signals - advanced
-          </a>
+          </Link>
         ) : null}
       </div>
     </div>

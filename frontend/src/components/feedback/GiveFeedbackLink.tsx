@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { buildFeedbackPageUrl } from '../../api/feedback'
 
 interface Props {
@@ -16,10 +17,10 @@ export function GiveFeedbackLink({
   className,
 }: Props) {
   if (!snapshotId || disabled) return null
-  const href = buildFeedbackPageUrl({ snapshotId, focus, pathwayId })
+  const to = buildFeedbackPageUrl({ snapshotId, focus, pathwayId })
   return (
-    <a
-      href={href}
+    <Link
+      to={to}
       target="_blank"
       rel="noopener noreferrer"
       className={
@@ -28,6 +29,6 @@ export function GiveFeedbackLink({
       }
     >
       See details and give feedback
-    </a>
+    </Link>
   )
 }
