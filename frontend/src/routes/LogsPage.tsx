@@ -1,7 +1,11 @@
 import { appUrl } from '../appBase'
 import { ExternalLink } from '../components/ExternalLink'
 
+const LOGS_API_BASE = appUrl('/api/logs')
+
 export function LogsPage() {
+  const dashboardSrc = `${appUrl('/api/logs/dashboard')}?api_base=${encodeURIComponent(LOGS_API_BASE)}`
+
   return (
     <div className="flex h-screen flex-col bg-stone-100">
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-stone-200 bg-white px-4 py-3">
@@ -19,7 +23,7 @@ export function LogsPage() {
         </div>
       </header>
       <iframe
-        src={appUrl('/api/logs/dashboard')}
+        src={dashboardSrc}
         title="Diagnosis log dashboard"
         className="min-h-0 w-full flex-1 border-0 bg-white"
       />

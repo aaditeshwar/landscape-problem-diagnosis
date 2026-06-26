@@ -517,16 +517,16 @@ If local `:8000` works but Apache still 503, the vhost `ProxyPass` prefix does n
 
 The `/logs` page embeds `/api/logs/dashboard`. That HTML page calls `/api/logs/meta` and `/api/logs/events`. On a subpath install (`VITE_BASE_PATH=/core-insights/`), those requests must go to **`/core-insights/api/logs/...`**, not `/api/logs/...` (which Apache does not proxy).
 
-The log dashboard script derives the API prefix from `window.location.pathname` (e.g. `/core-insights/api/logs/dashboard` → `/core-insights/api/logs`).
+The log dashboard script reads the API prefix from the `api_base` query parameter (set by the `/logs` React page), from `window.location.pathname`, or from `/static/logs/dashboard.html` mounts.
 
 **Verify on the server:**
 
 ```bash
-curl -s http://127.0.0.1:8000/api/logs/meta | head
-curl -s http://localhost/core-insights/api/logs/meta | head
+curl -s "http://localhost/core-insights/api/logs/meta" | head
+curl -s "http://localhost/core-insights/api/logs/dashboard?api_base=/core-insights/api/logs" | head
 ```
 
-Both should return JSON. Then open `https://your-host/core-insights/logs`.
+Both should return JSON / HTML respectively. Then open `https://your-host/core-insights/logs`.
 
 Ensure Apache proxies the prefixed API (see §6 subpath example):
 

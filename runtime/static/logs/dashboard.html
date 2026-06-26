@@ -877,6 +877,12 @@
     }
 
     function logsApiBase() {
+      const params = new URLSearchParams(window.location.search);
+      const fromQuery = params.get("api_base");
+      if (fromQuery) {
+        return fromQuery.replace(/\/+$/, "");
+      }
+
       const path = window.location.pathname.replace(/\/+$/, "");
       if (path.endsWith("/api/logs/dashboard")) {
         return path.slice(0, -"/dashboard".length);
@@ -884,12 +890,26 @@
       if (path.endsWith("/api/logs/dashboard.html")) {
         return path.slice(0, -"/dashboard.html".length);
       }
-      return "/api/logs";
+      const staticMount = path.match(/^(.*)\/static\/logs\/dashboard(?:\.html)?$/);
+      if (staticMount) {
+        const prefix = staticMount[1] || "";
+        return `${prefix}/api/logs`;
+      }
+
+      // Resolve relative to this document's directory (.../api/logs/)
+      const pageUrl = window.location.href.split("#")[0].split("?")[0];
+      const logsDir = pageUrl.replace(/\/dashboard(?:\.html)?\/?$/, "/");
+      try {
+        return new URL(".", logsDir).pathname.replace(/\/+$/, "") || "/api/logs";
+      } catch (_err) {
+        return "/api/logs";
+      }
     }
 
     function logsApiUrl(suffix) {
       const base = logsApiBase();
-      return `${base}${suffix.startsWith("/") ? suffix : `/${suffix}`}`;
+      const clean = suffix.startsWith("/") ? suffix : `/${suffix}`;
+      return `${base}${clean}`;
     }
 
     async function fetchJson(url) {
