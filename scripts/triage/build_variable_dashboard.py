@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Precompute global variable CDF dashboards per diagnosis section.
 
-Sections are derived from evidence cards with built pathways. CDFs use every
-MWS in the database with export coverage (not case-study catalog instances).
+Sections = union of (1) case-study catalog (production_system, observed_stress) pairs
+and (2) evidence-card sections with built pathways. Sections without built cards still
+appear with empty variable charts. CDFs use every MWS in the database with export coverage.
 """
 
 from __future__ import annotations
@@ -32,10 +33,11 @@ from services.mws_export import ensure_mws_export, has_minimum_export_coverage  
 from services.signal_evaluator import merge_export_variables  # noqa: E402
 from services.variable_categories import categorize_variable, category_sort_key  # noqa: E402
 from services.variable_registry import variable_type_catalog  # noqa: E402
-from services.triage_index import section_key  # noqa: E402
+from services.triage_index import group_instances_into_sections, load_case_study_rows_from_file, section_key  # noqa: E402
 
 OUTPUT_DIR = ROOT / "data" / "triage_dashboard"
 RAW_CARDS_DIR = ROOT / "data" / "evidence_cards" / "raw"
+DEFAULT_CATALOG = "case_study_locations_v3.json"
 
 
 def _utc_now() -> str:
@@ -183,6 +185,30 @@ def built_dashboard_sections() -> list[dict[str, str]]:
             }
         )
     return sections
+
+
+def dashboard_sections(catalog_filename: str) -> list[dict[str, str]]:
+    """Union of case-study catalog sections and evidence-card sections with built pathways."""
+    by_key: dict[str, dict[str, str]] = {}
+
+    for section in built_dashboard_sections():
+        by_key[section["section_key"]] = section
+
+    instances = load_case_study_rows_from_file(catalog_filename)
+    for section in group_instances_into_sections(instances):
+        key = section["section_key"]
+        if key in by_key:
+            continue
+        by_key[key] = {
+            "production_system": section["production_system"],
+            "observed_stress": section["observed_stress"],
+            "section_key": key,
+        }
+
+    return sorted(
+        by_key.values(),
+        key=lambda item: (item["production_system"], item["observed_stress"]),
+    )
 
 
 def cards_for_section(
@@ -396,6 +422,7 @@ def parse_section_arg(value: str) -> tuple[str, str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--catalog", default=DEFAULT_CATALOG, help="Case study catalog for section list")
     parser.add_argument("--output-dir", type=Path, default=OUTPUT_DIR)
     parser.add_argument("--section", action="append", help="Only build Agriculture/water_scarcity (repeatable)")
     parser.add_argument("--add-variable", action="append", help="Extra variable access key for all built sections")
@@ -407,7 +434,7 @@ def main() -> int:
     exports = load_all_exports(db, limit=args.limit_mws)
     print(f"  {len(exports)} MWS with export coverage")
 
-    sections = built_dashboard_sections()
+    sections = dashboard_sections(args.catalog)
     if args.section:
         wanted = {parse_section_arg(item) for item in args.section}
         sections = [
@@ -417,16 +444,18 @@ def main() -> int:
         ]
 
     if not sections:
-        print("No sections with built pathways found in evidence cards.")
+        print("No dashboard sections found (check case study catalog and evidence cards).")
         return 1
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
     manifest_sections: list[dict[str, str]] = []
+    written_keys: set[str] = set()
 
     for section in sections:
         production = section["production_system"]
         stress = section["observed_stress"]
         key = section["section_key"]
+        written_keys.add(key)
         payload = build_section_dashboard(
             db,
             production_system=production,
@@ -440,6 +469,12 @@ def main() -> int:
             handle.write("\n")
         manifest_sections.append({"section_key": key, "filename": out_path.name})
         print(f"  wrote {out_path.name} ({payload['mws_count']} MWS, {len(payload['variables'])} variables)")
+
+    for path in args.output_dir.glob("*.json"):
+        if path.name == "manifest.json" or path.stem in written_keys:
+            continue
+        path.unlink()
+        print(f"  removed stale {path.name}")
 
     manifest = {"generated_at": _utc_now(), "sections": manifest_sections}
     manifest_path = args.output_dir / "manifest.json"

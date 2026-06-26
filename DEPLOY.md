@@ -151,6 +151,7 @@ python scripts/reload_evidence_cards.py
 python scripts/build_spatial_index.py
 
 # Variable dashboard (/dashboard) — precomputes CDF charts under data/triage_dashboard/
+# Sections = case-study catalog + evidence-card sections (empty charts when no built cards).
 python scripts/triage/build_variable_dashboard.py
 ```
 

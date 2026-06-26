@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-ConfirmationLevel = str  # high | medium | unconfirmed
+AgreementLevel = str  # confirmed_high | confirmed_medium_low | uncertain | unconfirmed
 
 
 def _norm_confidence(value: Any) -> str:
@@ -14,36 +14,44 @@ def _norm_confidence(value: Any) -> str:
     return "medium"
 
 
-def server_pathway_level(diagnosis: dict[str, Any], pathway_id: str) -> ConfirmationLevel:
+def _review_entry(diagnosis: dict[str, Any], pathway_id: str) -> dict[str, Any] | None:
+    for item in diagnosis.get("independent_pathway_review") or []:
+        if not isinstance(item, dict):
+            continue
+        if str(item.get("pathway_id") or "") == pathway_id:
+            return item
+    return None
+
+
+def server_pathway_level(diagnosis: dict[str, Any], pathway_id: str) -> AgreementLevel:
     for item in diagnosis.get("confirmed_pathways") or []:
         if not isinstance(item, dict):
             continue
         if str(item.get("pathway_id") or "") != pathway_id:
             continue
         conf = _norm_confidence(item.get("confidence"))
-        return "high" if conf == "high" else "medium"
+        return "confirmed_high" if conf == "high" else "confirmed_medium_low"
     for item in diagnosis.get("uncertain_pathways") or []:
         if not isinstance(item, dict):
             continue
         if str(item.get("pathway_id") or "") == pathway_id:
-            return "medium"
+            return "uncertain"
     return "unconfirmed"
 
 
-def independent_pathway_level(diagnosis: dict[str, Any], pathway_id: str) -> ConfirmationLevel:
-    for item in diagnosis.get("independent_pathway_review") or []:
-        if not isinstance(item, dict):
-            continue
-        if str(item.get("pathway_id") or "") != pathway_id:
-            continue
-        present = str(item.get("pathway_present") or "uncertain").lower()
-        if present == "no":
-            return "unconfirmed"
+def independent_pathway_level(diagnosis: dict[str, Any], pathway_id: str) -> AgreementLevel:
+    item = _review_entry(diagnosis, pathway_id)
+    if item is None:
+        return "unconfirmed"
+    present = str(item.get("pathway_present") or "uncertain").strip().lower()
+    if present in {"no", "false"}:
+        return "unconfirmed"
+    if present == "uncertain":
+        return "uncertain"
+    if present == "yes":
         conf = _norm_confidence(item.get("confidence"))
-        if present == "yes" and conf == "high":
-            return "high"
-        return "medium"
-    return "unconfirmed"
+        return "confirmed_high" if conf == "high" else "confirmed_medium_low"
+    return "uncertain"
 
 
 def pathway_ids_union(*diagnoses: dict[str, Any]) -> list[str]:
@@ -56,6 +64,9 @@ def pathway_ids_union(*diagnoses: dict[str, Any]) -> list[str]:
         for item in diagnosis.get("independent_pathway_review") or []:
             if isinstance(item, dict) and item.get("pathway_id"):
                 ids.add(str(item["pathway_id"]))
+        signal_eval = diagnosis.get("signal_evaluation")
+        if isinstance(signal_eval, dict):
+            ids.update(str(key) for key in signal_eval if str(key).strip())
     return sorted(ids)
 
 
@@ -85,6 +96,17 @@ def _cohens_kappa(labels_a: list[str], labels_b: list[str]) -> tuple[float | Non
     return kappa, round(observed, 4), round(expected, 4)
 
 
+LEVEL_SCALE = {
+    "confirmed_high": "Server: confirmed_pathways with confidence high. LLM: pathway_present=yes with confidence high.",
+    "confirmed_medium_low": "Server: confirmed_pathways with confidence medium or low. LLM: pathway_present=yes with confidence medium or low.",
+    "uncertain": "Server: uncertain_pathways. LLM: pathway_present=uncertain.",
+    "unconfirmed": (
+        "Server: pathway absent from confirmed and uncertain lists. "
+        "LLM: pathway absent from independent_pathway_review or pathway_present=no."
+    ),
+}
+
+
 def agreement_between(
     left: dict[str, Any],
     right: dict[str, Any],
@@ -110,11 +132,13 @@ def agreement_between(
         "left_distribution": _category_distribution(left_labels),
         "right_distribution": _category_distribution(right_labels),
         "kappa_formula": "kappa = (observed_agreement - expected_agreement) / (1 - expected_agreement)",
-        "level_scale": {
-            "high": "confirmed at high confidence (server) or pathway_present=yes with high confidence (LLM)",
-            "medium": "uncertain pathway or medium/low confidence confirmed (server) or yes/uncertain (LLM)",
-            "unconfirmed": "pathway absent from server lists or pathway_present=no (LLM)",
-        },
+        "level_scale": LEVEL_SCALE,
+        "pairing_rules": [
+            "confirmed_high ↔ confirmed_high",
+            "confirmed_medium_low ↔ confirmed_medium_low",
+            "uncertain ↔ uncertain",
+            "unconfirmed ↔ unconfirmed (LLM entry missing or pathway_present=no)",
+        ],
         "pathways": [
             {
                 "pathway_id": pid,

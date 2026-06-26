@@ -224,6 +224,11 @@ def triage_dashboard_chart_defaults():
 
 @router.get("/dashboard/manifest")
 def triage_dashboard_manifest():
+    manifest_path = DASHBOARD_DIR / "manifest.json"
+    if manifest_path.is_file():
+        payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+        return {"sections": payload.get("sections") or [], "dashboard_dir": str(DASHBOARD_DIR)}
+
     sections: list[dict[str, str]] = []
     if DASHBOARD_DIR.is_dir():
         for path in sorted(DASHBOARD_DIR.glob("*.json")):
