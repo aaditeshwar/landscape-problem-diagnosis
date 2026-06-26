@@ -98,13 +98,13 @@ function limitedMwsLinks(items: CdfSample[] | string[], label: string) {
   const shown = ids.slice(0, MAX_REMOVED_MWS_LINKS)
   const extra = ids.length - shown.length
   return (
-    <div>
-      {label}:{' '}
+    <div className="flex flex-wrap items-baseline gap-x-1 gap-y-0.5 break-all">
+      <span className="shrink-0">{label}:</span>
       {shown.map((mwsId) => (
         <ExternalLink
           key={`${label}-${mwsId}`}
-          to={`/?mws=${encodeURIComponent(mwsId)}`}
-          className="mr-1 text-amber-800 hover:underline"
+          to={`/diagnose?mws=${encodeURIComponent(mwsId)}`}
+          className="text-amber-800 hover:underline"
         >
           {mwsId}
         </ExternalLink>
@@ -298,7 +298,7 @@ export function CdfChart({
   const showAllToggles = hasPrecomputed || samples.length > 0
 
   return (
-    <div className="rounded border border-stone-200 bg-white p-2">
+    <div className="min-w-0 overflow-hidden rounded border border-stone-200 bg-white p-2">
       <div className="mb-1 truncate text-[11px] font-medium text-stone-800" title={title}>
         {title}
         {unit ? <span className="ml-1 font-normal text-stone-400">({unit})</span> : null}
@@ -438,7 +438,7 @@ export function CdfChart({
         ) : null}
       </div>
       {hasRemovals ? (
-        <div className="mt-1 space-y-1 text-[10px] text-stone-600">
+        <div className="mt-1 min-w-0 space-y-1 text-[10px] text-stone-600">
           {removeZeros && removedZerosCount > 0 ? limitedMwsLinks(removedZeros, 'Zero MWS') : null}
           {trimBottom && removedBottomCount > 0 ? limitedMwsLinks(removedBottom, 'Bottom trim MWS') : null}
           {trimTop && removedTopCount > 0 ? limitedMwsLinks(removedTop, 'Top trim MWS') : null}

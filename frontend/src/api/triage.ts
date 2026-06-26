@@ -1,6 +1,7 @@
+import { appUrl } from '../appBase'
 import { apiFetch as api } from './http'
 
-export type CaseStudyCatalog = { filename: string; path: string }
+export type CaseStudyCatalog = { filename: string; path?: string; source?: 'builtin' | 'user' }
 
 export type CaseStudyInstance = {
   case_study_id: number
@@ -231,6 +232,39 @@ export function fetchTriageCatalogs() {
   return api<{ catalogs: CaseStudyCatalog[] }>('/api/triage/catalogs')
 }
 
+export function triageCatalogExampleUrl(): string {
+  return appUrl('/api/triage/catalogs/example')
+}
+
+export async function uploadTriageCatalog(file: File, filename?: string): Promise<{
+  filename: string
+  catalog_filename: string
+  instance_count: number
+}> {
+  const form = new FormData()
+  form.append('file', file)
+  const query = filename?.trim() ? `?filename=${encodeURIComponent(filename.trim())}` : ''
+  const res = await fetch(appUrl(`/api/triage/catalogs/upload${query}`), {
+    method: 'POST',
+    body: form,
+  })
+  if (!res.ok) {
+    let detail = await res.text()
+    try {
+      const parsed = JSON.parse(detail) as { detail?: string }
+      if (typeof parsed.detail === 'string') detail = parsed.detail
+    } catch {
+      /* keep raw */
+    }
+    throw new Error(detail || `${res.status} ${res.statusText}`)
+  }
+  return res.json() as Promise<{
+    filename: string
+    catalog_filename: string
+    instance_count: number
+  }>
+}
+
 export function fetchTriageCatalog(filename: string) {
   return api<CatalogBundle>(`/api/triage/catalog/${encodeURIComponent(filename)}`)
 }
@@ -397,7 +431,7 @@ export function diagnosisMwsUrl(instance: Pick<CaseStudyInstance, 'mws_id' | 'st
   if (instance.state) params.set('state', instance.state)
   if (instance.district) params.set('district', instance.district)
   if (instance.tehsil) params.set('tehsil', instance.tehsil)
-  return `/?${params.toString()}`
+  return `/diagnose?${params.toString()}`
 }
 
 export function dashboardSectionUrl(productionSystem: string, observedStress: string, sectionKey: string): string {

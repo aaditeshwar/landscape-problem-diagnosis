@@ -1,6 +1,12 @@
 {
   "version": 1,
   "description": "Default CDF chart display options for the variable dashboard (global across sections).",
+  "excluded_variables": [
+    "drought_severe_return_period",
+    "drought_moderate_return_period",
+    "drought_mild_spi_score_latest",
+    "drought_mild_vci_score_latest"
+  ],
   "variables": {
     "drought_weeks_severe[-1]": { "remove_zeros": true },
     "drought_weeks_moderate[-1]": { "remove_zeros": true },
@@ -20,6 +26,9 @@
     "cd_afforestation_ha": { "log_scale": true },
     "lulc_tree_forest_ha[-1]": { "trim_top": true },
     "lulc_tree_forest_ha[0]": { "trim_top": true },
-    "cd_urbanization_ha": { "log_scale": true }
+    "cd_urbanization_ha": { "log_scale": true },
+    "village_total_population": { "log_scale": true },
+    "nrega_community_assets_count": { "log_scale": true },
+    "lulc_cropland_ha[-1]": { "log_scale": true }
   }
 }

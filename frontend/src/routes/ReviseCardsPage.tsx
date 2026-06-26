@@ -370,7 +370,10 @@ export function ReviseCardsPage() {
             <div className="flex items-center gap-3">
               <h1 className="text-lg font-semibold text-stone-900">Revise Cards</h1>
               <Link to="/" className="text-sm text-stone-600 underline-offset-2 hover:underline">
-                Diagnosis app
+                Home
+              </Link>
+              <Link to="/diagnose" className="text-sm text-stone-600 underline-offset-2 hover:underline">
+                Diagnosis map
               </Link>
             </div>
             <p className="text-sm text-stone-600">

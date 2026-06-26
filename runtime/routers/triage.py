@@ -6,7 +6,8 @@ import json
 from pathlib import Path
 from typing import Any
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, File, HTTPException, Query, UploadFile
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 from config import ROOT
@@ -17,14 +18,20 @@ from services.reviewer_access import ReviewerNotAllowedError, validate_reviewer_
 from services.built_pathways import BUILT_PATHWAY_IDS, NONE_OF_THESE_PATHWAY
 from services.triage_card_map import card_map_payload, load_card_with_fallback
 from services.triage_eval import evaluate_section
-from services.triage_index import list_case_study_catalogs, load_catalog_bundle, section_key
+from services.triage_index import list_case_study_catalogs, load_case_study_rows_from_file, load_catalog_bundle, section_key
+from services.user_case_study_catalog import (
+    EXAMPLE_CATALOG_PATH,
+    parse_catalog_bytes,
+    save_user_catalog,
+    verify_saved_catalog,
+)
 from services.variable_catalog import build_variable_catalog
+from services.dashboard_policy import filter_dashboard_section, load_dashboard_chart_policy
 from services.mws_variable_values import mws_variable_values_payload
 
 router = APIRouter(prefix="/api/triage", tags=["triage"])
 
 DASHBOARD_DIR = ROOT / "data" / "triage_dashboard"
-CHART_DEFAULTS_PATH = ROOT / "metadata" / "dashboard_chart_defaults.json"
 
 
 class CardEditPayload(BaseModel):
@@ -72,6 +79,47 @@ class SaveCatalogPatchesBody(BaseModel):
 @router.get("/catalogs")
 def triage_catalogs():
     return {"catalogs": list_case_study_catalogs()}
+
+
+@router.get("/catalogs/example")
+def triage_catalog_example():
+    if not EXAMPLE_CATALOG_PATH.is_file():
+        raise HTTPException(status_code=404, detail="Example catalog template is not available")
+    return FileResponse(
+        EXAMPLE_CATALOG_PATH,
+        media_type="application/json",
+        filename="case_study_catalog_example.json",
+    )
+
+
+@router.post("/catalogs/upload")
+async def triage_catalog_upload(
+    file: UploadFile = File(...),
+    filename: str | None = Query(None, max_length=120),
+):
+    raw = await file.read()
+    if not raw:
+        raise HTTPException(status_code=400, detail="Uploaded file is empty")
+    if len(raw) > 2_000_000:
+        raise HTTPException(status_code=400, detail="Catalog file is too large (max 2 MB)")
+
+    try:
+        payload = parse_catalog_bytes(raw)
+        if not isinstance(payload, dict):
+            raise ValueError("Catalog must be a JSON object")
+        suggested = filename or file.filename
+        out_path = save_user_catalog(payload, filename=suggested)
+        verify_saved_catalog(out_path)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    rel = f"user-case-studies/{out_path.name}"
+    instance_count = len(load_case_study_rows_from_file(rel))
+    return {
+        "filename": rel,
+        "catalog_filename": rel,
+        "instance_count": instance_count,
+    }
 
 
 @router.get("/catalog/{filename}")
@@ -217,9 +265,11 @@ def triage_mws_variable_values(mws_id: str):
 
 @router.get("/dashboard/chart-defaults")
 def triage_dashboard_chart_defaults():
-    if not CHART_DEFAULTS_PATH.is_file():
-        return {"version": 1, "variables": {}}
-    return json.loads(CHART_DEFAULTS_PATH.read_text(encoding="utf-8"))
+    policy = load_dashboard_chart_policy()
+    return {
+        "version": policy.get("version", 1),
+        "variables": policy.get("variables") or {},
+    }
 
 
 @router.get("/dashboard/manifest")
@@ -248,4 +298,5 @@ def triage_dashboard_section(section_key: str):
     path = DASHBOARD_DIR / f"{section_key}.json"
     if not path.is_file():
         raise HTTPException(status_code=404, detail=f"Dashboard section not found: {section_key}")
-    return json.loads(path.read_text(encoding="utf-8"))
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    return filter_dashboard_section(payload)

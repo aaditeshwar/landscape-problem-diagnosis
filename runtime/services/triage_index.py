@@ -17,6 +17,8 @@ from services.built_pathways import (
 from services.tehsil_refs import primary_tehsil
 
 CASE_STUDY_GLOB = "case_study_locations*.json"
+USER_CATALOG_DIR = METADATA_DIR / "user-case-studies"
+USER_CATALOG_PREFIX = "user-case-studies/"
 
 
 def list_case_study_catalogs() -> list[dict[str, str]]:
@@ -24,15 +26,40 @@ def list_case_study_catalogs() -> list[dict[str, str]]:
     for path in sorted(METADATA_DIR.glob(CASE_STUDY_GLOB)):
         if not path.is_file():
             continue
-        rows.append({"filename": path.name, "path": str(path.relative_to(METADATA_DIR.parent))})
+        rows.append(
+            {
+                "filename": path.name,
+                "path": str(path.relative_to(METADATA_DIR.parent)),
+                "source": "builtin",
+            }
+        )
+    if USER_CATALOG_DIR.is_dir():
+        for path in sorted(USER_CATALOG_DIR.glob("*.json")):
+            if not path.is_file():
+                continue
+            rel = f"{USER_CATALOG_PREFIX}{path.name}"
+            rows.append(
+                {
+                    "filename": rel,
+                    "path": str(path.relative_to(METADATA_DIR.parent)),
+                    "source": "user",
+                }
+            )
     return rows
 
 
 def _catalog_path(filename: str) -> Path:
-    safe = Path(filename).name
-    path = METADATA_DIR / safe
+    normalized = str(filename or "").replace("\\", "/").strip()
+    if not normalized or ".." in normalized.split("/"):
+        raise FileNotFoundError(f"Case study catalog not found: {filename}")
+
+    if normalized.startswith(USER_CATALOG_PREFIX):
+        path = METADATA_DIR / normalized
+    else:
+        path = METADATA_DIR / Path(normalized).name
+
     if not path.is_file():
-        raise FileNotFoundError(f"Case study catalog not found: {safe}")
+        raise FileNotFoundError(f"Case study catalog not found: {filename}")
     return path
 
 
@@ -200,7 +227,7 @@ def load_catalog_bundle(db, filename: str) -> dict[str, Any]:
         if section_has_built_pathways(section["production_system"], section["observed_stress"])
     ]
     return {
-        "filename": Path(filename).name,
+        "filename": filename.replace("\\", "/"),
         "instance_count": len(instances),
         "sections": sections,
     }

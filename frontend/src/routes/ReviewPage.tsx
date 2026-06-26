@@ -820,7 +820,13 @@ export function ReviewPage() {
 
             <ExternalLink to="/" className="text-sm text-amber-800 hover:underline">
 
-              Diagnosis app
+              Home
+
+            </ExternalLink>
+
+            <ExternalLink to="/diagnose" className="text-sm text-amber-800 hover:underline">
+
+              Diagnosis map
 
             </ExternalLink>
 

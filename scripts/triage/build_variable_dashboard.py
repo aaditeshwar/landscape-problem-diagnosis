@@ -33,6 +33,7 @@ from services.mws_export import ensure_mws_export, has_minimum_export_coverage  
 from services.signal_evaluator import merge_export_variables  # noqa: E402
 from services.variable_categories import categorize_variable, category_sort_key  # noqa: E402
 from services.variable_registry import variable_type_catalog  # noqa: E402
+from services.dashboard_policy import excluded_dashboard_variables  # noqa: E402
 from services.triage_index import group_instances_into_sections, load_case_study_rows_from_file, section_key  # noqa: E402
 
 OUTPUT_DIR = ROOT / "data" / "triage_dashboard"
@@ -330,8 +331,11 @@ def build_section_dashboard(
     type_catalog = variable_type_catalog()
     flat_variables: dict[str, Any] = {}
     grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    skip_variables = excluded_dashboard_variables()
 
     for access in access_keys:
+        if access in skip_variables:
+            continue
         if not _is_scalar_dashboard_access(access, type_catalog):
             continue
         base = access.split("[", 1)[0].split("(", 1)[0]
