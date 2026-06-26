@@ -21,7 +21,7 @@ uvicorn (runtime/)
 
 | Component | Role |
 |-----------|------|
-| `frontend/dist/` | React SPA (`/`, `/feedback`, `/signals`, `/revise-cards`) |
+| `frontend/dist/` | React SPA (`/`, `/diagnose`, `/feedback`, `/review`, `/logs`, `/triaging`, `/dashboard`, …) |
 | `runtime/main.py` | FastAPI API under `/api/*` |
 | MongoDB | MWS data, evidence cards, paper chunks, metadata |
 | Ollama | **Required** for query embeddings (`nomic-embed-text`); also used for diagnosis when `LLM_PROVIDER=ollama` |
@@ -326,8 +326,8 @@ For a **root** vhost (`DocumentRoot` = `frontend/dist`), keep `VITE_BASE_PATH=/`
 | API health | `curl https://your-domain.example/api/health` |
 | Ingested tehsils | `https://your-domain.example/api/ingested-tehsils` |
 | UI loads | Open `https://your-domain.example/` |
-| SPA routes | `/feedback`, `/signals`, `/revise-cards` refresh without 404 |
-| Log dashboard | `https://your-domain.example/static/logs/dashboard.html` |
+| SPA routes | `/`, `/diagnose`, `/feedback`, `/review`, `/logs`, `/triaging`, `/dashboard` refresh without 404 |
+| Log dashboard | `https://your-domain.example/logs` (SPA) or `/api/logs/dashboard` |
 | Ollama reachability | From app server: `curl $OLLAMA_URL/api/tags` |
 
 Run a diagnosis smoke test (optional):
@@ -372,7 +372,80 @@ This workflow is typically run on a staging machine, not public production.
 
 ---
 
-## 10. Troubleshooting
+## 10. Diagnosis logs and query evaluation on production
+
+### Where logs live
+
+Diagnosis run events are appended to **`logs/diagnosis.jsonl`** (path from `LOG_DIR` in `.env`, e.g. `/opt/landscape-diagnosis/logs/diagnosis.jsonl`). The API exposes them at `/api/logs/*`; the UI serves a public viewer at **`/logs`** (embeds `/api/logs/dashboard`).
+
+`logs/diagnosis.log` and `logs/server.log` are plain-text service logs and are **not** pruned by the cleanup script below.
+
+### Pruning logs locally
+
+Use `scripts/maintenance/cleanup_diagnosis_logs.py` on a dev or staging machine before copying a small, curated set to production.
+
+```bash
+source .venv/bin/activate
+
+# Preview: keep only events referenced by query-eval batches
+python scripts/maintenance/cleanup_diagnosis_logs.py --only-query-eval --dry-run
+
+# Apply (creates logs/diagnosis.jsonl.bak.<timestamp> first)
+python scripts/maintenance/cleanup_diagnosis_logs.py --only-query-eval
+```
+
+Other modes:
+
+| Flag | Effect |
+|------|--------|
+| `--all` | Delete every event (combine with `--keep-query-eval` to spare eval rows) |
+| `--before YYYY-MM-DD` | Delete events with timestamp strictly before that UTC date |
+| `--session-ids id1,id2` | Delete events for those `session_id` values |
+| `--keep-query-eval` | Never delete rows referenced in `reports/query_eval/` |
+| `--dry-run` | Print plan only |
+| `--no-backup` | Skip writing a `.bak` copy |
+
+When events are removed, the script **remaps `log_index`** inside `reports/query_eval/**` (manifest, responses, evaluations) so feedback links stay consistent with the compacted JSONL. Copy the **updated** batch folder together with the pruned `diagnosis.jsonl`.
+
+### Copy query evaluation + logs to production
+
+Query evaluation batches live under **`reports/query_eval/`** (gitignored). The `/review` app reads them from disk; feedback links load the corresponding row from **`diagnosis.jsonl`** via `log_index`. Both must be present on the server and must match after any cleanup/remap.
+
+From your dev machine (adjust host and paths):
+
+```bash
+# Pruned diagnosis log
+scp logs/diagnosis.jsonl user@production:/opt/landscape-diagnosis/logs/diagnosis.jsonl
+
+# One eval batch (entire directory, including remapped manifest + responses)
+scp -r reports/query_eval/query_eval__pilot_v2_20260625T131416Z \
+  user@production:/opt/landscape-diagnosis/reports/query_eval/
+```
+
+On the production host:
+
+```bash
+sudo mkdir -p /opt/landscape-diagnosis/reports/query_eval
+sudo chown www-data:www-data /opt/landscape-diagnosis/logs/diagnosis.jsonl
+sudo chown -R www-data:www-data /opt/landscape-diagnosis/reports/query_eval/
+```
+
+No API restart is required — files are read on each request. Verify:
+
+```bash
+curl -s https://your-domain.example/api/logs/meta | head
+curl -s https://your-domain.example/api/query-eval/batches
+```
+
+Open **`/review`** in the browser and confirm feedback links load.
+
+**Feedback URLs:** manifests may still contain `http://localhost:5173/feedback?...` from a local eval run. On production, links should use your public base (e.g. `https://your-domain.example/core-insights/feedback?...`). Re-run `scripts/eval/run_query_eval.py` with the production frontend base, or edit `feedback_url` fields in the batch manifest after copy.
+
+To generate a fresh batch on production instead of copying, run the eval scripts on the server (with Mongo and LLM configured) so sessions and logs are created in place.
+
+---
+
+## 11. Troubleshooting
 
 | Symptom | Likely cause |
 |---------|----------------|
@@ -382,8 +455,89 @@ This workflow is typically run on a staging machine, not public production.
 | Empty map / no tehsils | Mongo empty — re-run ingest; check `MONGO_URI` / `MONGO_DB` |
 | `/dashboard` empty | Run `python scripts/triage/build_variable_dashboard.py` (writes `data/triage_dashboard/`) |
 | `/revise-cards` empty | Missing `reports/claude_review/results/` on server |
+| `/review` empty or feedback 404 | Missing `reports/query_eval/<batch>/` or `logs/diagnosis.jsonl`; copy both (see §10) |
+| `/logs` blank or `404` on subpath deploy | Log dashboard fetches API under `/api/logs/*`; on subpath installs use `/core-insights/api/logs/...` (see §11.1). Rebuild frontend and restart API after updating `dashboard.html`. |
 | Cluster map blank | Set `CLUSTER_COG_URL` (e.g. `http://127.0.0.1:10001/clusters.tif`) or add `data/clusters.tif`; confirm COG server is up and `curl -I http://127.0.0.1:10001/clusters.tif` works on the host |
 | Permission errors | Ensure `www-data` owns `logs/` and can read repo + `.env` |
+
+### 11.1 API down — `503 Service Unavailable` on `/api/*`
+
+Apache returns **503** when the reverse proxy cannot reach uvicorn. The React shell may still load; API-backed pages show HTML error bodies instead of JSON.
+
+**Confirm the service is crash-looping:**
+
+```bash
+sudo systemctl status landscape-diagnosis
+sudo journalctl -u landscape-diagnosis -n 80 --no-pager
+```
+
+**Reproduce manually** (same paths as the unit file):
+
+```bash
+cd /path/to/landscape-problem-diagnosis
+source .venv/bin/activate
+cd runtime
+python -m uvicorn main:app --host 127.0.0.1 --port 8000
+```
+
+In another shell: `curl -s http://127.0.0.1:8000/api/health` should return `{"status":"ok"}`.
+
+| Log / symptom | Fix |
+|---------------|-----|
+| `ModuleNotFoundError: No module named 'main'` | Set `WorkingDirectory=.../runtime` in the systemd unit (`main:app` resolves only from `runtime/`). |
+| `ServerSelectionTimeoutError` (Mongo) | Fix `MONGO_URI` in `.env`; from the host run a pymongo `ping` (see §2). Startup fails if Mongo is unreachable. |
+| `Permission denied` on `logs/` | `mkdir -p logs && chown` to the service user (`www-data` or deploy user). |
+| Import / package errors after `git pull` | `pip install -r runtime/requirements.txt` |
+| Manual start works, systemd fails | Check `User=`, `EnvironmentFile=`, and file permissions on `.env` and the repo. |
+
+**Example unit paths** (adjust to your install):
+
+```ini
+WorkingDirectory=/home/aseth/core-stack/landscape-problem-diagnosis/runtime
+EnvironmentFile=/home/aseth/core-stack/landscape-problem-diagnosis/.env
+ExecStart=/home/aseth/core-stack/landscape-problem-diagnosis/.venv/bin/python -m uvicorn main:app \
+  --host 127.0.0.1 --port 8000 --proxy-headers
+```
+
+After fixes: `sudo systemctl daemon-reload && sudo systemctl restart landscape-diagnosis`.
+
+**Apache vs API:** once `curl http://127.0.0.1:8000/api/health` works, test through Apache:
+
+```bash
+# Root deploy
+curl -s http://localhost/api/health
+
+# Subpath deploy (e.g. act4d.iitd.ac.in/core-insights/)
+curl -s http://localhost/core-insights/api/health
+```
+
+If local `:8000` works but Apache still 503, the vhost `ProxyPass` prefix does not match the public URL.
+
+### 11.2 `/logs` returns 404 on subpath deploy
+
+The `/logs` page embeds `/api/logs/dashboard`. That HTML page calls `/api/logs/meta` and `/api/logs/events`. On a subpath install (`VITE_BASE_PATH=/core-insights/`), those requests must go to **`/core-insights/api/logs/...`**, not `/api/logs/...` (which Apache does not proxy).
+
+The log dashboard script derives the API prefix from `window.location.pathname` (e.g. `/core-insights/api/logs/dashboard` → `/core-insights/api/logs`).
+
+**Verify on the server:**
+
+```bash
+curl -s http://127.0.0.1:8000/api/logs/meta | head
+curl -s http://localhost/core-insights/api/logs/meta | head
+```
+
+Both should return JSON. Then open `https://your-host/core-insights/logs`.
+
+Ensure Apache proxies the prefixed API (see §6 subpath example):
+
+```apache
+ProxyPass        /core-insights/api http://127.0.0.1:8000/api retry=0 timeout=600
+ProxyPassReverse /core-insights/api http://127.0.0.1:8000/api
+```
+
+Restart API after updating `runtime/static/logs/dashboard.html` (no frontend rebuild required for that file alone; restart uvicorn or touch the service).
+
+---
 
 API logs: `/opt/landscape-diagnosis/logs/` (see `LOG_DIR` in `.env`).
 

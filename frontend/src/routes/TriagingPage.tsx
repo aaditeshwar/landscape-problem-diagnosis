@@ -193,8 +193,8 @@ export function TriagingPage() {
             </ExternalLink>
           </div>
         </div>
-        {reviewerAccess && !reviewerValid ? (
-          <p className="mx-auto mt-2 max-w-[1400px] text-xs text-red-700">{reviewerAccessHint(reviewerAccess)}</p>
+        {reviewerAccess && !reviewerValid && reviewerAccessHint(reviewerAccess, reviewer) ? (
+          <p className="mx-auto mt-2 max-w-[1400px] text-xs text-red-700">{reviewerAccessHint(reviewerAccess, reviewer)}</p>
         ) : null}
         {catalogPatches?.batch_id ? (
           <p className="mx-auto mt-2 max-w-[1400px] text-xs text-stone-500">

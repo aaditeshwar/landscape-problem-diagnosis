@@ -224,7 +224,7 @@ export function ReviseCardsPage() {
     if (!bundle) return 'Loading card…'
     if (finalizing) return 'Saving…'
     if (!reviewerValid) {
-      return reviewerAccess ? reviewerAccessHint(reviewerAccess) : 'Enter a reviewer name to save.'
+      return reviewerAccess ? reviewerAccessHint(reviewerAccess, reviewer) : 'Enter a reviewer name to save.'
     }
     if (pendingCount > 0) {
       return `Mark ${pendingCount} issue(s) as handled or not handled before saving.`
@@ -246,7 +246,7 @@ export function ReviseCardsPage() {
   const handleFinalizeCard = async () => {
     if (!bundle || !batchId || !userCardEdit) return
     if (!reviewerValid) {
-      setFinalizeError(reviewerAccess ? reviewerAccessHint(reviewerAccess) : 'Reviewer name is required.')
+      setFinalizeError(reviewerAccess ? reviewerAccessHint(reviewerAccess, reviewer) : 'Reviewer name is required.')
       return
     }
     if (pendingCount > 0) {
@@ -423,8 +423,8 @@ export function ReviseCardsPage() {
           </div>
         </div>
         {error && <p className="mt-2 text-sm text-red-700">{error}</p>}
-        {reviewerAccess && !reviewerValid ? (
-          <p className="mt-2 text-xs text-red-700">{reviewerAccessHint(reviewerAccess)}</p>
+        {reviewerAccess && !reviewerValid && reviewerAccessHint(reviewerAccess, reviewer) ? (
+          <p className="mt-2 text-xs text-red-700">{reviewerAccessHint(reviewerAccess, reviewer)}</p>
         ) : null}
       </header>
 

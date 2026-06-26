@@ -28,10 +28,12 @@ export function isReviewerAllowed(name: string, config: ReviewerAccessConfig): b
   return config.allowed_reviewers.includes(cleaned)
 }
 
-export function reviewerAccessHint(config: ReviewerAccessConfig): string {
+export function reviewerAccessHint(config: ReviewerAccessConfig, reviewerName = ''): string {
   if (config.allowed_reviewers_all) return 'Any reviewer name is allowed.'
-  if (!config.allowed_reviewers.length) return 'No reviewers configured.'
-  return `Allowed reviewers: ${config.allowed_reviewers.join(', ')}`
+  const cleaned = reviewerName.trim()
+  if (!cleaned) return 'Enter your reviewer name to save patches.'
+  if (config.allowed_reviewers.includes(cleaned)) return ''
+  return 'This reviewer name is not authorized to save patches. Write to contact@core-stack.org to request a username with editing rights.'
 }
 
 const STORAGE_KEY = 'landscape_reviewer_name'

@@ -876,6 +876,22 @@
       box.classList.remove("hidden");
     }
 
+    function logsApiBase() {
+      const path = window.location.pathname.replace(/\/+$/, "");
+      if (path.endsWith("/api/logs/dashboard")) {
+        return path.slice(0, -"/dashboard".length);
+      }
+      if (path.endsWith("/api/logs/dashboard.html")) {
+        return path.slice(0, -"/dashboard.html".length);
+      }
+      return "/api/logs";
+    }
+
+    function logsApiUrl(suffix) {
+      const base = logsApiBase();
+      return `${base}${suffix.startsWith("/") ? suffix : `/${suffix}`}`;
+    }
+
     async function fetchJson(url) {
       const res = await fetch(url);
       if (!res.ok) {
@@ -1263,7 +1279,7 @@
         detailScroll.scrollTop = 0;
       }
       try {
-        const event = await fetchJson(`/api/logs/events/${index}`);
+        const event = await fetchJson(logsApiUrl(`/events/${index}`));
         renderDetail(event);
         if (detailScroll) {
           detailScroll.scrollTop = 0;
@@ -1276,10 +1292,10 @@
     async function refresh() {
       showError("");
       try {
-        const meta = await fetchJson("/api/logs/meta");
+        const meta = await fetchJson(logsApiUrl("/meta"));
         renderStats(meta);
 
-        const data = await fetchJson(`/api/logs/events?offset=${state.offset}&limit=${state.limit}`);
+        const data = await fetchJson(logsApiUrl(`/events?offset=${state.offset}&limit=${state.limit}`));
         state.total = data.total;
         state.events = data.events || [];
         renderEventsTable();

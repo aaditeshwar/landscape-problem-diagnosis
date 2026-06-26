@@ -16,9 +16,9 @@ def validate_reviewer_name(name: str | None) -> str:
     if ALLOWED_REVIEWERS_ALL:
         return cleaned
     if cleaned not in ALLOWED_REVIEWERS:
-        allowed = ", ".join(ALLOWED_REVIEWERS)
         raise ReviewerNotAllowedError(
-            f"Reviewer {cleaned!r} is not allowed. Set ALLOWED_REVIEWERS=ALL or use: {allowed}"
+            "This reviewer is not authorized to save changes. "
+            "Write to contact@core-stack.org to request a username with editing rights."
         )
     return cleaned
 
