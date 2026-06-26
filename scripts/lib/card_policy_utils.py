@@ -8,6 +8,10 @@ import re
 from typing import Any
 
 SIG_REF_RE = re.compile(r"sig_(\d+)", re.IGNORECASE)
+PRIMARY_EM_DASH_RE = re.compile(
+    r"at least (?:one|1|two|2|three|3|four|4|\d+) of the primary signals — (.+?) — co-occur",
+    re.IGNORECASE,
+)
 AT_LEAST_OF_RE = re.compile(
     r"at least (?:two|2|three|3) of[^:]*:\s*([^.;]+)",
     re.IGNORECASE,
@@ -76,11 +80,47 @@ def _sig_ids_in_text(text: str, confirm_set: set[str]) -> list[str]:
     return found
 
 
+def _merge_primary_signals(*groups: list[str]) -> list[str]:
+    merged: list[str] = []
+    for group in groups:
+        for sig_id in group:
+            if sig_id not in merged:
+                merged.append(sig_id)
+    return merged
+
+
 def primary_signals_from_note(note: str, confirm_ids: list[str]) -> list[str]:
     """Extract primary confirm signal ids from note prose (best-effort)."""
     confirm_set = set(confirm_ids)
     note_text = str(note or "")
     note_l = note_text.lower()
+
+    em_dash: list[str] = []
+    match = PRIMARY_EM_DASH_RE.search(note_text)
+    if match:
+        em_dash = _sig_ids_in_text(match.group(1), confirm_set)
+
+    required_all: list[str] = []
+    for clause in re.findall(
+        r"Required:\s*(.+?)\s+must all be TRUE",
+        note_text,
+        flags=re.IGNORECASE,
+    ):
+        required_all = _merge_primary_signals(
+            required_all, _sig_ids_in_text(clause, confirm_set)
+        )
+
+    groups_match = re.search(
+        r"at least one of these signal groups is satisfied:\s*(.+?)\.\s*(?:Additionally,|Required:|Amplifying|Prioritise|The |Always |In [A-Z])",
+        note_text,
+        flags=re.IGNORECASE | re.DOTALL,
+    )
+    group_signals: list[str] = []
+    if groups_match:
+        group_signals = _sig_ids_in_text(groups_match.group(1), confirm_set)
+
+    if em_dash or required_all or group_signals:
+        return _merge_primary_signals(em_dash, required_all, group_signals)
 
     for pattern in (AT_LEAST_OF_RE, TWO_OF_RE):
         match = pattern.search(note_text)
@@ -119,6 +159,25 @@ def primary_signals_from_note(note: str, confirm_ids: list[str]) -> list[str]:
 
 def min_confirms_from_note(note: str) -> int:
     note_l = str(note or "").lower()
+    if PRIMARY_EM_DASH_RE.search(note_l):
+        match = re.search(
+            r"at least (one|1|two|2|three|3|four|4|\d+) of the primary signals",
+            note_l,
+        )
+        if match:
+            token = match.group(1)
+            if token in {"one", "1"}:
+                return 1
+            if token in {"two", "2"}:
+                return 2
+            if token in {"three", "3"}:
+                return 3
+            if token in {"four", "4"}:
+                return 4
+            if token.isdigit():
+                return int(token)
+    if "at least one of these signal groups" in note_l:
+        return 1
     if "at least three" in note_l or "at least 3" in note_l:
         return 3
     if (
@@ -130,6 +189,24 @@ def min_confirms_from_note(note: str) -> int:
     ):
         return 2
     return 1
+
+
+def effective_min_confirms(policy: dict | None) -> int:
+    if not policy:
+        return 0
+    confirm_when = policy.get("confirm_when") or {}
+    raw_min = confirm_when.get("min_confirms_true")
+    base = int(raw_min) if raw_min is not None else 0
+    min_from = confirm_when.get("min_from_set") or {}
+    mfs_min = int(min_from.get("min") or 0)
+    effective = max(base, mfs_min) if mfs_min else base
+    if effective == 0 and (
+        confirm_when.get("required_any")
+        or confirm_when.get("required_all")
+        or confirm_when.get("min_from_set")
+    ):
+        return 1
+    return effective
 
 
 def policy_referenced_signal_ids(policy: dict | None) -> set[str]:

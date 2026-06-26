@@ -21,6 +21,7 @@ from lib.card_policy_utils import (  # noqa: E402
     confirm_signal_ids,
     derive_policy,
     draft_reasoning_note_from_policy,
+    effective_min_confirms,
     min_confirms_from_note,
     policy_primary_set,
     primary_signals_from_note,
@@ -61,7 +62,7 @@ def card_policy_context(card: dict, pilot_ids: set[str] | None = None) -> dict[s
     note_primary = primary_signals_from_note(note, confirm_ids)
     policy_primary = sorted(policy_primary_set(policy))
     note_min = min_confirms_from_note(note)
-    policy_min = int((policy.get("confirm_when") or {}).get("min_confirms_true") or 0)
+    policy_min = effective_min_confirms(policy)
     derived = derive_policy(card)
     derived_primary = sorted(derived.get("primary_confirm_signals") or [])
     stored_primary = sorted(policy.get("primary_confirm_signals") or [])

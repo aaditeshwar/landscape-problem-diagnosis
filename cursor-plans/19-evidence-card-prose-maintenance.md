@@ -1,6 +1,6 @@
 # Evidence card prose maintenance (signals, policy, notes)
 
-> **Status:** In progress — signal qual alignment (categories 1–8 done); policy/note alignment next  
+> **Status:** Track A largely done (categories 1–8); Track B P1+P2 complete (2026-06-26) — **0 policy audit warnings** corpus-wide  
 > **Created:** 2026-06-26  
 > **Related:** [00-tooling-registry.md](./00-tooling-registry.md), [13-confirmation-policy-and-schema.md](./13-confirmation-policy-and-schema.md), [15-claude-evidence-card-review.md](./15-claude-evidence-card-review.md), [16-revise-cards-review-app.md](./16-revise-cards-review-app.md)
 
@@ -13,7 +13,7 @@ Bulk-align human-readable prose on evidence cards with machine-evaluated rules, 
 | Track | Fields | Status |
 |-------|--------|--------|
 | **A — Signal qual** | `diagnostic_signals[].condition.qualitative_description` vs `expression` | Categories 1–8 applied; rainfed sig_01, drought sig_04/05, etc. pending |
-| **B — Policy vs note** | `overall_reasoning_note` vs `confirmation_policy` | Audit run 2026-06-26; template review with user next |
+| **B — Policy vs note** | `overall_reasoning_note` vs `confirmation_policy` | **Done** — `align_overall_reasoning_notes.py` applied; audit 0 warnings (136 cards) |
 
 ---
 
@@ -32,6 +32,7 @@ Run in order:
 ```powershell
 # 1. Apply the maintenance change (examples)
 py scripts/maintenance/align_qualitative_descriptions.py <category>   # signal qual templates
+py scripts/maintenance/align_overall_reasoning_notes.py          # note opening from confirmation_policy (Track B)
 py scripts/maintenance/normalize_evidence_card_expressions.py         # expression rewrites + variables[] sync into patches
 
 # 2. Refresh user-edit patches from live raw (MANDATORY after raw maintenance)
@@ -91,7 +92,28 @@ Handler categories in `scripts/maintenance/align_qualitative_descriptions.py`:
 
 ---
 
-## Track B — Policy vs `overall_reasoning_note` (next)
+## Track B — Policy vs `overall_reasoning_note` (done)
+
+### Apply tool
+
+```powershell
+py scripts/maintenance/align_overall_reasoning_notes.py           # cards with drift flags
+py scripts/maintenance/align_overall_reasoning_notes.py --all-cards  # full corpus refresh
+```
+
+Rebuilds the note **opening** from `confirmation_policy` (policy authoritative), preserves contextual **tail** (distinguish-from, interventions, etc.). Uses em-dash primary lists (`sig_01 (short label), sig_02 (…) — co-occur`).
+
+**Note label tiers** (`scripts/lib/sig_note_labels.py`, `scripts/lib/note_label_templates.py`):
+1. **Tier 2** — expression/pathway templates (short handles; expression in tooltip)
+2. **Tier 1** — compress `qualitative_description` (strip rationale/parentheticals)
+3. Fallback — variable names
+
+Re-apply after template edits:
+
+```powershell
+py scripts/maintenance/align_overall_reasoning_notes.py --all-cards
+py scripts/maintenance/scrub_note_signal_duplicates.py --all-cards
+```
 
 ### Audit tool
 

@@ -28,8 +28,22 @@ def test_groundwater_010_primary_set_excludes_contextual_sig_03():
     assert set(policy["primary_confirm_signals"]) == {"sig_01", "sig_02", "sig_05"}
 
 
+def test_drought_em_dash_primary_list_includes_sig_04():
+    note = (
+        "Confirm drought when at least 2 of the primary signals — "
+        "sig_01 (Severe drought return period is 4 years or less), "
+        "sig_02 (Mean dry-spell weeks across the record is 3 or more), "
+        "sig_04 (Kharif seasonal rainfall below 75% of the long-run annual mean) — co-occur. "
+        "Amplifying signals (do not alone confirm): sig_05 (Monsoon onset delayed)."
+    )
+    confirm_ids = ["sig_01", "sig_02", "sig_04", "sig_05"]
+    primary = primary_signals_from_note(note, confirm_ids)
+    assert primary == ["sig_01", "sig_02", "sig_04"]
+
+
 def main() -> int:
     test_groundwater_010_primary_set_excludes_contextual_sig_03()
+    test_drought_em_dash_primary_list_includes_sig_04()
     print("All card policy utils tests passed.")
     return 0
 
