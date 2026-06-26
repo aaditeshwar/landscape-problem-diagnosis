@@ -1,0 +1,363 @@
+{
+  "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__017",
+  "production_system": "NTFP_Forest_Biodiversity",
+  "observed_stress": "ntfp_decline",
+  "causal_pathway": "encroachment",
+  "context": {
+    "agro_climatic_zones": [
+      "humid",
+      "perhumid"
+    ],
+    "aquifer_types": [
+      "coastal"
+    ],
+    "terrain_types": [
+      "plains"
+    ],
+    "rainfall_regime": "humid",
+    "geographic_examples": [
+      "Andaman & Nicobar",
+      "Lakshadweep"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "cd_forest_to_farm_ha"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "cd_forest_to_farm_ha > 50",
+        "qualitative_description": "More than 50 ha of forest has been converted to farmland, indicating measurable encroachment reducing NTFP-bearing forest extent.",
+        "variables": [
+          "cd_forest_to_farm_ha"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Forest-to-farm conversion is the most direct indicator of encroachment. In island ecosystems such as Andaman & Nicobar, even modest conversion of humid and perhumid forest patches can disproportionately reduce NTFP availability because forest patches are spatially constrained and community access corridors are narrow. A threshold of 50 ha is conservative given the small total land area of island territories; lower thresholds may be appropriate at the village level.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "cd_forest_to_farm_ha"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "cd_forest_to_farm_ha > 50",
+        "qualitative_description": "Forest-to-farm conversion area has increased over the observation period (2017–2024), indicating ongoing and accelerating encroachment pressure.",
+        "variables": [
+          "cd_forest_to_farm_ha"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "A positive trend in forest-to-farm conversion confirms that encroachment is not a historical legacy but an active and continuing process. In island contexts with high population pressure and limited alternative land, incremental conversion of forest margins for subsistence agriculture is a well-documented driver of NTFP decline. Geospatial analyses of forest fragmentation in comparable humid forest zones show that even slow conversion rates compound over time to reduce interior forest and NTFP-productive habitat.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "cd_urbanization_ha"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "cd_urbanization_ha > 20",
+        "qualitative_description": "More than 20 ha of forest-adjacent land has been converted to settlement or built-up use, indicating settlement-driven encroachment into forest margins.",
+        "variables": [
+          "cd_urbanization_ha"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Settlement expansion into forest margins reduces community access to NTFP collection zones and creates buffer zones of human activity that deter collection. In island territories with constrained land area, even small urbanization footprints can sever traditional NTFP access routes. This signal amplifies the forest-to-farm conversion signal but is weaker on its own because urbanization may occur on non-forest land.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "village_st_percent",
+        "cd_forest_to_farm_ha"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "(village_st_percent > 25) and (cd_forest_to_farm_ha > 50)",
+        "qualitative_description": "Village has a substantial Scheduled Tribe population (>25%) coinciding with ongoing forest-to-farm conversion, suggesting forest rights disputes or displacement of NTFP-dependent communities.",
+        "variables": [
+          "village_st_percent",
+          "cd_forest_to_farm_ha"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "High ST population share combined with active forest conversion is a strong indicator that encroachment is displacing or restricting access for forest-dependent indigenous communities. The Forest Rights Act (FRA) recognises individual and community forest rights for Scheduled Tribes, but where encroachment proceeds without FRA claim resolution, communities lose de facto access to NTFP collection areas. Studies on relocation and displacement from protected areas in India document how absence of tenure recognition enables encroachment-driven exclusion of forest dwellers.",
+      "active": true
+    },
+    {
+      "variables": [
+        "fra_claims_filed_count"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Many pending or rejected FRA claims with reported NTFP decline and forest conversion indicate tenure insecurity confirming encroachment vulnerability; high recognition weakens encroachment as primary driver."
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Unresolved forest rights alongside measurable conversion corroborates encroachment as a tenure and access driver of NTFP decline.",
+      "signal_id": "sig_05",
+      "active": true
+    },
+    {
+      "variables": [
+        "ntfp_collection_trend_qualitative"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Collectors report NTFP decline attributed to shrinking forest area or blocked/restricted access (not merely lower density inside intact forest). Decline greater than 25–50% increases severity."
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Access- or area-attributed NTFP decline distinguishes encroachment from degradation or over-harvesting within intact forest.",
+      "signal_id": "sig_06",
+      "active": true
+    }
+  ],
+  "confounders": [
+    {
+      "confounder": "Forest degradation from fire or storm damage reducing NTFP availability without encroachment",
+      "how_to_distinguish": "Check for fire event records or cyclone history in the island territory. If cd_forest_to_farm_ha and cd_total_urbanization_ha show no increasing trend but NTFP decline is reported, fire or storm damage is more likely the driver. Island ecosystems in Andaman & Nicobar are periodically affected by cyclones; NTFP decline following a major storm event without land conversion signals a disturbance pathway rather than encroachment."
+    },
+    {
+      "confounder": "Forest policy restrictions (protected area notifications, eco-sensitive zone designations) reducing legal NTFP access without physical encroachment",
+      "how_to_distinguish": "If cd_forest_to_farm_ha shows no significant increase but village_st_percent is high and communities report reduced access, investigate whether new protected area notifications or eco-sensitive zone orders have restricted collection rights. This is a governance-access pathway distinct from physical encroachment. FRA claim status and forest department orders should be reviewed."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "fra_claims_filed_count",
+      "question_to_user": "Have community members or households in this village filed Forest Rights Act (FRA) claims for individual or community forest rights? If yes, approximately how many claims have been filed and how many have been recognised?",
+      "how_answer_updates_diagnosis": "Low FRA claim filing or high rejection rates in a village with high ST population and active forest conversion strongly confirms the encroachment pathway, as it indicates that forest rights are unresolved and communities lack legal protection against encroachment. High recognition rates would suggest the pathway is being addressed through policy.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "none",
+          "label": "No FRA claims filed by community members",
+          "normalized": {
+            "present": false
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "pending",
+          "label": "Claims filed but mostly pending or rejected",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "recognized",
+          "label": "Several claims recognised (individual or community forest rights)",
+          "normalized": {
+            "band": "high",
+            "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
+          }
+        }
+      ],
+      "question_mode": "presence_graded"
+    },
+    {
+      "missing_variable": "ntfp_collection_trend_qualitative",
+      "question_to_user": "Has the quantity of forest produce (such as honey, medicinal plants, fruits, or timber substitutes) collected by households declined over the past 5 years? If yes, by roughly what proportion — less than 25%, 25–50%, or more than 50%?",
+      "how_answer_updates_diagnosis": "A reported decline of more than 25% in NTFP collection volume, coinciding with forest-to-farm conversion trends, directly confirms the stress observation and strengthens the encroachment diagnosis. A decline of more than 50% indicates severe impact requiring urgent intervention.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "little_change",
+          "label": "Little change — decline under 25% or stable collection",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "trend": "stable",
+            "percent_upper": 25
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": false
+              }
+            ]
+          }
+        },
+        {
+          "id": "moderate_decline",
+          "label": "Noticeable decline of about 25–50% in collection volume",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening",
+            "percent_lower": 25,
+            "percent_upper": 50
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "severe_decline",
+          "label": "Severe decline over 50% or access largely blocked",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "worsening",
+            "percent_lower": 50
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
+          }
+        }
+      ],
+      "question_mode": "magnitude"
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Gopal2019",
+      "title": "Mangrove Forests of India",
+      "authors": [
+        "Gopal, B.",
+        "Chauhan, M."
+      ],
+      "year": 2019,
+      "doi": "10.18520/cs/v114/i05/976-981",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents the unique biodiversity and ecological significance of Andaman & Nicobar island forests, providing context for why even small-scale encroachment in humid perhumid island ecosystems has disproportionate impacts on forest biodiversity and NTFP availability."
+    },
+    {
+      "source_id": "Bose2021",
+      "title": "Relocation from protected areas as a violent process in the recent history of biodiversity conservation in India",
+      "authors": [
+        "Bose, P."
+      ],
+      "year": 2021,
+      "doi": "10.37773/ees.v2i1.55",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Analyses how absence of Forest Rights Act tenure recognition enables displacement and exclusion of indigenous forest-dependent communities from NTFP collection areas in India, directly relevant to the encroachment-driven NTFP decline pathway."
+    },
+    {
+      "source_id": "RRI2020",
+      "title": "The Opportunity Framework 2020: Identifying Opportunities to Invest in Securing Collective Tenure Rights in the Forest",
+      "authors": [
+        "Rights and Resources Initiative"
+      ],
+      "year": 2020,
+      "doi": "10.53892/rhaa9312",
+      "source_type": "government_report",
+      "relevance_note": "Documents the global and Indian context of community forest tenure insecurity, showing that governments legally recognise only a fraction of customary forest land, creating conditions under which encroachment displaces NTFP-dependent communities."
+    },
+    {
+      "source_id": "Hegde2016",
+      "title": "Geospatial analysis of forest fragmentation in Uttara Kannada District, India",
+      "authors": [
+        "Hegde, R.",
+        "Hegde, G. R."
+      ],
+      "year": 2016,
+      "doi": "10.1186/s40663-016-0069-4",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Demonstrates how forest-to-farmland and built-up area conversion progressively reduces interior forest cover and fragments NTFP-productive habitat in humid Indian forest zones, providing methodological and empirical grounding for using cd_forest_to_farm_ha as a diagnostic variable."
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-01-24",
+    "last_updated": "2025-01-24",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 17,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_04",
+      "sig_05"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_04",
+          "sig_05"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_04",
+            "sig_05"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,282 @@
+{
+  "card_id": "agriculture__water_scarcity__irrigation_challenges__017",
+  "production_system": "Agriculture",
+  "observed_stress": "water_scarcity",
+  "causal_pathway": "irrigation_challenges",
+  "context": {
+    "agro_climatic_zones": [
+      "humid",
+      "perhumid"
+    ],
+    "aquifer_types": [
+      "coastal"
+    ],
+    "terrain_types": [
+      "plains"
+    ],
+    "rainfall_regime": "humid",
+    "geographic_examples": [
+      "Andaman & Nicobar",
+      "Lakshadweep"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "trend_swb_total_area_ha",
+        "swb_count",
+        "mean_swb_total_area_ha"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "trend_swb_total_area_ha < -2 or (swb_count < 3 and mean_swb_total_area_ha < 10)",
+        "qualitative_description": "Declining surface water body area (more than 2 ha/year loss) or very few small water bodies relative to the micro-watershed, indicating insufficient or shrinking storage infrastructure on these small island territories.",
+        "variables": [
+          "trend_swb_total_area_ha",
+          "swb_count",
+          "mean_swb_total_area_ha"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "In humid island ecosystems like Andaman & Nicobar and Lakshadweep, surface water bodies are the primary irrigation source given the limited groundwater storage in coastal/volcanic aquifers. A declining trend in total SWB area signals siltation, structural deterioration, or encroachment of existing tanks and ponds. With high annual rainfall (1600–3000 mm), shrinking SWB area despite adequate precipitation is a strong indicator of infrastructure failure rather than meteorological drought. Dashora et al. (2019) demonstrated that siltation of check dams in India reduces storage capacity and infiltration rates substantially, with one 5-year-old structure in Gujarat filling completely with silt at 40 cm/year.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "mean_swb_rabi_kharif_ratio"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "mean_swb_rabi_kharif_ratio < 0.4",
+        "qualitative_description": "The rabi-to-kharif SWB area ratio is below 0.4, meaning surface water bodies lose more than 60% of their kharif-season area by rabi season, indicating rapid post-monsoon drying and inability to support rabi or zaid irrigation.",
+        "variables": [
+          "mean_swb_rabi_kharif_ratio"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "A low rabi/kharif SWB ratio reveals that water bodies fill during the monsoon but drain rapidly, leaving insufficient storage for dry-season irrigation. On small islands with limited catchment area and high evapotranspiration, this pattern is consistent with either siltation reducing effective storage depth, poor bund design, or absence of inlet/outlet management. Farmers dependent on these bodies for rabi crops (vegetables, pulses) face acute water shortages even in years of adequate total rainfall. This directly matches the stress description of insufficient water for rabi and zaid seasons.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "nrega_swc_count"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "nrega_swc_count < 5",
+        "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA for the micro-watershed, indicating historically low investment in water harvesting infrastructure.",
+        "variables": [
+          "nrega_swc_count"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Low MGNREGA investment in SWC and irrigation structures means existing water bodies have not been desilted, repaired, or supplemented with new storage. Dashora et al. (2019) showed that manual desilting of check dams increased recharge by 84% over the preceding year, while neglected structures saw declining performance. In island contexts where institutional reach is limited, the absence of MGNREGA water works is a proxy for deferred maintenance and infrastructure gap. This signal amplifies the storage deficit identified in sig_01 and sig_02.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "dist_cooperative_km",
+        "river_name"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "dist_cooperative_km > 15 and river_name is None",
+        "qualitative_description": "The nearest agricultural cooperative is more than 15 km away and no named river passes through or adjacent to the micro-watershed, indicating both limited access to institutional credit for irrigation investment and absence of surface diversion potential.",
+        "variables": [
+          "dist_cooperative_km",
+          "river_name"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "On remote island micro-watersheds, distance to cooperative societies constrains farmers' ability to access credit for pump installation, drip/sprinkler systems, or tank repair. The absence of a named river eliminates the option of diversion or lift irrigation from perennial surface flows, making farmers entirely dependent on rainwater harvesting structures. Together, these conditions create a structural barrier to irrigation investment that amplifies the infrastructure gap. This is consistent with the pathway description that irrigation infrastructure is present but insufficient or costly.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_05",
+      "variables": [
+        "annual_well_depth_m"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Farmers report that wells have become shallower or saline in recent years, or that pumping costs have increased due to saltwater intrusion requiring deeper freshwater lenses — a common problem in coastal and island aquifers where over-extraction causes seawater ingress."
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "Well depth data is not available from the framework for this context. However, in coastal island aquifers (volcanic and coral), the freshwater lens is thin and highly sensitive to extraction. Increased pumping for irrigation during dry spells can trigger saltwater intrusion, effectively reducing usable groundwater for irrigation even where rainfall is high. This makes groundwater an unreliable backup to surface storage failures, reinforcing the irrigation challenge pathway.",
+      "active": true
+    }
+  ],
+  "overall_reasoning_note": "In humid to perhumid island contexts (AER-20), water scarcity through irrigation challenges is paradoxical given high annual rainfall (1600–3000 mm) but is explained by the mismatch between monsoon-concentrated precipitation and year-round crop water demand, combined with limited and deteriorating storage infrastructure. Diagnosis should be confirmed by at least two of sig_01, sig_02, or sig_03. The absence of river diversion potential (sig_04) and groundwater salinity risk (sig_05) are amplifying factors. If SWB area is stable and NREGA investment is moderate, consider whether the stress is meteorological (dry spell within kharif) rather than infrastructure-driven — check drought_moderate_return_period before finalising the pathway.",
+  "confounders": [
+    {
+      "confounder": "Meteorological dry spells within the kharif season causing temporary water shortage rather than structural irrigation infrastructure failure",
+      "how_to_distinguish": "Check drought_moderate_return_period and drought_severe_return_period. If severe droughts recur frequently (every 2–3 years) and SWB area trend is stable (trend_swb_total_area_ha near zero), the stress is primarily climate-driven rather than infrastructure-driven. Infrastructure failure is more likely when SWB area is declining despite normal or above-normal rainfall years."
+    },
+    {
+      "confounder": "Saltwater intrusion into coastal aquifers causing water quality failure rather than water quantity shortage",
+      "how_to_distinguish": "Ask farmers whether water is available but unusable (salty, causes crop damage) versus genuinely absent. Salinity-driven failure points to a groundwater quality pathway rather than irrigation infrastructure insufficiency. If surface water bodies are adequate but groundwater is saline, the diagnosis shifts to coastal aquifer degradation rather than storage infrastructure gap."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "annual_well_depth_m",
+      "question_to_user": "Have farmers in this area noticed changes in their well water over the past 5 years — for example, has the water become saltier, has the water level dropped, or have pumping costs increased significantly?",
+      "how_answer_updates_diagnosis": "If wells have become saline or water levels have dropped despite high rainfall, this confirms coastal aquifer stress as an amplifying factor, making groundwater an unreliable backup to surface storage failures and strengthening the irrigation challenges diagnosis. If wells are stable and freshwater, groundwater may partially compensate for surface storage deficits, reducing overall severity.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "stable",
+          "label": "Well depth has stayed roughly the same (within ~1 m)",
+          "normalized": {
+            "trend": "stable",
+            "present": false
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
+          }
+        },
+        {
+          "id": "deepening",
+          "label": "Wells have deepened by more than 2–3 m in the last 5–10 years",
+          "normalized": {
+            "trend": "worsening",
+            "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "failed",
+          "label": "Springs or shallow wells have dried up permanently or for much longer",
+          "normalized": {
+            "trend": "worsening",
+            "present": true,
+            "band": "high"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
+          }
+        }
+      ],
+      "question_mode": "trend"
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Dashora2019",
+      "title": "Hydrologic and cost benefit analysis at local scale of streambed recharge structures in Rajasthan (India) and their value for securing irrigation water supplies",
+      "authors": [
+        "Dashora, Y.",
+        "Dillon, P.",
+        "Maheshwari, B.",
+        "Soni, P.",
+        "Mittal, H.K.",
+        "Dashora, R.",
+        "Singh, P.K.",
+        "Purohit, R.C.",
+        "Katara, P."
+      ],
+      "year": 2019,
+      "doi": "10.1007/s10040-019-01951-y",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents how siltation reduces check dam storage capacity and recharge rates over time (40 cm/year siltation in one Gujarat structure), and shows manual desilting increased recharge by 84%. Provides cost-benefit evidence (B:C ratio 4.1) for water harvesting structure maintenance as an irrigation security intervention."
+    },
+    {
+      "source_id": "IPCC2014SYR",
+      "title": "Climate Change 2014 - Synthesis Report",
+      "authors": [
+        "IPCC"
+      ],
+      "year": 2014,
+      "doi": "10.59327/ipcc_ar5-9789291691432",
+      "source_type": "government_report",
+      "relevance_note": "Documents increasing variability in precipitation patterns and dry spell frequency in tropical island regions, supporting the rationale that even high-rainfall island contexts face seasonal water stress requiring storage infrastructure."
+    },
+    {
+      "source_id": "Mekonnen2016",
+      "title": "Global Monthly Water Scarcity: Blue Water Footprints versus Blue Water Availability",
+      "authors": [
+        "Mekonnen, M.M.",
+        "Hoekstra, A.Y."
+      ],
+      "year": 2016,
+      "doi": "10.1371/journal.pone.0032688",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Demonstrates that water scarcity is a monthly phenomenon even in high-rainfall regions, with 2.67 billion people experiencing severe scarcity for at least one month per year — supporting the diagnosis of seasonal irrigation water shortage in perhumid island contexts."
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-01-24",
+    "last_updated": "2025-01-24",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 20,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
+  }
+}

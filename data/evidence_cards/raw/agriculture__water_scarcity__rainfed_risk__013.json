@@ -25,16 +25,16 @@
     {
       "signal_id": "sig_01",
       "variables": [
-        "lulc_single_kharif_ha",
-        "lulc_double_crop_ha"
+        "mean_kharif_cropped_area_ha",
+        "mean_double_crop_area_ha"
       ],
       "condition": {
         "type": "quantitative",
         "expression": "(mean_kharif_cropped_area_ha / (mean_kharif_cropped_area_ha + mean_double_crop_area_ha + 1e-9)) > 0.75",
         "qualitative_description": "More than 75% of cropped area is under single kharif season only, indicating near-total dependence on monsoon rainfall with negligible irrigation-supported double cropping.",
         "variables": [
-          "lulc_single_kharif_ha",
-          "lulc_double_crop_ha"
+          "mean_kharif_cropped_area_ha",
+          "mean_double_crop_area_ha"
         ]
       },
       "severity": "high",
@@ -89,7 +89,7 @@
       "condition": {
         "type": "composite",
         "expression": "nrega_irrigation_count <= 35 and canal_name is None",
-        "qualitative_description": "Fewer than 3 MGNREGA irrigation works recorded in the MWS and no canal infrastructure present, confirming absence of both public irrigation investment and surface water conveyance.",
+        "qualitative_description": "35 or fewer MGNREGA irrigation works recorded in the MWS and no canal infrastructure present, confirming absence of both public irrigation investment and surface water conveyance.",
         "variables": [
           "nrega_irrigation_count",
           "canal_name"

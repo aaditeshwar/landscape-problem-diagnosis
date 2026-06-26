@@ -26,16 +26,16 @@
     {
       "signal_id": "sig_01",
       "variables": [
-        "drought_weeks_severe",
-        "drought_weeks_moderate"
+        "drought_severe_return_period",
+        "drought_moderate_return_period"
       ],
       "condition": {
         "type": "quantitative",
         "expression": "drought_severe_return_period <= 4 or drought_moderate_return_period <= 4",
-        "qualitative_description": "Four or more severe drought weeks in the latest kharif season, or a combined pattern of at least 2 severe and 4 moderate weeks, indicates persistent crop-season water deficit sufficient to cause yield loss.",
+        "qualitative_description": "Severe drought return period is 4 years or less, or moderate drought return period is 4 years or less, indicates persistent crop-season water deficit sufficient to cause yield loss.",
         "variables": [
-          "drought_weeks_severe",
-          "drought_weeks_moderate"
+          "drought_severe_return_period",
+          "drought_moderate_return_period"
         ]
       },
       "severity": "high",
@@ -46,13 +46,15 @@
     {
       "signal_id": "sig_02",
       "variables": [
+        "mean",
         "dry_spell_weeks"
       ],
       "condition": {
         "type": "quantitative",
         "expression": "mean(dry_spell_weeks) >= 3",
-        "qualitative_description": "Six or more dry spell weeks (4-week moving window with <50% historical rainfall) in the latest kharif season indicate prolonged moisture stress disrupting multiple crop growth stages.",
+        "qualitative_description": "Mean dry-spell weeks across the record is 3 or more (4-week moving window with <50% historical rainfall), indicate prolonged moisture stress disrupting multiple crop growth stages.",
         "variables": [
+          "mean",
           "dry_spell_weeks"
         ]
       },

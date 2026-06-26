@@ -1,0 +1,298 @@
+{
+  "card_id": "agriculture__water_scarcity__rainfed_risk__013",
+  "production_system": "Agriculture",
+  "observed_stress": "water_scarcity",
+  "causal_pathway": "rainfed_risk",
+  "context": {
+    "agro_climatic_zones": [
+      "perhumid"
+    ],
+    "aquifer_types": [
+      "semi-consolidated"
+    ],
+    "terrain_types": [
+      "hilly"
+    ],
+    "rainfall_regime": "humid",
+    "geographic_examples": [
+      "Meghalaya",
+      "Nagaland",
+      "Mizoram",
+      "Assam hills"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "lulc_single_kharif_ha",
+        "lulc_double_crop_ha"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "(lulc_single_kharif_ha[-1] / (lulc_single_kharif_ha[-1] + lulc_double_crop_ha[-1] + 1e-9)) > 0.75",
+        "qualitative_description": "More than 75% of cropped area is under single kharif season only, indicating near-total dependence on monsoon rainfall with negligible irrigation-supported double cropping.",
+        "variables": [
+          "lulc_single_kharif_ha",
+          "lulc_double_crop_ha"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "In the North-Eastern Hills (AER-17), where rainfall can reach 2000–12000 mm annually, the paradox of water scarcity arises from the inability to retain and utilise rainfall across seasons. A high share of single kharif area relative to total cropland confirms that farmers lack irrigation infrastructure to extend cultivation into rabi or zaid seasons. This is a structural indicator of rainfed dependency rather than absolute rainfall deficit. Rainfed areas in Asia are characterised by variable rainfall, short growing seasons, and minimal development investment, making single-season cropping the dominant pattern (Devendra & Thomas 2002).",
+      "active": true
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "mean_cropping_intensity"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "mean_cropping_intensity <= 1.15",
+        "qualitative_description": "Mean cropping intensity at or below 1.15 across the multi-year record indicates that the vast majority of net sown area is harvested only once per year, consistent with rainfed single-season farming.",
+        "variables": [
+          "mean_cropping_intensity"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Cropping intensity near 1.0 is a robust proxy for rainfed single-season agriculture. In perhumid hilly zones like Meghalaya and Nagaland, where topography limits canal irrigation and groundwater extraction from semi-consolidated aquifers is constrained by slope and drainage, farmers are unable to sustain a second crop without stored water. A mean cropping intensity ≤ 1.15 over the 2017–2024 period confirms that irrigation access is negligible at the micro-watershed scale. Higher values (>1.5) would indicate meaningful irrigation penetration.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "terrain_cluster_id",
+        "mean_annual_runoff_mm"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "terrain_cluster_id == 3 and mean_annual_runoff_mm > 500",
+        "qualitative_description": "Broad plains and slopes terrain (cluster 3) combined with high mean annual runoff indicates rapid drainage off hillslopes, reducing in-field moisture retention and limiting water availability for crops despite high total rainfall.",
+        "variables": [
+          "terrain_cluster_id",
+          "mean_annual_runoff_mm"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "In hilly terrain of the North-Eastern Hills ecoregion, steep slopes accelerate surface runoff, meaning that even very high rainfall (2000–12000 mm) is rapidly lost from the field before crops can utilise it. High mean annual runoff combined with sloping terrain (cluster 3) confirms that the physical landscape amplifies rainfed risk: water is present in aggregate but unavailable at the field level during dry spells or inter-monsoon gaps. This is consistent with findings that unproductive water losses including runoff are highest under tropical residual moisture regimes with short intense rainy seasons (Daryanto et al. 2016).",
+      "active": true
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "nrega_irrigation_count",
+        "canal_name"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "nrega_irrigation_count < 3 and canal_name is None",
+        "qualitative_description": "Fewer than 3 MGNREGA irrigation works recorded in the MWS and no canal infrastructure present, confirming absence of both public irrigation investment and surface water conveyance.",
+        "variables": [
+          "nrega_irrigation_count",
+          "canal_name"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "The absence of canal irrigation and low MGNREGA irrigation work count together confirm that neither large-scale surface irrigation nor community-level water harvesting investment has been made in the micro-watershed. In the North-Eastern Hills, canal irrigation is rare due to terrain constraints, and MGNREGA works represent the primary public investment channel for small-scale water harvesting. Low counts indicate that the rainfed risk has not been mitigated through institutional intervention. Rainfed less-favoured areas in Asia have historically received minimum development attention (Devendra & Thomas 2002), and this signal captures that structural neglect.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_05",
+      "variables": [
+        "irrigated_area_ha"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Net irrigated area data is not available for this micro-watershed. If available, a net irrigated area below 10% of net sown area would strongly confirm rainfed dependency. Proxy estimation using double-crop area plus single non-kharif area is recommended where direct data is absent."
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Net irrigated area is the most direct quantifier of irrigation access. Its absence from the dataset is itself informative in the North-Eastern Hills context, where irrigation infrastructure is sparse and data collection is limited. The proxy (double_crop_area_ha + triple_crop_area_ha + single non-kharif area) should be used to estimate irrigated extent when the primary variable is unavailable.",
+      "active": true
+    }
+  ],
+  "confounders": [
+    {
+      "confounder": "High total rainfall masking seasonal water scarcity: the perhumid classification of AER-17 may lead diagnosticians to dismiss water scarcity as implausible, when in fact inter-monsoon dry spells and rapid runoff on slopes create genuine crop water deficits.",
+      "how_to_distinguish": "Check swb_rabi_area_ha and mean_swb_rabi_kharif_ratio — a low rabi-to-kharif surface water body ratio confirms that water is not being retained post-monsoon. Also verify cropping_intensity: if it remains near 1.0 despite high annual rainfall, the constraint is water retention and storage, not total precipitation. This distinguishes rainfed_risk from a simple drought pathway."
+    },
+    {
+      "confounder": "Shifting cultivation (jhum) systems in the North-Eastern Hills may produce low cropping intensity and single-season patterns for agronomic and cultural reasons unrelated to irrigation access or water scarcity.",
+      "how_to_distinguish": "Cross-check with lulc_double_crop_ha trend and nrega_irrigation_count. If jhum is dominant, lulc classifications will show fallow rotation patterns and NREGA irrigation works may still be low but for different reasons. Farmer interviews should distinguish between water-limited single cropping and intentional fallow rotation. If farmers report inability to grow rabi crops due to water unavailability (not cultural preference), rainfed_risk is confirmed."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "irrigated_area_ha",
+      "question_to_user": "Approximately what share of your village's cultivated land is irrigated — either from a canal, pump, tank, or any other source — during the rabi (winter) or zaid (summer) season? Would you say it is almost none (less than 10%), some (10–30%), or a significant portion (more than 30%)?",
+      "how_answer_updates_diagnosis": "If farmers confirm that almost no land is irrigated outside the kharif season, this strongly confirms the rainfed_risk pathway and justifies recommending in-situ water harvesting and farm pond interventions. If a significant portion is irrigated, the diagnosis should shift toward investigating why water scarcity is still reported — possibly pointing to groundwater stress or distribution failures rather than rainfed dependency.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "low",
+          "label": "Less than 10% of cultivated land is irrigated",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "percent_upper": 10
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "moderate",
+          "label": "Between 10% and 30% of cultivated land is irrigated",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "percent_lower": 10,
+            "percent_upper": 30
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "high",
+          "label": "More than 30% of cultivated land is irrigated",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "percent_lower": 30
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
+          }
+        }
+      ],
+      "question_mode": "magnitude"
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Devendra2002",
+      "title": "Rainfed Areas and Animal Agriculture in Asia: The Wanting Agenda for Transforming Productivity Growth and Rural Poverty",
+      "authors": [
+        "Devendra, C.",
+        "Thomas, D."
+      ],
+      "year": 2002,
+      "doi": "10.5713/ajas.2011.r.09",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents the biophysical characteristics of rainfed less-favoured areas in Asia including variable rainfall, short growing seasons, and minimum development investment; directly supports the structural rainfed dependency diagnosis in AER-17 type contexts."
+    },
+    {
+      "source_id": "Daryanto2016",
+      "title": "Global Synthesis of Drought Effects on Maize and Wheat Production",
+      "authors": [
+        "Daryanto, S.",
+        "Wang, L.",
+        "Jacinthe, P.A."
+      ],
+      "year": 2016,
+      "doi": "10.1371/journal.pone.0156362",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Provides evidence that dryland rainfed systems face higher yield vulnerability to water stress, supporting the severity assessment of rainfed risk in single-season cropping systems."
+    },
+    {
+      "source_id": "Hsiao2016",
+      "title": "Management of crop water under drought: a review",
+      "authors": [
+        "Hsiao, T.C.",
+        "Steduto, P.",
+        "Fereres, E."
+      ],
+      "year": 2016,
+      "doi": "10.1007/s13593-015-0283-4",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents that unproductive water losses including runoff are highest under tropical residual moisture regimes with short intense rainy seasons, supporting the runoff-terrain composite signal for hilly perhumid zones."
+    },
+    {
+      "source_id": "ICAR_AER17",
+      "title": "Agro-Ecological Regions of India: AER-17 North-Eastern Hills (Purvanchal)",
+      "authors": [
+        "Indian Council of Agricultural Research",
+        "National Bureau of Soil Survey and Land Use Planning"
+      ],
+      "year": 2019,
+      "source_type": "government_report",
+      "relevance_note": "Defines AER-17 as a warm perhumid ecoregion covering Meghalaya, Nagaland, Manipur, Mizoram, Tripura and Assam hills with rainfall 2000–12000 mm and sedimentary soft rock aquifers; provides the authoritative agro-ecological context for this card."
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-07-15",
+    "last_updated": "2025-07-15",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 20,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_04",
+      "sig_05"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_04",
+          "sig_05"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_04",
+            "sig_05"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
+  }
+}

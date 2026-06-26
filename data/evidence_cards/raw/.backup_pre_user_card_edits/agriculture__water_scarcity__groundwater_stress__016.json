@@ -1,0 +1,471 @@
+{
+  "card_id": "agriculture__water_scarcity__groundwater_stress__016",
+  "production_system": "Agriculture",
+  "observed_stress": "water_scarcity",
+  "causal_pathway": "groundwater_stress",
+  "context": {
+    "agro_climatic_zones": [
+      "arid"
+    ],
+    "aquifer_types": [
+      "hard_rock"
+    ],
+    "terrain_types": [
+      "hilly",
+      "valley"
+    ],
+    "rainfall_regime": "arid",
+    "geographic_examples": [
+      "Ladakh",
+      "high Himalaya cold desert"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "aquifer_class",
+        "acwadam_class_percent"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "aquifer_class == 'himalayan_and_sub_himalayan' and acwadam_class_percent.get('alluvium', 0) < 20",
+        "qualitative_description": "Aquifer classified as Himalayan/sub-Himalayan with less than 20% alluvial lithology, indicating dominance of fractured crystalline or glaciofluvial hard rock with very low storativity.",
+        "variables": [
+          "aquifer_class",
+          "acwadam_class_percent"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "In the Western Himalayan cold arid ecoregion (AER-1), aquifers are predominantly composed of fractured crystalline basement and glaciofluvial deposits with minimal alluvial cover. Such aquifers have extremely low storativity, meaning even modest extraction rapidly depletes available storage. With mean annual rainfall below 150 mm in Ladakh, natural recharge is negligible, making any extraction essentially mining of stored groundwater. Hard rock aquifer vulnerability to depletion is well established in the literature on Indian hydrogeology.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "mean_annual_delta_g_mm",
+        "trend_annual_delta_g_mm"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "mean_annual_delta_g_mm < 0 and trend_annual_delta_g_mm < 0",
+        "qualitative_description": "Mean annual groundwater balance (P - ET - Runoff) is negative across the multi-year record and the trend is declining, confirming chronic recharge deficit.",
+        "variables": [
+          "mean_annual_delta_g_mm",
+          "trend_annual_delta_g_mm"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "In an arid cold desert context with precipitation below 150 mm/year, evapotranspiration and runoff together routinely exceed precipitation, yielding a structurally negative groundwater balance. A negative mean_annual_delta_g_mm confirms that recharge is chronically insufficient to offset extraction and natural discharge. A negative trend further indicates that the imbalance is worsening over time, consistent with global evidence that groundwater-level declines are accelerating in dry regions with croplands. This dual condition is the strongest quantitative confirmation of the groundwater stress pathway in this context.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "soge_dev_percent",
+        "soge_class_name"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "soge_dev_percent > 70 or soge_class_name in ['Semi-critical', 'Critical', 'Over-exploited']",
+        "qualitative_description": "Block-level CGWB SOGE classification indicates Semi-critical or worse, or extraction exceeds 70% of net annual recharge.",
+        "variables": [
+          "soge_dev_percent",
+          "soge_class_name"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "CGWB defines Safe as below 70% extraction of net annual recharge, Semi-critical as 70–90%, Critical as 90–100%, and Over-exploited as above 100%. In the cold arid Himalayan context, block-level SOGE may underestimate local stress because recharge is spatially concentrated along valley floors and glacial meltwater channels, while extraction is dispersed across agricultural terraces. Even a 'Safe' SOGE classification at block level may mask critical depletion at the micro-watershed scale in hilly terrain. Any SOGE value above 70% in this low-recharge environment should be treated as a strong confirmation signal.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "nrega_swc_count"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "nrega_swc_count < 5",
+        "qualitative_description": "Fewer than 5 cumulative MGNREGA soil and water conservation works recorded in the micro-watershed, indicating very low investment in recharge infrastructure.",
+        "variables": [
+          "nrega_swc_count"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "In the cold arid Himalayan zone, traditional water harvesting structures such as zing (storage tanks), kuls (irrigation channels), and check dams have historically supported agriculture by capturing glacial meltwater and snowmelt runoff. Low MGNREGA SWC investment indicates that modern recharge infrastructure has not supplemented or replaced declining traditional systems. This amplifies groundwater stress by leaving available recharge opportunities unexploited. Global evidence confirms that managed aquifer recharge through streambed structures and infiltration basins can significantly augment recharge in arid settings, and India's own percolation tank network demonstrates the scale of potential intervention.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_05",
+      "variables": [
+        "annual_well_depth_m"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Farmers report that wells or springs that previously provided year-round water now run dry in winter or pre-monsoon months, or that new wells must be dug deeper than historical norms to reach water. This is consistent with declining static water levels in fractured hard rock aquifers with minimal storage."
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Well depth data are not available from automated sources for this context. However, farmer-reported observations of drying springs, reduced spring discharge, and need for deeper excavation are reliable proxies for declining groundwater table in hard rock Himalayan terrain. In fractured crystalline aquifers, storage is confined to weathered zones and fracture networks typically 5–25 m deep; even small declines in water table can cause shallow wells and springs to fail entirely. This qualitative signal should be elicited through the missing variable question below.",
+      "active": true
+    },
+    {
+      "variables": [
+        "borewell_density"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Farmers report moderate-to-high borewell/tubewell density (roughly 10–50 or more than 50 within 2–3 km) in hard rock terrain, indicating localised over-extraction not captured by block-level SOGE. Very low density or widespread borewell failure may indicate aquifer limits rather than density-driven stress."
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "High local borewell density confirms extraction pressure at micro-watershed scale when paired with landscape depletion signals. Failed or unsuccessful borewells indicate hard-rock aquifer limits and may amplify stress severity without confirming high density per se.",
+      "signal_id": "sig_06",
+      "active": true
+    },
+    {
+      "variables": [
+        "groundwater_salinity"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Farmers report salty/brackish well water, white crust on soil or pipes, or water unsuitable for sensitive crops — indicating salinity from deep penetration or over-extraction."
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Reported salinity confirms groundwater stress as a quality-and-quantity problem; may also indicate a distinct salinity pathway requiring solution reassessment.",
+      "signal_id": "sig_07",
+      "active": true
+    }
+  ],
+  "overall_reasoning_note": "Groundwater stress in the cold arid Himalayan context (Ladakh, AER-1) is structurally different from peninsular hard rock depletion: the primary driver is not over-extraction per se but the combination of extremely low natural recharge (<150 mm/year precipitation), dependence on glacial and snowmelt contributions that are seasonally and climatically variable, and hard rock aquifer lithology with negligible storativity. Diagnosis should be confirmed by at least two of: (1) negative mean_annual_delta_g_mm with declining trend, (2) SOGE above 70% or Semi-critical classification, (3) farmer-reported spring or well failure. Low MGNREGA SWC investment amplifies but does not independently confirm stress. Block-level SOGE is particularly unreliable in hilly valley terrain where recharge zones are spatially concentrated; micro-watershed-level assessment is essential. Climate change impacts on glacial meltwater timing add a confounding layer that must be distinguished from extraction-driven depletion.",
+  "confounders": [
+    {
+      "confounder": "Glacial meltwater reduction or shift in snowmelt timing causing apparent groundwater stress without over-extraction",
+      "how_to_distinguish": "Compare trend_annual_delta_g_mm against trend_annual_precipitation_mm. If precipitation is declining or snowmelt season is shortening (reported by farmers or visible in runoff trends), reduced recharge from glacial/snowmelt sources rather than over-extraction may be the primary driver. Check soge_dev_percent: if it remains low (<50%) but delta_g is still negative, climate-driven recharge reduction rather than extraction pressure is likely dominant. Solutions differ: climate-driven stress requires storage augmentation (zings, check dams) rather than demand management."
+    },
+    {
+      "confounder": "Seasonal spring drying misread as chronic groundwater depletion",
+      "how_to_distinguish": "In cold arid Himalayan terrain, springs fed by snowmelt naturally dry in late winter before snowmelt begins. Distinguish chronic depletion from seasonal variation by asking whether springs that previously flowed year-round (including in winter) have now failed, versus springs that have always been seasonal. Chronic depletion is indicated by failure of previously perennial springs or by springs failing earlier in the season than historical norms. Cross-check with trend_annual_delta_g_mm: a worsening multi-year trend confirms chronic depletion rather than normal seasonality."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "annual_well_depth_m",
+      "question_to_user": "Have the wells or springs in your area become shallower or deeper over the past 5–10 years? Are there springs that used to flow year-round that now dry up in winter or before the snowmelt season? Have farmers had to dig new wells deeper than old ones to find water?",
+      "how_answer_updates_diagnosis": "Reports of deepening wells, failing perennial springs, or earlier seasonal drying strongly confirm the groundwater stress pathway in this hard rock arid context. If springs and wells are stable or improving, consider climate-driven recharge reduction as the primary pathway rather than extraction-driven depletion.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "stable",
+          "label": "Well depth has stayed roughly the same (within ~1 m)",
+          "normalized": {
+            "trend": "stable",
+            "present": false
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
+          }
+        },
+        {
+          "id": "deepening",
+          "label": "Wells have deepened by more than 2–3 m in the last 5–10 years",
+          "normalized": {
+            "trend": "worsening",
+            "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "failed",
+          "label": "Springs or shallow wells have dried up permanently or for much longer",
+          "normalized": {
+            "trend": "worsening",
+            "present": true,
+            "band": "high"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
+          }
+        }
+      ],
+      "question_mode": "trend"
+    },
+    {
+      "missing_variable": "borewell_density",
+      "question_to_user": "How many borewells or tube wells have been installed in your village or nearby villages in the last 10 years? Has the number increased significantly, and have older shallow wells been replaced by deeper borewells?",
+      "how_answer_updates_diagnosis": "A rapid increase in borewell numbers or shift from shallow dug wells to deep borewells in a hard rock aquifer with very low recharge confirms extraction pressure exceeding recharge capacity, strongly supporting the groundwater stress pathway. Low borewell density with failing springs points more toward climate-driven recharge reduction.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "few",
+          "label": "Very few (fewer than 10 within 2–3 km)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": false
+              }
+            ]
+          }
+        },
+        {
+          "id": "moderate",
+          "label": "Moderate (10–50 within 2–3 km)",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "many",
+          "label": "More than 50 within 2–3 km",
+          "normalized": {
+            "band": "high",
+            "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
+          }
+        }
+      ],
+      "question_mode": "magnitude"
+    },
+    {
+      "missing_variable": "groundwater_salinity",
+      "question_to_user": "Have farmers noticed that water from wells or springs has become more brackish, leaves white or mineral deposits on fields or pipes, or causes crop damage that was not observed previously?",
+      "how_answer_updates_diagnosis": "Increasing salinity in Himalayan hard rock aquifers can indicate penetration into deeper saline geological formations due to water table decline, or concentration of dissolved minerals as recharge decreases. This would confirm severe depletion and may require different intervention strategies focused on water quality treatment alongside recharge augmentation.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "none",
+          "label": "No — water quality has not changed; no saltiness or deposits",
+          "normalized": {
+            "present": false,
+            "trend": "stable"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": false
+              }
+            ]
+          }
+        },
+        {
+          "id": "mild",
+          "label": "Some salinity or white deposits; still usable for some crops",
+          "normalized": {
+            "present": true,
+            "band": "moderate",
+            "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "severe",
+          "label": "Brackish or salty water; crop damage or unsuitable for irrigation",
+          "normalized": {
+            "present": true,
+            "band": "high",
+            "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": true
+              }
+            ]
+          }
+        }
+      ],
+      "question_mode": "presence_graded"
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "CGWB2023",
+      "title": "National Compilation of Dynamic Ground Water Resources of India 2022",
+      "authors": [
+        "Central Ground Water Board"
+      ],
+      "year": 2023,
+      "url": "https://cgwb.gov.in",
+      "source_type": "government_report",
+      "relevance_note": "Defines SOGE class thresholds (Safe <70%, Semi-critical 70–90%, Critical 90–100%, Over-exploited >100%) used in sig_03; provides AER-1 classification for Western Himalayan cold arid ecoregion including Ladakh with rainfall <150 mm and Himalayan/sub-Himalayan aquifer type."
+    },
+    {
+      "source_id": "Gleeson2024NatureRapidDecline",
+      "title": "Rapid groundwater decline and some cases of recovery in aquifers globally",
+      "authors": [
+        "Gleeson, Tom",
+        "et al."
+      ],
+      "year": 2023,
+      "doi": "10.1038/s41586-023-06879-8",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents that rapid groundwater-level declines (>0.5 m/year) are especially prevalent in dry regions with croplands, and that declines have accelerated in 30% of regional aquifers globally; supports use of trend_annual_delta_g_mm as a primary diagnostic signal."
+    },
+    {
+      "source_id": "Siebert2010GroundwaterIrrigation",
+      "title": "Groundwater use for irrigation – a global inventory",
+      "authors": [
+        "Siebert, S.",
+        "Burke, J.",
+        "Faures, J.M.",
+        "Frenken, K.",
+        "Hoogeveen, J.",
+        "Döll, P.",
+        "Portmann, F.T."
+      ],
+      "year": 2010,
+      "doi": "10.5194/hess-14-1863-2010",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Establishes India as the world's largest user of groundwater for irrigation (39 million ha), providing global context for extraction pressure; notes that groundwater use is increasing in places where extraction exceeds recharge, directly relevant to the chronic depletion pathway."
+    },
+    {
+      "source_id": "Dillon2019MARSixtyYears",
+      "title": "Sixty years of global progress in managed aquifer recharge",
+      "authors": [
+        "Dillon, Peter",
+        "et al."
+      ],
+      "year": 2019,
+      "doi": "10.1007/s10040-018-1841-z",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents India's extensive use of percolation tanks, check dams, and streambed recharge structures for managed aquifer recharge; supports recommended solutions including trench and check-dam construction and community pond repair; notes that MAR is not keeping pace with extraction globally."
+    },
+    {
+      "source_id": "Villholth2018GroundwaterChallenges",
+      "title": "A Snapshot of the World's Groundwater Challenges",
+      "authors": [
+        "Villholth, Karen G."
+      ],
+      "year": 2018,
+      "doi": "10.1146/annurev-environ-102017-025800",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Reviews global groundwater depletion and pollution challenges; highlights that climate change amplifies groundwater use pressure and threatens recharge, particularly relevant to the cold arid Himalayan context where glacial meltwater recharge is climate-sensitive."
+    },
+    {
+      "source_id": "Kulkarni2022AlluvsHardRock",
+      "title": "Addressing Depletion in Alluvial Aquifers",
+      "authors": [
+        "Kulkarni, Himanshu",
+        "et al."
+      ],
+      "year": 2022,
+      "doi": "10.37773/ees.v8i1.1122",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Distinguishes hard rock aquifer depletion dynamics (seasonal emptying and filling, low storage) from alluvial aquifer depletion; argues that management approaches must account for geological differences; supports the aquifer_class and acwadam_class_percent signals in this card."
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-01-27",
+    "last_updated": "2025-01-27",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 24,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_03",
+      "sig_05",
+      "sig_06",
+      "sig_07"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_03",
+          "sig_05",
+          "sig_06",
+          "sig_07"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_05",
+            "sig_06",
+            "sig_07"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
+  }
+}

@@ -26,16 +26,16 @@
     {
       "signal_id": "sig_01",
       "variables": [
-        "drought_weeks_severe",
-        "drought_weeks_moderate"
+        "drought_severe_return_period",
+        "drought_moderate_return_period"
       ],
       "condition": {
         "type": "quantitative",
         "expression": "drought_severe_return_period <= 4 or drought_moderate_return_period <= 4",
-        "qualitative_description": "Three or more severe drought weeks in the latest kharif season, or a combination of at least one severe week and four or more moderate weeks, indicates a drought episode sufficient to cause significant crop water stress and yield loss.",
+        "qualitative_description": "Severe drought return period is 4 years or less, or moderate drought return period is 4 years or less, indicates a drought episode sufficient to cause significant crop water stress and yield loss.",
         "variables": [
-          "drought_weeks_severe",
-          "drought_weeks_moderate"
+          "drought_severe_return_period",
+          "drought_moderate_return_period"
         ]
       },
       "severity": "high",
@@ -46,13 +46,15 @@
     {
       "signal_id": "sig_02",
       "variables": [
+        "mean",
         "dry_spell_weeks"
       ],
       "condition": {
         "type": "quantitative",
         "expression": "mean(dry_spell_weeks) >= 3",
-        "qualitative_description": "Four or more dry spell weeks (4-week moving window with less than 50% historical rainfall) in the latest kharif season indicate prolonged moisture deficit disrupting crop growth stages.",
+        "qualitative_description": "Mean dry-spell weeks across the record is 3 or more (4-week moving window with less than 50% historical rainfall), indicate prolonged moisture deficit disrupting crop growth stages.",
         "variables": [
+          "mean",
           "dry_spell_weeks"
         ]
       },
@@ -86,18 +88,18 @@
     {
       "signal_id": "sig_04",
       "variables": [
+        "mean_kharif_precipitation",
         "mean_annual_precipitation_mm",
-        "trend_annual_precipitation_mm",
-        "seasonal_precipitation_mm"
+        "trend_annual_precipitation_mm"
       ],
       "condition": {
         "type": "composite",
         "expression": "(mean_kharif_precipitation < 0.75 * mean_annual_precipitation_mm * 0.85) or (mean_annual_precipitation_mm < 1000 and trend_annual_precipitation_mm < -10)",
         "qualitative_description": "Kharif seasonal precipitation below 75% of the long-run kharif normal, or mean annual precipitation below 1000 mm with a declining trend exceeding 10 mm/year, confirms a rainfall deficit context consistent with recurrent drought.",
         "variables": [
+          "mean_kharif_precipitation",
           "mean_annual_precipitation_mm",
-          "trend_annual_precipitation_mm",
-          "seasonal_precipitation_mm"
+          "trend_annual_precipitation_mm"
         ]
       },
       "severity": "moderate",

@@ -1,0 +1,451 @@
+{
+  "card_id": "agriculture__water_scarcity__groundwater_stress__003",
+  "production_system": "Agriculture",
+  "observed_stress": "water_scarcity",
+  "causal_pathway": "groundwater_stress",
+  "context": {
+    "agro_climatic_zones": [
+      "sub-humid"
+    ],
+    "aquifer_types": [
+      "alluvium"
+    ],
+    "terrain_types": [
+      "plains"
+    ],
+    "rainfall_regime": "sub-humid",
+    "geographic_examples": [
+      "Punjab",
+      "Haryana",
+      "western Uttar Pradesh"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "soge_dev_percent",
+        "soge_class_name"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "soge_dev_percent > 90 or soge_class_name in ['Critical', 'Over-exploited']",
+        "qualitative_description": "Block-level SOGE exceeds 90% or is classified Critical/Over-exploited by CGWB, indicating abstraction is at or beyond net annual recharge in the alluvial aquifer.",
+        "variables": [
+          "soge_dev_percent",
+          "soge_class_name"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "In the Indo-Gangetic alluvial aquifer system, CGWB defines Critical as 90–100% and Over-exploited as >100% of net annual recharge extracted. Unlike hard-rock aquifers where seasonal emptying masks chronic depletion, alluvial aquifers show a gradual, cumulative water-table decline when abstraction persistently exceeds recharge. Punjab and Haryana have large proportions of Over-exploited blocks driven by paddy-wheat double cropping under tube-well irrigation. A threshold of 90% is used here because alluvial aquifers, while having higher storativity than hard-rock systems, still face irreversible long-term depletion once extraction consistently exceeds recharge.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "trend_annual_delta_g_mm",
+        "mean_annual_delta_g_mm"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "trend_annual_delta_g_mm < 0 and mean_annual_delta_g_mm < 0",
+        "qualitative_description": "Both the linear trend slope of annual groundwater balance (P - ET - Runoff) is negative and the multi-year mean is negative, confirming chronic depletion rather than a single drought year anomaly.",
+        "variables": [
+          "trend_annual_delta_g_mm",
+          "mean_annual_delta_g_mm"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "A sustained negative delta_g trend combined with a negative multi-year mean indicates that outflows (ET + runoff) persistently exceed precipitation inputs, leaving no surplus for aquifer recharge. In the sub-humid Indo-Gangetic Plain, this pattern is driven by high crop water demand from paddy cultivation in kharif and wheat in rabi, both heavily dependent on groundwater irrigation. Global analyses confirm that rapid groundwater-level declines (>0.5 m/year) are widespread in regions with extensive croplands, and that acceleration of depletion over recent decades is a key warning signal requiring urgent management response.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "aquifer_class",
+        "acwadam_class_percent"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "aquifer_class == 'alluvium' and acwadam_class_percent.get('alluvium', 0) > 60",
+        "qualitative_description": "Dominant alluvial aquifer with more than 60% of MWS area underlain by alluvial lithology, confirming the high-storage but over-exploited aquifer type characteristic of the Indo-Gangetic Plain.",
+        "variables": [
+          "aquifer_class",
+          "acwadam_class_percent"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "Alluvial aquifers of the Indo-Gangetic Plain have high storativity compared to hard-rock systems, meaning depletion manifests as a gradual, cumulative water-table decline rather than seasonal emptying. This geological context is critical: management strategies effective in peninsular hard-rock systems (e.g., percolation tanks sized for low-storage aquifers) are not directly transferable to alluvial settings where the resource is shared across large spatial extents and depletion is driven by aggregate extraction pressure across many users. Confirming alluvial lithology dominance contextualises the SOGE and delta_g signals and guides appropriate intervention design.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "nrega_swc_count"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "nrega_swc_count < 10",
+        "qualitative_description": "Fewer than 10 cumulative SWC works in the MWS over the MGNREGA record, indicating low investment in recharge infrastructure relative to the extraction pressure in an alluvial plain setting.",
+        "variables": [
+          "nrega_swc_count"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Low MGNREGA-funded SWC investment means that natural recharge opportunities — check dams, trench structures, pond desilting, and drainage-line interventions — have not been systematically exploited. In alluvial plains, managed aquifer recharge through streambed structures and infiltration basins can meaningfully supplement natural recharge, but requires sustained institutional investment. The absence of such works amplifies depletion driven by over-extraction and signals an intervention opportunity. India has a long history of tank and pond-based recharge, and government investment in artificial recharge structures is projected to expand significantly, making low current SWC counts a remediable gap rather than a terminal condition.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_05",
+      "variables": [
+        "annual_well_depth_m"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Farmers report that they have had to deepen borewells or tubewells over the past 5–10 years, or that shallow dug wells have dried up during rabi or zaid seasons, indicating a declining static water level in the alluvial aquifer."
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Well depth increase over time is a direct proxy for declining groundwater table. In alluvial aquifers of the Indo-Gangetic Plain, this manifests as a gradual deepening of the water table rather than the seasonal emptying seen in hard-rock systems. Farmers deepening tubewells from 30–40 m to 60–80 m over a decade is a commonly reported symptom in Punjab and Haryana. This variable is not available in the framework data and must be elicited through farmer interviews.",
+      "active": true
+    },
+    {
+      "variables": [
+        "borewell_density"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Farmers report moderate-to-high borewell/tubewell density (roughly 10–50 or more than 50 within 2–3 km) in hard rock terrain, indicating localised over-extraction not captured by block-level SOGE. Very low density or widespread borewell failure may indicate aquifer limits rather than density-driven stress."
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "High local borewell density confirms extraction pressure at micro-watershed scale when paired with landscape depletion signals. Failed or unsuccessful borewells indicate hard-rock aquifer limits and may amplify stress severity without confirming high density per se.",
+      "signal_id": "sig_06",
+      "active": true
+    },
+    {
+      "variables": [
+        "groundwater_salinity"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Farmers report salty/brackish well water, white crust on soil or pipes, or water unsuitable for sensitive crops — indicating salinity from deep penetration or over-extraction."
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Reported salinity confirms groundwater stress as a quality-and-quantity problem; may also indicate a distinct salinity pathway requiring solution reassessment.",
+      "signal_id": "sig_07",
+      "active": true
+    }
+  ],
+  "confounders": [
+    {
+      "confounder": "Meteorological drought reducing recharge and causing apparent groundwater stress without chronic over-extraction",
+      "how_to_distinguish": "Compare trend_annual_precipitation_mm and drought_severe_return_period against the delta_g trend. If negative delta_g is concentrated in drought years (low precipitation) but SOGE remains below 70% in non-drought years, drought is the primary driver rather than structural over-extraction. In genuine groundwater stress from over-extraction, SOGE will be elevated (>90%) even in normal rainfall years, and the delta_g trend will be negative across both wet and dry years."
+    },
+    {
+      "confounder": "Canal irrigation failure or surface water diversion reduction causing farmers to switch to groundwater, mimicking chronic groundwater stress",
+      "how_to_distinguish": "Check whether the increase in groundwater extraction is recent and coincides with reduced canal water availability (e.g., reduced river flows, canal maintenance failures). If SOGE was previously Safe and has risen rapidly in recent years alongside documented canal system decline, the root cause is surface water failure rather than structural aquifer depletion. In this case, restoring surface water supply is the primary intervention, not groundwater governance alone."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "annual_well_depth_m",
+      "question_to_user": "Have farmers in this area had to deepen their borewells or tubewells in the last 5–10 years? If yes, roughly how many metres deeper are they now compared to when they were first installed? Are any shallow dug wells or hand pumps running dry during the rabi (winter) or zaid (summer) season?",
+      "how_answer_updates_diagnosis": "If farmers confirm borewell deepening of more than 5–10 metres over a decade, or report seasonal drying of shallow wells, this strongly confirms the groundwater stress pathway in the alluvial aquifer. A deepening rate of more than 1 m/year in alluvial settings is considered significant and consistent with the rapid declines (>0.5 m/year) documented globally in intensively irrigated cropland aquifers.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "stable",
+          "label": "Well depth has stayed roughly the same (within ~1 m)",
+          "normalized": {
+            "trend": "stable",
+            "present": false
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
+          }
+        },
+        {
+          "id": "deepening",
+          "label": "Wells have deepened by more than 2–3 m in the last 5–10 years",
+          "normalized": {
+            "trend": "worsening",
+            "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "failed",
+          "label": "Springs or shallow wells have dried up permanently or for much longer",
+          "normalized": {
+            "trend": "worsening",
+            "present": true,
+            "band": "high"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
+          }
+        }
+      ],
+      "question_mode": "trend"
+    },
+    {
+      "missing_variable": "borewell_density",
+      "question_to_user": "Approximately how many tubewells or borewells are there per village or per 100 hectares in this area? Has the number of new borewells increased significantly in the last 10 years?",
+      "how_answer_updates_diagnosis": "High borewell density (more than 50 per 100 ha) in an alluvial plain with elevated SOGE confirms that aggregate extraction pressure is the primary driver of depletion. Rapid recent growth in borewell numbers suggests the problem is worsening and that demand-side governance interventions (e.g., Atal Bhujal Yojana participatory groundwater management) are urgently needed.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "few",
+          "label": "Very few (fewer than 10 within 2–3 km)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": false
+              }
+            ]
+          }
+        },
+        {
+          "id": "moderate",
+          "label": "Moderate (10–50 within 2–3 km)",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "many",
+          "label": "More than 50 within 2–3 km",
+          "normalized": {
+            "band": "high",
+            "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
+          }
+        }
+      ],
+      "question_mode": "magnitude"
+    },
+    {
+      "missing_variable": "groundwater_salinity",
+      "question_to_user": "Have farmers noticed that borewell water has become saltier, leaves white or crusty deposits on fields or pipes, or causes crop damage that was not observed previously? Are there areas where groundwater is known to be too saline for irrigation?",
+      "how_answer_updates_diagnosis": "Increasing salinity in alluvial aquifers can indicate lateral intrusion of saline groundwater as fresh water is depleted, or upward migration of deeper saline layers due to excessive pumping. If salinity is confirmed, the effective usable groundwater resource is smaller than SOGE figures suggest, making the stress more severe and changing solution priorities toward water quality management alongside recharge.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "none",
+          "label": "No — water quality has not changed; no saltiness or deposits",
+          "normalized": {
+            "present": false,
+            "trend": "stable"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": false
+              }
+            ]
+          }
+        },
+        {
+          "id": "mild",
+          "label": "Some salinity or white deposits; still usable for some crops",
+          "normalized": {
+            "present": true,
+            "band": "moderate",
+            "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "severe",
+          "label": "Brackish or salty water; crop damage or unsuitable for irrigation",
+          "normalized": {
+            "present": true,
+            "band": "high",
+            "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": true
+              }
+            ]
+          }
+        }
+      ],
+      "question_mode": "presence_graded"
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Biswas2022_AlluvalAquifers",
+      "title": "Addressing Depletion in Alluvial Aquifers",
+      "authors": [
+        "Biswas, Asit K.",
+        "et al."
+      ],
+      "year": 2022,
+      "doi": "10.37773/ees.v8i1.1122",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Argues that alluvial aquifer depletion in the Indo-Gangetic Plain is a chronic cumulative decline distinct from hard-rock seasonal emptying, and that management approaches must differ accordingly; directly supports sig_03 and the overall pathway framing."
+    },
+    {
+      "source_id": "CGWB2023",
+      "title": "National Compilation of Dynamic Ground Water Resources of India 2022",
+      "authors": [
+        "Central Ground Water Board"
+      ],
+      "year": 2023,
+      "url": "https://cgwb.gov.in",
+      "source_type": "government_report",
+      "relevance_note": "Defines SOGE class thresholds (Safe <70%, Semi-critical 70–90%, Critical 90–100%, Over-exploited >100%) used in sig_01; documents the high proportion of Over-exploited blocks in Punjab and Haryana."
+    },
+    {
+      "source_id": "Jasechko2024_GlobalDecline",
+      "title": "Rapid groundwater decline and some cases of recovery in aquifers globally",
+      "authors": [
+        "Jasechko, Scott",
+        "et al."
+      ],
+      "year": 2024,
+      "doi": "10.1038/s41586-023-06879-8",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents that rapid groundwater-level declines (>0.5 m/year) are widespread in regions with extensive croplands, and that 30% of regional aquifers show accelerating decline; supports the severity framing of sig_02 and the urgency of intervention."
+    },
+    {
+      "source_id": "Siebert2010_GroundwaterIrrigation",
+      "title": "Groundwater use for irrigation – a global inventory",
+      "authors": [
+        "Siebert, S.",
+        "Burke, J.",
+        "Faures, J.M.",
+        "Frenken, K.",
+        "Hoogeveen, J.",
+        "Döll, P.",
+        "Portmann, F.T."
+      ],
+      "year": 2010,
+      "doi": "10.5194/hess-14-1863-2010",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents India as having the largest area equipped for groundwater irrigation globally (39 million ha), contextualising the scale of extraction pressure in the Indo-Gangetic alluvial aquifer system."
+    },
+    {
+      "source_id": "Dillon2019_MAR60Years",
+      "title": "Sixty years of global progress in managed aquifer recharge",
+      "authors": [
+        "Dillon, Peter",
+        "et al."
+      ],
+      "year": 2019,
+      "doi": "10.1007/s10040-018-1841-z",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents India's long history of tank and pond-based recharge and government investment in artificial recharge structures; supports the recommended solutions involving check dams, trench structures, and community pond repair, and contextualises the low nrega_swc_count signal."
+    }
+  ],
+  "overall_reasoning_note": "Groundwater stress in Indo-Gangetic alluvial aquifers should be confirmed by at least two of the three primary signals: elevated SOGE (>90% or Critical/Over-exploited classification), chronic negative delta_g trend, and farmer-reported borewell deepening. Unlike hard-rock peninsular aquifers, alluvial systems have higher storativity and depletion manifests as a slow cumulative water-table decline rather than seasonal emptying — this means SOGE is a more reliable block-level indicator here, but still masks spatial heterogeneity within blocks. The geological confirmation (sig_03) is important for directing appropriate interventions: alluvial aquifer management requires demand-side governance and large-scale recharge infrastructure rather than the small percolation tank approaches suited to hard-rock systems. Low SWC investment (sig_04) amplifies the depletion signals and identifies a remediable gap. Always elicit farmer testimony on borewell deepening and seasonal well failure before finalising diagnosis, as annual_well_depth_m is not available in the framework data.",
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-01-27",
+    "last_updated": "2025-01-27",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "high",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 24,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_05"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_05"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_05"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,490 @@
+{
+  "card_id": "agriculture__water_scarcity__groundwater_stress__012",
+  "production_system": "Agriculture",
+  "observed_stress": "water_scarcity",
+  "causal_pathway": "groundwater_stress",
+  "context": {
+    "agro_climatic_zones": [
+      "perhumid"
+    ],
+    "aquifer_types": [
+      "hard_rock"
+    ],
+    "terrain_types": [
+      "hilly"
+    ],
+    "rainfall_regime": "humid",
+    "geographic_examples": [
+      "Sikkim",
+      "Arunachal Pradesh",
+      "NE hill states"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "aquifer_class",
+        "acwadam_class_percent"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "aquifer_class == 'himalayan_and_sub_himalayan' and acwadam_class_percent.get('crystalline_basement', 0) + acwadam_class_percent.get('sedimentary_hard_rock', 0) > 40",
+        "qualitative_description": "Aquifer classified as Himalayan and sub-Himalayan with significant crystalline or hard-rock lithology fraction, indicating low storativity and limited recharge capacity despite high rainfall.",
+        "variables": [
+          "aquifer_class",
+          "acwadam_class_percent"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "In the Eastern Himalayan hill states, aquifers are predominantly fractured hard rock and crystalline basement with very low storativity. Despite perhumid rainfall (2000–5000 mm/year), steep terrain causes rapid surface runoff, limiting infiltration and groundwater recharge. Hard-rock aquifers in hilly terrain manifest stress as seasonal emptying rather than long-term water table decline, meaning even moderate extraction can cause dry-season water shortages. This is consistent with the documented pattern in peninsular hard-rock systems where stress manifests as seasonal emptying and filling rather than gradual depletion.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "soge_dev_percent",
+        "soge_class_name"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "soge_dev_percent > 50 or soge_class_name in ['Semi-critical', 'Critical', 'Over-exploited']",
+        "qualitative_description": "SOGE development exceeds 50% or block is classified Semi-critical or above. In hard-rock hilly aquifers, even moderate SOGE values signal localised stress due to spatial heterogeneity of recharge.",
+        "variables": [
+          "soge_dev_percent",
+          "soge_class_name"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "CGWB SOGE thresholds define Safe (<70%), Semi-critical (70–90%), Critical (90–100%), and Over-exploited (>100%). However, in hard-rock hilly aquifers of the Eastern Himalayas, block-level SOGE values may appear Safe while localised stress is severe, because recharge is spatially heterogeneous and concentrated along fracture zones and valley bottoms. A threshold of 50% is used here as a conservative trigger given the low storativity of these aquifers. Rapid groundwater-level declines have been documented globally in hard-rock systems even where aggregate extraction statistics appear moderate.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "trend_annual_delta_g_mm",
+        "mean_annual_delta_g_mm"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "trend_annual_delta_g_mm < 0 and mean_annual_delta_g_mm < 0",
+        "qualitative_description": "Declining trend in annual groundwater recharge balance (P - ET - Runoff) with a low mean recharge value, indicating that despite high rainfall, net groundwater replenishment is diminishing over time.",
+        "variables": [
+          "trend_annual_delta_g_mm",
+          "mean_annual_delta_g_mm"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "A negative trend in delta_g combined with a low mean recharge value is a strong indicator of chronic groundwater stress even in perhumid zones. In steep hilly terrain, high rainfall does not guarantee high groundwater recharge because most precipitation becomes surface runoff. Increasing ET from expanding vegetation or cropping, combined with accelerating runoff due to land-use change, can reduce the fraction of rainfall that recharges aquifers. A sustained negative trend in delta_g confirms that the groundwater balance is deteriorating regardless of total rainfall.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "nrega_swc_count"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "nrega_swc_count < 10",
+        "qualitative_description": "Fewer than 10 cumulative SWC works in the micro-watershed under MGNREGA, indicating underinvestment in recharge infrastructure in a terrain where check dams, trench bunds, and gabion structures are critical for slowing runoff and enhancing infiltration.",
+        "variables": [
+          "nrega_swc_count"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "In steep hilly terrain with hard-rock aquifers, soil and water conservation structures such as check dams, trenches, and gabion walls are essential for slowing surface runoff and promoting infiltration into fractured rock recharge zones. India has a long history of tank and pond construction for groundwater recharge, with over 500,000 such structures documented historically. Low MGNREGA SWC investment in NE hill states means that natural recharge opportunities are not being exploited, amplifying seasonal water stress. This signal identifies an intervention opportunity rather than confirming terminal depletion.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_05",
+      "variables": [
+        "annual_well_depth_m"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Farmers report that springs, dug wells, or shallow borewells that previously yielded water year-round now run dry in the rabi or zaid season, or that they have had to deepen wells or drill new borewells at greater depth to access water. This is the primary field symptom of seasonal aquifer emptying in hard-rock hilly terrain."
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "In hard-rock hilly aquifers of the Eastern Himalayas, groundwater stress manifests primarily as seasonal spring and well failure rather than gradual water table decline. Springs are the dominant water source for both drinking and irrigation in these hill states, and spring discharge is directly linked to fracture-zone recharge during the monsoon. Declining spring discharge or complete dry-season failure is the most reliable field indicator of groundwater stress in this context. Well depth data is not available in the framework but farmer-reported spring and well failure is a critical qualitative signal.",
+      "active": true
+    },
+    {
+      "variables": [
+        "borewell_density"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Farmers report moderate-to-high borewell/tubewell density (roughly 10–50 or more than 50 within 2–3 km) in hard rock terrain, indicating localised over-extraction not captured by block-level SOGE. Very low density or widespread borewell failure may indicate aquifer limits rather than density-driven stress."
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "High local borewell density confirms extraction pressure at micro-watershed scale when paired with landscape depletion signals. Failed or unsuccessful borewells indicate hard-rock aquifer limits and may amplify stress severity without confirming high density per se.",
+      "signal_id": "sig_06",
+      "active": true
+    },
+    {
+      "variables": [
+        "groundwater_salinity"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Farmers report salty/brackish well water, white crust on soil or pipes, or water unsuitable for sensitive crops — indicating salinity from deep penetration or over-extraction."
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Reported salinity confirms groundwater stress as a quality-and-quantity problem; may also indicate a distinct salinity pathway requiring solution reassessment.",
+      "signal_id": "sig_07",
+      "active": true
+    }
+  ],
+  "confounders": [
+    {
+      "confounder": "High seasonal rainfall masking chronic groundwater stress — perhumid rainfall statistics suggest abundant water availability, leading to misdiagnosis of water scarcity as a distribution or infrastructure problem rather than aquifer depletion",
+      "how_to_distinguish": "Check trend_annual_delta_g_mm and mean_annual_delta_g_mm. If delta_g trend is negative despite high mean_annual_precipitation_mm (>2000 mm), the issue is runoff-dominated hydrology with poor infiltration, not rainfall deficit. Also verify whether water scarcity is seasonal (dry months only) or year-round — seasonal scarcity in a perhumid zone strongly points to hard-rock aquifer emptying rather than meteorological drought."
+    },
+    {
+      "confounder": "Spring discharge decline attributed to deforestation or land-use change rather than groundwater over-extraction",
+      "how_to_distinguish": "Compare trend_annual_runoff_mm against trend_annual_delta_g_mm. If runoff is increasing while delta_g is declining, land-use change (forest loss increasing surface runoff) is the primary driver of reduced recharge rather than extraction pressure. In this case, the pathway is more accurately characterised as recharge deficit from land degradation rather than over-extraction, and solutions should prioritise reforestation and runoff retention over demand-side groundwater governance."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "annual_well_depth_m",
+      "question_to_user": "Have the springs, dug wells, or borewells in your area started drying up or yielding less water during the dry season (November to May) compared to 5–10 years ago? Have farmers had to drill deeper borewells or travel further to fetch water?",
+      "how_answer_updates_diagnosis": "Confirmed seasonal spring or well failure in a perhumid zone is the strongest field indicator of hard-rock aquifer stress in NE hill states. If farmers report year-round spring failure, the stress is severe and chronic. If only dry-season failure is reported, it indicates seasonal aquifer emptying consistent with hard-rock low-storativity dynamics. This qualitative information should be weighted heavily when SOGE data shows Safe classification, as block-level SOGE routinely underestimates localised stress in fractured hill aquifers.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "stable",
+          "label": "Well depth has stayed roughly the same (within ~1 m)",
+          "normalized": {
+            "trend": "stable",
+            "present": false
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
+          }
+        },
+        {
+          "id": "deepening",
+          "label": "Wells have deepened by more than 2–3 m in the last 5–10 years",
+          "normalized": {
+            "trend": "worsening",
+            "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "failed",
+          "label": "Springs or shallow wells have dried up permanently or for much longer",
+          "normalized": {
+            "trend": "worsening",
+            "present": true,
+            "band": "high"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
+          }
+        }
+      ],
+      "question_mode": "trend"
+    },
+    {
+      "missing_variable": "borewell_density",
+      "question_to_user": "Approximately how many borewells or tubewells have been drilled in your village or panchayat area in the last 10 years? Has the number increased significantly, and are many of them now yielding less water or running dry?",
+      "how_answer_updates_diagnosis": "Rapid increase in borewell density in hard-rock hilly terrain signals extraction pressure exceeding the limited storativity of fractured aquifers. Even a moderate number of borewells (20–30 per village) can cause localised depletion in hard-rock systems where recharge is confined to narrow fracture zones. High borewell density combined with seasonal failure confirms the groundwater stress pathway and strengthens the case for collective groundwater governance and recharge infrastructure investment.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "few",
+          "label": "Very few (fewer than 10 within 2–3 km)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": false
+              }
+            ]
+          }
+        },
+        {
+          "id": "moderate",
+          "label": "Moderate (10–50 within 2–3 km)",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "many",
+          "label": "More than 50 within 2–3 km",
+          "normalized": {
+            "band": "high",
+            "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
+          }
+        }
+      ],
+      "question_mode": "magnitude"
+    },
+    {
+      "missing_variable": "groundwater_salinity",
+      "question_to_user": "Have farmers or households noticed any change in the taste or quality of spring or well water — for example, has it become brackish, left white deposits on vessels, or caused crop damage when used for irrigation?",
+      "how_answer_updates_diagnosis": "Salinity is uncommon in Eastern Himalayan hard-rock aquifers but can occur where deep borewells penetrate mineralised fracture zones. If salinity is reported, it may indicate a different causal pathway (geogenic contamination or deep borewell intrusion into saline zones) rather than simple depletion, and would change solution recommendations away from recharge enhancement toward water quality treatment or source substitution.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "none",
+          "label": "No — water quality has not changed; no saltiness or deposits",
+          "normalized": {
+            "present": false,
+            "trend": "stable"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": false
+              }
+            ]
+          }
+        },
+        {
+          "id": "mild",
+          "label": "Some salinity or white deposits; still usable for some crops",
+          "normalized": {
+            "present": true,
+            "band": "moderate",
+            "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "severe",
+          "label": "Brackish or salty water; crop damage or unsuitable for irrigation",
+          "normalized": {
+            "present": true,
+            "band": "high",
+            "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": true
+              }
+            ]
+          }
+        }
+      ],
+      "question_mode": "presence_graded"
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Bierkens2019",
+      "title": "A Snapshot of the World's Groundwater Challenges",
+      "authors": [
+        "Bierkens, Marc F.P.",
+        "Wada, Yoshihide"
+      ],
+      "year": 2019,
+      "doi": "10.1146/annurev-environ-102017-025800",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents global groundwater depletion patterns, the role of climate extremes in amplifying groundwater stress, and the challenge of data scarcity for trend analysis — relevant to NE India where monitoring infrastructure is sparse"
+    },
+    {
+      "source_id": "Jasechko2023",
+      "title": "Rapid groundwater decline and some cases of recovery in aquifers globally",
+      "authors": [
+        "Jasechko, Scott",
+        "Seybold, Hansjörg",
+        "Perrone, Debra",
+        "Fan, Ying",
+        "Shamsudduha, Mohammad",
+        "Taylor, Richard G.",
+        "Fallatah, Othman",
+        "Kirchner, James W."
+      ],
+      "year": 2023,
+      "doi": "10.1038/s41586-023-06879-8",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Provides global evidence that rapid groundwater-level declines (>0.5 m/year) are widespread and accelerating, including in hard-rock aquifer systems; also documents cases of recovery through managed recharge and policy intervention, supporting recommended solutions"
+    },
+    {
+      "source_id": "Saha2022",
+      "title": "Addressing Depletion in Alluvial Aquifers",
+      "authors": [
+        "Saha, Deba Prakash",
+        "Marwaha, Sanjay"
+      ],
+      "year": 2022,
+      "doi": "10.37773/ees.v8i1.1122",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Explicitly documents that hard-rock aquifers in India manifest stress as seasonal emptying and filling rather than gradual decline, and argues that management approaches must account for geological differences — directly applicable to NE hill state hard-rock aquifer context"
+    },
+    {
+      "source_id": "Dillon2019",
+      "title": "Sixty years of global progress in managed aquifer recharge",
+      "authors": [
+        "Dillon, Peter",
+        "Stuyfzand, Pieter",
+        "Grischek, Thomas",
+        "Lluria, Manuel",
+        "Pyne, R.D.G.",
+        "Jain, R.C.",
+        "Bear, Jacob",
+        "Schwarz, Jörg",
+        "Wang, Wei",
+        "Fernandez, Enrique",
+        "Stefan, Catalin",
+        "Pettenati, Marie",
+        "van der Gun, Jac",
+        "Sprenger, Carsten",
+        "Massmann, Gudrun",
+        "Scanlon, Bridget R.",
+        "Xanke, Julian",
+        "Jokela, Pekka",
+        "Zheng, Yan",
+        "Rossetto, Rudy",
+        "Shamrukh, Mohammad",
+        "Pavelic, Paul",
+        "Murray, Eileen",
+        "Ross, Andrew",
+        "Bonilla Valverde, Juan Pablo",
+        "Palma Nava, Adriana",
+        "Ansems, Nienke",
+        "Posavec, Kristijan",
+        "Ha, Kyoochul",
+        "Martin, Rolf",
+        "Sapiano, Marija"
+      ],
+      "year": 2019,
+      "doi": "10.1007/s10040-018-1841-z",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents India's long history of tank, pond, and check-dam construction for groundwater recharge, and the role of streambed structures and infiltration basins in enhancing aquifer recharge — supports recommended solutions including trench and check-dam construction and community pond repair for NE hill states"
+    },
+    {
+      "source_id": "CGWB2023",
+      "title": "National Compilation of Dynamic Ground Water Resources of India 2022",
+      "authors": [
+        "Central Ground Water Board"
+      ],
+      "year": 2023,
+      "url": "https://cgwb.gov.in",
+      "source_type": "government_report",
+      "relevance_note": "Defines SOGE classification thresholds (Safe <70%, Semi-critical 70–90%, Critical 90–100%, Over-exploited >100%) and provides block-level groundwater development data used in sig_02; also provides aquifer classification data for AER-16 Eastern Himalayas region"
+    }
+  ],
+  "overall_reasoning_note": "In the perhumid Eastern Himalayan hill states, groundwater stress is paradoxical — very high annual rainfall (2000–5000 mm) coexists with seasonal water scarcity because steep terrain drives rapid surface runoff, limiting infiltration into fractured hard-rock aquifers with very low storativity. Diagnosis should not be dismissed on the basis of high rainfall alone. Confirm stress using at least two signals: (1) hard-rock aquifer classification with low recharge lithology fraction, (2) negative trend in annual delta_g despite high precipitation, or (3) SOGE values above 50% at block level. Farmer-reported spring and well failure is the most reliable field indicator in this context and should be actively elicited. Low MGNREGA SWC investment amplifies stress by leaving natural recharge opportunities unexploited. Solutions should prioritise in-situ recharge infrastructure (check dams, gabions, trench bunds) and participatory spring-shed management rather than demand-side groundwater governance approaches designed for alluvial aquifer systems, which are not appropriate for fractured hard-rock hill aquifers.",
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-01-30",
+    "last_updated": "2025-01-30",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 24,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_03",
+      "sig_05",
+      "sig_06",
+      "sig_07"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_03",
+          "sig_05",
+          "sig_06",
+          "sig_07"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_05",
+            "sig_06",
+            "sig_07"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
+  }
+}

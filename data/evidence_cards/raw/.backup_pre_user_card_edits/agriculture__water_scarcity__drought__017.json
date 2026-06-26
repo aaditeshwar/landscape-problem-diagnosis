@@ -1,0 +1,265 @@
+{
+  "card_id": "agriculture__water_scarcity__drought__017",
+  "production_system": "Agriculture",
+  "observed_stress": "water_scarcity",
+  "causal_pathway": "drought",
+  "context": {
+    "agro_climatic_zones": [
+      "humid",
+      "perhumid"
+    ],
+    "aquifer_types": [
+      "coastal"
+    ],
+    "terrain_types": [
+      "plains"
+    ],
+    "rainfall_regime": "humid",
+    "geographic_examples": [
+      "Andaman & Nicobar",
+      "Lakshadweep"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "drought_weeks_severe",
+        "drought_weeks_moderate"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "drought_weeks_severe[-1] >= 3 or drought_weeks_moderate[-1] >= 6",
+        "qualitative_description": "Three or more severe drought weeks, or six or more moderate drought weeks in the latest kharif season, indicate significant meteorological drought stress even in a normally humid island ecoregion.",
+        "variables": [
+          "drought_weeks_severe",
+          "drought_weeks_moderate"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "In the humid to perhumid island ecoregion of Andaman & Nicobar and Lakshadweep (AER-20, 1600–3000 mm annual rainfall), crops are calibrated to near-continuous moisture availability. Even a few weeks of severe drought can cause acute crop water stress because farmers do not maintain supplemental irrigation infrastructure suited to prolonged dry spells. SPI-based drought classification confirms meteorological drought when precipitation falls well below the long-term mean for the island stations. Persistent severe drought weeks directly cause kharif crop failure as documented in drought assessment studies using SPI for kharif rice.",
+      "sources_cited": [
+        "Mishra2022"
+      ],
+      "active": true
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "dry_spell_weeks"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "dry_spell_weeks[-1] >= 4",
+        "qualitative_description": "Four or more dry spell weeks (4-week moving window with <50% historical rainfall) in the latest kharif season indicate a prolonged moisture deficit disrupting critical crop growth stages.",
+        "variables": [
+          "dry_spell_weeks"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Dry spells of four or more consecutive weeks disrupt crop growth stages, particularly flowering and grain filling in kharif crops. In island ecosystems with volcanic or coastal aquifers and limited surface water storage, prolonged dry spells cannot be buffered by irrigation. The 4-week moving window criterion aligns with India Drought Manual definitions for agricultural drought onset. Management of crop water under drought literature confirms that tropical residual moisture regimes with short intense rainy seasons are especially vulnerable to dry spell disruption.",
+      "sources_cited": [
+        "Dreccer2015",
+        "Mishra2022"
+      ],
+      "active": true
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "drought_mild_vci_score_latest",
+        "drought_mild_spi_score_latest",
+        "drought_severe_moderate_spi_score_latest",
+        "drought_mild_mai_score_latest",
+        "drought_severe_moderate_path_score_latest"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "(drought_mild_spi_score_latest >= 26 or drought_severe_moderate_spi_score_latest >= 26) and (drought_mild_mai_score_latest >= 26 or drought_severe_moderate_path_score_latest >= 2) and drought_mild_vci_score_latest >= 26",
+        "qualitative_description": "Concurrent SPI indicating dry conditions, low MAI indicating soil moisture deficit, and VCI below 40 indicating vegetation stress together confirm meteorological drought has translated into agricultural drought.",
+        "variables": [
+          "drought_mild_vci_score_latest",
+          "drought_mild_spi_score_latest",
+          "drought_severe_moderate_spi_score_latest",
+          "drought_mild_mai_score_latest",
+          "drought_severe_moderate_path_score_latest"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "The India Drought Manual classifies drought using a composite of SPI (meteorological), MAI (soil moisture adequacy), and VCI (vegetation condition). When all three indices simultaneously indicate stress, the drought is confirmed as both meteorological and agricultural in nature. Studies on kharif rice in India show SPI and VCI are significantly positively correlated with productivity index, with combined regression models explaining 69–76% of yield variability. A VCI below 40 is the standard threshold for moderate-to-severe vegetation stress.",
+      "sources_cited": [
+        "Mishra2022"
+      ],
+      "active": true
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "mean_annual_precipitation_mm",
+        "seasonal_precipitation_mm"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "mean_annual_precipitation_mm < 1600 or (seasonal_precipitation_mm[-1].get('kharif', 9999) < 0.6 * (sum(v.get('kharif', 0) for v in list(seasonal_precipitation_mm.values())) / max(len(seasonal_precipitation_mm), 1)))",
+        "qualitative_description": "Mean annual precipitation below the AER-20 lower bound of 1600 mm, or kharif seasonal precipitation in the latest year below 60% of the multi-year kharif mean, confirms a below-normal rainfall year consistent with meteorological drought.",
+        "variables": [
+          "mean_annual_precipitation_mm",
+          "seasonal_precipitation_mm"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "AER-20 (Andaman & Nicobar and Lakshadweep) has a normal annual rainfall range of 1600–3000 mm. A mean annual precipitation below 1600 mm or a kharif season receiving less than 60% of its historical average indicates a significant rainfall deficit. In island ecoregions, inter-annual variability in monsoon delivery is the primary driver of agricultural drought, as groundwater recharge from volcanic aquifers depends almost entirely on seasonal rainfall. Below-normal years confirm drought risk and are consistent with the water–food–energy nexus literature documenting declining groundwater storage after drought years.",
+      "sources_cited": [
+        "Biemans2017",
+        "Dreccer2015"
+      ],
+      "active": true
+    },
+    {
+      "signal_id": "sig_05",
+      "variables": [
+        "monsoon_onset_date"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "monsoon_onset_date[-1] > monsoon_onset_date[0] + 10",
+        "qualitative_description": "Monsoon onset in the latest year is more than 10 days later than the earliest recorded onset, indicating a delayed monsoon that shortens the effective kharif season.",
+        "variables": [
+          "monsoon_onset_date"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Delayed monsoon onset shortens the effective kharif growing season and increases the risk of terminal drought stress at critical crop growth stages. In island ecoregions where farmers plant in synchrony with monsoon arrival, a delay of more than 10 days can push flowering and grain filling into drier post-monsoon periods. Crop ecology literature confirms that sites with a climatic dry season require phenological adaptation, and delayed onset is a key trigger for crop failure in tropical humid systems.",
+      "sources_cited": [
+        "Dreccer2015"
+      ],
+      "active": true
+    }
+  ],
+  "confounders": [
+    {
+      "confounder": "Saltwater intrusion into coastal or volcanic aquifers causing water quality failure rather than meteorological drought causing water quantity deficit",
+      "how_to_distinguish": "Check drought_causality_json for SPI and MAI values. If SPI is near-normal (between -0.5 and +0.5) but farmers still report water scarcity, the cause is likely saline intrusion rather than drought. Coastal aquifer contamination from seawater ingress is common in low-lying island terrain and would not be reflected in precipitation deficit signals. Ask farmers whether well water has become salty or unfit for irrigation — this distinguishes the saline intrusion pathway from the drought pathway."
+    },
+    {
+      "confounder": "Degraded or absent water harvesting infrastructure causing apparent water scarcity even in normal rainfall years",
+      "how_to_distinguish": "If drought_weeks_severe and dry_spell_weeks are low or zero but farmers still report water scarcity, the cause is likely infrastructure failure (broken check dams, silted tanks) rather than meteorological drought. Compare seasonal_precipitation_mm against historical norms — if rainfall is near-normal but scarcity persists, infrastructure degradation is the primary pathway. NREGA investment records for water harvesting structures can corroborate this distinction."
+    }
+  ],
+  "missing_variable_questions": [],
+  "sources": [
+    {
+      "source_id": "Mishra2022",
+      "title": "Drought assessment for kharif rice using standardized precipitation index (SPI) and vegetation condition index (VCI)",
+      "authors": [
+        "Mishra, A.",
+        "Singh, R.",
+        "Rai, P."
+      ],
+      "year": 2022,
+      "doi": "10.54386/jam.v21i2.230",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents SPI and VCI as complementary indices for confirming meteorological and agricultural drought in kharif season; shows combined indices explain 69–76% of kharif rice yield variability, supporting sig_01 and sig_03 thresholds."
+    },
+    {
+      "source_id": "Dreccer2015",
+      "title": "Management of crop water under drought: a review",
+      "authors": [
+        "Dreccer, M.F.",
+        "Ogbonnaya, F.C.",
+        "Borgognone, M.G."
+      ],
+      "year": 2015,
+      "doi": "10.1007/s13593-015-0283-4",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Reviews drought stress mechanisms across climates; notes that tropical residual moisture regimes with short intense rainy seasons have highest unproductive water losses and are most vulnerable to dry spell disruption, supporting sig_02 and sig_05."
+    },
+    {
+      "source_id": "Biemans2017",
+      "title": "Water–food–energy nexus with changing agricultural scenarios in India during recent decades",
+      "authors": [
+        "Biemans, H.",
+        "Siderius, C.",
+        "Mishra, A.",
+        "Ahmad, B."
+      ],
+      "year": 2017,
+      "doi": "10.5194/hess-21-3041-2017",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents that groundwater storage drops after drought years and cannot recover even after good monsoon years in India; supports sig_04 interpretation that below-normal rainfall years confirm drought risk and have lasting hydrological consequences."
+    },
+    {
+      "source_id": "IMD_DroughtManual2016",
+      "title": "Drought Management Manual",
+      "authors": [
+        "India Meteorological Department",
+        "Ministry of Agriculture and Farmers Welfare"
+      ],
+      "year": 2016,
+      "source_type": "government_report",
+      "relevance_note": "Defines India's official drought classification framework using SPI, MAI, and VCI composite indices; establishes thresholds for meteorological and agricultural drought declaration used in sig_03."
+    }
+  ],
+  "overall_reasoning_note": "For island ecoregions (AER-20: Andaman & Nicobar, Lakshadweep), drought diagnosis requires at least two confirming signals from: (1) severe or moderate drought weeks exceeding thresholds, (2) prolonged dry spell weeks, or (3) composite SPI/MAI/VCI classification. A single signal may reflect data noise or localised variability. The normally perhumid climate means even moderate drought represents a significant departure from baseline, so thresholds are set lower than for semi-arid zones. Delayed monsoon onset (sig_05) amplifies but does not independently confirm drought. Always rule out saline intrusion and infrastructure failure as confounders before attributing water scarcity to meteorological drought in coastal island settings.",
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-01-30",
+    "last_updated": "2025-01-30",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 24,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_03",
+      "sig_04"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_03",
+          "sig_04"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_04"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
+  }
+}

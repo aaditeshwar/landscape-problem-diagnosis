@@ -1,0 +1,295 @@
+{
+  "card_id": "agriculture__water_scarcity__rainfed_risk__004",
+  "production_system": "Agriculture",
+  "observed_stress": "water_scarcity",
+  "causal_pathway": "rainfed_risk",
+  "context": {
+    "agro_climatic_zones": [
+      "arid",
+      "semi-arid"
+    ],
+    "aquifer_types": [
+      "alluvium"
+    ],
+    "terrain_types": [
+      "plains",
+      "slopes"
+    ],
+    "rainfall_regime": "arid",
+    "geographic_examples": [
+      "Rajasthan",
+      "Kachchh Gujarat",
+      "Haryana arid belt"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "lulc_single_kharif_ha",
+        "lulc_double_crop_ha"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "(lulc_single_kharif_ha[-1] / (lulc_single_kharif_ha[-1] + lulc_double_crop_ha[-1] + 1e-9)) > 0.75",
+        "qualitative_description": "More than 75% of cropped area is under single kharif season only, indicating near-total dependence on monsoon rainfall with negligible irrigation access for a second crop.",
+        "variables": [
+          "lulc_single_kharif_ha",
+          "lulc_double_crop_ha"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "In arid and semi-arid AEZs such as AER-2 (Kachchh, western Rajasthan, <400mm rainfall) and AER-4 (eastern Rajasthan, Haryana arid belt, 400–740mm), the dominance of single kharif cropping is the primary land-use signature of rainfed dependence. Where irrigation infrastructure is absent or minimal, farmers cannot sustain a rabi or zaid crop, leaving the majority of net sown area idle for 6–8 months. A ratio above 0.75 confirms structural rainfed vulnerability rather than a transient drought response. This aligns with the documented pattern in South Asian less-favoured arid/semi-arid areas where erratic monsoons directly determine whether any crop is harvested at all.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "mean_cropping_intensity"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "mean_cropping_intensity <= 1.15",
+        "qualitative_description": "Mean cropping intensity at or below 1.15 over the multi-year record indicates that on average fewer than 15% of net sown area supports a second crop, consistent with near-complete rainfed single-season farming.",
+        "variables": [
+          "mean_cropping_intensity"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Cropping intensity is a direct aggregate measure of irrigation access: a value of 1.0 means every parcel is cropped exactly once per year (pure rainfed kharif); values approaching 2.0 indicate full double-cropping enabled by irrigation. In AER-2 and AER-4 contexts with alluvial aquifers but limited canal or groundwater infrastructure, mean cropping intensity persistently at or below 1.15 confirms that irrigation supplements are negligible. This is consistent with the characterisation of South Asian arid/semi-arid rainfed systems as 'less favoured areas' where minimal development attention has left irrigation infrastructure underdeveloped.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "canal_name",
+        "nrega_irrigation_count"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "canal_name is None and nrega_irrigation_count < 3",
+        "qualitative_description": "No irrigation canal intersects the micro-watershed AND fewer than 3 MGNREGA irrigation works have been constructed, jointly confirming absence of both surface water conveyance and public investment in irrigation infrastructure.",
+        "variables": [
+          "canal_name",
+          "nrega_irrigation_count"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "The co-absence of canal infrastructure and low MGNREGA irrigation investment is a strong structural indicator of rainfed dependency. In Rajasthan and Kachchh, canal networks (e.g., Indira Gandhi Canal command area) are spatially limited; micro-watersheds outside command areas have no surface water delivery. MGNREGA irrigation works (farm ponds, check dams, field channels) represent the primary public investment pathway for improving water access in rainfed areas — fewer than 3 such works over the programme record indicates that even this safety-net investment has not materialised, leaving farmers entirely exposed to monsoon variability.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "mean_annual_runoff_mm",
+        "terrain_cluster_id"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "mean_annual_runoff_mm > 60 and terrain_cluster_id == 3",
+        "qualitative_description": "Mean annual runoff exceeds 60mm and terrain is classified as broad plains and slopes (cluster 3), indicating significant water loss potential that could be captured through in-situ harvesting but currently is not.",
+        "variables": [
+          "mean_annual_runoff_mm",
+          "terrain_cluster_id"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "In arid and semi-arid systems, high runoff relative to low total rainfall represents a critical unproductive water loss. On sloping terrain (cluster 3), runoff velocities are higher and infiltration opportunity is reduced, exacerbating in-season moisture deficits. Where mean annual runoff exceeds 60mm in a <400mm rainfall regime, more than 15% of precipitation is lost as surface flow — water that could otherwise recharge soil moisture or be harvested in farm ponds and bunds. This signal identifies both the severity of the rainfed risk and the opportunity for in-situ water harvesting interventions such as broad-bed furrows, contour bunds, and farm ponds, which are the primary recommended solutions for this pathway.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_05",
+      "variables": [
+        "irrigated_area_ha"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Net irrigated area data are not available for this micro-watershed. If available from district census or state irrigation department records, a net irrigated area below 15% of net sown area would strongly confirm rainfed dependency. Proxy confirmation is provided by low double-crop area and low cropping intensity (sig_01, sig_02)."
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Net irrigated area is the most direct quantitative measure of irrigation access and rainfed risk. Its absence from the dataset means the diagnosis must rely on proxy indicators (lulc_double_crop_ha, cropping_intensity, canal_name, nrega_irrigation_count). Where district-level data are available from the Agricultural Census or state irrigation statistics, a net irrigated fraction below 15% of net sown area in an arid zone would be definitive confirmation of structural rainfed vulnerability.",
+      "active": true
+    }
+  ],
+  "confounders": [
+    {
+      "confounder": "Meteorological drought causing temporary single-season cropping in an otherwise irrigated system",
+      "how_to_distinguish": "Check trend_cropping_intensity and mean_cropping_intensity over the full 2017–2024 record. If cropping intensity was above 1.4 in earlier years and has declined recently, drought rather than structural rainfed dependency is the primary driver. Also check canal_name — if a canal is present but water delivery has failed due to drought-reduced reservoir levels, the pathway is drought stress rather than rainfed risk. Persistent low cropping intensity across all years, including wet years, confirms structural rainfed dependency."
+    },
+    {
+      "confounder": "Groundwater-irrigated double cropping masked by LULC classification errors or small plot sizes below mapping resolution",
+      "how_to_distinguish": "Cross-check lulc_double_crop_ha against nrega_irrigation_count and canal_name. If NREGA has constructed multiple irrigation works and a canal is present but double-crop area appears low, suspect LULC under-mapping of small irrigated plots. In such cases, field verification or higher-resolution imagery is needed before confirming rainfed risk. In true rainfed systems, all three indicators (low double crop, no canal, low NREGA irrigation) will align consistently."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "irrigated_area_ha",
+      "question_to_user": "Do you know approximately what share of the cultivated land in this area has access to any form of irrigation — whether from canals, tubewells, open wells, or farm ponds? Would you estimate it is less than 10%, between 10–30%, or more than 30% of the total farmed area?",
+      "how_answer_updates_diagnosis": "If less than 10–15% of cultivated area is irrigated, this strongly confirms the rainfed risk pathway and justifies high-severity classification. If 20–30% or more is irrigated, the diagnosis should be reviewed — water scarcity may be driven by groundwater stress or canal failure rather than structural rainfed dependency, and solution recommendations should shift accordingly.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "low",
+          "label": "Less than 10% of cultivated land is irrigated",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "percent_upper": 10
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "moderate",
+          "label": "Between 10% and 30% of cultivated land is irrigated",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "percent_lower": 10,
+            "percent_upper": 30
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "high",
+          "label": "More than 30% of cultivated land is irrigated",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "percent_lower": 30
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
+          }
+        }
+      ],
+      "question_mode": "magnitude"
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Devendra2011",
+      "title": "Rainfed Areas and Animal Agriculture in Asia: The Wanting Agenda for Transforming Productivity Growth and Rural Poverty",
+      "authors": [
+        "Devendra, C."
+      ],
+      "year": 2011,
+      "doi": "10.5713/ajas.2011.r.09",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents the biophysical characteristics of arid and semi-arid rainfed systems in South Asia (116 million ha), including their characterisation as less-favoured areas with variable rainfall, poor soils, and minimal development investment. Directly supports the structural rainfed dependency framing for AER-2 and AER-4 contexts."
+    },
+    {
+      "source_id": "Daryanto2016",
+      "title": "Global Synthesis of Drought Effects on Maize and Wheat Production",
+      "authors": [
+        "Daryanto, S.",
+        "Wang, L.",
+        "Jacinthe, P.-A."
+      ],
+      "year": 2016,
+      "doi": "10.1371/journal.pone.0156362",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Provides quantitative evidence that dryland rainfed wheat cultivation is more prone to yield loss than non-dryland systems, supporting the severity classification of rainfed risk in arid zones and the importance of drought-tolerant variety promotion."
+    },
+    {
+      "source_id": "Hsiao2015",
+      "title": "Management of crop water under drought: a review",
+      "authors": [
+        "Hsiao, T.C.",
+        "Steduto, P.",
+        "Fereres, E."
+      ],
+      "year": 2015,
+      "doi": "10.1007/s13593-015-0283-4",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Reviews unproductive water losses (runoff, evaporation) in rainfed systems and management options including mulching, in-situ water harvesting, and adapted cultivars — directly supporting the recommended solutions for this pathway and the runoff-based signal (sig_04)."
+    },
+    {
+      "source_id": "ICAR_AEZ_Report",
+      "title": "Agro-Ecological Regions of India: Characterisation and Land Use Planning",
+      "authors": [
+        "Indian Council of Agricultural Research"
+      ],
+      "year": 2015,
+      "source_type": "government_report",
+      "relevance_note": "Defines AER-2 (Western Plain, Kachchh, hot arid, <400mm) and AER-4 (Northern Plain and Central Highlands, hot semi-arid, 400–740mm) with alluvial aquifer characteristics and documents the dominance of single kharif rainfed cropping in these zones."
+    }
+  ],
+  "overall_reasoning_note": "Diagnosis of rainfed risk in arid and semi-arid alluvial plains (AER-2, AER-4) should be confirmed by at least two of the three primary structural signals: dominant single kharif land use ratio (sig_01), persistently low mean cropping intensity (sig_02), and co-absence of canal infrastructure with low MGNREGA irrigation investment (sig_03). The runoff-terrain signal (sig_04) amplifies severity and identifies intervention opportunity but does not independently confirm the pathway. A single signal may reflect data noise or a transient drought year. Always distinguish structural rainfed dependency (persistent across wet and dry years) from drought-induced temporary single-season cropping (recent decline from previously higher cropping intensity). Where irrigated_area_ha data can be obtained from district agricultural census records, this should be used to validate or override proxy-based signals.",
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-07-14",
+    "last_updated": "2025-07-14",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 20,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_03"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_03"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
+  }
+}

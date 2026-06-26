@@ -10,40 +10,54 @@
               {
                 "signal_id": "sig_01",
                 "variables": [
-                  "drought_weeks_severe",
-                  "drought_weeks_moderate"
+                  "drought_severe_return_period",
+                  "drought_moderate_return_period"
                 ],
                 "severity": "high",
                 "direction": "confirms",
                 "condition": {
                   "expression": "drought_severe_return_period <= 4 or drought_moderate_return_period <= 4",
-                  "qualitative_description": "Three or more severe drought weeks in the latest kharif season, or at least one severe week combined with four or more moderate weeks, indicates a drought episode sufficient to cause significant crop water stress and yield loss."
+                  "qualitative_description": "Severe drought return period is 4 years or less, or moderate drought return period is 4 years or less, indicates a drought episode sufficient to cause significant crop water stress and yield loss.",
+                  "variables": [
+                    "drought_severe_return_period",
+                    "drought_moderate_return_period"
+                  ]
                 }
               },
               {
                 "signal_id": "sig_02",
                 "variables": [
+                  "mean",
                   "dry_spell_weeks"
                 ],
                 "severity": "high",
                 "direction": "confirms",
                 "condition": {
                   "expression": "mean(dry_spell_weeks) >= 3",
-                  "qualitative_description": "Four or more dry spell weeks (4-week moving window with <50% historical rainfall) in the latest kharif season indicate prolonged moisture deficit disrupting critical crop growth stages."
+                  "qualitative_description": "Mean dry-spell weeks across the record is 3 or more (4-week moving window with <50% historical rainfall), indicate prolonged moisture deficit disrupting critical crop growth stages.",
+                  "variables": [
+                    "mean",
+                    "dry_spell_weeks"
+                  ]
                 }
               },
               {
                 "signal_id": "sig_04",
                 "variables": [
+                  "mean_kharif_precipitation",
                   "trend_annual_precipitation_mm",
-                  "mean_annual_precipitation_mm",
-                  "seasonal_precipitation_mm"
+                  "mean_annual_precipitation_mm"
                 ],
                 "severity": "moderate",
                 "direction": "confirms",
                 "condition": {
                   "expression": "mean_kharif_precipitation < 0.75 * mean_annual_precipitation_mm and trend_annual_precipitation_mm < 0",
-                  "qualitative_description": "Latest kharif seasonal rainfall is below 75% of the long-term mean annual precipitation, and the multi-year annual precipitation trend is declining, confirming a structural rainfall deficit rather than a single anomalous year."
+                  "qualitative_description": "Latest kharif seasonal rainfall is below 75% of the long-term mean annual precipitation, and the multi-year annual precipitation trend is declining, confirming a structural rainfall deficit rather than a single anomalous year.",
+                  "variables": [
+                    "mean_kharif_precipitation",
+                    "trend_annual_precipitation_mm",
+                    "mean_annual_precipitation_mm"
+                  ]
                 }
               }
             ]
@@ -51,8 +65,8 @@
           "finalized_at": "2026-06-24T17:36:39+00:00",
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
-          "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "612f23c62f339ef6fc5406520b39deca2a6db36285ac03de8286dea238daeffc"
+          "propagated_at": "2026-06-26T10:29:46+00:00",
+          "applied_card_digest": "378b3a2b90b29d3191887f377d1397b48bf4de91be30bde7543e6211471d552b"
         },
         "agriculture__water_scarcity__irrigation_challenges__001": {
           "card_id": "agriculture__water_scarcity__irrigation_challenges__001",
@@ -76,7 +90,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "b239d6d0dc8becfe974d6455be60a9eb0f3b730b80a0f4b694ff24617e55a50a"
+          "applied_card_digest": "b1e4515aad394eb34b54e3c8a5cf7ca440940985a54a548ce77966b60055ec45"
         },
         "agriculture__water_scarcity__irrigation_challenges__002": {
           "card_id": "agriculture__water_scarcity__irrigation_challenges__002",
@@ -92,7 +106,11 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "trend_swb_total_area_ha < 1 and swb_count <= 15",
-                  "qualitative_description": "Surface water body total area is declining at more than 5 ha/year and fewer than 3 distinct water bodies exist in the MWS, indicating shrinking storage infrastructure."
+                  "qualitative_description": "Surface water body total area trend is below 1 ha/year and 15 or fewer distinct SWBs are present in the MWS, indicating shrinking storage infrastructure.",
+                  "variables": [
+                    "trend_swb_total_area_ha",
+                    "swb_count"
+                  ]
                 }
               },
               {
@@ -104,7 +122,10 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "nrega_swc_count <= 20",
-                  "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA for the MWS, indicating historically low investment in water harvesting infrastructure."
+                  "qualitative_description": "20 or fewer cumulative soil and water conservation or irrigation works recorded under MGNREGA for the MWS, indicating historically low investment in water harvesting infrastructure.",
+                  "variables": [
+                    "nrega_swc_count"
+                  ]
                 }
               }
             ]
@@ -113,7 +134,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "e425bc996677af64b5e207a168b5dfbdd97fd2f8c381b7831e7360514b5c5186"
+          "applied_card_digest": "c7cd4756e845cda2a2087e040ecc38a5a3b7f9c34fc10cebc38d0a9256cded8b"
         },
         "agriculture__water_scarcity__rainfed_risk__002": {
           "card_id": "agriculture__water_scarcity__rainfed_risk__002",
@@ -129,7 +150,11 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "mean_cropping_intensity <= 1.15 and trend_cropping_intensity <= 0.05",
-                  "qualitative_description": "Mean cropping intensity at or below 1.15 with no upward trend over the observation period confirms persistent single-season rainfed farming with no expansion of irrigated double-cropping."
+                  "qualitative_description": "Mean cropping intensity at or below 1.15 with no upward trend over the observation period confirms persistent single-season rainfed farming with no expansion of irrigated double-cropping.",
+                  "variables": [
+                    "mean_cropping_intensity",
+                    "trend_cropping_intensity"
+                  ]
                 }
               },
               {
@@ -142,7 +167,11 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "canal_name is None and nrega_irrigation_count <= 35",
-                  "qualitative_description": "No canal irrigation infrastructure intersects the micro-watershed AND fewer than 3 MGNREGA irrigation works have been recorded, jointly confirming absence of both formal surface irrigation and community-level irrigation investment."
+                  "qualitative_description": "No canal irrigation infrastructure intersects the micro-watershed AND 35 or fewer MGNREGA irrigation works have been recorded, jointly confirming absence of both formal surface irrigation and community-level irrigation investment.",
+                  "variables": [
+                    "canal_name",
+                    "nrega_irrigation_count"
+                  ]
                 }
               }
             ]
@@ -151,7 +180,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "05a79fc439b45e30cf4f8b1ddf5525236077b494c8da5b29e2a134961405348b"
+          "applied_card_digest": "b45a60196a4f1cdf6462e77f0d25a65ca76752c2986e6e21e1998f23b31e6926"
         },
         "ntfp_forest_biodiversity__ntfp_decline__encroachment__002": {
           "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__002",
@@ -224,7 +253,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "9c9641d619b9c57625c66f1da04e264f22a2b60f83dde155dc61bdd7802433a6"
+          "applied_card_digest": "f1772e9ec8bfe0b32d788985c3ad8a76239a3f0d06fef2e86762917da6e8e254"
         },
         "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__001": {
           "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__001",
@@ -239,7 +268,10 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "cd_total_deforestation_ha > 30",
-                  "qualitative_description": "More than 50 hectares of cumulative deforestation recorded in the micro-watershed, representing a significant absolute loss of forest habitat."
+                  "qualitative_description": "More than 30 hectares of cumulative deforestation recorded in the micro-watershed, representing a significant absolute loss of forest habitat.",
+                  "variables": [
+                    "cd_total_deforestation_ha"
+                  ]
                 }
               }
             ]
@@ -248,7 +280,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "fb53983cf6a313c028b6dfbab03ac96b3cd0d2a7362cb129a3a6d95911396a08"
+          "applied_card_digest": "5fcdd5fc5e68c9b73f957b98bc9aa85c7165c58ce1ad51dfe62b4aafa186008f"
         },
         "socio_economic__economic_hardship__multi_sector_vulnerability__001": {
           "card_id": "socio_economic__economic_hardship__multi_sector_vulnerability__001",
@@ -478,7 +510,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "ca19bac8db52c2492a46230b49fda59ea1d856d2ec656bf7186790812da803f3"
+          "applied_card_digest": "04fdd031f0b07ed00714f99c1ea48fb32f507ca72adfdf8d84a9507f5807d6df"
         },
         "agriculture__water_scarcity__groundwater_stress__004": {
           "card_id": "agriculture__water_scarcity__groundwater_stress__004",
@@ -556,7 +588,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "67f609222fcd159f8ab840f031b7183b8a0661ea0712380b458241ff5c6ecd1b"
+          "applied_card_digest": "43408463a8212bc32614c1257dffc50b8988165392d1e0cbe9a9000afc92748c"
         },
         "agriculture__water_scarcity__groundwater_stress__006": {
           "card_id": "agriculture__water_scarcity__groundwater_stress__006",
@@ -634,7 +666,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "1b851e55d0ca5d06565f4cca60bb57b5e31f3c346d4711baba17edbc93b85eb4"
+          "applied_card_digest": "09f7adaad694c7ba93faf19864624157042e8d162b086997a7febdc9fcdf4ad9"
         },
         "agriculture__water_scarcity__groundwater_stress__007": {
           "card_id": "agriculture__water_scarcity__groundwater_stress__007",
@@ -643,14 +675,16 @@
               {
                 "signal_id": "sig_02",
                 "variables": [
-                  "trend_annual_delta_g_mm",
                   "mean_annual_delta_g_mm"
                 ],
                 "severity": "high",
                 "direction": "confirms",
                 "condition": {
                   "expression": "mean_annual_delta_g_mm < 0",
-                  "qualitative_description": "Both the linear trend and the multi-year mean of annual groundwater recharge (P - ET - Runoff) are negative, indicating chronic depletion rather than a single drought year anomaly."
+                  "qualitative_description": "The multi-year mean annual groundwater recharge (P - ET - Runoff) is negative, indicating chronic depletion rather than a single drought year anomaly.",
+                  "variables": [
+                    "mean_annual_delta_g_mm"
+                  ]
                 }
               },
               {
@@ -663,7 +697,11 @@
                 "direction": "amplifies",
                 "condition": {
                   "expression": "aquifer_class in ['crystalline_basement'] and acwadam_class_percent.get('alluvium', 0) < 20",
-                  "qualitative_description": "Dominant aquifer class is crystalline basement with less than 20% alluvial lithology, confirming low recharge capacity and high vulnerability to depletion."
+                  "qualitative_description": "Dominant aquifer class is crystalline basement with less than 20% alluvial lithology, confirming low recharge capacity and high vulnerability to depletion.",
+                  "variables": [
+                    "aquifer_class",
+                    "acwadam_class_percent"
+                  ]
                 }
               }
             ]
@@ -672,7 +710,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "5c87a4720de4f874f126edbc1f2bdaf67d0ad726e73034675fcb8064ae9c3d94"
+          "applied_card_digest": "4d0d60d9e81579529a2e3c084ab502f144167f496a99a6dbd581cfb7bdbf00fc"
         },
         "agriculture__water_scarcity__groundwater_stress__017": {
           "card_id": "agriculture__water_scarcity__groundwater_stress__017",
@@ -752,7 +790,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "7825133a3ea30d75a7f14762ae6bde02cb8eb17ba3b99e93f7395268fbb8376b"
+          "applied_card_digest": "24127c87df513371180dfd1d04393b6b6ba1fa03fcd64bf0fe86d23b1497f4c1"
         },
         "agriculture__water_scarcity__groundwater_stress__015": {
           "card_id": "agriculture__water_scarcity__groundwater_stress__015",
@@ -797,40 +835,54 @@
               {
                 "signal_id": "sig_01",
                 "variables": [
-                  "drought_weeks_severe",
-                  "drought_weeks_moderate"
+                  "drought_severe_return_period",
+                  "drought_moderate_return_period"
                 ],
                 "severity": "high",
                 "direction": "confirms",
                 "condition": {
                   "expression": "drought_severe_return_period <= 4 or drought_moderate_return_period <= 4",
-                  "qualitative_description": "Three or more severe drought weeks in the latest kharif season, or co-occurrence of at least one severe week with four or more moderate weeks, indicates sustained crop-season water deficit."
+                  "qualitative_description": "Severe drought return period is 4 years or less, or moderate drought return period is 4 years or less, indicates sustained crop-season water deficit.",
+                  "variables": [
+                    "drought_severe_return_period",
+                    "drought_moderate_return_period"
+                  ]
                 }
               },
               {
                 "signal_id": "sig_03",
                 "variables": [
+                  "mean",
                   "dry_spell_weeks"
                 ],
                 "severity": "moderate",
                 "direction": "confirms",
                 "condition": {
                   "expression": "mean(dry_spell_weeks) >= 3",
-                  "qualitative_description": "Four or more dry spell weeks (4-week moving window with less than 50% historical rainfall) in the latest kharif season indicate prolonged moisture deficit disrupting critical crop growth stages."
+                  "qualitative_description": "Mean dry-spell weeks across the record is 3 or more (4-week moving window with less than 50% historical rainfall), indicate prolonged moisture deficit disrupting critical crop growth stages.",
+                  "variables": [
+                    "mean",
+                    "dry_spell_weeks"
+                  ]
                 }
               },
               {
                 "signal_id": "sig_04",
                 "variables": [
+                  "mean_kharif_precipitation",
                   "mean_annual_precipitation_mm",
-                  "trend_annual_precipitation_mm",
-                  "seasonal_precipitation_mm"
+                  "trend_annual_precipitation_mm"
                 ],
                 "severity": "moderate",
                 "direction": "confirms",
                 "condition": {
                   "expression": "mean_kharif_precipitation < 0.75 * mean_annual_precipitation_mm or mean_annual_precipitation_mm < 700 or trend_annual_precipitation_mm < -5",
-                  "qualitative_description": "Kharif seasonal rainfall below 75% of the long-term annual mean, or mean annual precipitation below 700 mm, or a declining trend exceeding 5 mm/year confirms structural precipitation deficit underpinning drought risk."
+                  "qualitative_description": "Kharif seasonal rainfall below 75% of the long-term annual mean, or mean annual precipitation below 700 mm, or a declining trend exceeding 5 mm/year confirms structural precipitation deficit underpinning drought risk.",
+                  "variables": [
+                    "mean_kharif_precipitation",
+                    "mean_annual_precipitation_mm",
+                    "trend_annual_precipitation_mm"
+                  ]
                 }
               }
             ]
@@ -838,8 +890,8 @@
           "finalized_at": "2026-06-24T17:36:24+00:00",
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
-          "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "459f53212737fd6f362aeed578faf7207da7a90ae819d6a666f9622d5a940eff"
+          "propagated_at": "2026-06-26T10:29:46+00:00",
+          "applied_card_digest": "8f5507aa7884acbc443980aeb31cad1f71c0501a391f18510426d780725cccca"
         },
         "agriculture__water_scarcity__drought__004": {
           "card_id": "agriculture__water_scarcity__drought__004",
@@ -856,7 +908,12 @@
                 "direction": "amplifies",
                 "condition": {
                   "expression": "drought_mild_spi_score_latest >= 26 and drought_mild_mai_score_latest >= 26 and drought_mild_vci_score_latest >= 26",
-                  "qualitative_description": "SPI at or below -1.0 (moderate meteorological drought), MAI below 0.5 (soil moisture inadequacy), and VCI below 35 (significant vegetation stress) together confirm concurrent meteorological and agricultural drought per India Drought Manual classification."
+                  "qualitative_description": "SPI at or below -1.0 (moderate meteorological drought), MAI below 0.5 (soil moisture inadequacy), and VCI below 35 (significant vegetation stress) together confirm concurrent meteorological and agricultural drought per India Drought Manual classification.",
+                  "variables": [
+                    "drought_mild_spi_score_latest",
+                    "drought_mild_mai_score_latest",
+                    "drought_mild_vci_score_latest"
+                  ]
                 }
               }
             ]
@@ -865,44 +922,36 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:47:43+00:00",
-          "applied_card_digest": "aaa9d67e048faaa049a0b9a53a0adfbe472257123f893872b673eed1db2563c3"
+          "applied_card_digest": "a07a15ffa264d61cb4ca5f2d6256e5a33286cb1cc9f59d281ec3c9bffecc0a55"
         },
         "agriculture__water_scarcity__drought__006": {
           "card_id": "agriculture__water_scarcity__drought__006",
           "patch": {
             "diagnostic_signals": [
               {
-                "signal_id": "sig_02",
+                "signal_id": "sig_01",
                 "variables": [
-                  "dry_spell_weeks"
+                  "drought_severe_return_period",
+                  "drought_moderate_return_period"
                 ],
                 "severity": "high",
                 "direction": "confirms",
                 "condition": {
-                  "expression": "mean(dry_spell_weeks) >= 3",
-                  "qualitative_description": "Four or more dry spell weeks (4-week moving window with <50% historical rainfall) in the latest kharif season indicate prolonged moisture deficit disrupting critical crop growth stages."
-                }
-              },
-              {
-                "signal_id": "sig_04",
-                "variables": [
-                  "mean_annual_precipitation_mm",
-                  "seasonal_precipitation_mm"
-                ],
-                "severity": "moderate",
-                "direction": "confirms",
-                "condition": {
-                  "expression": "mean_annual_precipitation_mm < 1000 or (seasonal_precipitation_mm[-1].get('kharif', 9999) < 0.65 * mean_kharif_precipitation)",
-                  "qualitative_description": "Mean annual precipitation below 1000 mm (lower bound of AER-18 normal range of 900–1400 mm) or current kharif seasonal rainfall below 65% of the long-term kharif mean indicates a below-normal rainfall year consistent with meteorological drought."
+                  "expression": "drought_severe_return_period <= 4 or drought_moderate_return_period <= 4",
+                  "qualitative_description": "Severe drought return period is 4 years or less, or moderate drought return period is 4 years or less, indicates persistent crop-season water deficit sufficient to cause yield loss.",
+                  "variables": [
+                    "drought_severe_return_period",
+                    "drought_moderate_return_period"
+                  ]
                 }
               }
             ]
           },
-          "finalized_at": "2026-06-24T19:30:42+00:00",
+          "finalized_at": "2026-06-26T10:18:06+00:00",
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
-          "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "5f3ed5289b7eb6885000d3f9f52adf8e357959bef88387cce6f8c0a36d6dc814"
+          "propagated_at": "2026-06-26T10:29:46+00:00",
+          "applied_card_digest": "4ffcd7b498b07d5ef755ea0d1edf82227c01cca1f0346579d19f3926821eb464"
         },
         "agriculture__water_scarcity__drought__007": {
           "card_id": "agriculture__water_scarcity__drought__007",
@@ -911,40 +960,54 @@
               {
                 "signal_id": "sig_01",
                 "variables": [
-                  "drought_weeks_severe",
-                  "drought_weeks_moderate"
+                  "drought_severe_return_period",
+                  "drought_moderate_return_period"
                 ],
                 "severity": "high",
                 "direction": "confirms",
                 "condition": {
                   "expression": "drought_severe_return_period <= 4 or drought_moderate_return_period <= 4",
-                  "qualitative_description": "Three or more severe drought weeks in the latest kharif season, or a combination of at least one severe week and four or more moderate weeks, indicates a drought episode sufficient to cause significant crop water stress and yield loss."
+                  "qualitative_description": "Severe drought return period is 4 years or less, or moderate drought return period is 4 years or less, indicates a drought episode sufficient to cause significant crop water stress and yield loss.",
+                  "variables": [
+                    "drought_severe_return_period",
+                    "drought_moderate_return_period"
+                  ]
                 }
               },
               {
                 "signal_id": "sig_02",
                 "variables": [
+                  "mean",
                   "dry_spell_weeks"
                 ],
                 "severity": "high",
                 "direction": "confirms",
                 "condition": {
                   "expression": "mean(dry_spell_weeks) >= 3",
-                  "qualitative_description": "Four or more dry spell weeks (4-week moving window with less than 50% historical rainfall) in the latest kharif season indicate prolonged moisture deficit disrupting crop growth stages."
+                  "qualitative_description": "Mean dry-spell weeks across the record is 3 or more (4-week moving window with less than 50% historical rainfall), indicate prolonged moisture deficit disrupting crop growth stages.",
+                  "variables": [
+                    "mean",
+                    "dry_spell_weeks"
+                  ]
                 }
               },
               {
                 "signal_id": "sig_04",
                 "variables": [
+                  "mean_kharif_precipitation",
                   "mean_annual_precipitation_mm",
-                  "trend_annual_precipitation_mm",
-                  "seasonal_precipitation_mm"
+                  "trend_annual_precipitation_mm"
                 ],
                 "severity": "moderate",
                 "direction": "confirms",
                 "condition": {
                   "expression": "(mean_kharif_precipitation < 0.75 * mean_annual_precipitation_mm * 0.85) or (mean_annual_precipitation_mm < 1000 and trend_annual_precipitation_mm < -10)",
-                  "qualitative_description": "Kharif seasonal precipitation below 75% of the long-run kharif normal, or mean annual precipitation below 1000 mm with a declining trend exceeding 10 mm/year, confirms a rainfall deficit context consistent with recurrent drought."
+                  "qualitative_description": "Kharif seasonal precipitation below 75% of the long-run kharif normal, or mean annual precipitation below 1000 mm with a declining trend exceeding 10 mm/year, confirms a rainfall deficit context consistent with recurrent drought.",
+                  "variables": [
+                    "mean_kharif_precipitation",
+                    "mean_annual_precipitation_mm",
+                    "trend_annual_precipitation_mm"
+                  ]
                 }
               }
             ]
@@ -952,8 +1015,8 @@
           "finalized_at": "2026-06-24T17:34:34+00:00",
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
-          "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "f7db88631724f1010215d1dcf18ea5a69e354cfbfb8ee9718fc2634c94969c87"
+          "propagated_at": "2026-06-26T10:29:46+00:00",
+          "applied_card_digest": "fc06568b88da47285721cebac763d7e19f7aa1106ee0468ecd7858e4b390311a"
         },
         "agriculture__water_scarcity__drought__005": {
           "card_id": "agriculture__water_scarcity__drought__005",
@@ -962,40 +1025,54 @@
               {
                 "signal_id": "sig_01",
                 "variables": [
-                  "drought_weeks_severe",
-                  "drought_weeks_moderate"
+                  "drought_severe_return_period",
+                  "drought_moderate_return_period"
                 ],
                 "severity": "high",
                 "direction": "confirms",
                 "condition": {
                   "expression": "drought_severe_return_period <= 4 or drought_moderate_return_period <= 4",
-                  "qualitative_description": "Three or more severe drought weeks in the latest kharif season, or a combination of at least one severe week and four or more moderate weeks, indicates persistent crop-season water deficit sufficient to cause yield loss."
+                  "qualitative_description": "Severe drought return period is 4 years or less, or moderate drought return period is 4 years or less, indicates persistent crop-season water deficit sufficient to cause yield loss.",
+                  "variables": [
+                    "drought_severe_return_period",
+                    "drought_moderate_return_period"
+                  ]
                 }
               },
               {
                 "signal_id": "sig_02",
                 "variables": [
+                  "mean",
                   "dry_spell_weeks"
                 ],
                 "severity": "high",
                 "direction": "confirms",
                 "condition": {
                   "expression": "mean(dry_spell_weeks) >= 3",
-                  "qualitative_description": "Four or more dry spell weeks (4-week moving window with <50% historical rainfall) in the latest kharif season indicate prolonged moisture stress during critical crop growth stages."
+                  "qualitative_description": "Mean dry-spell weeks across the record is 3 or more (4-week moving window with <50% historical rainfall), indicate prolonged moisture stress during critical crop growth stages.",
+                  "variables": [
+                    "mean",
+                    "dry_spell_weeks"
+                  ]
                 }
               },
               {
                 "signal_id": "sig_04",
                 "variables": [
                   "mean_annual_precipitation_mm",
-                  "trend_annual_precipitation_mm",
-                  "seasonal_precipitation_mm"
+                  "mean_kharif_precipitation",
+                  "trend_annual_precipitation_mm"
                 ],
                 "severity": "moderate",
                 "direction": "confirms",
                 "condition": {
                   "expression": "mean_annual_precipitation_mm < 950 or (mean_kharif_precipitation < 700) or (trend_annual_precipitation_mm < -10 and mean_annual_precipitation_mm < 1100)",
-                  "qualitative_description": "Mean annual precipitation below 950 mm, or kharif seasonal precipitation below 700 mm in the latest year, or a declining trend exceeding 10 mm/year with mean below 1100 mm, indicates structural rainfall deficit in this sub-humid zone."
+                  "qualitative_description": "Mean annual precipitation below 950 mm, or kharif seasonal precipitation below 700 mm in the latest year, or a declining trend exceeding 10 mm/year with mean below 1100 mm, indicates structural rainfall deficit in this sub-humid zone.",
+                  "variables": [
+                    "mean_annual_precipitation_mm",
+                    "mean_kharif_precipitation",
+                    "trend_annual_precipitation_mm"
+                  ]
                 }
               }
             ]
@@ -1003,8 +1080,8 @@
           "finalized_at": "2026-06-24T17:34:59+00:00",
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
-          "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "9ac64594a43463cac40fca99a6207a4419af43645d6130e1e29a896920c8b033"
+          "propagated_at": "2026-06-26T10:29:46+00:00",
+          "applied_card_digest": "cd2c95fea3a7cc48d64cc54489ce590faa343dec515b2c8267bd804734dd1fc1"
         },
         "agriculture__water_scarcity__drought__008": {
           "card_id": "agriculture__water_scarcity__drought__008",
@@ -1013,40 +1090,54 @@
               {
                 "signal_id": "sig_01",
                 "variables": [
-                  "drought_weeks_severe",
-                  "drought_weeks_moderate"
+                  "drought_severe_return_period",
+                  "drought_moderate_return_period"
                 ],
                 "severity": "high",
                 "direction": "confirms",
                 "condition": {
                   "expression": "drought_severe_return_period <= 4 or drought_moderate_return_period <= 4",
-                  "qualitative_description": "Three or more severe drought weeks in the latest kharif season, or at least one severe week combined with four or more moderate drought weeks, indicates a drought episode sufficient to cause significant crop water stress and yield loss."
+                  "qualitative_description": "Severe drought return period is 4 years or less, or moderate drought return period is 4 years or less, indicates a drought episode sufficient to cause significant crop water stress and yield loss.",
+                  "variables": [
+                    "drought_severe_return_period",
+                    "drought_moderate_return_period"
+                  ]
                 }
               },
               {
                 "signal_id": "sig_02",
                 "variables": [
+                  "mean",
                   "dry_spell_weeks"
                 ],
                 "severity": "high",
                 "direction": "confirms",
                 "condition": {
                   "expression": "mean(dry_spell_weeks) >= 3",
-                  "qualitative_description": "Four or more dry spell weeks (4-week moving window with less than 50% of historical rainfall) in the latest kharif season indicate prolonged moisture deficit disrupting critical crop growth stages."
+                  "qualitative_description": "Mean dry-spell weeks across the record is 3 or more (4-week moving window with less than 50% of historical rainfall), indicate prolonged moisture deficit disrupting critical crop growth stages.",
+                  "variables": [
+                    "mean",
+                    "dry_spell_weeks"
+                  ]
                 }
               },
               {
                 "signal_id": "sig_04",
                 "variables": [
+                  "mean_kharif_precipitation",
                   "mean_annual_precipitation_mm",
-                  "trend_annual_precipitation_mm",
-                  "seasonal_precipitation_mm"
+                  "trend_annual_precipitation_mm"
                 ],
                 "severity": "moderate",
                 "direction": "confirms",
                 "condition": {
                   "expression": "(mean_kharif_precipitation < 0.75 * mean_annual_precipitation_mm * 0.85) or (mean_annual_precipitation_mm < 900 and trend_annual_precipitation_mm < -10)",
-                  "qualitative_description": "Kharif seasonal rainfall below 75% of the long-term annual mean, or a declining multi-year precipitation trend below 900 mm/year, confirms meteorological drought as the primary driver of water scarcity."
+                  "qualitative_description": "Kharif seasonal rainfall below 75% of the long-term annual mean, or a declining multi-year precipitation trend below 900 mm/year, confirms meteorological drought as the primary driver of water scarcity.",
+                  "variables": [
+                    "mean_kharif_precipitation",
+                    "mean_annual_precipitation_mm",
+                    "trend_annual_precipitation_mm"
+                  ]
                 }
               }
             ]
@@ -1054,8 +1145,8 @@
           "finalized_at": "2026-06-24T17:34:21+00:00",
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
-          "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "d18337f7988b6e5928a156750f22ff4693cf9db92e2c31c19f8bfd34f8269545"
+          "propagated_at": "2026-06-26T10:29:46+00:00",
+          "applied_card_digest": "f9f208720b25dba062f2bb1303e5cdafb441d2a4af27f616ee81169b2f85c8c1"
         },
         "agriculture__water_scarcity__drought__009": {
           "card_id": "agriculture__water_scarcity__drought__009",
@@ -1064,39 +1155,52 @@
               {
                 "signal_id": "sig_01",
                 "variables": [
-                  "drought_weeks_severe",
-                  "drought_weeks_moderate"
+                  "drought_severe_return_period",
+                  "drought_moderate_return_period"
                 ],
                 "severity": "high",
                 "direction": "confirms",
                 "condition": {
                   "expression": "drought_severe_return_period <= 4 or drought_moderate_return_period <= 4",
-                  "qualitative_description": "Three or more severe drought weeks, or six or more moderate drought weeks in the most recent kharif season, indicate persistent crop-season water deficit sufficient to cause yield loss in rice and other kharif crops."
+                  "qualitative_description": "Severe drought return period is 4 years or less, or moderate drought return period is 4 years or less, indicate persistent crop-season water deficit sufficient to cause yield loss in rice and other kharif crops.",
+                  "variables": [
+                    "drought_severe_return_period",
+                    "drought_moderate_return_period"
+                  ]
                 }
               },
               {
                 "signal_id": "sig_03",
                 "variables": [
+                  "mean",
                   "dry_spell_weeks"
                 ],
                 "severity": "moderate",
                 "direction": "confirms",
                 "condition": {
                   "expression": "mean(dry_spell_weeks) >= 3",
-                  "qualitative_description": "Four or more dry spell weeks (4-week moving window with less than 50% historical rainfall) in the most recent kharif season indicate prolonged intra-seasonal moisture gaps that disrupt critical crop growth stages."
+                  "qualitative_description": "Mean dry-spell weeks across the record is 3 or more (4-week moving window with less than 50% historical rainfall), indicate prolonged intra-seasonal moisture gaps that disrupt critical crop growth stages.",
+                  "variables": [
+                    "mean",
+                    "dry_spell_weeks"
+                  ]
                 }
               },
               {
                 "signal_id": "sig_04",
                 "variables": [
-                  "mean_annual_precipitation_mm",
-                  "seasonal_precipitation_mm"
+                  "mean_kharif_precipitation",
+                  "mean_annual_precipitation_mm"
                 ],
                 "severity": "moderate",
                 "direction": "confirms",
                 "condition": {
                   "expression": "mean_kharif_precipitation < 0.75 * mean_annual_precipitation_mm or mean_annual_precipitation_mm < 1200",
-                  "qualitative_description": "Kharif seasonal rainfall in the most recent year below 75% of the long-term annual mean, or mean annual precipitation below 1200 mm, indicates a below-normal rainfall year consistent with meteorological drought in AER-13."
+                  "qualitative_description": "Kharif seasonal rainfall in the most recent year below 75% of the long-term annual mean, or mean annual precipitation below 1200 mm, indicates a below-normal rainfall year consistent with meteorological drought in AER-13.",
+                  "variables": [
+                    "mean_kharif_precipitation",
+                    "mean_annual_precipitation_mm"
+                  ]
                 }
               }
             ]
@@ -1104,8 +1208,8 @@
           "finalized_at": "2026-06-24T17:34:04+00:00",
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
-          "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "6190255e72dd969da12bf1eca2274af8184b3b47b548df6cd94e33b840849096"
+          "propagated_at": "2026-06-26T10:29:46+00:00",
+          "applied_card_digest": "476cb4bbe68be397b83ebf08233f59f3ff272fcdd5cb31aac379efa6536c736f"
         },
         "agriculture__water_scarcity__drought__010": {
           "card_id": "agriculture__water_scarcity__drought__010",
@@ -1114,39 +1218,54 @@
               {
                 "signal_id": "sig_01",
                 "variables": [
-                  "drought_weeks_severe",
-                  "drought_weeks_moderate"
+                  "drought_severe_return_period",
+                  "drought_moderate_return_period"
                 ],
                 "severity": "high",
                 "direction": "confirms",
                 "condition": {
                   "expression": "drought_severe_return_period <= 4 or drought_moderate_return_period <= 4",
-                  "qualitative_description": "Three or more severe drought weeks, or six or more moderate drought weeks, in the most recent kharif season indicate a drought episode sufficient to cause significant crop water stress in an otherwise humid zone."
+                  "qualitative_description": "Severe drought return period is 4 years or less, or moderate drought return period is 4 years or less, indicate a drought episode sufficient to cause significant crop water stress in an otherwise humid zone.",
+                  "variables": [
+                    "drought_severe_return_period",
+                    "drought_moderate_return_period"
+                  ]
                 }
               },
               {
                 "signal_id": "sig_02",
                 "variables": [
+                  "mean",
                   "dry_spell_weeks"
                 ],
                 "severity": "high",
                 "direction": "confirms",
                 "condition": {
                   "expression": "mean(dry_spell_weeks) >= 3",
-                  "qualitative_description": "Four or more dry spell weeks (4-week moving window with <50% historical rainfall) in the most recent kharif season indicate a prolonged moisture deficit disrupting crop growth stages."
+                  "qualitative_description": "Mean dry-spell weeks across the record is 3 or more (4-week moving window with <50% historical rainfall), indicate a prolonged moisture deficit disrupting crop growth stages.",
+                  "variables": [
+                    "mean",
+                    "dry_spell_weeks"
+                  ]
                 }
               },
               {
                 "signal_id": "sig_04",
                 "variables": [
                   "monsoon_onset_date",
+                  "mean_kharif_precipitation",
                   "seasonal_precipitation_mm"
                 ],
                 "severity": "moderate",
                 "direction": "confirms",
                 "condition": {
                   "expression": "monsoon_onset_date[-1] > monsoon_onset_date[0] and seasonal_precipitation_mm[-1].get('kharif', 9999) < 0.80 * mean_kharif_precipitation",
-                  "qualitative_description": "Monsoon onset is later than the earliest year on record AND kharif seasonal precipitation in the most recent year is below 80% of the multi-year mean, jointly indicating a delayed and deficient monsoon."
+                  "qualitative_description": "Monsoon onset is later than the earliest year on record AND kharif seasonal precipitation in the most recent year is below 80% of the multi-year mean, jointly indicating a delayed and deficient monsoon.",
+                  "variables": [
+                    "monsoon_onset_date",
+                    "mean_kharif_precipitation",
+                    "seasonal_precipitation_mm"
+                  ]
                 }
               }
             ]
@@ -1154,8 +1273,8 @@
           "finalized_at": "2026-06-24T19:31:15+00:00",
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
-          "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "1acf87520848976905723cc279301fd7a9c18f7f376a8b450cbdc16b31c4324d"
+          "propagated_at": "2026-06-26T10:29:46+00:00",
+          "applied_card_digest": "866a14f17d5effd879e71f36e46a70d47bec0f6a99a50d66d242936919ea7661"
         },
         "agriculture__water_scarcity__drought__011": {
           "card_id": "agriculture__water_scarcity__drought__011",
@@ -1164,37 +1283,44 @@
               {
                 "signal_id": "sig_01",
                 "variables": [
-                  "drought_weeks_severe",
-                  "drought_weeks_moderate"
+                  "drought_severe_return_period",
+                  "drought_moderate_return_period"
                 ],
                 "severity": "high",
                 "direction": "confirms",
                 "condition": {
                   "expression": "drought_severe_return_period <= 4 or drought_moderate_return_period <= 4",
-                  "qualitative_description": "Three or more severe drought weeks, or five or more moderate drought weeks in the most recent kharif season, indicate persistent crop-season water deficit sufficient to cause yield loss."
+                  "qualitative_description": "Severe drought return period is 4 years or less, or moderate drought return period is 4 years or less, indicate persistent crop-season water deficit sufficient to cause yield loss.",
+                  "variables": [
+                    "drought_severe_return_period",
+                    "drought_moderate_return_period"
+                  ]
                 }
               },
               {
-                "signal_id": "sig_04",
+                "signal_id": "sig_02",
                 "variables": [
-                  "trend_annual_precipitation_mm",
-                  "mean_annual_precipitation_mm",
-                  "seasonal_precipitation_mm"
+                  "mean",
+                  "dry_spell_weeks"
                 ],
-                "severity": "moderate",
+                "severity": "high",
                 "direction": "confirms",
                 "condition": {
-                  "expression": "trend_annual_precipitation_mm < -5 and (mean_kharif_precipitation < 0.75 * mean_annual_precipitation_mm * 0.8)",
-                  "qualitative_description": "A declining multi-year precipitation trend (>5 mm/year reduction) combined with a below-normal kharif season rainfall (less than 75% of expected kharif share) confirms a structural rainfall deficit driving drought."
+                  "expression": "mean(dry_spell_weeks) >= 3",
+                  "qualitative_description": "Mean dry-spell weeks across the record is 3 or more (4-week moving window with <50% historical rainfall), indicate prolonged moisture stress during critical crop growth stages.",
+                  "variables": [
+                    "mean",
+                    "dry_spell_weeks"
+                  ]
                 }
               }
             ]
           },
-          "finalized_at": "2026-06-24T17:33:31+00:00",
+          "finalized_at": "2026-06-26T10:29:20+00:00",
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
-          "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "a1a4ec3f63c8d0d053e61f742cac1e2cc0a39642b7866cbc62fb42725663832c"
+          "propagated_at": "2026-06-26T10:29:46+00:00",
+          "applied_card_digest": "0c36c8fd7c9d6e7951fdc453f30399db1d469de09342b3953ea04b6b6dfbc046"
         },
         "agriculture__water_scarcity__drought__012": {
           "card_id": "agriculture__water_scarcity__drought__012",
@@ -1203,40 +1329,54 @@
               {
                 "signal_id": "sig_01",
                 "variables": [
-                  "drought_weeks_severe",
-                  "drought_weeks_moderate"
+                  "drought_severe_return_period",
+                  "drought_moderate_return_period"
                 ],
                 "severity": "high",
                 "direction": "confirms",
                 "condition": {
                   "expression": "drought_severe_return_period <= 4 or drought_moderate_return_period <= 4",
-                  "qualitative_description": "Two or more severe drought weeks, or four or more moderate drought weeks in the latest kharif season, indicate meaningful crop-season water deficit even in a perhumid zone."
+                  "qualitative_description": "Severe drought return period is 4 years or less, or moderate drought return period is 4 years or less, indicate meaningful crop-season water deficit even in a perhumid zone.",
+                  "variables": [
+                    "drought_severe_return_period",
+                    "drought_moderate_return_period"
+                  ]
                 }
               },
               {
                 "signal_id": "sig_02",
                 "variables": [
+                  "mean",
                   "dry_spell_weeks"
                 ],
                 "severity": "high",
                 "direction": "confirms",
                 "condition": {
                   "expression": "mean(dry_spell_weeks) >= 3",
-                  "qualitative_description": "Three or more dry spell weeks (4-week moving window with <50% historical rainfall) in the latest kharif season indicate prolonged moisture stress periods that disrupt crop growth stages."
+                  "qualitative_description": "Mean dry-spell weeks across the record is 3 or more (4-week moving window with <50% historical rainfall), indicate prolonged moisture stress periods that disrupt crop growth stages.",
+                  "variables": [
+                    "mean",
+                    "dry_spell_weeks"
+                  ]
                 }
               },
               {
                 "signal_id": "sig_04",
                 "variables": [
+                  "mean_kharif_precipitation",
                   "mean_annual_precipitation_mm",
-                  "trend_annual_precipitation_mm",
-                  "seasonal_precipitation_mm"
+                  "trend_annual_precipitation_mm"
                 ],
                 "severity": "moderate",
                 "direction": "confirms",
                 "condition": {
                   "expression": "mean_kharif_precipitation < 0.75 * mean_annual_precipitation_mm or (mean_annual_precipitation_mm < 1800 and trend_annual_precipitation_mm < -20)",
-                  "qualitative_description": "Kharif seasonal precipitation below 75% of the long-run annual mean, or a declining precipitation trend exceeding 20mm/year combined with mean annual rainfall below 1800mm, signals structural drought risk in this perhumid zone."
+                  "qualitative_description": "Kharif seasonal precipitation below 75% of the long-run annual mean, or a declining precipitation trend exceeding 20mm/year combined with mean annual rainfall below 1800mm, signals structural drought risk in this perhumid zone.",
+                  "variables": [
+                    "mean_kharif_precipitation",
+                    "mean_annual_precipitation_mm",
+                    "trend_annual_precipitation_mm"
+                  ]
                 }
               }
             ]
@@ -1244,8 +1384,8 @@
           "finalized_at": "2026-06-24T17:33:13+00:00",
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
-          "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "4cfbfb75bb2da56546c04e23ba553b74446b2019a845a5fd6ebc2b991b53b39d"
+          "propagated_at": "2026-06-26T10:29:46+00:00",
+          "applied_card_digest": "d2c4f6b0224b0dbe07459045859afde18eae3f71c0d5fee55f4ce80592cc33e5"
         },
         "agriculture__water_scarcity__drought__017": {
           "card_id": "agriculture__water_scarcity__drought__017",
@@ -1254,26 +1394,35 @@
               {
                 "signal_id": "sig_01",
                 "variables": [
-                  "drought_weeks_severe",
-                  "drought_weeks_moderate"
+                  "drought_severe_return_period",
+                  "drought_moderate_return_period"
                 ],
                 "severity": "high",
                 "direction": "confirms",
                 "condition": {
                   "expression": "drought_severe_return_period <= 4 or drought_moderate_return_period <= 4",
-                  "qualitative_description": "Three or more severe drought weeks, or six or more moderate drought weeks in the latest kharif season, indicate significant meteorological drought stress even in a normally humid island ecoregion."
+                  "qualitative_description": "Severe drought return period is 4 years or less, or moderate drought return period is 4 years or less, indicate significant meteorological drought stress even in a normally humid island ecoregion.",
+                  "variables": [
+                    "drought_severe_return_period",
+                    "drought_moderate_return_period"
+                  ]
                 }
               },
               {
                 "signal_id": "sig_02",
                 "variables": [
+                  "mean",
                   "dry_spell_weeks"
                 ],
                 "severity": "high",
                 "direction": "confirms",
                 "condition": {
                   "expression": "mean(dry_spell_weeks) >= 3",
-                  "qualitative_description": "Four or more dry spell weeks (4-week moving window with <50% historical rainfall) in the latest kharif season indicate a prolonged moisture deficit disrupting critical crop growth stages."
+                  "qualitative_description": "Mean dry-spell weeks across the record is 3 or more (4-week moving window with <50% historical rainfall), indicate a prolonged moisture deficit disrupting critical crop growth stages.",
+                  "variables": [
+                    "mean",
+                    "dry_spell_weeks"
+                  ]
                 }
               }
             ]
@@ -1281,8 +1430,8 @@
           "finalized_at": "2026-06-24T17:26:23+00:00",
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
-          "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "c1ef0b8d4c5dc57e479593638bd6701cdc853ba7e4030a94f3fbb310d18805f7"
+          "propagated_at": "2026-06-26T10:29:46+00:00",
+          "applied_card_digest": "018f1edbf6625f4ca545d922e0a4be8857504aac1487c6b4c675244745c37f1a"
         },
         "agriculture__water_scarcity__drought__016": {
           "card_id": "agriculture__water_scarcity__drought__016",
@@ -1291,26 +1440,35 @@
               {
                 "signal_id": "sig_01",
                 "variables": [
-                  "drought_weeks_severe",
-                  "drought_weeks_moderate"
+                  "drought_severe_return_period",
+                  "drought_moderate_return_period"
                 ],
                 "severity": "high",
                 "direction": "confirms",
                 "condition": {
                   "expression": "drought_severe_return_period <= 4 or drought_moderate_return_period <= 4",
-                  "qualitative_description": ""
+                  "qualitative_description": "Severe drought return period is 4 years or less, or moderate drought return period is 4 years or less, indicating recurrent drought episodes sufficient to cause significant crop water stress and yield loss.",
+                  "variables": [
+                    "drought_severe_return_period",
+                    "drought_moderate_return_period"
+                  ]
                 }
               },
               {
                 "signal_id": "sig_02",
                 "variables": [
+                  "mean",
                   "dry_spell_weeks"
                 ],
                 "severity": "high",
                 "direction": "confirms",
                 "condition": {
                   "expression": "mean(dry_spell_weeks) >= 3",
-                  "qualitative_description": ""
+                  "qualitative_description": "Mean dry-spell weeks across the record is 3 or more (4-week moving window with less than 50% historical rainfall), indicating prolonged moisture deficit disrupting critical crop growth stages.",
+                  "variables": [
+                    "mean",
+                    "dry_spell_weeks"
+                  ]
                 }
               }
             ]
@@ -1318,8 +1476,8 @@
           "finalized_at": "2026-06-24T17:26:40+00:00",
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
-          "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "6f2165deea5549d343972b2f678e6c8e57face353d2c368fbf7cc54a819d4d97"
+          "propagated_at": "2026-06-26T10:29:46+00:00",
+          "applied_card_digest": "1246a000de76d541696ae1562cd996744f4438b060866b0349ff6a6977d53756"
         },
         "agriculture__water_scarcity__drought__015": {
           "card_id": "agriculture__water_scarcity__drought__015",
@@ -1328,40 +1486,54 @@
               {
                 "signal_id": "sig_01",
                 "variables": [
-                  "drought_weeks_severe",
-                  "drought_weeks_moderate"
+                  "drought_severe_return_period",
+                  "drought_moderate_return_period"
                 ],
                 "severity": "high",
                 "direction": "confirms",
                 "condition": {
                   "expression": "drought_severe_return_period <= 4 or drought_moderate_return_period <= 4",
-                  "qualitative_description": "Two or more severe drought weeks, or four or more moderate drought weeks in the latest kharif season, indicate meaningful crop-season water deficit even in a normally humid zone."
+                  "qualitative_description": "Severe drought return period is 4 years or less, or moderate drought return period is 4 years or less, indicate meaningful crop-season water deficit even in a normally humid zone.",
+                  "variables": [
+                    "drought_severe_return_period",
+                    "drought_moderate_return_period"
+                  ]
                 }
               },
               {
                 "signal_id": "sig_02",
                 "variables": [
+                  "mean",
                   "dry_spell_weeks"
                 ],
                 "severity": "high",
                 "direction": "confirms",
                 "condition": {
                   "expression": "mean(dry_spell_weeks) >= 3",
-                  "qualitative_description": "Three or more dry spell weeks (4-week moving window with <50% historical rainfall) in the latest kharif season indicate a prolonged intra-seasonal break that disrupts crop water supply."
+                  "qualitative_description": "Mean dry-spell weeks across the record is 3 or more (4-week moving window with <50% historical rainfall), indicate a prolonged intra-seasonal break that disrupts crop water supply.",
+                  "variables": [
+                    "mean",
+                    "dry_spell_weeks"
+                  ]
                 }
               },
               {
                 "signal_id": "sig_04",
                 "variables": [
+                  "mean_kharif_precipitation",
                   "trend_annual_precipitation_mm",
-                  "mean_annual_precipitation_mm",
-                  "seasonal_precipitation_mm"
+                  "mean_annual_precipitation_mm"
                 ],
                 "severity": "moderate",
                 "direction": "confirms",
                 "condition": {
                   "expression": "(mean_kharif_precipitation < 0.75 * mean_annual_precipitation_mm * 0.85) or (trend_annual_precipitation_mm < -20)",
-                  "qualitative_description": "Kharif seasonal precipitation in the latest year below 75% of the long-run kharif normal, or a declining trend in annual precipitation exceeding 20 mm/year, confirms a structural rainfall deficit underpinning drought."
+                  "qualitative_description": "Kharif seasonal precipitation in the latest year below 75% of the long-run kharif normal, or a declining trend in annual precipitation exceeding 20 mm/year, confirms a structural rainfall deficit underpinning drought.",
+                  "variables": [
+                    "mean_kharif_precipitation",
+                    "trend_annual_precipitation_mm",
+                    "mean_annual_precipitation_mm"
+                  ]
                 }
               }
             ]
@@ -1369,8 +1541,8 @@
           "finalized_at": "2026-06-24T17:31:40+00:00",
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
-          "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "354606b2ff96b0900c471af3eb8723b8d7cd0ee266cc9b6413d784b968754e85"
+          "propagated_at": "2026-06-26T10:29:46+00:00",
+          "applied_card_digest": "da2ef2bde147fcdb1f7f29ae8c09d6dde8d22481ffe58d12ce3fdddc10a0d31a"
         },
         "agriculture__water_scarcity__drought__014": {
           "card_id": "agriculture__water_scarcity__drought__014",
@@ -1379,39 +1551,52 @@
               {
                 "signal_id": "sig_01",
                 "variables": [
-                  "drought_weeks_severe",
-                  "drought_weeks_moderate"
+                  "drought_severe_return_period",
+                  "drought_moderate_return_period"
                 ],
                 "severity": "high",
                 "direction": "confirms",
                 "condition": {
                   "expression": "drought_severe_return_period <= 4 or drought_moderate_return_period <= 4",
-                  "qualitative_description": "Three or more severe drought weeks in the latest kharif season, or a combination of at least one severe week and four or more moderate weeks, indicates persistent crop-season water deficit sufficient to cause yield loss."
+                  "qualitative_description": "Severe drought return period is 4 years or less, or moderate drought return period is 4 years or less, indicates persistent crop-season water deficit sufficient to cause yield loss.",
+                  "variables": [
+                    "drought_severe_return_period",
+                    "drought_moderate_return_period"
+                  ]
                 }
               },
               {
                 "signal_id": "sig_02",
                 "variables": [
+                  "mean",
                   "dry_spell_weeks"
                 ],
                 "severity": "high",
                 "direction": "confirms",
                 "condition": {
                   "expression": "mean(dry_spell_weeks) >= 3",
-                  "qualitative_description": "Four or more dry spell weeks (4-week moving window with <50% historical rainfall) in the latest kharif season indicate prolonged rainfall gaps that disrupt critical crop growth stages."
+                  "qualitative_description": "Mean dry-spell weeks across the record is 3 or more (4-week moving window with <50% historical rainfall), indicate prolonged rainfall gaps that disrupt critical crop growth stages.",
+                  "variables": [
+                    "mean",
+                    "dry_spell_weeks"
+                  ]
                 }
               },
               {
                 "signal_id": "sig_03",
                 "variables": [
                   "mean_annual_precipitation_mm",
-                  "seasonal_precipitation_mm"
+                  "mean_kharif_precipitation"
                 ],
                 "severity": "moderate",
                 "direction": "confirms",
                 "condition": {
                   "expression": "mean_annual_precipitation_mm < 600 and mean_kharif_precipitation < (0.75 * mean_annual_precipitation_mm)",
-                  "qualitative_description": "Long-run mean annual precipitation below 600 mm combined with a kharif season receiving less than 75% of the long-run annual mean confirms a below-normal monsoon year in an already moisture-limited zone."
+                  "qualitative_description": "Long-run mean annual precipitation below 600 mm combined with a kharif season receiving less than 75% of the long-run annual mean confirms a below-normal monsoon year in an already moisture-limited zone.",
+                  "variables": [
+                    "mean_annual_precipitation_mm",
+                    "mean_kharif_precipitation"
+                  ]
                 }
               }
             ]
@@ -1419,8 +1604,8 @@
           "finalized_at": "2026-06-24T17:32:37+00:00",
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
-          "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "b0b25eafe16a7d6ca5b6a3d4b0d9a2540fe6c3c2181505b50cda95f36906729d"
+          "propagated_at": "2026-06-26T10:29:46+00:00",
+          "applied_card_digest": "093218d9c16a23d3a089d347f955abbbf2778adb408ccb6945b31d0490963122"
         },
         "agriculture__water_scarcity__drought__013": {
           "card_id": "agriculture__water_scarcity__drought__013",
@@ -1429,37 +1614,44 @@
               {
                 "signal_id": "sig_01",
                 "variables": [
-                  "drought_weeks_severe",
-                  "drought_weeks_moderate"
+                  "drought_severe_return_period",
+                  "drought_moderate_return_period"
                 ],
                 "severity": "high",
                 "direction": "confirms",
                 "condition": {
                   "expression": "drought_severe_return_period <= 4 or drought_moderate_return_period <= 4",
-                  "qualitative_description": "Two or more severe drought weeks, or four or more moderate drought weeks in the latest kharif season, indicate meaningful crop-season water deficit even in a perhumid zone."
+                  "qualitative_description": "Severe drought return period is 4 years or less, or moderate drought return period is 4 years or less, indicate meaningful crop-season water deficit even in a perhumid zone.",
+                  "variables": [
+                    "drought_severe_return_period",
+                    "drought_moderate_return_period"
+                  ]
                 }
               },
               {
-                "signal_id": "sig_04",
+                "signal_id": "sig_02",
                 "variables": [
-                  "trend_annual_precipitation_mm",
-                  "mean_annual_precipitation_mm",
-                  "seasonal_precipitation_mm"
+                  "mean",
+                  "dry_spell_weeks"
                 ],
-                "severity": "moderate",
+                "severity": "high",
                 "direction": "confirms",
                 "condition": {
-                  "expression": "trend_annual_precipitation_mm < -30 or (mean_kharif_precipitation < 0.75 * mean_annual_precipitation_mm)",
-                  "qualitative_description": "A declining trend in annual precipitation exceeding 30 mm/year, or a kharif seasonal total below 75% of the long-term mean annual precipitation, confirms a below-normal rainfall year driving drought stress."
+                  "expression": "mean(dry_spell_weeks) >= 3",
+                  "qualitative_description": "Mean dry-spell weeks across the record is 3 or more (4-week moving window with <50% historical rainfall), indicate prolonged moisture stress capable of disrupting crop growth stages.",
+                  "variables": [
+                    "mean",
+                    "dry_spell_weeks"
+                  ]
                 }
               }
             ]
           },
-          "finalized_at": "2026-06-24T17:32:53+00:00",
+          "finalized_at": "2026-06-26T10:29:41+00:00",
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
-          "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "02c5e0e0dc621596d961e3f04d0ffc512e11d8c09460e8eb3a991dd5a106b97a"
+          "propagated_at": "2026-06-26T10:29:46+00:00",
+          "applied_card_digest": "12dfd3d5b7fac3c476956502b797a1efa09420b9ed78a0dd754f6444b10d9ee3"
         },
         "agriculture__water_scarcity__rainfed_risk__003": {
           "card_id": "agriculture__water_scarcity__rainfed_risk__003",
@@ -1514,7 +1706,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "e33784d8b5e1e7770cffedc593ba2ebbec432038fa9864e7e3d614862955e50c"
+          "applied_card_digest": "6ea8cb13f9d6ec7beb2a6e860191136b0a0d593a8ad34db4d00f5cadf7804b4c"
         },
         "agriculture__water_scarcity__rainfed_risk__007": {
           "card_id": "agriculture__water_scarcity__rainfed_risk__007",
@@ -1580,7 +1772,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "bf00b0525066614e375dd51bc7481442975daf958f2e239efb8755370b0965a8"
+          "applied_card_digest": "cdef01c0963c623d64ff2df556bbb60e9b3eb97b419fa44ab737ed109a538b9f"
         },
         "agriculture__water_scarcity__rainfed_risk__008": {
           "card_id": "agriculture__water_scarcity__rainfed_risk__008",
@@ -1589,14 +1781,18 @@
               {
                 "signal_id": "sig_01",
                 "variables": [
-                  "lulc_single_kharif_ha",
-                  "lulc_double_crop_ha"
+                  "mean_kharif_cropped_area_ha",
+                  "mean_double_crop_area_ha"
                 ],
                 "severity": "high",
                 "direction": "confirms",
                 "condition": {
                   "expression": "(mean_kharif_cropped_area_ha / (mean_kharif_cropped_area_ha + mean_double_crop_area_ha + 1e-9)) > 0.75",
-                  "qualitative_description": "More than 75% of cropped area is under single kharif season only, indicating near-total dependence on monsoon rainfall with negligible irrigation-supported rabi or double cropping."
+                  "qualitative_description": "More than 75% of cropped area is under single kharif season only, indicating near-total dependence on monsoon rainfall with negligible irrigation-supported rabi or double cropping.",
+                  "variables": [
+                    "mean_kharif_cropped_area_ha",
+                    "mean_double_crop_area_ha"
+                  ]
                 }
               },
               {
@@ -1609,7 +1805,11 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "canal_name is None and nrega_irrigation_count <= 35",
-                  "qualitative_description": "No irrigation canal intersects the micro-watershed and fewer than 3 MGNREGA irrigation works have been constructed, confirming absence of both surface irrigation infrastructure and public investment in water access."
+                  "qualitative_description": "No irrigation canal intersects the micro-watershed and 35 or fewer MGNREGA irrigation works have been constructed, confirming absence of both surface irrigation infrastructure and public investment in water access.",
+                  "variables": [
+                    "canal_name",
+                    "nrega_irrigation_count"
+                  ]
                 }
               }
             ]
@@ -1618,7 +1818,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "020e250bf0dda90e978b66b7d942e6384e183117fe92ad716cba1f122b6f38f1"
+          "applied_card_digest": "4c51c27a3a7b010b91b12a5f671d1c2908b8676fcedf03177cfe09ea59d16f05"
         },
         "agriculture__water_scarcity__rainfed_risk__009": {
           "card_id": "agriculture__water_scarcity__rainfed_risk__009",
@@ -1673,7 +1873,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "a76d9932928222a055f17569a789380c6d1c8d45092d2c01d1850d359faac58e"
+          "applied_card_digest": "562a179b64f738d55bf278b7523eb76fdb986b1f72cb4443ee07bedbf4957219"
         },
         "agriculture__water_scarcity__rainfed_risk__010": {
           "card_id": "agriculture__water_scarcity__rainfed_risk__010",
@@ -1728,7 +1928,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "856b833ac7edfece278c31b0c565a59cf75229a54e0943fa289761d53b1592ae"
+          "applied_card_digest": "0cd9ae5b5f9c2ef3d88df8a96c06452df877ca1e466befe7a79d8d3faafd7733"
         },
         "agriculture__water_scarcity__rainfed_risk__011": {
           "card_id": "agriculture__water_scarcity__rainfed_risk__011",
@@ -1744,7 +1944,11 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "canal_name is None and nrega_irrigation_count <= 35",
-                  "qualitative_description": "No canal irrigation infrastructure intersects the micro-watershed, and fewer than 3 MGNREGA irrigation works have been recorded, confirming absence of both surface and publicly-invested irrigation."
+                  "qualitative_description": "No canal irrigation infrastructure intersects the micro-watershed, and 35 or fewer MGNREGA irrigation works have been recorded, confirming absence of both surface and publicly-invested irrigation.",
+                  "variables": [
+                    "canal_name",
+                    "nrega_irrigation_count"
+                  ]
                 }
               }
             ]
@@ -1753,7 +1957,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "5cbd155cc824628daf984111c26a846eeb2a908a22cdfaa2f336f221578194c9"
+          "applied_card_digest": "5927ba9ecdebfea04f8075669fa9fbb56ecee9734872ffcae4f1c1cb1dc18088"
         },
         "agriculture__water_scarcity__rainfed_risk__015": {
           "card_id": "agriculture__water_scarcity__rainfed_risk__015",
@@ -1762,14 +1966,18 @@
               {
                 "signal_id": "sig_01",
                 "variables": [
-                  "lulc_single_kharif_ha",
-                  "lulc_double_crop_ha"
+                  "mean_kharif_cropped_area_ha",
+                  "mean_double_crop_area_ha"
                 ],
                 "severity": "high",
                 "direction": "confirms",
                 "condition": {
                   "expression": "(mean_kharif_cropped_area_ha / (mean_kharif_cropped_area_ha + mean_double_crop_area_ha + 1e-9)) > 0.75",
-                  "qualitative_description": "More than 75% of cropped area is under single kharif season only, indicating near-total dependence on monsoon rainfall with negligible irrigation-supported double cropping."
+                  "qualitative_description": "More than 75% of cropped area is under single kharif season only, indicating near-total dependence on monsoon rainfall with negligible irrigation-supported double cropping.",
+                  "variables": [
+                    "mean_kharif_cropped_area_ha",
+                    "mean_double_crop_area_ha"
+                  ]
                 }
               },
               {
@@ -1782,7 +1990,11 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "canal_name is None and nrega_irrigation_count <= 35",
-                  "qualitative_description": "No irrigation canal intersects the micro-watershed and fewer than 3 MGNREGA irrigation works have been constructed, confirming absence of both formal surface irrigation and community-level irrigation investment."
+                  "qualitative_description": "No irrigation canal intersects the micro-watershed and 35 or fewer MGNREGA irrigation works have been constructed, confirming absence of both formal surface irrigation and community-level irrigation investment.",
+                  "variables": [
+                    "canal_name",
+                    "nrega_irrigation_count"
+                  ]
                 }
               }
             ]
@@ -1791,7 +2003,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "377e080364202d2ddcfaf57ae76e67a9ac04cfceb2572e23543392c6a9318d0f"
+          "applied_card_digest": "0fb732e3aad03c5b10637269bcf7c558f56e2e102cc695b7b6a2eb82bed907c7"
         },
         "agriculture__water_scarcity__rainfed_risk__017": {
           "card_id": "agriculture__water_scarcity__rainfed_risk__017",
@@ -1800,14 +2012,18 @@
               {
                 "signal_id": "sig_01",
                 "variables": [
-                  "lulc_single_kharif_ha",
-                  "lulc_double_crop_ha"
+                  "mean_kharif_cropped_area_ha",
+                  "mean_double_crop_area_ha"
                 ],
                 "severity": "high",
                 "direction": "confirms",
                 "condition": {
                   "expression": "(mean_kharif_cropped_area_ha / (mean_kharif_cropped_area_ha + mean_double_crop_area_ha + 1e-9)) > 0.75",
-                  "qualitative_description": "More than 75% of cropped area is under single kharif season only, indicating near-total dependence on monsoon rainfall with negligible double-cropping."
+                  "qualitative_description": "More than 75% of cropped area is under single kharif season only, indicating near-total dependence on monsoon rainfall with negligible double-cropping.",
+                  "variables": [
+                    "mean_kharif_cropped_area_ha",
+                    "mean_double_crop_area_ha"
+                  ]
                 }
               },
               {
@@ -1820,7 +2036,11 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "canal_name is None and nrega_irrigation_count <= 35",
-                  "qualitative_description": "No irrigation canal intersects the micro-watershed and fewer than 3 MGNREGA irrigation works have been recorded, confirming absence of surface irrigation infrastructure."
+                  "qualitative_description": "No irrigation canal intersects the micro-watershed and 35 or fewer MGNREGA irrigation works have been recorded, confirming absence of surface irrigation infrastructure.",
+                  "variables": [
+                    "canal_name",
+                    "nrega_irrigation_count"
+                  ]
                 }
               }
             ]
@@ -1829,7 +2049,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "385461f77016cddb837f4ef0db8164a308574b826a7d8300de41beb699798f61"
+          "applied_card_digest": "c852c8ff7e3ce3686dc6f61bb6404a434a9db2d51f425e089741401ae486e564"
         },
         "agriculture__water_scarcity__irrigation_challenges__003": {
           "card_id": "agriculture__water_scarcity__irrigation_challenges__003",
@@ -1845,7 +2065,11 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "trend_swb_total_area_ha < 1 and swb_count <= 15",
-                  "qualitative_description": "Surface water body area is declining at more than 5 ha/year and fewer than 3 distinct water bodies exist in the MWS, indicating shrinking storage infrastructure."
+                  "qualitative_description": "Surface water body total area trend is below 1 ha/year and 15 or fewer distinct SWBs are present in the MWS, indicating shrinking storage infrastructure.",
+                  "variables": [
+                    "trend_swb_total_area_ha",
+                    "swb_count"
+                  ]
                 }
               },
               {
@@ -1857,7 +2081,10 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "nrega_swc_count <= 20",
-                  "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA for the MWS, indicating historically low public investment in water harvesting infrastructure."
+                  "qualitative_description": "20 or fewer cumulative soil and water conservation or irrigation works recorded under MGNREGA for the MWS, indicating historically low public investment in water harvesting infrastructure.",
+                  "variables": [
+                    "nrega_swc_count"
+                  ]
                 }
               }
             ]
@@ -1866,7 +2093,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "b3014bb86b0011f0ac0b8caf837c21ab9ad37e57df9f4064c0d6bc3191064ddb"
+          "applied_card_digest": "fc6d7713062049841b21efb5985ba13fa184f72d4b1408138130a8a26b69b620"
         },
         "agriculture__water_scarcity__irrigation_challenges__004": {
           "card_id": "agriculture__water_scarcity__irrigation_challenges__004",
@@ -1890,7 +2117,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:47:43+00:00",
-          "applied_card_digest": "192de63dccbdf806bc52d3157f7b510417b19afde623286cfc2f63b5093179ac"
+          "applied_card_digest": "ae85d61a9e9ac064ceb05c0f2ff4ba4be66d3dfe99d4646d3513f086481398cf"
         },
         "agriculture__water_scarcity__irrigation_challenges__005": {
           "card_id": "agriculture__water_scarcity__irrigation_challenges__005",
@@ -1906,7 +2133,11 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "trend_swb_total_area_ha < 1 and swb_count <= 15",
-                  "qualitative_description": "Surface water body area is declining at more than 5 ha/year and fewer than 3 distinct water bodies exist in the MWS, indicating shrinking storage infrastructure relative to irrigable command area."
+                  "qualitative_description": "Surface water body total area trend is below 1 ha/year and 15 or fewer distinct SWBs are present in the MWS, indicating shrinking storage infrastructure relative to irrigable command area.",
+                  "variables": [
+                    "trend_swb_total_area_ha",
+                    "swb_count"
+                  ]
                 }
               },
               {
@@ -1918,7 +2149,10 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "nrega_swc_count <= 20",
-                  "qualitative_description": "Fewer than 10 cumulative soil and water conservation or irrigation works completed under MGNREGA in the MWS, indicating historically low investment in water harvesting infrastructure."
+                  "qualitative_description": "20 or fewer cumulative soil and water conservation or irrigation works recorded under MGNREGA in the MWS, indicating historically low investment in water harvesting infrastructure.",
+                  "variables": [
+                    "nrega_swc_count"
+                  ]
                 }
               }
             ]
@@ -1927,7 +2161,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "96413d81ab685411bbdf5e163d1c77e269406bbc3b81fc043025675e4cb42fdf"
+          "applied_card_digest": "bcabf5cb6d3c9e5929f064bad14e7d09e4203f2c9905bfd4540530e011739e30"
         },
         "agriculture__water_scarcity__irrigation_challenges__006": {
           "card_id": "agriculture__water_scarcity__irrigation_challenges__006",
@@ -1943,7 +2177,11 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "trend_swb_total_area_ha < 1 and swb_count <= 15",
-                  "qualitative_description": "Total surface water body area is declining at more than 5 ha/year and fewer than 3 distinct water bodies exist in the MWS, indicating shrinking storage infrastructure."
+                  "qualitative_description": "Surface water body total area trend is below 1 ha/year and 15 or fewer distinct SWBs are present in the MWS, indicating shrinking storage infrastructure.",
+                  "variables": [
+                    "trend_swb_total_area_ha",
+                    "swb_count"
+                  ]
                 }
               },
               {
@@ -1955,7 +2193,10 @@
                 "direction": "amplifies",
                 "condition": {
                   "expression": "nrega_swc_count <= 20",
-                  "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA, indicating historically low investment in water harvesting maintenance."
+                  "qualitative_description": "20 or fewer cumulative soil and water conservation or irrigation works recorded under MGNREGA, indicating historically low investment in water harvesting maintenance.",
+                  "variables": [
+                    "nrega_swc_count"
+                  ]
                 }
               }
             ]
@@ -1964,7 +2205,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "753fae643524c823c8f26cbd671b58b9fe7d8a5c1a2b27848ab99bdab1334ae2"
+          "applied_card_digest": "8341ca4e25180bd5640457b2952310a07c3f20e9d2c2e53f190368345bffc191"
         },
         "agriculture__water_scarcity__irrigation_challenges__008": {
           "card_id": "agriculture__water_scarcity__irrigation_challenges__008",
@@ -1981,7 +2222,12 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "trend_swb_total_area_ha < 1 or (swb_total_area_ha[-1] < mean_swb_total_area_ha * 0.85)",
-                  "qualitative_description": "Surface water body area is declining at more than 5 ha/year, or the latest year area is below 85% of the multi-year mean, indicating siltation, structural failure, or reduced catchment inflows."
+                  "qualitative_description": "Surface water body area is declining at more than 5 ha/year, or the latest year area is below 85% of the multi-year mean, indicating siltation, structural failure, or reduced catchment inflows.",
+                  "variables": [
+                    "trend_swb_total_area_ha",
+                    "swb_total_area_ha",
+                    "mean_swb_total_area_ha"
+                  ]
                 }
               },
               {
@@ -1993,7 +2239,10 @@
                 "direction": "amplifies",
                 "condition": {
                   "expression": "nrega_swc_count <= 20",
-                  "qualitative_description": "Fewer than 10 cumulative soil and water conservation or irrigation works recorded under MGNREGA for the micro-watershed, indicating historically low investment in water harvesting infrastructure."
+                  "qualitative_description": "20 or fewer cumulative soil and water conservation or irrigation works recorded under MGNREGA for the micro-watershed, indicating historically low investment in water harvesting infrastructure.",
+                  "variables": [
+                    "nrega_swc_count"
+                  ]
                 }
               },
               {
@@ -2006,7 +2255,11 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "(swb_count <= 15) and (dist_cooperative_km > 15)",
-                  "qualitative_description": "Fewer than 3 surface water bodies in the MWS combined with cooperative distance exceeding 15 km, indicating both a structural infrastructure gap and limited access to institutional credit for irrigation investment."
+                  "qualitative_description": "Fewer than 3 surface water bodies in the MWS combined with cooperative distance exceeding 15 km, indicating both a structural infrastructure gap and limited access to institutional credit for irrigation investment.",
+                  "variables": [
+                    "swb_count",
+                    "dist_cooperative_km"
+                  ]
                 }
               }
             ]
@@ -2015,7 +2268,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "fad2790ce7f77b1e16362ee1c4d1bc0587257616f4c212e8097959760c1eb1e4"
+          "applied_card_digest": "a43ff417d8f577c9add2bccaf796e96ddb5e447d784234b86ad2940e8579975a"
         },
         "agriculture__water_scarcity__irrigation_challenges__009": {
           "card_id": "agriculture__water_scarcity__irrigation_challenges__009",
@@ -2031,7 +2284,11 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "trend_swb_total_area_ha < 1 and swb_count <= 15",
-                  "qualitative_description": "Total surface water body area is declining at more than 5 ha/year and fewer than 3 distinct SWBs are present in the MWS, indicating contraction of storage infrastructure."
+                  "qualitative_description": "Surface water body total area trend is below 1 ha/year and 15 or fewer distinct SWBs are present in the MWS, indicating contraction of storage infrastructure.",
+                  "variables": [
+                    "trend_swb_total_area_ha",
+                    "swb_count"
+                  ]
                 }
               },
               {
@@ -2043,7 +2300,10 @@
                 "direction": "amplifies",
                 "condition": {
                   "expression": "nrega_swc_count <= 20",
-                  "qualitative_description": "Fewer than 10 cumulative soil and water conservation or irrigation works recorded under MGNREGA for the MWS, indicating historically low investment in water harvesting infrastructure."
+                  "qualitative_description": "20 or fewer cumulative soil and water conservation or irrigation works recorded under MGNREGA for the MWS, indicating historically low investment in water harvesting infrastructure.",
+                  "variables": [
+                    "nrega_swc_count"
+                  ]
                 }
               }
             ]
@@ -2052,7 +2312,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "23c2cc7aba42db9d3a3cce1242770948bd3185d446394aca13812e3f92180476"
+          "applied_card_digest": "f715432db7ed394d65031ae7f3e13bc850c0de54effa7acc79a56a17ad91b4ff"
         },
         "agriculture__water_scarcity__irrigation_challenges__010": {
           "card_id": "agriculture__water_scarcity__irrigation_challenges__010",
@@ -2076,7 +2336,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "48688682d201e5545a66cdd932e14ab5001a78f3164f8debb215e34986d431c7"
+          "applied_card_digest": "ec16a426cb5d3d1c2a2712134a27508e97c2b7a77d2cd661a849f7368af925be"
         },
         "agriculture__water_scarcity__irrigation_challenges__011": {
           "card_id": "agriculture__water_scarcity__irrigation_challenges__011",
@@ -2092,7 +2352,11 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "trend_swb_total_area_ha < 1 and swb_count <= 15",
-                  "qualitative_description": "Surface water body area is declining at more than 2 ha/year and fewer than 5 distinct water bodies exist in the MWS, indicating shrinking storage infrastructure relative to irrigable area."
+                  "qualitative_description": "Surface water body total area trend is below 1 ha/year and 15 or fewer distinct SWBs are present in the MWS, indicating shrinking storage infrastructure relative to irrigable area.",
+                  "variables": [
+                    "trend_swb_total_area_ha",
+                    "swb_count"
+                  ]
                 }
               },
               {
@@ -2104,7 +2368,10 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "nrega_swc_count <= 20",
-                  "qualitative_description": "Fewer than 10 cumulative soil and water conservation or irrigation works recorded under MGNREGA, indicating historically low investment in water harvesting infrastructure relative to the irrigation needs of a hilly MWS."
+                  "qualitative_description": "20 or fewer cumulative soil and water conservation or irrigation works recorded under MGNREGA, indicating historically low investment in water harvesting infrastructure relative to the irrigation needs of a hilly MWS.",
+                  "variables": [
+                    "nrega_swc_count"
+                  ]
                 }
               }
             ]
@@ -2113,7 +2380,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "83d9a784946811f543b678a8190cbc4e7caff045777480247791b078f94345e7"
+          "applied_card_digest": "8409f63c6c858bde23d842c1befe561fdd52eed628b1f36420712133fad1fd77"
         },
         "agriculture__water_scarcity__irrigation_challenges__015": {
           "card_id": "agriculture__water_scarcity__irrigation_challenges__015",
@@ -2137,7 +2404,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "fc21ee318b1463288ee68ba13b1c84b2c72f17fdd3a03192f7736523eda0225e"
+          "applied_card_digest": "6040dd7883b6669b4a67e6c711c3436ec7107fa22b4b021ee1ae9b6be33bb3a4"
         },
         "agriculture__water_scarcity__irrigation_challenges__017": {
           "card_id": "agriculture__water_scarcity__irrigation_challenges__017",
@@ -2154,7 +2421,12 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "trend_swb_total_area_ha < 1 or (swb_count <= 15 and mean_swb_total_area_ha < 10)",
-                  "qualitative_description": "Declining surface water body area (more than 2 ha/year loss) or very few small water bodies relative to the micro-watershed, indicating insufficient or shrinking storage infrastructure on these small island territories."
+                  "qualitative_description": "Declining surface water body area (more than 2 ha/year loss) or very few small water bodies relative to the micro-watershed, indicating insufficient or shrinking storage infrastructure on these small island territories.",
+                  "variables": [
+                    "trend_swb_total_area_ha",
+                    "swb_count",
+                    "mean_swb_total_area_ha"
+                  ]
                 }
               },
               {
@@ -2166,7 +2438,10 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "nrega_swc_count <= 20",
-                  "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA for the micro-watershed, indicating historically low investment in water harvesting infrastructure."
+                  "qualitative_description": "20 or fewer cumulative soil and water conservation or irrigation works recorded under MGNREGA for the micro-watershed, indicating historically low investment in water harvesting infrastructure.",
+                  "variables": [
+                    "nrega_swc_count"
+                  ]
                 }
               }
             ]
@@ -2175,7 +2450,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "a34feb660a1a259e42ea246daba4bb627a8b8a7a7233e27c565743c7f6a75daa"
+          "applied_card_digest": "44c7c3598489d776a723a9da4ff8b1afece51e517728e2aa6cbe57da7734a88f"
         },
         "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__002": {
           "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__002",
@@ -2191,7 +2466,11 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "cd_total_deforestation_ha > 20 and (cd_afforestation_ha / (cd_total_deforestation_ha + 1e-9)) < 0.5",
-                  "qualitative_description": "Cumulative deforestation exceeds 50 ha and afforestation covers less than half the deforested area, indicating a net deficit in forest recovery."
+                  "qualitative_description": "Cumulative deforestation exceeds 20 ha and afforestation covers less than half the deforested area, indicating a net deficit in forest recovery.",
+                  "variables": [
+                    "cd_total_deforestation_ha",
+                    "cd_afforestation_ha"
+                  ]
                 }
               },
               {
@@ -2203,7 +2482,10 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "cd_total_deforestation_ha > 30",
-                  "qualitative_description": "Total deforested area in the micro-watershed exceeds 100 ha, representing a substantial absolute loss of NTFP habitat."
+                  "qualitative_description": "Total deforested area in the micro-watershed exceeds 30 ha, representing a substantial absolute loss of NTFP habitat.",
+                  "variables": [
+                    "cd_total_deforestation_ha"
+                  ]
                 }
               }
             ]
@@ -2212,7 +2494,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "e87e922e7bc67ea1c3856db08133a35a253edc3e4b2c215867dbae2a8768c64b"
+          "applied_card_digest": "2553ab1d36a4c92711950297eca72a20e3cb9743ed12d9e25c248d1eef81089f"
         },
         "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__003": {
           "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__003",
@@ -2227,7 +2509,10 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "cd_total_deforestation_ha > 30",
-                  "qualitative_description": "More than 50 hectares of cumulative deforestation recorded in the micro-watershed, representing substantial habitat loss for NTFP species."
+                  "qualitative_description": "More than 30 hectares of cumulative deforestation recorded in the micro-watershed, representing substantial habitat loss for NTFP species.",
+                  "variables": [
+                    "cd_total_deforestation_ha"
+                  ]
                 }
               }
             ]
@@ -2236,7 +2521,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "0e80da9a54ab9dc3db722ad4979a67a17c560ffcc97465576c9efc260df80c21"
+          "applied_card_digest": "e5098b9ad8b7789407057f5f77b12b03afe85739723883fd54054db35b79cf4c"
         },
         "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__004": {
           "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__004",
@@ -2251,7 +2536,10 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "cd_total_deforestation_ha > 30",
-                  "qualitative_description": "Total deforested area exceeds 50 hectares, representing a substantial absolute loss of NTFP habitat in a micro-watershed context."
+                  "qualitative_description": "Total deforested area exceeds 30 hectares, representing a substantial absolute loss of NTFP habitat in a micro-watershed context.",
+                  "variables": [
+                    "cd_total_deforestation_ha"
+                  ]
                 }
               }
             ]
@@ -2260,7 +2548,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "10cf8b47d77a711a858f9155c2132f546f0d6ff6a2a8fb1eb8acfed88d060e99"
+          "applied_card_digest": "a4b930cf4958decff439b7ea9bad44e074df0ca578e0da05a25365d8cd6bc221"
         },
         "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__005": {
           "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__005",
@@ -2275,7 +2563,10 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "cd_total_deforestation_ha > 30",
-                  "qualitative_description": "More than 50 hectares of cumulative deforestation recorded in the micro-watershed, representing a significant absolute loss of forest habitat."
+                  "qualitative_description": "More than 30 hectares of cumulative deforestation recorded in the micro-watershed, representing a significant absolute loss of forest habitat.",
+                  "variables": [
+                    "cd_total_deforestation_ha"
+                  ]
                 }
               }
             ]
@@ -2284,7 +2575,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "1b78084b25447e4694f3ab17801311d0f137e2212445de54df32f19367721bfa"
+          "applied_card_digest": "a3fbd2e2a0aa941d2e327512838294072590397ec2d8c55ee1c3e4be3751b5a3"
         },
         "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__006": {
           "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__006",
@@ -2299,7 +2590,10 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "cd_total_deforestation_ha > 30",
-                  "qualitative_description": "Cumulative deforested area exceeds 50 ha, indicating substantial habitat loss for NTFP species within the micro-watershed."
+                  "qualitative_description": "Cumulative deforested area exceeds 30 ha, indicating substantial habitat loss for NTFP species within the micro-watershed.",
+                  "variables": [
+                    "cd_total_deforestation_ha"
+                  ]
                 }
               }
             ]
@@ -2308,7 +2602,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "1037780e9ccd93496e1363a117a21f20159fea1a3b46265fc4a65d53b3afb4e2"
+          "applied_card_digest": "79affa8f144f577d894611de88f7594cdd206cfedad40b126e2c88699cd65eb0"
         },
         "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__010": {
           "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__010",
@@ -2377,7 +2671,10 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "cd_total_deforestation_ha > 30",
-                  "qualitative_description": "More than 50 ha of cumulative deforestation recorded in the micro-watershed, indicating substantial habitat loss for NTFP species."
+                  "qualitative_description": "More than 30 ha of cumulative deforestation recorded in the micro-watershed, indicating substantial habitat loss for NTFP species.",
+                  "variables": [
+                    "cd_total_deforestation_ha"
+                  ]
                 }
               }
             ]
@@ -2386,7 +2683,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "a2eb0d486215c426471aa36aa09c367de2b5edfbcd17140b0db6f0feea2b9ad7"
+          "applied_card_digest": "5911faae28efe507788f15b3bd7a3233352096b4b53f1cdca3d46bab4eb1d084"
         },
         "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__012": {
           "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__012",
@@ -2401,7 +2698,10 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "cd_total_deforestation_ha > 30",
-                  "qualitative_description": "Total deforested area exceeds 50 ha, representing a substantial absolute loss of NTFP habitat within the micro-watershed."
+                  "qualitative_description": "Total deforested area exceeds 30 ha, representing a substantial absolute loss of NTFP habitat within the micro-watershed.",
+                  "variables": [
+                    "cd_total_deforestation_ha"
+                  ]
                 }
               }
             ]
@@ -2410,7 +2710,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "ef1c911a414b994fbc540b3aee74f9bd4e627cffa3f751b854e55f9f1cfc4508"
+          "applied_card_digest": "c95fbec06551ad0012fea1c80dc14d2d7d2ce49284ca1637d327a173730b890e"
         },
         "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__013": {
           "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__013",
@@ -2426,7 +2726,11 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "cd_total_deforestation_ha > 20 and (cd_afforestation_ha / (cd_total_deforestation_ha + 1e-9)) < 0.5",
-                  "qualitative_description": "Cumulative deforestation exceeds 50 ha and afforestation covers less than half the deforested area, indicating a net forest deficit with weak recovery."
+                  "qualitative_description": "Cumulative deforestation exceeds 20 ha and afforestation covers less than half the deforested area, indicating a net forest deficit with weak recovery.",
+                  "variables": [
+                    "cd_total_deforestation_ha",
+                    "cd_afforestation_ha"
+                  ]
                 }
               },
               {
@@ -2438,7 +2742,10 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "cd_total_deforestation_ha > 30",
-                  "qualitative_description": "Cumulative deforested area exceeds 100 ha, representing substantial absolute habitat loss for NTFP species in the micro-watershed."
+                  "qualitative_description": "Cumulative deforested area exceeds 30 ha, representing substantial absolute habitat loss for NTFP species in the micro-watershed.",
+                  "variables": [
+                    "cd_total_deforestation_ha"
+                  ]
                 }
               }
             ]
@@ -2447,7 +2754,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "ee476cb7229cd5f5b4890bcbdfd714585d2c1db4dbd6c2a64cde679ee0d19119"
+          "applied_card_digest": "0a81e05852f531803c409d24e326efb8f8b53bfa1098920f863050dfa9c66989"
         },
         "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__014": {
           "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__014",
@@ -2505,7 +2812,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "5109801ff12564b8523b6725840e18f563ea08dce06b34dd60cd77871e7e9a86"
+          "applied_card_digest": "06b5bc33d184807ba4de99ffd8d3ced6bffbb32587af4a23e942db3c6304ba70"
         },
         "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__016": {
           "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__016",
@@ -2587,7 +2894,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "f72b90ad2d9fc0f451dc7890102fc4f6868e40deff9a3a7368940e5ad3c56e64"
+          "applied_card_digest": "0ea53c970b04186c00f5379d7cbc0f1105d6e7366921489c8514d7b2ec3d1c01"
         },
         "ntfp_forest_biodiversity__ntfp_decline__encroachment__005": {
           "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__005",
@@ -2636,7 +2943,10 @@
                 "direction": "amplifies",
                 "condition": {
                   "expression": "village_st_percent > 25",
-                  "qualitative_description": "Scheduled Tribe population exceeds 25% of village population, indicating high dependence on forest resources and elevated risk of NTFP access loss from encroachment-related tenure disputes."
+                  "qualitative_description": "Scheduled Tribe population exceeds 25% of village population, indicating high dependence on forest resources and elevated risk of NTFP access loss from encroachment-related tenure disputes.",
+                  "variables": [
+                    "village_st_percent"
+                  ]
                 }
               },
               {
@@ -2657,7 +2967,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "00d1f110efc0191d9ea64c3da4e0caf8e3d9c6f1678a6b782587ad42d6bbe86b"
+          "applied_card_digest": "4bd97700aafb5105941340e2b8723bbc764320c4e9a60a4fd4c92f57ef008d5d"
         },
         "ntfp_forest_biodiversity__ntfp_decline__encroachment__006": {
           "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__006",
@@ -2732,7 +3042,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "ca9ecd55c1686110a834cdaa22f73fc5ccb91f6a67f9066b218737856ee88d87"
+          "applied_card_digest": "81b7c1a115a5bb6517aaf0a2ee6ef9e5612757881007191221868068b3084c43"
         },
         "ntfp_forest_biodiversity__ntfp_decline__encroachment__009": {
           "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__009",
@@ -2747,7 +3057,10 @@
                 "direction": "amplifies",
                 "condition": {
                   "expression": "cd_urbanization_ha > 5",
-                  "qualitative_description": "Total urbanized or settled area has expanded by more than 5 ha over the record period, suggesting settlement encroachment into forest margins."
+                  "qualitative_description": "Total urbanized or settled area has expanded by more than 5 ha over the record period, suggesting settlement encroachment into forest margins.",
+                  "variables": [
+                    "cd_urbanization_ha"
+                  ]
                 }
               }
             ]
@@ -2832,7 +3145,10 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "cd_urbanization_ha > 20",
-                  "qualitative_description": "Total urbanized or settled area has expanded by more than 20 ha over the record period, suggesting settlement encroachment into or adjacent to forest land."
+                  "qualitative_description": "Total urbanized or settled area has expanded by more than 20 ha over the record period, suggesting settlement encroachment into or adjacent to forest land.",
+                  "variables": [
+                    "cd_urbanization_ha"
+                  ]
                 }
               },
               {
@@ -2844,7 +3160,10 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "village_st_percent > 25",
-                  "qualitative_description": "Scheduled Tribe population exceeds 25% of village population, indicating high dependence on forest resources and elevated vulnerability to encroachment-driven access loss."
+                  "qualitative_description": "Scheduled Tribe population exceeds 25% of village population, indicating high dependence on forest resources and elevated vulnerability to encroachment-driven access loss.",
+                  "variables": [
+                    "village_st_percent"
+                  ]
                 }
               },
               {
@@ -2877,7 +3196,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "08560395ead21adf4415ea86e97aef49011dab365a705764e38d6766d45359df"
+          "applied_card_digest": "ba24ab5435369d365cc6ba1ac6e3970eaa4c81ad6185d21a4cef7b7e69d3f641"
         },
         "ntfp_forest_biodiversity__ntfp_decline__encroachment__011": {
           "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__011",
@@ -2892,7 +3211,10 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "cd_forest_to_farm_ha > 29",
-                  "qualitative_description": "Cumulative forest-to-farm conversion has increased by more than 50 ha over the available record, indicating active encroachment of forest land for agriculture."
+                  "qualitative_description": "Cumulative forest-to-farm conversion has increased by more than 30 ha over the available record, indicating active encroachment of forest land for agriculture.",
+                  "variables": [
+                    "cd_forest_to_farm_ha"
+                  ]
                 }
               },
               {
@@ -2905,7 +3227,11 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "village_st_percent > 25 and cd_forest_to_farm_ha > 29",
-                  "qualitative_description": "Village has a significant Scheduled Tribe population (>25%) coinciding with measurable forest-to-farm conversion, suggesting forest rights disputes or displacement of traditional NTFP collectors."
+                  "qualitative_description": "Village has a significant Scheduled Tribe population (>25%) coinciding with measurable forest-to-farm conversion, suggesting forest rights disputes or displacement of traditional NTFP collectors.",
+                  "variables": [
+                    "village_st_percent",
+                    "cd_forest_to_farm_ha"
+                  ]
                 }
               },
               {
@@ -2919,7 +3245,12 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "cd_forest_to_farm_ha > 29 and cd_urbanization_ha > 10 and terrain_cluster_id != 1",
-                  "qualitative_description": "Both forest-to-farm conversion and settlement expansion are occurring simultaneously in non-plains terrain, indicating compound encroachment pressure on hilly forest landscapes."
+                  "qualitative_description": "Both forest-to-farm conversion and settlement expansion are occurring simultaneously in non-plains terrain, indicating compound encroachment pressure on hilly forest landscapes.",
+                  "variables": [
+                    "cd_forest_to_farm_ha",
+                    "cd_urbanization_ha",
+                    "terrain_cluster_id"
+                  ]
                 }
               }
             ]
@@ -2928,7 +3259,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "b203f157a6d2a6defd2385babec9f70919b8828018e2381812dee466eccfebcc"
+          "applied_card_digest": "8e67e2548a79beb7f7fe188e63f0c8a452773f4a4b12451c7985b2aaa7643e1a"
         },
         "ntfp_forest_biodiversity__ntfp_decline__encroachment__012": {
           "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__012",
@@ -3014,7 +3345,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "553b885a6f4571fc2f0e345fa41147b94b159237dc01695efa92a529250f5e92"
+          "applied_card_digest": "a4d86ec3647ac516716c26e4e2c03046c8fa9a25f0f6747b837f1488dfb99f2b"
         },
         "ntfp_forest_biodiversity__ntfp_decline__encroachment__013": {
           "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__013",
@@ -3100,7 +3431,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "c8cdd89e708923259ff792fc46b1729229f18285ad44e3d654a7f08679ca2f1f"
+          "applied_card_digest": "71327f012868f5a2daf79465d51dd67ba8bddc10cf8c87f7b72ad49890184db0"
         },
         "ntfp_forest_biodiversity__ntfp_decline__encroachment__015": {
           "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__015",
@@ -3169,7 +3500,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "a8d2dca26eb4346c82bbed33c714e8d5cd2836a42a9ce1f44b734737c2965d94"
+          "applied_card_digest": "7e204c4032323e52e7d0a04d9979cad4cd032bb7bc11a78fd72c500773f95092"
         },
         "ntfp_forest_biodiversity__ntfp_decline__encroachment__016": {
           "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__016",
@@ -3205,7 +3536,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "d76da082487c02c1c7d7cf1ea5b867d70e857c2a5cea0b777bf595d483404216"
+          "applied_card_digest": "5dfd69749addf486277e145531ca4f79d582140be815351677e8dafad1034655"
         },
         "ntfp_forest_biodiversity__ntfp_decline__encroachment__017": {
           "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__017",
@@ -3271,7 +3602,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "9dab4d7d4b24cff5b7b9039cae6542eb2d96b60d5a0ef7fbeb0d37d12b4096d1"
+          "applied_card_digest": "e8a01e6a9f7e6f6f155becbadb8df75f8e53aafa8c9945de65c51ddb3b7ea695"
         },
         "socio_economic__economic_hardship__multi_sector_vulnerability__003": {
           "card_id": "socio_economic__economic_hardship__multi_sector_vulnerability__003",
@@ -3387,7 +3718,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "de4f5f3d7adf6bdf2141ffd8d23f5d69f0ae9d75834ccdaff371e950d63ba54a"
+          "applied_card_digest": "d1464e9085ab07d979dd938b0ed1fe8a379de6a539c04197be1127470ffd519b"
         },
         "socio_economic__economic_hardship__multi_sector_vulnerability__007": {
           "card_id": "socio_economic__economic_hardship__multi_sector_vulnerability__007",
@@ -3506,7 +3837,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "b87e417e897c8be50ab0605989dc39c7773a7551aff642ff99de477488cf4db7"
+          "applied_card_digest": "8407e7e352548bccb774ac18e261c38def76d714a4af4f2f916c453b2cd96070"
         },
         "socio_economic__economic_hardship__multi_sector_vulnerability__009": {
           "card_id": "socio_economic__economic_hardship__multi_sector_vulnerability__009",
@@ -3564,7 +3895,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "255da19d0389bb2c2438a090015662d22b85df6108956be58480a433de131d29"
+          "applied_card_digest": "a0521ec6bc1ac938fb56c04e8def6e9e03058747f02fce591607034dad4f4f5a"
         },
         "socio_economic__economic_hardship__multi_sector_vulnerability__010": {
           "card_id": "socio_economic__economic_hardship__multi_sector_vulnerability__010",
@@ -3622,7 +3953,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "a97e336f2d9953fafac73af0392fadf03e006750413450c625c3e46c740ec81c"
+          "applied_card_digest": "7f9bf75cdb812f0f392ae68d41672acf8f4d97bcbf917ac2e231c443ffb9d33b"
         },
         "socio_economic__economic_hardship__multi_sector_vulnerability__012": {
           "card_id": "socio_economic__economic_hardship__multi_sector_vulnerability__012",
@@ -3680,7 +4011,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "cf8dda0e4f31e159d706e075b58910dc90754991fcb5f3a85054402474930204"
+          "applied_card_digest": "ae4f501442c7dbe6cc7dbc34a4b825d87843a8ec37bdaa3a16f643da117c2716"
         },
         "socio_economic__economic_hardship__multi_sector_vulnerability__013": {
           "card_id": "socio_economic__economic_hardship__multi_sector_vulnerability__013",
@@ -3738,7 +4069,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "ac879b16266f448ab0f27a933306fd9b88c118b7ed80a16655d99d7430e89184"
+          "applied_card_digest": "4dde72587ba2b374d96e13af3aecb2dc1e0323ed4d9354e8883b961fc44ff5a1"
         },
         "socio_economic__economic_hardship__multi_sector_vulnerability__014": {
           "card_id": "socio_economic__economic_hardship__multi_sector_vulnerability__014",
@@ -3805,6 +4136,7 @@
               {
                 "signal_id": "sig_01",
                 "variables": [
+                  "village_literacy_rate",
                   "village_sc_percent",
                   "village_st_percent"
                 ],
@@ -3812,7 +4144,12 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "(village_sc_percent + village_st_percent) > 35 and village_literacy_rate < 65",
-                  "qualitative_description": "Combined SC and ST population exceeds 35% of village population, indicating a high proportion of socially marginalised households with limited asset base and greater livelihood vulnerability."
+                  "qualitative_description": "Combined SC and ST population exceeds 35% of village population AND literacy rate is below 65%, indicating a high proportion of socially marginalised households with limited asset base and greater livelihood vulnerability.",
+                  "variables": [
+                    "village_literacy_rate",
+                    "village_sc_percent",
+                    "village_st_percent"
+                  ]
                 }
               },
               {
@@ -3822,13 +4159,18 @@
               {
                 "signal_id": "sig_03",
                 "variables": [
-                  "dist_bank_km"
+                  "dist_bank_km",
+                  "nrega_swc_count"
                 ],
                 "severity": "high",
                 "direction": "confirms",
                 "condition": {
                   "expression": "dist_bank_km > 5 or nrega_swc_count < 5",
-                  "qualitative_description": "Distance to nearest bank branch exceeds 5 km, indicating poor financial inclusion and likely reliance on informal moneylenders at high interest rates."
+                  "qualitative_description": "Distance to nearest bank branch exceeds 5 km, or fewer than 5 cumulative MGNREGA soil and water conservation works have been recorded in the micro-watershed, indicating poor financial inclusion and likely reliance on informal moneylenders at high interest rates.",
+                  "variables": [
+                    "dist_bank_km",
+                    "nrega_swc_count"
+                  ]
                 }
               },
               {
@@ -3840,7 +4182,7 @@
           "finalized_at": "2026-06-21T17:31:27+00:00",
           "reviewer": null,
           "propagated_at": "2026-06-21T17:34:37+00:00",
-          "applied_card_digest": "fdca8902a60885ccd008dcd7a7c39d6910d66ee97c8cedcaeab12f52d44bafc8"
+          "applied_card_digest": "89ce08f3be8c3886499087a44a392d1db0ded07f407a0392c1cc254577737666"
         },
         "socio_economic__economic_hardship__multi_sector_vulnerability__016": {
           "card_id": "socio_economic__economic_hardship__multi_sector_vulnerability__016",
@@ -3849,6 +4191,7 @@
               {
                 "signal_id": "sig_01",
                 "variables": [
+                  "village_literacy_rate",
                   "village_st_percent",
                   "village_sc_percent"
                 ],
@@ -3856,7 +4199,12 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "(village_st_percent + village_sc_percent) > 40 and village_literacy_rate < 60",
-                  "qualitative_description": "Combined SC and ST population share exceeds 40%, indicating a high proportion of socially marginalised households with limited asset base and greater dependence on degrading commons."
+                  "qualitative_description": "Combined SC and ST population exceeds 40% of village population AND literacy rate is below 60%, indicating a high proportion of socially marginalised households with limited asset base and greater dependence on degrading commons.",
+                  "variables": [
+                    "village_literacy_rate",
+                    "village_st_percent",
+                    "village_sc_percent"
+                  ]
                 }
               },
               {
@@ -3868,7 +4216,7 @@
           "finalized_at": "2026-06-21T17:33:10+00:00",
           "reviewer": null,
           "propagated_at": "2026-06-21T17:34:37+00:00",
-          "applied_card_digest": "d46c1ff6a7281757269b32096126bf99c53597571ea8a9b623bcbad356ac3649"
+          "applied_card_digest": "3e96d7c0abdfe0ef06f20e59441a122dda16ec466a2ee34997f4907be1992594"
         },
         "socio_economic__low_income__small_landholding__003": {
           "card_id": "socio_economic__low_income__small_landholding__003",
@@ -4030,7 +4378,7 @@
           "finalized_at": "2026-06-21T18:27:50+00:00",
           "reviewer": null,
           "propagated_at": "2026-06-21T18:52:09+00:00",
-          "applied_card_digest": "fe45a2a7913c26a2d66bc5530dc5f4b554da8aaf05893e151b638424e5d55b53"
+          "applied_card_digest": "1f4d34a8abbab335ed22e18e3f08750f1bf731e02eca57357d2db62a7db0a83d"
         },
         "socio_economic__low_income__small_landholding__006": {
           "card_id": "socio_economic__low_income__small_landholding__006",
@@ -4553,7 +4901,10 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "mean_cropping_intensity <= 1.15",
-                  "qualitative_description": "Mean cropping intensity at or below 1.15 across the available record indicates that small holders are not compensating for limited land area through double-cropping or multi-season cultivation."
+                  "qualitative_description": "Mean cropping intensity at or below 1.15 across the available record indicates that small holders are not compensating for limited land area through double-cropping or multi-season cultivation.",
+                  "variables": [
+                    "mean_cropping_intensity"
+                  ]
                 }
               },
               {
@@ -4565,7 +4916,10 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "dist_apmc_km > 30",
-                  "qualitative_description": "Distance to nearest APMC market exceeding 30 km indicates that small holders face high transaction costs and are likely dependent on intermediaries for price discovery, reducing net farm income."
+                  "qualitative_description": "Distance to nearest APMC market exceeding 30 km indicates that small holders face high transaction costs and are likely dependent on intermediaries for price discovery, reducing net farm income.",
+                  "variables": [
+                    "dist_apmc_km"
+                  ]
                 }
               }
             ]
@@ -4640,40 +4994,54 @@
               {
                 "signal_id": "sig_01",
                 "variables": [
-                  "drought_weeks_severe",
-                  "drought_weeks_moderate"
+                  "drought_severe_return_period",
+                  "drought_moderate_return_period"
                 ],
                 "severity": "high",
                 "direction": "confirms",
                 "condition": {
                   "expression": "drought_severe_return_period <= 4 or drought_moderate_return_period <= 4",
-                  "qualitative_description": "Three or more severe drought weeks in the latest kharif season, or at least one severe week combined with four or more moderate weeks, indicates a drought episode sufficient to cause significant crop water stress and yield loss."
+                  "qualitative_description": "Severe drought return period is 4 years or less, or moderate drought return period is 4 years or less, indicates a drought episode sufficient to cause significant crop water stress and yield loss.",
+                  "variables": [
+                    "drought_severe_return_period",
+                    "drought_moderate_return_period"
+                  ]
                 }
               },
               {
                 "signal_id": "sig_02",
                 "variables": [
+                  "mean",
                   "dry_spell_weeks"
                 ],
                 "severity": "high",
                 "direction": "confirms",
                 "condition": {
                   "expression": "mean(dry_spell_weeks) >= 3",
-                  "qualitative_description": "Four or more dry spell weeks (4-week moving window with <50% historical rainfall) in the latest kharif season indicate prolonged moisture deficit disrupting crop growth stages."
+                  "qualitative_description": "Mean dry-spell weeks across the record is 3 or more (4-week moving window with <50% historical rainfall), indicate prolonged moisture deficit disrupting crop growth stages.",
+                  "variables": [
+                    "mean",
+                    "dry_spell_weeks"
+                  ]
                 }
               },
               {
                 "signal_id": "sig_04",
                 "variables": [
+                  "mean_kharif_precipitation",
                   "mean_annual_precipitation_mm",
-                  "trend_annual_precipitation_mm",
-                  "seasonal_precipitation_mm"
+                  "trend_annual_precipitation_mm"
                 ],
                 "severity": "moderate",
                 "direction": "confirms",
                 "condition": {
                   "expression": "(mean_kharif_precipitation < 0.75 * mean_annual_precipitation_mm) or (mean_annual_precipitation_mm < 700 and trend_annual_precipitation_mm < -5)",
-                  "qualitative_description": "Kharif seasonal rainfall below 75% of the long-run annual mean, or a declining multi-year precipitation trend below 700 mm/year, confirms structural rainfall deficit underpinning drought risk."
+                  "qualitative_description": "Kharif seasonal rainfall below 75% of the long-run annual mean, or a declining multi-year precipitation trend below 700 mm/year, confirms structural rainfall deficit underpinning drought risk.",
+                  "variables": [
+                    "mean_kharif_precipitation",
+                    "mean_annual_precipitation_mm",
+                    "trend_annual_precipitation_mm"
+                  ]
                 }
               }
             ]
@@ -4681,8 +5049,8 @@
           "finalized_at": "2026-06-24T17:36:58+00:00",
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
-          "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "0b33c2bcb52a18cf2b8e10b73284650c66d7a80f2ea4f77b6b9e33526f718ce4"
+          "propagated_at": "2026-06-26T10:29:46+00:00",
+          "applied_card_digest": "a52da9824ed7f0b7696f6da30d1cad2281c45d4cd55ff02e3a384508fd90f967"
         },
         "agriculture__water_scarcity__groundwater_stress__001": {
           "card_id": "agriculture__water_scarcity__groundwater_stress__001",
@@ -4718,7 +5086,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "7cc54878e0f8caaf46649d08a136e5487e9837799fa1d2f7d6b03e01fefa89a5"
+          "applied_card_digest": "921d463b52416029f7a01867a110c2797015265a32453197ea4297231e202d8f"
         },
         "agriculture__water_scarcity__groundwater_stress__002": {
           "card_id": "agriculture__water_scarcity__groundwater_stress__002",
@@ -4754,7 +5122,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "4536b4a9d6b9924787c93610596b545665be05cd3bb77892ab85905a54c77244"
+          "applied_card_digest": "b1aa5109a8e01fe7d6a6b9c9ecc7eefca1b8f8a7a533150968d064c93ed69def"
         },
         "agriculture__water_scarcity__groundwater_stress__003": {
           "card_id": "agriculture__water_scarcity__groundwater_stress__003",
@@ -4770,7 +5138,11 @@
                 "direction": "amplifies",
                 "condition": {
                   "expression": "aquifer_class in ['alluvium'] and acwadam_class_percent.get('alluvium', 0) > 60",
-                  "qualitative_description": "Dominant alluvial aquifer with more than 60% of MWS area underlain by alluvial lithology, confirming the high-storage but over-exploited aquifer type characteristic of the Indo-Gangetic Plain."
+                  "qualitative_description": "Dominant alluvial aquifer with more than 60% of MWS area underlain by alluvial lithology, confirming the high-storage but over-exploited aquifer type characteristic of the Indo-Gangetic Plain.",
+                  "variables": [
+                    "aquifer_class",
+                    "acwadam_class_percent"
+                  ]
                 }
               },
               {
@@ -4803,7 +5175,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "8b5496d398002b6387dc253bc0867df586adbe4404c7da85af9d4bfff55c8c44"
+          "applied_card_digest": "d1da39f9a53b0e65f7a60fab12ae47056a7f32f9d5cf6ae6994d7bd4138a10fa"
         },
         "agriculture__water_scarcity__groundwater_stress__005": {
           "card_id": "agriculture__water_scarcity__groundwater_stress__005",
@@ -4881,7 +5253,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "400140ce44d1761dd17a906de7235d353765a2de6b19ef771d945e0f202086c5"
+          "applied_card_digest": "1b9f69a67521ac86569a84ec2528560477d7cdba9cd42a5ced6f284577a8340f"
         },
         "agriculture__water_scarcity__groundwater_stress__008": {
           "card_id": "agriculture__water_scarcity__groundwater_stress__008",
@@ -4917,7 +5289,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "15f63efdb270fbebb50885eb10075042a3dcaf913cc9fe7950362a827871cc19"
+          "applied_card_digest": "754ccb1d9ce5d6bce2937b112658c015e441eed8c5d39f85014be34ef823c6f7"
         },
         "agriculture__water_scarcity__groundwater_stress__009": {
           "card_id": "agriculture__water_scarcity__groundwater_stress__009",
@@ -4953,7 +5325,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "dd2d3555e87ccf82072cdc32843ff0911652758e6b2a1c38de2016ac0dea7a49"
+          "applied_card_digest": "2f9f92874f8d03b39d1b91ae40daceb675d7190ac417ac6da92ffae9d9055352"
         },
         "agriculture__water_scarcity__groundwater_stress__010": {
           "card_id": "agriculture__water_scarcity__groundwater_stress__010",
@@ -4989,7 +5361,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "e424ddd5c699514888902c062eaf81c653c7cc890693e62f4f2386935782ecc1"
+          "applied_card_digest": "0cc880c3ca5f40fffe666525273bf435a118e041e36673eb9fb5ef4f8eaa687d"
         },
         "agriculture__water_scarcity__groundwater_stress__011": {
           "card_id": "agriculture__water_scarcity__groundwater_stress__011",
@@ -5025,7 +5397,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "aee8b372166329b00238f38d4aa972effb40c56863c19fe5fd788e9f31bd45ef"
+          "applied_card_digest": "fd0f1852b6dbbb301a73d1909d79bf7ff375369925ae7369eda9ce660be694f5"
         },
         "agriculture__water_scarcity__groundwater_stress__012": {
           "card_id": "agriculture__water_scarcity__groundwater_stress__012",
@@ -5106,7 +5478,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "2820f54574f0459b801f2068833a2d61a94983515f2042f2ab8559eb8c8ee109"
+          "applied_card_digest": "1023fd885c5ec8760d011bce25109a403cbc1af2f098b5a5dcefb3b2a4c71bfd"
         },
         "agriculture__water_scarcity__groundwater_stress__013": {
           "card_id": "agriculture__water_scarcity__groundwater_stress__013",
@@ -5184,7 +5556,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "a83ff75e587767c952452d0990baed29c2c9c6d348725c3f26be931b44d5acac"
+          "applied_card_digest": "98f2ae729c2b3fd662f1eb81acbe52975d0480933bb1a5c12c4bc541a1a7d9fe"
         },
         "agriculture__water_scarcity__groundwater_stress__014": {
           "card_id": "agriculture__water_scarcity__groundwater_stress__014",
@@ -5262,7 +5634,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "7349a5b248239adacec619c3e13158ce7a282dd113b462a579f7db50a2245aa5"
+          "applied_card_digest": "e3557b8c6b08443a29abddcb03bd8fd0c5b6bb951762492f7c8012a4f6546b5f"
         },
         "agriculture__water_scarcity__groundwater_stress__016": {
           "card_id": "agriculture__water_scarcity__groundwater_stress__016",
@@ -5343,7 +5715,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "4ae12b6efffc307220dd628d9e7ff8fc59ad5e8b7a0034e14bf619dbfddede3b"
+          "applied_card_digest": "08199d9b03df561d407104fb18219707bec2e63ab2d639f8cd116606b1b4c0a2"
         },
         "agriculture__water_scarcity__irrigation_challenges__007": {
           "card_id": "agriculture__water_scarcity__irrigation_challenges__007",
@@ -5359,7 +5731,11 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "trend_swb_total_area_ha < 1 and swb_count <= 15",
-                  "qualitative_description": "Total surface water body area is declining at more than 5 ha/year and fewer than 3 distinct SWBs exist in the MWS, indicating shrinking storage infrastructure."
+                  "qualitative_description": "Surface water body total area trend is below 1 ha/year and 15 or fewer distinct SWBs are present in the MWS, indicating shrinking storage infrastructure.",
+                  "variables": [
+                    "trend_swb_total_area_ha",
+                    "swb_count"
+                  ]
                 }
               },
               {
@@ -5371,7 +5747,10 @@
                 "direction": "amplifies",
                 "condition": {
                   "expression": "nrega_swc_count <= 20",
-                  "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA in the MWS, indicating low historical investment in water harvesting infrastructure."
+                  "qualitative_description": "20 or fewer cumulative soil and water conservation or irrigation works recorded under MGNREGA in the MWS, indicating low historical investment in water harvesting infrastructure.",
+                  "variables": [
+                    "nrega_swc_count"
+                  ]
                 }
               }
             ]
@@ -5380,7 +5759,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "ada02f274dd6d46b2b078370c2fdd153e46a5e65aeb4960917a1c29acdbddb41"
+          "applied_card_digest": "0d9a26f36876830c257b84255b0877a0a690dfcaae62131ab048424900f4df84"
         },
         "agriculture__water_scarcity__irrigation_challenges__013": {
           "card_id": "agriculture__water_scarcity__irrigation_challenges__013",
@@ -5396,7 +5775,11 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "trend_swb_total_area_ha < 1 and swb_count <= 15",
-                  "qualitative_description": "Surface water body area is declining at more than 2 ha/year and fewer than 5 distinct water bodies exist in the MWS, indicating shrinking storage infrastructure relative to irrigable area."
+                  "qualitative_description": "Surface water body total area trend is below 1 ha/year and 15 or fewer distinct SWBs are present in the MWS, indicating shrinking storage infrastructure relative to irrigable area.",
+                  "variables": [
+                    "trend_swb_total_area_ha",
+                    "swb_count"
+                  ]
                 }
               },
               {
@@ -5408,7 +5791,10 @@
                 "direction": "amplifies",
                 "condition": {
                   "expression": "nrega_swc_count <= 20",
-                  "qualitative_description": "Fewer than 10 cumulative soil and water conservation or irrigation works recorded under MGNREGA in the MWS, indicating historically low investment in water harvesting infrastructure relative to the area's irrigation needs."
+                  "qualitative_description": "20 or fewer cumulative soil and water conservation or irrigation works recorded under MGNREGA in the MWS, indicating historically low investment in water harvesting infrastructure relative to the area's irrigation needs.",
+                  "variables": [
+                    "nrega_swc_count"
+                  ]
                 }
               }
             ]
@@ -5417,7 +5803,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "f0c28bd045d36906c3a087911b4e70ebdc0d29c7e2dfe2b24558397fb9ae3617"
+          "applied_card_digest": "bc863b38cddfb57319e3a6fad3ffe7b8a46e8b8acea8ca49ab9cfbeefd141d88"
         },
         "agriculture__water_scarcity__irrigation_challenges__012": {
           "card_id": "agriculture__water_scarcity__irrigation_challenges__012",
@@ -5434,7 +5820,12 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "trend_swb_total_area_ha < 1 or (swb_count <= 15 and mean_swb_total_area_ha < 5)",
-                  "qualitative_description": "Declining SWB total area (slope < -2 ha/year) or very few small water bodies relative to watershed size indicates inadequate surface storage infrastructure in hilly terrain."
+                  "qualitative_description": "Declining SWB total area (slope < -2 ha/year) or very few small water bodies relative to watershed size indicates inadequate surface storage infrastructure in hilly terrain.",
+                  "variables": [
+                    "trend_swb_total_area_ha",
+                    "swb_count",
+                    "mean_swb_total_area_ha"
+                  ]
                 }
               },
               {
@@ -5446,7 +5837,10 @@
                 "direction": "amplifies",
                 "condition": {
                   "expression": "nrega_swc_count <= 20",
-                  "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA indicates historically low investment in water harvesting infrastructure."
+                  "qualitative_description": "20 or fewer cumulative soil and water conservation or irrigation works recorded under MGNREGA, indicating historically low investment in water harvesting infrastructure.",
+                  "variables": [
+                    "nrega_swc_count"
+                  ]
                 }
               }
             ]
@@ -5455,7 +5849,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "cebb612bd805210fd5ab2cdf9d6892bbd2e7cf056b8254b378efb7fb6cd65e2b"
+          "applied_card_digest": "df8b2df1975a12bebfbb4857455b4494f8e1feaca9714e9ddce9510d94e9ad3a"
         },
         "agriculture__water_scarcity__irrigation_challenges__014": {
           "card_id": "agriculture__water_scarcity__irrigation_challenges__014",
@@ -5471,7 +5865,11 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "trend_swb_total_area_ha < 1 and swb_count <= 15",
-                  "qualitative_description": "Surface water body area is declining at more than 5 ha/year and fewer than 3 distinct SWBs exist in the MWS, indicating both shrinking storage and sparse infrastructure coverage."
+                  "qualitative_description": "Surface water body total area trend is below 1 ha/year and 15 or fewer distinct SWBs are present in the MWS, indicating both shrinking storage and sparse infrastructure coverage.",
+                  "variables": [
+                    "trend_swb_total_area_ha",
+                    "swb_count"
+                  ]
                 }
               },
               {
@@ -5483,7 +5881,10 @@
                 "direction": "amplifies",
                 "condition": {
                   "expression": "nrega_swc_count <= 20",
-                  "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA in the MWS, indicating historically low investment in water harvesting infrastructure."
+                  "qualitative_description": "20 or fewer cumulative soil and water conservation or irrigation works recorded under MGNREGA in the MWS, indicating historically low investment in water harvesting infrastructure.",
+                  "variables": [
+                    "nrega_swc_count"
+                  ]
                 }
               }
             ]
@@ -5492,7 +5893,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "78c460cab4872d2bcbe2d33f74e7e2e52d45425c778cdcaabfd4fc9b18a918f8"
+          "applied_card_digest": "552806863bcdc0223a1569f91f9235b3e6badc8811e8fd2f660f2fc8f30851a7"
         },
         "agriculture__water_scarcity__irrigation_challenges__016": {
           "card_id": "agriculture__water_scarcity__irrigation_challenges__016",
@@ -5501,14 +5902,18 @@
               {
                 "signal_id": "sig_01",
                 "variables": [
-                  "mean_swb_total_area_ha",
+                  "trend_swb_total_area_ha",
                   "swb_count"
                 ],
                 "severity": "high",
                 "direction": "confirms",
                 "condition": {
                   "expression": "trend_swb_total_area_ha < 1 and swb_count <= 15",
-                  "qualitative_description": "Very few and small surface water bodies in the MWS indicate minimal storage infrastructure relative to agricultural demand in this cold arid zone."
+                  "qualitative_description": "Surface water body total area trend is below 1 ha/year and 15 or fewer distinct SWBs are present in the MWS, indicating minimal storage infrastructure relative to agricultural demand in this cold arid zone.",
+                  "variables": [
+                    "trend_swb_total_area_ha",
+                    "swb_count"
+                  ]
                 }
               },
               {
@@ -5520,7 +5925,10 @@
                 "direction": "amplifies",
                 "condition": {
                   "expression": "nrega_swc_count <= 20",
-                  "qualitative_description": "Fewer than 3 cumulative soil and water conservation or irrigation works recorded under MGNREGA, indicating very low historical investment in water harvesting infrastructure."
+                  "qualitative_description": "20 or fewer cumulative soil and water conservation or irrigation works recorded under MGNREGA, indicating very low historical investment in water harvesting infrastructure.",
+                  "variables": [
+                    "nrega_swc_count"
+                  ]
                 }
               }
             ]
@@ -5529,7 +5937,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "976bbc4d2b7de7a26af5094f6382e99d95f903079200635dd93de1a1ce41dbcd"
+          "applied_card_digest": "fdc8870b36541331241c2bbe0a607635ee63ae392a1bb11f2fe2ebb026a02b79"
         },
         "agriculture__water_scarcity__rainfed_risk__016": {
           "card_id": "agriculture__water_scarcity__rainfed_risk__016",
@@ -5545,7 +5953,11 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "canal_name is None and nrega_irrigation_count <= 35",
-                  "qualitative_description": "No irrigation canal intersects the micro-watershed and fewer than 3 MGNREGA irrigation works have been recorded, confirming absence of surface irrigation infrastructure."
+                  "qualitative_description": "No irrigation canal intersects the micro-watershed and 35 or fewer MGNREGA irrigation works have been recorded, confirming absence of surface irrigation infrastructure.",
+                  "variables": [
+                    "canal_name",
+                    "nrega_irrigation_count"
+                  ]
                 }
               }
             ]
@@ -5554,7 +5966,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "c95a0e043b4586fe62cee68316be2fe66b6f30cd4544ec5a3d4f5ac88ec20c5f"
+          "applied_card_digest": "833d5dba6f0498086d21f0668ebb647df64309db1b5132a8c9a33ed490032812"
         },
         "agriculture__water_scarcity__rainfed_risk__014": {
           "card_id": "agriculture__water_scarcity__rainfed_risk__014",
@@ -5612,7 +6024,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "dbebae2d4887137eccc4b0598d994b6b20ef2ab4974102e1c5dadf6401750358"
+          "applied_card_digest": "a908c5050e86b11de69b3d946cee1c64a55a4dc6d2f5f0521cb3d65e33d3b990"
         },
         "agriculture__water_scarcity__rainfed_risk__013": {
           "card_id": "agriculture__water_scarcity__rainfed_risk__013",
@@ -5621,14 +6033,18 @@
               {
                 "signal_id": "sig_01",
                 "variables": [
-                  "lulc_single_kharif_ha",
-                  "lulc_double_crop_ha"
+                  "mean_kharif_cropped_area_ha",
+                  "mean_double_crop_area_ha"
                 ],
                 "severity": "high",
                 "direction": "confirms",
                 "condition": {
                   "expression": "(mean_kharif_cropped_area_ha / (mean_kharif_cropped_area_ha + mean_double_crop_area_ha + 1e-9)) > 0.75",
-                  "qualitative_description": "More than 75% of cropped area is under single kharif season only, indicating near-total dependence on monsoon rainfall with negligible irrigation-supported double cropping."
+                  "qualitative_description": "More than 75% of cropped area is under single kharif season only, indicating near-total dependence on monsoon rainfall with negligible irrigation-supported double cropping.",
+                  "variables": [
+                    "mean_kharif_cropped_area_ha",
+                    "mean_double_crop_area_ha"
+                  ]
                 }
               },
               {
@@ -5641,7 +6057,11 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "nrega_irrigation_count <= 35 and canal_name is None",
-                  "qualitative_description": "Fewer than 3 MGNREGA irrigation works recorded in the MWS and no canal infrastructure present, confirming absence of both public irrigation investment and surface water conveyance."
+                  "qualitative_description": "35 or fewer MGNREGA irrigation works recorded in the MWS and no canal infrastructure present, confirming absence of both public irrigation investment and surface water conveyance.",
+                  "variables": [
+                    "nrega_irrigation_count",
+                    "canal_name"
+                  ]
                 }
               }
             ]
@@ -5650,7 +6070,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "569fb5c8972b066563a1004ac6d68b087699c2da9213286860836195d19f4864"
+          "applied_card_digest": "e897e21e76b21f9d2ad3a028a71e78024148f9bd10b445e8367ac54e9f789ebc"
         },
         "agriculture__water_scarcity__rainfed_risk__012": {
           "card_id": "agriculture__water_scarcity__rainfed_risk__012",
@@ -5666,7 +6086,11 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "nrega_irrigation_count <= 35 and canal_name is None",
-                  "qualitative_description": "Fewer than 3 MGNREGA irrigation works recorded and no canal infrastructure present, confirming minimal irrigation investment in the micro-watershed."
+                  "qualitative_description": "35 or fewer MGNREGA irrigation works recorded and no canal infrastructure present, confirming minimal irrigation investment in the micro-watershed.",
+                  "variables": [
+                    "nrega_irrigation_count",
+                    "canal_name"
+                  ]
                 }
               }
             ]
@@ -5675,7 +6099,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "67c4a59ca1676249ab3511e1d8ce72bd2310acd1d8478802ad62a2d783625993"
+          "applied_card_digest": "23bc52507ab85be7c7645f7209a06a7093d30512b9bbc5922c30c7849c759cb9"
         },
         "agriculture__water_scarcity__rainfed_risk__006": {
           "card_id": "agriculture__water_scarcity__rainfed_risk__006",
@@ -5730,7 +6154,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "06cc6c551f46479cdb48207a819eb907163ed41105174e355647ac785820defd"
+          "applied_card_digest": "dc1672a585513a768c0e7f84f2feab1c6e953ff2d20fd73d70cfd4b894618978"
         },
         "agriculture__water_scarcity__rainfed_risk__005": {
           "card_id": "agriculture__water_scarcity__rainfed_risk__005",
@@ -5739,14 +6163,18 @@
               {
                 "signal_id": "sig_01",
                 "variables": [
-                  "lulc_single_kharif_ha",
-                  "lulc_double_crop_ha"
+                  "mean_kharif_cropped_area_ha",
+                  "mean_double_crop_area_ha"
                 ],
                 "severity": "high",
                 "direction": "confirms",
                 "condition": {
                   "expression": "(mean_kharif_cropped_area_ha / (mean_kharif_cropped_area_ha + mean_double_crop_area_ha + 1e-9)) > 0.75",
-                  "qualitative_description": "More than 75% of cropped area is under single kharif season only, indicating near-total dependence on monsoon rainfall with negligible irrigation-supported rabi or double cropping."
+                  "qualitative_description": "More than 75% of cropped area is under single kharif season only, indicating near-total dependence on monsoon rainfall with negligible irrigation-supported rabi or double cropping.",
+                  "variables": [
+                    "mean_kharif_cropped_area_ha",
+                    "mean_double_crop_area_ha"
+                  ]
                 }
               },
               {
@@ -5759,7 +6187,11 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "canal_name is None and nrega_irrigation_count <= 35",
-                  "qualitative_description": "No canal irrigation infrastructure intersects the micro-watershed, and fewer than 3 MGNREGA irrigation works have been constructed, jointly confirming absence of surface irrigation investment."
+                  "qualitative_description": "No canal irrigation infrastructure intersects the micro-watershed, and 35 or fewer MGNREGA irrigation works have been constructed, jointly confirming absence of surface irrigation investment.",
+                  "variables": [
+                    "canal_name",
+                    "nrega_irrigation_count"
+                  ]
                 }
               }
             ]
@@ -5768,7 +6200,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "ba9f3fb8b02031499fc2188e318b418d31ca696fdfe20a7b64be7150a2c80f50"
+          "applied_card_digest": "98c07646914b779abc21ec7d700ebedbb6b0f9c7a58567993929ce9368fe7cba"
         },
         "agriculture__water_scarcity__rainfed_risk__004": {
           "card_id": "agriculture__water_scarcity__rainfed_risk__004",
@@ -5823,7 +6255,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "f7454cbe76df975eafad3d0ed04c6e5e631434acb65657a9d2f3c17e06600509"
+          "applied_card_digest": "1036b953f3b84e35c81708190d35e45c647dde5aa7c9cdb6c92a1f0781060c9d"
         },
         "agriculture__water_scarcity__rainfed_risk__001": {
           "card_id": "agriculture__water_scarcity__rainfed_risk__001",
@@ -5878,7 +6310,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "8cb463db755d288e99945b23963f302fd19a6158b8b9a0534254c3517c518ca7"
+          "applied_card_digest": "c67df167d578dc8c4665ce6218fe57bf19e24ad774399a4df597c35255358bba"
         },
         "ntfp_forest_biodiversity__ntfp_decline__encroachment__001": {
           "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__001",
@@ -5960,7 +6392,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "25bb51c383a34c34061e550ce570710d7b088d95588f85aa173728d5b5004b41"
+          "applied_card_digest": "74d9644b589148d845ade273d17a71f0fadfaac39485c6d0d2c2535577f03ac2"
         },
         "ntfp_forest_biodiversity__ntfp_decline__encroachment__004": {
           "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__004",
@@ -6029,7 +6461,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "1cda9308b65fc8f40ac6ec85e8cda0bdce267f59c5485ac50a3bd5ff1ba15aed"
+          "applied_card_digest": "5966df30a11a7871cc3f0869f06199a3c858d59402479fb472caa305683d4669"
         },
         "ntfp_forest_biodiversity__ntfp_decline__encroachment__007": {
           "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__007",
@@ -6098,7 +6530,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "b6d7075d3ed68bea5c677ccd60f6193e796fc20266d3ee14a307bf1476350c17"
+          "applied_card_digest": "975f651c77e6740e47dca9e62bca80d8d3620f6854a0bc3c3293f6bcec60249c"
         },
         "ntfp_forest_biodiversity__ntfp_decline__encroachment__008": {
           "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__008",
@@ -6167,7 +6599,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "295860e1bad1d13e05726c729a35fc394561e128d829ae5df0ea64c641fb6d14"
+          "applied_card_digest": "0fb8346288d4e3c12b73a602b8bf08fbcab9f00778d1f9432e961d4b22027dd1"
         },
         "ntfp_forest_biodiversity__ntfp_decline__encroachment__014": {
           "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__014",
@@ -6233,7 +6665,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "086f3664afb63737cf390629d0ede6e947e33aa0562cd0c3a6bc0a5e668b9291"
+          "applied_card_digest": "d11c223804cba518ef7a0615c39ed75dd747010b69a06f1431617cd3d072fca8"
         },
         "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__007": {
           "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__007",
@@ -6291,7 +6723,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-25T12:01:49+00:00",
-          "applied_card_digest": "6fe38778004e29b5351a2d3d91259e904f7b84c25b190308ba3d2a0de4c36369"
+          "applied_card_digest": "8ce4f6f84155daeb2db55ab82ae15867937ec0bd21fae6c5e61cecfe905202ca"
         },
         "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__008": {
           "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__008",
@@ -6307,7 +6739,11 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "cd_total_deforestation_ha > 20 and (cd_afforestation_ha / (cd_total_deforestation_ha + 1e-9)) < 0.5",
-                  "qualitative_description": "Cumulative deforestation exceeds 50 ha and afforestation has replaced less than half the lost area, indicating a net forest deficit with weak recovery."
+                  "qualitative_description": "Cumulative deforestation exceeds 20 ha and afforestation has replaced less than half the lost area, indicating a net forest deficit with weak recovery.",
+                  "variables": [
+                    "cd_total_deforestation_ha",
+                    "cd_afforestation_ha"
+                  ]
                 }
               },
               {
@@ -6319,7 +6755,10 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "cd_total_deforestation_ha > 30",
-                  "qualitative_description": "Cumulative deforestation in the micro-watershed exceeds 100 ha, representing a substantial absolute loss of forest habitat."
+                  "qualitative_description": "Cumulative deforestation in the micro-watershed exceeds 30 ha, representing a substantial absolute loss of forest habitat.",
+                  "variables": [
+                    "cd_total_deforestation_ha"
+                  ]
                 }
               }
             ]
@@ -6328,7 +6767,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "81f0afa7f655b81aaa6240114947c39fee0391794ba090f14b7cf383521b72f1"
+          "applied_card_digest": "1b60d354cf8ecdfe5853c766269532dd34a1c21c383d641ab1bc11ec4e72c5c6"
         },
         "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__009": {
           "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__009",
@@ -6344,7 +6783,11 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "(cd_total_deforestation_ha > 20) and (cd_total_deforestation_ha > cd_afforestation_ha * 2)",
-                  "qualitative_description": "Cumulative deforestation exceeds 50 ha and is more than double the cumulative afforestation, indicating a strongly negative forest balance with inadequate compensatory recovery."
+                  "qualitative_description": "Cumulative deforestation exceeds 20 ha and is more than double the cumulative afforestation, indicating a strongly negative forest balance with inadequate compensatory recovery.",
+                  "variables": [
+                    "cd_total_deforestation_ha",
+                    "cd_afforestation_ha"
+                  ]
                 }
               }
             ]
@@ -6353,7 +6796,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "91b0b913b4cfe5b13243ac808ca640b091277d5751d12df9b23b573be765fdfb"
+          "applied_card_digest": "e7cd48fa1719764e0e5e5fe71145d4137d275688461e56abc05606170f26bb47"
         },
         "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__015": {
           "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__015",
@@ -6368,7 +6811,10 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "cd_total_deforestation_ha > 30",
-                  "qualitative_description": "More than 50 hectares of cumulative deforestation recorded in the micro-watershed, representing significant habitat loss for NTFP species."
+                  "qualitative_description": "More than 30 hectares of cumulative deforestation recorded in the micro-watershed, representing significant habitat loss for NTFP species.",
+                  "variables": [
+                    "cd_total_deforestation_ha"
+                  ]
                 }
               }
             ]
@@ -6377,7 +6823,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "652681bea2167d0de2e3eec4dbc9cf6233178a77ab788fb17128e9bc715d1fa4"
+          "applied_card_digest": "6df16c86dcb775c8d2ea02c77f9b24cfa032cbe264cdd1b4ff4d862af69c78eb"
         },
         "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__017": {
           "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__017",
@@ -6392,7 +6838,10 @@
                 "direction": "confirms",
                 "condition": {
                   "expression": "cd_total_deforestation_ha > 30",
-                  "qualitative_description": "Cumulative deforestation exceeds 50 ha, representing a meaningful threshold of habitat loss in small island micro-watersheds where total forest extent is limited."
+                  "qualitative_description": "Cumulative deforestation exceeds 30 ha, representing a meaningful threshold of habitat loss in small island micro-watersheds where total forest extent is limited.",
+                  "variables": [
+                    "cd_total_deforestation_ha"
+                  ]
                 }
               }
             ]
@@ -6401,7 +6850,7 @@
           "reviewer": "Aadi",
           "source_batch_id": "2026-06-21_small_landholding",
           "propagated_at": "2026-06-24T19:36:18+00:00",
-          "applied_card_digest": "e9ee63d4d16e9d657ac5791044bea2c85e415d754694be7587e6e79c983c9a55"
+          "applied_card_digest": "1b8da35e649532bc09de47d3529376e17d4bef1f23002c5a91a063c4fb644dd5"
         },
         "socio_economic__economic_hardship__multi_sector_vulnerability__005": {
           "card_id": "socio_economic__economic_hardship__multi_sector_vulnerability__005",

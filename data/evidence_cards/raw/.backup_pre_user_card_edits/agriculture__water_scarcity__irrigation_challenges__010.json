@@ -1,0 +1,292 @@
+{
+  "card_id": "agriculture__water_scarcity__irrigation_challenges__010",
+  "production_system": "Agriculture",
+  "observed_stress": "water_scarcity",
+  "causal_pathway": "irrigation_challenges",
+  "context": {
+    "agro_climatic_zones": [
+      "humid",
+      "perhumid"
+    ],
+    "aquifer_types": [
+      "alluvium"
+    ],
+    "terrain_types": [
+      "plains"
+    ],
+    "rainfall_regime": "humid",
+    "geographic_examples": [
+      "West Bengal",
+      "Assam",
+      "eastern Bihar"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "trend_swb_total_area_ha",
+        "swb_count"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "trend_swb_total_area_ha < -5 and swb_count < 3",
+        "qualitative_description": "Total surface water body area is declining at more than 5 ha/year and fewer than 3 distinct SWBs are present, indicating shrinking storage infrastructure relative to MWS demand.",
+        "variables": [
+          "trend_swb_total_area_ha",
+          "swb_count"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "In the humid alluvial plains of Bengal and Assam, surface water bodies (tanks, beels, ponds) are the primary irrigation source for rabi and zaid seasons. A declining trend in total SWB area combined with a low count of water bodies signals that storage infrastructure is contracting — through siltation, encroachment, or neglect — faster than it is being replenished. Even in high-rainfall zones, seasonal dry spells between November and May create irrigation deficits that depend entirely on stored surface water.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "mean_swb_rabi_kharif_ratio"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "mean_swb_rabi_kharif_ratio < 0.4",
+        "qualitative_description": "The mean ratio of rabi-season SWB area to kharif-season SWB area is below 0.4, indicating that water bodies lose more than 60% of their kharif storage by rabi, pointing to rapid drawdown from siltation or poor design.",
+        "variables": [
+          "mean_swb_rabi_kharif_ratio"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "A low rabi-to-kharif SWB area ratio reveals that tanks and ponds are drying rapidly after the monsoon, leaving insufficient water for rabi irrigation. This pattern is consistent with siltation reducing effective storage capacity — a well-documented problem in Indian tank systems where accumulated silt can reduce capacity by 40 cm/year in some structures. In the Bengal plains, where boro rice and rabi vegetables depend on stored water, rapid post-monsoon drawdown directly translates to crop water stress.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "nrega_swc_count"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "nrega_swc_count < 5",
+        "qualitative_description": "Fewer than 5 cumulative soil and water conservation or irrigation works recorded under MGNREGA, indicating historically low investment in water harvesting and storage maintenance.",
+        "variables": [
+          "nrega_swc_count"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Low MGNREGA investment in SWC and irrigation works means that existing tanks and ponds have not been desilted or repaired through public programmes. Evidence from Rajasthan check dam studies shows that manual desilting can increase recharge and storage capacity by up to 84% over the preceding year, while neglected structures lose performance steadily. In the Bengal-Assam plains, where MGNREGA is a primary vehicle for tank desilting, a low cumulative work count signals that infrastructure deterioration has not been addressed, amplifying the storage deficit identified in sig_01 and sig_02.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "river_name",
+        "dist_cooperative_km"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "river_name is None and dist_cooperative_km > 10",
+        "qualitative_description": "No named river passes through or adjacent to the MWS, and the nearest agricultural cooperative is more than 10 km away, indicating both absence of surface diversion potential and limited institutional credit access for pump or micro-irrigation investment.",
+        "variables": [
+          "river_name",
+          "dist_cooperative_km"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "In the alluvial plains of eastern India, lift irrigation from rivers and institutional credit for pump sets are the two main fallback options when tank storage fails. Absence of a proximate river eliminates the diversion or lift irrigation option, while distance to a cooperative constrains farmers' ability to finance solar pumps or drip systems. Together these conditions mean that when surface storage declines, farmers have neither a surface water alternative nor affordable credit to develop groundwater lift infrastructure, deepening the irrigation challenge.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_05",
+      "variables": [
+        "annual_well_depth_m"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Farmers report that shallow dug wells or hand pumps used for supplemental irrigation have dried earlier in the season compared to previous years, or that pump operating costs have increased due to greater lift depth. This is not directly measurable from available data but is a key field indicator of groundwater supplemental irrigation failure in alluvial settings."
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "In alluvial plains, shallow groundwater is often used as a supplemental irrigation source when surface tanks fail. Increasing well depth or earlier seasonal drying of shallow wells indicates that the groundwater buffer is also under stress, leaving farmers with no fallback. This variable is not available from CoRE data and must be elicited from farmers directly.",
+      "active": true
+    }
+  ],
+  "overall_reasoning_note": "In the humid alluvial plains of AER-15 (Bengal, Assam, eastern Bihar), irrigation challenges arise not from rainfall deficit but from the failure of surface storage infrastructure to carry water through the dry rabi and zaid seasons. Diagnosis should be confirmed by at least two of the three primary signals: declining SWB area trend (sig_01), rapid post-monsoon drawdown indicated by low rabi/kharif SWB ratio (sig_02), or low MGNREGA investment in tank maintenance (sig_03). The absence of river access and cooperative proximity (sig_04) amplifies the diagnosis by ruling out alternative water sources. The qualitative well depth signal (sig_05) should be elicited from farmers when surface storage signals are ambiguous. Note that high annual rainfall in this zone can mask irrigation challenges in aggregate statistics — the stress is seasonal and infrastructure-mediated, not climatological.",
+  "confounders": [
+    {
+      "confounder": "Meteorological drought causing temporary SWB area decline rather than structural infrastructure failure",
+      "how_to_distinguish": "Compare trend_swb_total_area_ha against mean_annual_precipitation_mm trend. If SWB area decline co-occurs with a significant precipitation decline (trend_annual_precipitation_mm < -20 mm/year) in a normally humid zone, drought may be the primary driver rather than siltation or infrastructure neglect. Check nrega_swc_count — if investment is also low, both drivers are likely operating simultaneously. In AER-15 with 1600–3000 mm annual rainfall, a persistent SWB decline despite adequate rainfall strongly implicates infrastructure failure over meteorological drought."
+    },
+    {
+      "confounder": "Land use change (conversion of water bodies to agriculture or settlement) rather than siltation or poor maintenance causing SWB area decline",
+      "how_to_distinguish": "If swb_count is declining alongside swb_total_area_ha (rather than area declining while count remains stable), encroachment or conversion is more likely than siltation. Siltation typically reduces the depth and effective storage of existing bodies while their mapped area may remain similar. A declining count with stable or slowly declining area per body points to encroachment as the primary driver, which requires a different intervention (legal protection, restoration) than desilting or MGNREGA works."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "annual_well_depth_m",
+      "question_to_user": "Have farmers in this area noticed that their dug wells or shallow tubewells used for irrigation are drying up earlier in the dry season (January–May) compared to 5–10 years ago, or that they need to pump from greater depth? If yes, roughly how many months earlier do wells dry up now compared to before?",
+      "how_answer_updates_diagnosis": "If farmers confirm earlier seasonal drying or increased lift depth, this indicates that shallow alluvial groundwater — the main fallback when tanks fail — is also under stress, strongly confirming the irrigation challenges pathway and elevating severity. It also shifts solution priority toward solar pump installation at greater depth or community-managed surface storage rather than shallow well rehabilitation.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "stable",
+          "label": "Well depth has stayed roughly the same (within ~1 m)",
+          "normalized": {
+            "trend": "stable",
+            "present": false
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
+          }
+        },
+        {
+          "id": "deepening",
+          "label": "Wells have deepened by more than 2–3 m in the last 5–10 years",
+          "normalized": {
+            "trend": "worsening",
+            "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "failed",
+          "label": "Springs or shallow wells have dried up permanently or for much longer",
+          "normalized": {
+            "trend": "worsening",
+            "present": true,
+            "band": "high"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
+          }
+        }
+      ],
+      "question_mode": "trend"
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Dashora2019",
+      "title": "Hydrologic and cost benefit analysis at local scale of streambed recharge structures in Rajasthan (India) and their value for securing irrigation water supplies",
+      "authors": [
+        "Dashora, Y.",
+        "Dillon, P.",
+        "Maheshwari, B.",
+        "Soni, P.",
+        "Mittal, H.K.",
+        "Dashora, R.",
+        "Singh, P.K.",
+        "Purohit, R.C.",
+        "Katara, P."
+      ],
+      "year": 2019,
+      "doi": "10.1007/s10040-019-01951-y",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents how siltation reduces check dam and tank storage capacity over time (up to 40 cm/year accumulation), and shows that manual desilting can restore recharge capacity by 84%. Provides cost-benefit evidence for tank desilting as an economically attractive intervention (B:C ratio 4.1), directly supporting the tank desilting recommendation and the nrega_swc_count signal."
+    },
+    {
+      "source_id": "IPCC2014SYR",
+      "title": "Climate Change 2014 - Synthesis Report",
+      "authors": [
+        "IPCC"
+      ],
+      "year": 2014,
+      "doi": "10.59327/ipcc_ar5-9789291691432",
+      "source_type": "government_report",
+      "relevance_note": "Provides global context for increasing water scarcity under climate variability, including seasonal distribution changes in monsoon-dependent regions, supporting the framing of seasonal irrigation failure even in high-rainfall humid zones."
+    },
+    {
+      "source_id": "Mekonnen2016",
+      "title": "Global Monthly Water Scarcity: Blue Water Footprints versus Blue Water Availability",
+      "authors": [
+        "Mekonnen, M.M.",
+        "Hoekstra, A.Y."
+      ],
+      "year": 2016,
+      "doi": "10.1371/journal.pone.0032688",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Demonstrates that water scarcity is a monthly phenomenon even in river basins with high annual rainfall, supporting the diagnosis that humid-zone farmers face seasonal irrigation deficits during rabi and zaid despite adequate annual precipitation."
+    },
+    {
+      "source_id": "MoRD_MGNREGA2023",
+      "title": "MGNREGA Annual Report 2022-23",
+      "authors": [
+        "Ministry of Rural Development, Government of India"
+      ],
+      "year": 2023,
+      "url": "https://nrega.nic.in",
+      "source_type": "government_report",
+      "relevance_note": "Documents MGNREGA as the primary public programme for tank desilting and irrigation infrastructure works in eastern India, providing the institutional basis for using nrega_swc_count as a proxy for historical investment in water storage maintenance."
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-01-27",
+    "last_updated": "2025-01-27",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 20,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
+  }
+}

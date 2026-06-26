@@ -1,0 +1,477 @@
+{
+  "card_id": "agriculture__water_scarcity__groundwater_stress__017",
+  "production_system": "Agriculture",
+  "observed_stress": "water_scarcity",
+  "causal_pathway": "groundwater_stress",
+  "context": {
+    "agro_climatic_zones": [
+      "humid",
+      "perhumid"
+    ],
+    "aquifer_types": [
+      "coastal"
+    ],
+    "terrain_types": [
+      "plains"
+    ],
+    "rainfall_regime": "humid",
+    "geographic_examples": [
+      "Andaman & Nicobar",
+      "Lakshadweep"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "soge_dev_percent",
+        "soge_class_name"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "soge_dev_percent > 70 or soge_class_name in ['Semi-critical', 'Critical', 'Over-exploited']",
+        "variables": [
+          "soge_dev_percent",
+          "soge_class_name"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "CGWB SOGE thresholds define groundwater stress classes based on extraction as a percentage of net annual recharge. In small island systems such as Andaman & Nicobar and Lakshadweep, volcanic and coral aquifers have very limited storage and are highly sensitive to extraction pressure. Even a Semi-critical SOGE classification (70–90%) on an island aquifer can signal imminent stress because the total recharge volume is small and lateral recharge from adjacent land is negligible. Seawater intrusion risk further reduces the effective usable fraction of available groundwater.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "aquifer_class"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "aquifer_class == 'volcanic' or aquifer_class == 'crystalline_basement'",
+        "qualitative_description": "Aquifer classified as volcanic or crystalline basement, indicating low storativity and limited lateral recharge typical of island geology in Andaman & Nicobar and Lakshadweep.",
+        "variables": [
+          "aquifer_class"
+        ]
+      },
+      "severity": "high",
+      "direction": "amplifies",
+      "explanation": "Island aquifers in the Andaman & Nicobar archipelago are predominantly volcanic and fractured crystalline basement, while Lakshadweep sits on coral limestone. Both aquifer types have low storativity compared to alluvial systems. Volcanic aquifers in particular have spatially heterogeneous permeability concentrated in fracture zones, meaning block-level SOGE values may mask severe localised depletion. The AER-20 reference confirms volcanic aquifer dominance in these islands. Low storativity means even modest extraction rates can rapidly lower the water table and trigger saline intrusion from the surrounding ocean.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "trend_annual_delta_g_mm",
+        "mean_annual_delta_g_mm"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "trend_annual_delta_g_mm < 0 and mean_annual_delta_g_mm < 20",
+        "qualitative_description": "Linear trend in annual groundwater recharge (P - ET - Runoff) is negative and mean annual recharge surplus is below 20 mm, indicating that despite high rainfall, effective recharge to the aquifer is declining or marginal.",
+        "variables": [
+          "trend_annual_delta_g_mm",
+          "mean_annual_delta_g_mm"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "Although Andaman & Nicobar and Lakshadweep receive 1600–3000 mm of annual rainfall, high evapotranspiration in humid tropical conditions and rapid surface runoff on small islands with steep drainage can limit effective groundwater recharge. A declining trend in delta_g despite high precipitation indicates that extraction is outpacing recharge or that runoff is increasing (e.g. due to land use change or impervious surfaces) at the expense of infiltration. Globally, groundwater level declines exceeding 0.5 m/year have been documented even in high-rainfall regions where extraction is concentrated in low-storativity aquifers.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "nrega_swc_count"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "nrega_swc_count < 3",
+        "qualitative_description": "Fewer than 3 cumulative MGNREGA soil and water conservation works recorded in the micro-watershed, indicating very low investment in recharge infrastructure on the island.",
+        "variables": [
+          "nrega_swc_count"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Island ecosystems have limited land area for recharge infrastructure, making each SWC intervention disproportionately important. Low MGNREGA SWC counts signal that opportunities for managed aquifer recharge — such as check dams, percolation ponds, and trench structures to slow runoff and enhance infiltration — have not been exploited. India's managed aquifer recharge programme has historically invested heavily in percolation tanks and streambed structures to detain monsoon runoff, but island territories often receive less programme attention than mainland states. The absence of recharge infrastructure amplifies depletion risk from even moderate extraction.",
+      "active": true
+    },
+    {
+      "variables": [
+        "borewell_density"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Farmers report moderate-to-high borewell/tubewell density (roughly 10–50 or more than 50 within 2–3 km) in hard rock terrain, indicating localised over-extraction not captured by block-level SOGE. Very low density or widespread borewell failure may indicate aquifer limits rather than density-driven stress."
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "High local borewell density confirms extraction pressure at micro-watershed scale when paired with landscape depletion signals. Failed or unsuccessful borewells indicate hard-rock aquifer limits and may amplify stress severity without confirming high density per se.",
+      "signal_id": "sig_05",
+      "active": true
+    },
+    {
+      "variables": [
+        "groundwater_salinity"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Farmers report salty/brackish well water, white crust on soil or pipes, or water unsuitable for sensitive crops — indicating salinity from deep penetration or over-extraction."
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Reported salinity confirms groundwater stress as a quality-and-quantity problem; may also indicate a distinct salinity pathway requiring solution reassessment.",
+      "signal_id": "sig_06",
+      "active": true
+    },
+    {
+      "variables": [
+        "annual_well_depth_m"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Farmers report borewell or dug-well deepening over recent years, or seasonal failure of shallow wells during rabi or zaid, indicating declining static water levels."
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Farmer-reported well deepening or seasonal well failure is a strong qualitative confirmation of groundwater stress, especially in low-storativity aquifers.",
+      "signal_id": "sig_07",
+      "active": true
+    }
+  ],
+  "confounders": [
+    {
+      "confounder": "Saline intrusion from the ocean presenting as groundwater unavailability rather than quantity depletion",
+      "how_to_distinguish": "In coastal island aquifers, water may be physically present in the aquifer but rendered unusable by saltwater intrusion driven by over-extraction lowering the freshwater head. Check groundwater_salinity (electrical conductivity) if available — high EC values (>1500 µS/cm) in wells near the coast indicate saline intrusion rather than simple depletion. The causal pathway is still groundwater stress (over-extraction), but the mechanism and solution differ: demand reduction and managed recharge to restore freshwater head are prioritised over new extraction infrastructure."
+    },
+    {
+      "confounder": "Seasonal rainfall variability causing temporary water scarcity unrelated to structural groundwater depletion",
+      "how_to_distinguish": "Island territories in AER-20 receive 1600–3000 mm annually but rainfall is highly seasonal. If soge_dev_percent is low (<50%) and trend_annual_delta_g_mm is not negative, the water scarcity may be purely seasonal (inter-monsoon dry spell) rather than structural depletion. Compare annual_delta_g_mm across multiple years — if negative values are confined to drought years (cross-reference drought_weeks_severe) rather than persistent across all years, seasonal variability rather than chronic over-extraction is the primary driver."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "groundwater_salinity",
+      "question_to_user": "Have farmers or households noticed that well or borewell water has become salty, tastes brackish, or leaves white or crusty deposits on soil and equipment? Has any water been tested and found unsuitable for irrigation or drinking due to saltiness?",
+      "how_answer_updates_diagnosis": "Saline groundwater in a coastal island setting strongly confirms the groundwater stress pathway: over-extraction has lowered the freshwater lens, allowing seawater to intrude. This changes the recommended solutions — demand reduction and managed recharge to restore freshwater head become urgent, and new extraction infrastructure should not be recommended. If salinity is absent, the stress is more likely quantity-based depletion.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "none",
+          "label": "No — water quality has not changed; no saltiness or deposits",
+          "normalized": {
+            "present": false,
+            "trend": "stable"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": false
+              }
+            ]
+          }
+        },
+        {
+          "id": "mild",
+          "label": "Some salinity or white deposits; still usable for some crops",
+          "normalized": {
+            "present": true,
+            "band": "moderate",
+            "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "severe",
+          "label": "Brackish or salty water; crop damage or unsuitable for irrigation",
+          "normalized": {
+            "present": true,
+            "band": "high",
+            "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
+          }
+        }
+      ],
+      "question_mode": "presence_graded"
+    },
+    {
+      "missing_variable": "borewell_density",
+      "question_to_user": "Approximately how many borewells, tubewells, or dug wells are used for irrigation or drinking water in your village or island settlement? Has the number of wells increased significantly in the past 5–10 years?",
+      "how_answer_updates_diagnosis": "High and increasing borewell density on a small island with a limited freshwater lens confirms localised over-extraction not captured by block-level SOGE. Even a moderate number of borewells can exceed recharge capacity on small coral or volcanic islands where the freshwater lens is thin. This would strongly confirm the groundwater stress pathway and elevate severity to high.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "few",
+          "label": "Very few (fewer than 10 within 2–3 km)",
+          "normalized": {
+            "band": "low",
+            "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
+          }
+        },
+        {
+          "id": "moderate",
+          "label": "Moderate (10–50 within 2–3 km)",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "many",
+          "label": "More than 50 within 2–3 km",
+          "normalized": {
+            "band": "high",
+            "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
+          }
+        }
+      ],
+      "question_mode": "magnitude"
+    },
+    {
+      "missing_variable": "annual_well_depth_m",
+      "question_to_user": "Has the depth at which water is found in wells or borewells increased over the past few years? Do farmers need to deepen existing wells or drill new deeper borewells to access water that was previously available at shallower depths?",
+      "how_answer_updates_diagnosis": "Increasing well depth over time is a direct proxy for a declining groundwater table. On island aquifers with thin freshwater lenses, even a 1–2 metre decline in the water table can indicate significant depletion of the usable freshwater resource and increased risk of saline intrusion from below.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "stable",
+          "label": "Well depth has stayed roughly the same (within ~1 m)",
+          "normalized": {
+            "trend": "stable",
+            "present": false
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": false
+              }
+            ]
+          }
+        },
+        {
+          "id": "deepening",
+          "label": "Wells have deepened by more than 2–3 m in the last 5–10 years",
+          "normalized": {
+            "trend": "worsening",
+            "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "failed",
+          "label": "Springs or shallow wells have dried up permanently or for much longer",
+          "normalized": {
+            "trend": "worsening",
+            "present": true,
+            "band": "high"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_07",
+                "result": true
+              }
+            ]
+          }
+        }
+      ],
+      "question_mode": "trend"
+    }
+  ],
+  "overall_reasoning_note": "Groundwater stress in humid and perhumid island settings (AER-20) presents differently from mainland semi-arid contexts. Despite high annual rainfall (1600–3000 mm), the freshwater resource is structurally limited by small island area, thin freshwater lenses overlying saline groundwater, and low-storativity volcanic or coral aquifers. Confirmation requires at least two signals: elevated SOGE classification and either a declining delta_g trend or confirmed volcanic/crystalline aquifer class. The primary risk mechanism is saline intrusion triggered by over-extraction rather than simple aquifer emptying. Low MGNREGA SWC investment amplifies risk but does not confirm stress independently. Always investigate salinity before recommending any new extraction infrastructure on island aquifers.",
+  "sources": [
+    {
+      "source_id": "CGWB2023",
+      "title": "National Compilation of Dynamic Ground Water Resources of India 2022",
+      "authors": [
+        "Central Ground Water Board"
+      ],
+      "year": 2023,
+      "url": "https://cgwb.gov.in",
+      "source_type": "government_report",
+      "relevance_note": "Defines SOGE class thresholds (Safe <70%, Semi-critical 70–90%, Critical 90–100%, Over-exploited >100%) used in sig_01; provides aquifer classification data for island territories including AER-20 volcanic aquifer designation."
+    },
+    {
+      "source_id": "Jasechko2023",
+      "title": "Rapid groundwater decline and some cases of recovery in aquifers globally",
+      "authors": [
+        "Jasechko, Scott",
+        "Seybold, Hansjörg",
+        "Perrone, Debra",
+        "Fan, Ying",
+        "Shamsudduha, Mohammad",
+        "Taylor, Richard G.",
+        "Fallatah, Othman",
+        "Kirchner, James W."
+      ],
+      "year": 2023,
+      "doi": "10.1038/s41586-023-06879-8",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents that rapid groundwater level declines (>0.5 m/year) are widespread globally including in high-rainfall regions with low-storativity aquifers; confirms that declines have accelerated in 30% of regional aquifers and that policy-driven managed recharge can reverse depletion trends."
+    },
+    {
+      "source_id": "Dillon2019",
+      "title": "Sixty years of global progress in managed aquifer recharge",
+      "authors": [
+        "Dillon, Peter",
+        "Stuyfzand, Pieter",
+        "Grischek, Thomas",
+        "Lluria, Manuel",
+        "Pyne, R.D.G.",
+        "Jain, R.C.",
+        "Bear, Jacob",
+        "Schwarz, Jörg",
+        "Wang, Wei",
+        "Fernandez, Enrique",
+        "Stefan, Catalin",
+        "Pettenati, Marie",
+        "van der Gun, Jac",
+        "Sprenger, Carsten",
+        "Massmann, Gudrun",
+        "Scanlon, Bridget R.",
+        "Xanke, Julian",
+        "Jokela, Pekka",
+        "Zheng, Yan",
+        "Rossetto, Rudy",
+        "Shamrukh, Mohammad",
+        "Pavelic, Paul",
+        "Murray, Eileen",
+        "Ross, Andrew",
+        "Bonilla Valverde, Juan Pablo",
+        "Palma Nava, Adrián",
+        "Ansems, Nienke",
+        "Posavec, Kristijan",
+        "Ha, Kyoochul",
+        "Martin, Rolf",
+        "Sapiano, Matthew"
+      ],
+      "year": 2019,
+      "doi": "10.1007/s10040-018-1841-z",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents India's extensive investment in percolation tanks and streambed recharge structures (>500,000 tanks historically); supports the rationale for MGNREGA SWC works as recharge infrastructure and the importance of check dams and trench structures for managed aquifer recharge in tropical settings."
+    },
+    {
+      "source_id": "Siebert2010",
+      "title": "Groundwater use for irrigation – a global inventory",
+      "authors": [
+        "Siebert, Stefan",
+        "Burke, Joanna",
+        "Faures, Jean Marc",
+        "Frenken, Karen",
+        "Hoogeveen, Jippe",
+        "Döll, Petra",
+        "Portmann, Felix T."
+      ],
+      "year": 2010,
+      "doi": "10.5194/hess-14-1863-2010",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Establishes India as the country with the largest area equipped for groundwater irrigation globally (39 million ha); contextualises the national-scale extraction pressure that extends to island territories and supports the diagnosis of extraction-driven stress."
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-07-14",
+    "last_updated": "2025-07-14",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 24,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_03",
+      "sig_05",
+      "sig_06",
+      "sig_07"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_03",
+          "sig_05",
+          "sig_06",
+          "sig_07"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_03",
+            "sig_05",
+            "sig_06",
+            "sig_07"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
+  }
+}

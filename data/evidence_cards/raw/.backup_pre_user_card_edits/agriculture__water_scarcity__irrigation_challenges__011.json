@@ -1,0 +1,298 @@
+{
+  "card_id": "agriculture__water_scarcity__irrigation_challenges__011",
+  "production_system": "Agriculture",
+  "observed_stress": "water_scarcity",
+  "causal_pathway": "irrigation_challenges",
+  "context": {
+    "agro_climatic_zones": [
+      "sub-humid",
+      "humid"
+    ],
+    "aquifer_types": [
+      "hard_rock"
+    ],
+    "terrain_types": [
+      "hilly",
+      "slopes"
+    ],
+    "rainfall_regime": "sub-humid",
+    "geographic_examples": [
+      "Himachal Pradesh",
+      "Uttarakhand",
+      "Jammu division"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "trend_swb_total_area_ha",
+        "swb_count"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "trend_swb_total_area_ha < -2 and swb_count < 5",
+        "qualitative_description": "Surface water body area is declining at more than 2 ha/year and fewer than 5 distinct water bodies exist in the MWS, indicating shrinking storage infrastructure relative to irrigable area.",
+        "variables": [
+          "trend_swb_total_area_ha",
+          "swb_count"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "A declining trend in total SWB area combined with a low count of water bodies signals that existing surface storage is contracting — likely due to siltation, poor maintenance, or encroachment — and is insufficient to meet seasonal irrigation demand. In hilly sub-humid terrain of Himachal Pradesh and Uttarakhand, small tanks and check dams are the primary irrigation source; their loss directly translates to water scarcity for rabi and zaid crops. Dashora et al. (2019) demonstrated that siltation of check dams in hard-rock terrain can reduce storage capacity by 40 cm/year, severely impairing recharge and irrigation supply.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "mean_swb_rabi_kharif_ratio"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "mean_swb_rabi_kharif_ratio < 0.4",
+        "qualitative_description": "The mean ratio of SWB area in rabi to kharif is below 0.4, indicating that water bodies dry out rapidly after the monsoon and cannot sustain post-kharif irrigation.",
+        "variables": [
+          "mean_swb_rabi_kharif_ratio"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "A low rabi-to-kharif SWB area ratio indicates that surface water bodies lose most of their storage soon after the monsoon ends, leaving little water for rabi season irrigation. This rapid drying is characteristic of silted or poorly designed structures that cannot retain water through the dry season. In hilly terrain with hard-rock aquifers, where groundwater recharge is spatially limited, surface storage persistence is critical for post-monsoon cropping. Dashora et al. (2019) showed that siltation reduces infiltration rates and storage capacity, undermining the dual function of check dams as both recharge and irrigation supply structures.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "nrega_swc_count"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "nrega_swc_count < 10",
+        "qualitative_description": "Fewer than 10 cumulative soil and water conservation or irrigation works recorded under MGNREGA, indicating historically low investment in water harvesting infrastructure relative to the irrigation needs of a hilly MWS.",
+        "variables": [
+          "nrega_swc_count"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Low cumulative NREGA SWC investment signals that the MWS has not benefited from systematic water harvesting infrastructure development. In hilly sub-humid zones, where terrain limits canal irrigation and groundwater access is constrained by hard-rock aquifers, community-built check dams, farm ponds, and diversion channels are essential. Their absence or low count amplifies irrigation water scarcity during dry spells and the rabi season. Dashora et al. (2019) found benefit-cost ratios averaging 4.1 for check dams in hard-rock terrain, underscoring the high returns from such investment when it does occur.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "river_name"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "river_name is None",
+        "qualitative_description": "No named river passes through or adjacent to the MWS, indicating absence of a perennial surface water source that could support diversion or lift irrigation schemes.",
+        "variables": [
+          "river_name"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "In hilly terrain of Himachal Pradesh, Uttarakhand, and Jammu division, gravity-fed diversion channels (kuhls) and lift irrigation from rivers are traditional and modern irrigation strategies. Where no named river is present, farmers are entirely dependent on local rainfall, small tanks, and groundwater — all of which are seasonally unreliable in sub-humid hard-rock settings. The absence of a river removes the option of diversion-based irrigation as a solution pathway, making storage infrastructure and micro-irrigation promotion more critical.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_05",
+      "variables": [
+        "dist_cooperative_km"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "dist_cooperative_km > 15",
+        "qualitative_description": "Nearest agricultural cooperative is more than 15 km away, indicating poor access to institutional credit that would enable farmers to invest in micro-irrigation or pump infrastructure.",
+        "variables": [
+          "dist_cooperative_km"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Distance to cooperative societies is a proxy for access to institutional credit and subsidised input supply. In hilly terrain where road connectivity is poor, distances above 15 km effectively exclude marginal farmers from credit-linked irrigation schemes such as solar pump installation or drip/sprinkler adoption. This financial exclusion amplifies irrigation infrastructure gaps by preventing individual investment even when public infrastructure is absent or degraded.",
+      "active": true
+    },
+    {
+      "variables": [
+        "annual_well_depth_m"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Farmers report well or borewell deepening over 5–10 years, or seasonal failure of shallow wells, indicating co-occurring groundwater depletion alongside surface irrigation failure."
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "Well deepening co-confirms groundwater_stress alongside irrigation_challenges when surface storage is inadequate; informs lift-cost assumptions for solar pump solutions.",
+      "signal_id": "sig_06",
+      "active": true
+    }
+  ],
+  "confounders": [
+    {
+      "confounder": "Meteorological drought reducing surface water availability independent of infrastructure failure",
+      "how_to_distinguish": "Compare mean_annual_precipitation_mm and drought_severe_return_period against regional baselines. If SWB area decline coincides with multi-year below-normal rainfall (trend_annual_precipitation_mm strongly negative) and drought return periods are short (drought_severe_return_period < 4 years), drought is the primary driver rather than infrastructure failure. Infrastructure failure is more likely when SWB area declines even in years of normal or above-normal rainfall, or when nrega_swc_count is very low indicating structures were never built."
+    },
+    {
+      "confounder": "Groundwater depletion (not surface irrigation failure) as the primary cause of water scarcity",
+      "how_to_distinguish": "If farmers report borewell or dug-well failure and annual_well_depth_m is increasing, the primary pathway may be groundwater stress rather than surface irrigation infrastructure failure. Surface irrigation challenges are more likely when SWB area and count are low or declining but groundwater indicators are stable. In hard-rock hilly terrain, both pathways can co-occur; check whether nrega_swc_count is low (infrastructure gap) or whether swb_rabi_kharif_ratio is low (storage not persisting) to distinguish surface from groundwater pathways."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "annual_well_depth_m",
+      "question_to_user": "Have farmers in this area noticed that their wells or borewells have become deeper over the past 5–10 years, or that water levels have dropped significantly during the dry season? If yes, roughly by how many metres?",
+      "how_answer_updates_diagnosis": "If well depth has increased by more than 3 metres over the observation period, this suggests groundwater stress is co-occurring with surface irrigation failure, strengthening the case for solar pump installation and groundwater recharge structures. If well depth is stable, the diagnosis focuses more squarely on surface water storage infrastructure gaps.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "stable",
+          "label": "Well depth has stayed roughly the same (within ~1 m)",
+          "normalized": {
+            "trend": "stable",
+            "present": false
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": false
+              }
+            ]
+          }
+        },
+        {
+          "id": "deepening",
+          "label": "Wells have deepened by more than 2–3 m in the last 5–10 years",
+          "normalized": {
+            "trend": "worsening",
+            "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "failed",
+          "label": "Springs or shallow wells have dried up permanently or for much longer",
+          "normalized": {
+            "trend": "worsening",
+            "present": true,
+            "band": "high"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
+          }
+        }
+      ],
+      "question_mode": "trend"
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Dashora2019",
+      "title": "Hydrologic and cost benefit analysis at local scale of streambed recharge structures in Rajasthan (India) and their value for securing irrigation water supplies",
+      "authors": [
+        "Dashora, Y.",
+        "Dillon, P.",
+        "Maheshwari, B.",
+        "Soni, P.",
+        "Mittal, H.K.",
+        "Dashora, R.",
+        "Singh, P.K.",
+        "Purohit, R.C.",
+        "Katara, P."
+      ],
+      "year": 2019,
+      "doi": "10.1007/s10040-019-01951-y",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Demonstrates that siltation of check dams in hard-rock terrain reduces storage capacity and infiltration rates, and that manual desilting can increase recharge by 84%; benefit-cost ratio of 4.1 supports tank desilting and repair as a high-return intervention for securing irrigation water."
+    },
+    {
+      "source_id": "IPCC2014SYR",
+      "title": "Climate Change 2014 - Synthesis Report",
+      "authors": [
+        "IPCC"
+      ],
+      "year": 2014,
+      "doi": "10.59327/ipcc_ar5-9789291691432",
+      "source_type": "government_report",
+      "relevance_note": "Provides global context for increasing water scarcity under climate change, relevant to sub-humid hilly regions where seasonal rainfall variability is projected to increase, amplifying irrigation infrastructure gaps."
+    },
+    {
+      "source_id": "Mekonnen2016",
+      "title": "Global Monthly Water Scarcity: Blue Water Footprints versus Blue Water Availability",
+      "authors": [
+        "Mekonnen, M.M.",
+        "Hoekstra, A.Y."
+      ],
+      "year": 2016,
+      "doi": "10.1371/journal.pone.0032688",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents that severe water scarcity occurs seasonally even in basins with adequate annual rainfall, supporting the diagnosis of irrigation challenges during rabi and zaid seasons in sub-humid hilly zones."
+    }
+  ],
+  "overall_reasoning_note": "Diagnosis of irrigation infrastructure failure in sub-humid hilly terrain (AER-14) should be confirmed by at least two primary signals: declining SWB area trend (sig_01), rapid post-monsoon drying of water bodies (sig_02), or very low NREGA SWC investment (sig_03). The absence of a river (sig_04) and poor cooperative access (sig_05) are amplifying signals that worsen the infrastructure gap but do not confirm it independently. Siltation of existing structures is a key mechanism — manual desilting through MGNREGA is the highest-priority intervention when SWB area is declining and nrega_swc_count is low. Always verify whether groundwater stress is co-occurring before finalising solution recommendations.",
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-01-30",
+    "last_updated": "2025-01-30",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 20,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
+  }
+}

@@ -2,7 +2,33 @@
 
 > **Purpose:** Ready reckoner for scripts — what they do, when to run them, which plan introduced them, and known gotchas.  
 > **Quick index (commands only):** [`scripts/README.md`](../scripts/README.md)  
-> **Last updated:** 2026-06-21 (Plan 15/16 batch progress + review scripts)
+> **Last updated:** 2026-06-26 (Plan 19 prose maintenance workflow + policy audit baseline)
+
+---
+
+## Evidence card prose maintenance (Plan 19)
+
+**Full runbook:** [19-evidence-card-prose-maintenance.md](./19-evidence-card-prose-maintenance.md)
+
+### After any bulk edit to `data/evidence_cards/raw/`
+
+```powershell
+py scripts/maintenance/sync_user_edit_patches_from_raw.py
+py scripts/review/apply_user_card_edits.py --dry-run    # expect applied=0
+py scripts/reload_evidence_cards.py
+```
+
+Signal-qual or expression maintenance also runs the aligning script first; see Plan 19 for category list and patch-sync matrix.
+
+### Key scripts (Plan 19)
+
+| Script | Purpose |
+|--------|---------|
+| `maintenance/align_qualitative_descriptions.py` | Signal qual vs expression (template categories) |
+| `maintenance/normalize_evidence_card_expressions.py` | Expression rewrites + `variables[]` patch sync |
+| `maintenance/sync_user_edit_patches_from_raw.py` | **Catch-all:** refresh patches + `applied_card_digest` from raw |
+| `maintenance/audit_expression_prose.py` | Signal qual vs expression audit |
+| `verify/audit_confirmation_policy.py` | Policy vs `overall_reasoning_note` audit |
 
 ---
 
@@ -155,7 +181,7 @@ py scripts/reload_evidence_cards.py --prefix <card_id>
 - **Purpose:** Heuristic check: `confirmation_policy` vs `overall_reasoning_note` vs signal directions
 - **When:** Plan 13; Plan 15 Phase 0 preflight; before Mongo reload
 - **Added:** Plan 13 (~2026-06)
-- **Produces:** `reports/policy_audit.csv` (one row per issue, with note/policy context columns), `reports/policy_audit_summary.csv` (all 136 cards)
+- **Produces:** `reports/policy_review/policy_audit.csv`, `policy_audit_summary.csv`
 - **Depends on:** `lib/card_policy_utils.py`
 - **Related plans:** 13, 15
 - **Gotchas:** Heuristics only — semantic gaps need Claude review (Plan 15). Prior manual fixes in `reports/POLICY_FIXES_FOR_REVIEW.md`
@@ -257,10 +283,32 @@ py scripts/reload_evidence_cards.py --prefix <card_id>
 
 ### `scripts/maintenance/normalize_evidence_card_expressions.py`
 - **Category:** maintenance
-- **Purpose:** Registry-based expression rewrites on raw cards
-- **When:** After alias/canonical name changes (Plan 06)
-- **Added:** Plan 06
-- **Related plans:** 05, 06, 13
+- **Purpose:** Registry-based expression rewrites on raw cards; syncs `variables[]` into user-edit patches
+- **When:** After alias/canonical name changes (Plan 06); after expression drift
+- **Added:** Plan 06; patch sync added Plan 19 (~2026-06-26)
+- **Related plans:** 05, 06, 13, 19
+
+### `scripts/maintenance/align_qualitative_descriptions.py`
+- **Category:** maintenance
+- **Purpose:** Template-based `qualitative_description` alignment to signal expressions; mirrors qual into user-edit patches
+- **When:** Plan 19 bulk qual maintenance (review templates in chat first)
+- **Added:** Plan 19 (~2026-06-26)
+- **Related plans:** 19, 15, 16
+
+### `scripts/maintenance/sync_user_edit_patches_from_raw.py`
+- **Category:** maintenance
+- **Purpose:** Refresh `claude_review_user_card_edits.json` patches + `applied_card_digest` from current raw cards
+- **When:** **Mandatory** after any raw-card bulk edit before `apply_user_card_edits.py`
+- **Added:** Plan 19 (~2026-06-26)
+- **Related plans:** 19, 16
+- **Gotchas:** Skipping this step can revert qual/expression fixes when apply runs
+
+### `scripts/maintenance/audit_expression_prose.py`
+- **Category:** verify/maintenance
+- **Purpose:** Flag mismatches between signal expressions and `qualitative_description`
+- **When:** Plan 19 pre/post qual alignment
+- **Added:** Plan 19 (~2026-06-26)
+- **Related plans:** 19
 
 ### `scripts/maintenance/derive_confirmation_policy.py`
 - **Category:** maintenance

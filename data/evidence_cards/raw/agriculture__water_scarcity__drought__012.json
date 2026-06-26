@@ -24,16 +24,16 @@
     {
       "signal_id": "sig_01",
       "variables": [
-        "drought_weeks_severe",
-        "drought_weeks_moderate"
+        "drought_severe_return_period",
+        "drought_moderate_return_period"
       ],
       "condition": {
         "type": "quantitative",
         "expression": "drought_severe_return_period <= 4 or drought_moderate_return_period <= 4",
-        "qualitative_description": "Two or more severe drought weeks, or four or more moderate drought weeks in the latest kharif season, indicate meaningful crop-season water deficit even in a perhumid zone.",
+        "qualitative_description": "Severe drought return period is 4 years or less, or moderate drought return period is 4 years or less, indicate meaningful crop-season water deficit even in a perhumid zone.",
         "variables": [
-          "drought_weeks_severe",
-          "drought_weeks_moderate"
+          "drought_severe_return_period",
+          "drought_moderate_return_period"
         ]
       },
       "severity": "high",
@@ -44,13 +44,15 @@
     {
       "signal_id": "sig_02",
       "variables": [
+        "mean",
         "dry_spell_weeks"
       ],
       "condition": {
         "type": "quantitative",
         "expression": "mean(dry_spell_weeks) >= 3",
-        "qualitative_description": "Three or more dry spell weeks (4-week moving window with <50% historical rainfall) in the latest kharif season indicate prolonged moisture stress periods that disrupt crop growth stages.",
+        "qualitative_description": "Mean dry-spell weeks across the record is 3 or more (4-week moving window with <50% historical rainfall), indicate prolonged moisture stress periods that disrupt crop growth stages.",
         "variables": [
+          "mean",
           "dry_spell_weeks"
         ]
       },
@@ -84,18 +86,18 @@
     {
       "signal_id": "sig_04",
       "variables": [
+        "mean_kharif_precipitation",
         "mean_annual_precipitation_mm",
-        "trend_annual_precipitation_mm",
-        "seasonal_precipitation_mm"
+        "trend_annual_precipitation_mm"
       ],
       "condition": {
         "type": "composite",
         "expression": "mean_kharif_precipitation < 0.75 * mean_annual_precipitation_mm or (mean_annual_precipitation_mm < 1800 and trend_annual_precipitation_mm < -20)",
         "qualitative_description": "Kharif seasonal precipitation below 75% of the long-run annual mean, or a declining precipitation trend exceeding 20mm/year combined with mean annual rainfall below 1800mm, signals structural drought risk in this perhumid zone.",
         "variables": [
+          "mean_kharif_precipitation",
           "mean_annual_precipitation_mm",
-          "trend_annual_precipitation_mm",
-          "seasonal_precipitation_mm"
+          "trend_annual_precipitation_mm"
         ]
       },
       "severity": "moderate",

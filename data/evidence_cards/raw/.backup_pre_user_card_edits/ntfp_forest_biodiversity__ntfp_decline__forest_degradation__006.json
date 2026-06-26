@@ -1,0 +1,387 @@
+{
+  "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__006",
+  "production_system": "NTFP_Forest_Biodiversity",
+  "observed_stress": "ntfp_decline",
+  "causal_pathway": "forest_degradation",
+  "context": {
+    "agro_climatic_zones": [
+      "sub-humid",
+      "semi-arid"
+    ],
+    "aquifer_types": [
+      "coastal",
+      "alluvium"
+    ],
+    "terrain_types": [
+      "plains"
+    ],
+    "rainfall_regime": "sub-humid",
+    "geographic_examples": [
+      "coastal Tamil Nadu",
+      "coastal Andhra Pradesh",
+      "Odisha coast"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "lulc_tree_forest_ha"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "lulc_tree_forest_ha[-1] < lulc_tree_forest_ha[0]",
+        "qualitative_description": "Forest area in the micro-watershed has declined from 2017 to 2024, indicating net loss of NTFP-bearing tree cover over the monitoring period.",
+        "variables": [
+          "lulc_tree_forest_ha"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "A declining trend in forest area directly reduces the stock of NTFP-bearing trees and understory species. In coastal sub-humid zones of Tamil Nadu, Andhra Pradesh, and Odisha, coastal forests and mangrove-adjacent dry deciduous patches are particularly vulnerable to agricultural encroachment and fuelwood extraction. Over 50 million people in India depend on NTFPs for subsistence, making forest cover loss a primary driver of NTFP decline for forest-fringe communities.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "cd_total_deforestation_ha"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "cd_total_deforestation_ha > 50",
+        "qualitative_description": "Cumulative deforested area exceeds 50 ha, indicating substantial habitat loss for NTFP species within the micro-watershed.",
+        "variables": [
+          "cd_total_deforestation_ha"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Cumulative deforestation quantifies the irreversible loss of forest habitat. In coastal alluvial plains, deforestation is often driven by conversion to aquaculture ponds, agricultural expansion, or infrastructure development. Each hectare lost removes multiple NTFP species from the landscape. The 50 ha threshold is indicative for micro-watershed scale; even smaller losses in species-rich coastal forests can disproportionately reduce NTFP availability for dependent communities.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "cd_total_deforestation_ha",
+        "cd_afforestation_ha"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "cd_total_deforestation_ha > cd_afforestation_ha and (cd_total_deforestation_ha - cd_afforestation_ha) > 20",
+        "qualitative_description": "Net forest loss (deforestation minus afforestation) exceeds 20 ha, indicating that restoration efforts are insufficient to compensate for habitat destruction.",
+        "variables": [
+          "cd_total_deforestation_ha",
+          "cd_afforestation_ha"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "When afforestation lags significantly behind deforestation, the net forest balance is negative and NTFP-bearing species cannot recover. Compensatory afforestation programmes in Odisha and coastal states have been critiqued for relying on industrial monoculture plantations that do not restore the multi-species understory required for NTFP production. A net loss of more than 20 ha at micro-watershed scale signals that governance and restoration mechanisms are failing to protect NTFP resources.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "ntfp_species_presence"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Field surveys or community reports indicate reduced abundance or local disappearance of key NTFP species such as Madhuca indica (mahua), Terminalia chebula (harra), Emblica officinalis (aonla), or Buchanania lanzan (achar) that are characteristic of coastal dry deciduous forests in Tamil Nadu, Andhra Pradesh, and Odisha."
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Direct evidence of NTFP species decline is the most diagnostic indicator of forest degradation impact on NTFP availability. Species such as mahua, harra, and aonla are documented as critical livelihood resources for tribal and forest-fringe communities across India. Their local disappearance or reduced fruiting directly translates to income loss, as NTFPs can constitute 17% or more of gross annual household income in forest-dependent communities. This variable is not available in the remote-sensing framework and must be gathered through community surveys.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_05",
+      "variables": [
+        "organization_domains"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "expression": "'Agroforestry' not in organization_domains and 'NTFP' not in organization_domains and 'Forest' not in organization_domains",
+        "qualitative_description": "No NGO or organisation active in the micro-watershed has a mandate in agroforestry, NTFP management, or forest governance, indicating an absence of institutional support for NTFP-dependent communities.",
+        "variables": [
+          "organization_domains"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "The absence of organisations working on NTFP or agroforestry domains means that communities lack access to technical support for sustainable harvesting, certification, Joint Forest Management facilitation, or Community Forest Resource rights under the Forest Rights Act. NGO presence in these domains has been associated with better NTFP governance outcomes and reduced ecological cost of harvesting. Absence amplifies the risk that forest degradation will continue unchecked and that NTFP decline will persist.",
+      "active": true
+    },
+    {
+      "variables": [
+        "forest_fire_frequency"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Frequent or intensifying forest fires (annual or every few years, worsening trend) damaging NTFP species and suppressing regeneration."
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Fire-driven degradation is a major NTFP loss mechanism in dry deciduous and plateau forests.",
+      "signal_id": "sig_06",
+      "active": true
+    }
+  ],
+  "overall_reasoning_note": "Diagnosis of forest degradation as the driver of NTFP decline in coastal sub-humid plains should be confirmed by at least two of the three remote-sensing signals (sig_01, sig_02, sig_03). A declining forest area trend combined with net deforestation exceeding afforestation provides strong evidence. The absence of NTFP species presence data (sig_04) is a critical gap — community interviews should be prioritised to ground-truth remote-sensing findings. Institutional absence (sig_05) amplifies but does not confirm the pathway. In coastal alluvial plains, distinguish forest degradation from seasonal flooding or salinity intrusion as alternative stressors on NTFP species. The Forest Rights Act CFR pathway is the primary policy lever for communities in this context.",
+  "confounders": [
+    {
+      "confounder": "Seasonal or cyclone-driven forest disturbance mimicking chronic degradation in remote-sensing data",
+      "how_to_distinguish": "Check whether the decline in lulc_tree_forest_ha is concentrated in a single year coinciding with a cyclone event (common in coastal Odisha and Andhra Pradesh) rather than showing a gradual multi-year trend. If forest area recovers partially in subsequent years, the driver is episodic disturbance rather than chronic degradation. Community interviews about NTFP availability before and after the event can help distinguish recovery trajectories."
+    },
+    {
+      "confounder": "Over-harvesting of NTFPs by communities causing species decline without significant forest cover loss",
+      "how_to_distinguish": "If lulc_tree_forest_ha is stable or increasing but NTFP species presence surveys show declining abundance, the pathway is over-harvesting rather than forest degradation. In this scenario, cd_total_deforestation_ha would be low and the net forest balance would be neutral or positive. Community reports of destructive collection methods (bark stripping, uprooting) would further support the over-harvesting pathway rather than forest cover loss."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "ntfp_species_presence",
+      "question_to_user": "Have community members noticed a reduction in the availability of key forest products such as mahua flowers, harra fruit, aonla, honey, or medicinal plants over the past 5–10 years? Are there specific species that used to be common but are now rare or absent in the local forest?",
+      "how_answer_updates_diagnosis": "Confirmed decline in multiple NTFP species strongly supports the forest degradation pathway. If decline is limited to one or two species, consider targeted over-harvesting or phenological shifts as alternative explanations. If communities report no change in species availability despite declining forest area in remote-sensing data, the remaining forest patches may be high-quality refugia and targeted protection rather than broad restoration may be the priority.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "abundant",
+          "label": "NTFP species are still common and easy to find",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "stable"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_04",
+                "result": false
+              }
+            ]
+          }
+        },
+        {
+          "id": "reduced",
+          "label": "Some species are harder to find than 5–10 years ago",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_04",
+                "result": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "rare",
+          "label": "Several species that used to be common are now rare or absent",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_04",
+                "result": true
+              }
+            ]
+          }
+        }
+      ],
+      "question_mode": "magnitude"
+    },
+    {
+      "missing_variable": "forest_fire_frequency",
+      "question_to_user": "How often do forest fires occur in or near the village forests? Have fires become more frequent or more severe in recent years? Are fires accidental, set for land clearing, or used for hunting?",
+      "how_answer_updates_diagnosis": "Frequent or intensifying fires are a major driver of forest degradation in coastal dry deciduous forests and would confirm the forest degradation pathway. Fire-driven degradation calls for fire line creation and community watch patrols as priority interventions, in addition to species replanting. If fires are absent, other degradation drivers such as encroachment or fuelwood extraction should be investigated.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "rare",
+          "label": "Forest fires are rare; no increase in recent years",
+          "normalized": {
+            "band": "low",
+            "present": false,
+            "trend": "stable"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": false
+              }
+            ]
+          }
+        },
+        {
+          "id": "occasional",
+          "label": "Occasional fires; frequency or severity increasing",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "frequent",
+          "label": "Frequent or repeated fires in the same forest patches",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
+          }
+        }
+      ],
+      "question_mode": "presence_graded"
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Shaanker2004",
+      "title": "Livelihood gains and ecological costs of non-timber forest product dependence: assessing the roles of dependence, ecological knowledge and market structure in three contrasting human and ecological settings in south India",
+      "authors": [
+        "Shaanker, R. Uma",
+        "Ganeshaiah, K. N.",
+        "Krishnan, S.",
+        "Ramya, R.",
+        "Meera, C.",
+        "Aravind, N. A.",
+        "Kumar, A.",
+        "Rao, D.",
+        "Venugopal, V. S.",
+        "Bhattacharya, S.",
+        "Ghazoul, J."
+      ],
+      "year": 2004,
+      "doi": "10.1017/s0376892904001596",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents the win-lose dynamic between NTFP livelihood dependence and ecological cost in south India, directly relevant to coastal Tamil Nadu and Andhra Pradesh contexts; identifies forest degradation as a pathway to lose-lose outcomes for communities and ecosystems."
+    },
+    {
+      "source_id": "Yadav2013",
+      "title": "Non-timber forest products certification in India: opportunities and challenges",
+      "authors": [
+        "Yadav, M.",
+        "Dugaya, D."
+      ],
+      "year": 2013,
+      "doi": "10.1007/s10668-012-9393-1",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents the socio-economic and cultural importance of NTFPs for forest-dwelling communities in India, declining wild populations due to destructive collection, and the need for sustainable management standards; provides species examples relevant to central and coastal India."
+    },
+    {
+      "source_id": "Sarin2006",
+      "title": "Potential for Recognition of Community Forest Resource Rights Under India's Forest Rights Act",
+      "authors": [
+        "Sarin, Madhu"
+      ],
+      "year": 2006,
+      "doi": "10.53892/ugvt5889",
+      "source_type": "grey_literature",
+      "relevance_note": "Establishes the legal and governance basis for CFR rights under FRA 2006 as a mechanism to protect forest-dependent livelihoods; relevant to recommended solutions for this pathway in coastal Odisha and Andhra Pradesh."
+    },
+    {
+      "source_id": "Bhatt2019",
+      "title": "Sustainable Forest Management Beyond the Timber-Oriented Status Quo: Transitioning to Co-production of Timber and Non-woody Forest Products",
+      "authors": [
+        "Vantomme, Paul",
+        "Markopoulos, Markus",
+        "Guariguata, Manuel R."
+      ],
+      "year": 2019,
+      "doi": "10.1007/s40725-019-00107-1",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Reviews the importance of NWFP/NTFP integration into forest management and the role of property rights and governance in determining NTFP availability and sustainability; supports the diagnosis that forest degradation and weak governance jointly drive NTFP decline."
+    },
+    {
+      "source_id": "Bhattacharya2022",
+      "title": "Compensatory Afforestation in Odisha, India: A Political Ecology of Forest Restoration",
+      "authors": [
+        "Bhattacharya, Priya"
+      ],
+      "year": 2022,
+      "source_type": "grey_literature",
+      "relevance_note": "Provides ground-truthed geospatial evidence from Odisha showing that compensatory afforestation programmes often rely on industrial monocultures that fail to restore NTFP-bearing species diversity, directly relevant to interpreting low afforestation relative to deforestation in this context."
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-07-15",
+    "last_updated": "2025-07-15",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 25,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_03",
+      "sig_04"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_03",
+          "sig_04"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_04"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
+  }
+}

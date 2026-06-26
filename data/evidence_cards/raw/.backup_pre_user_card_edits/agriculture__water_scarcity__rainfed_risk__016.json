@@ -1,0 +1,304 @@
+{
+  "card_id": "agriculture__water_scarcity__rainfed_risk__016",
+  "production_system": "Agriculture",
+  "observed_stress": "water_scarcity",
+  "causal_pathway": "rainfed_risk",
+  "context": {
+    "agro_climatic_zones": [
+      "arid"
+    ],
+    "aquifer_types": [
+      "hard_rock"
+    ],
+    "terrain_types": [
+      "hilly",
+      "valley"
+    ],
+    "rainfall_regime": "arid",
+    "geographic_examples": [
+      "Ladakh",
+      "high Himalaya cold desert"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "mean_cropping_intensity",
+        "mean_kharif_cropped_area_ha",
+        "mean_double_crop_area_ha"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "mean_cropping_intensity <= 1.15 and (mean_kharif_cropped_area_ha / (mean_double_crop_area_ha + mean_kharif_cropped_area_ha + 1e-9)) > 0.80",
+        "qualitative_description": "Mean cropping intensity at or below 1.15 combined with over 80% of cropped area under single kharif season indicates near-total rainfed dependence with no meaningful rabi or irrigated double-cropping.",
+        "variables": [
+          "mean_cropping_intensity",
+          "mean_kharif_cropped_area_ha",
+          "mean_double_crop_area_ha"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "In cold arid zones such as Ladakh (AER-1, <150 mm annual rainfall), the growing season is extremely short and confined to a single summer flush. A cropping intensity near 1.0 and dominance of single-kharif area over double-cropped area confirms that agriculture is entirely dependent on seasonal snowmelt and the brief monsoon pulse, with no irrigation infrastructure enabling a second crop. This pattern is consistent with the characterisation of arid/semi-arid rainfed systems in South Asia as occupying 116 million ha and supporting large populations under chronic water stress (Devendra & Thomas 2002).",
+      "active": true
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "canal_name",
+        "nrega_irrigation_count"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "canal_name is None and nrega_irrigation_count < 3",
+        "qualitative_description": "No irrigation canal intersects the micro-watershed and fewer than 3 MGNREGA irrigation works have been recorded, confirming absence of surface irrigation infrastructure.",
+        "variables": [
+          "canal_name",
+          "nrega_irrigation_count"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "The absence of a named canal combined with negligible MGNREGA irrigation investment directly confirms that no surface water delivery system exists to supplement rainfall. In the Western Himalayan cold arid ecoregion, traditional irrigation channels (kuls) are the primary water source; their absence or non-registration in canal datasets signals that even traditional infrastructure is inadequate or absent. Low MGNREGA irrigation works count further indicates that public investment in water infrastructure has not compensated for natural scarcity.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "terrain_cluster_id",
+        "mean_annual_runoff_mm"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "terrain_cluster_id == 3 and mean_annual_runoff_mm > 40",
+        "qualitative_description": "Broad plains and slopes terrain (cluster 3) combined with mean annual runoff exceeding 40 mm indicates that a significant fraction of the scarce precipitation is lost as surface runoff rather than infiltrating to support crops.",
+        "variables": [
+          "terrain_cluster_id",
+          "mean_annual_runoff_mm"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "In hilly and valley terrain of cold arid zones, steep gradients accelerate runoff loss from the limited precipitation events. Even where annual rainfall is below 150 mm, intense snowmelt pulses can generate disproportionate runoff. High runoff relative to total precipitation means in-situ soil moisture recharge is minimal, amplifying crop water stress. This also signals an opportunity for in-situ water harvesting interventions such as farm ponds and contour bunds, consistent with management recommendations for water-limited environments (Daryanto et al. 2016).",
+      "active": true
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "mean_swb_rabi_kharif_ratio"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "mean_swb_rabi_kharif_ratio < 0.15",
+        "qualitative_description": "Mean ratio of surface water body area in rabi to kharif season below 0.15 indicates that surface water storage does not persist into the post-monsoon period, confirming absence of stored water for rabi irrigation.",
+        "variables": [
+          "mean_swb_rabi_kharif_ratio"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "In cold arid zones, surface water bodies (glacial meltwater pools, seasonal streams) shrink dramatically after the summer season. A very low rabi-to-kharif SWB area ratio confirms that no meaningful surface water storage persists to support post-monsoon cropping. This directly explains why rabi and zaid seasons are absent or negligible, as farmers report insufficient water outside the brief kharif window. The lack of persistent surface water also limits the feasibility of gravity-fed irrigation from natural sources.",
+      "active": true
+    },
+    {
+      "variables": [
+        "irrigated_area_ha"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Irrigated share of cultivated land is negligible (under roughly 5–10%), confirming structural rainfed dependence; meaningful irrigated area (above roughly 20%) weakens the rainfed-risk diagnosis."
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "User-reported irrigated area is the most direct confirmatory variable for rainfed risk when landscape proxies are ambiguous.",
+      "signal_id": "sig_05",
+      "active": true
+    }
+  ],
+  "confounders": [
+    {
+      "confounder": "Glacial melt dependency masking true rainfed risk — agriculture may rely on snowmelt/glacial runoff rather than direct rainfall, making it appear rainfed when it is actually melt-fed",
+      "how_to_distinguish": "Check annual_runoff_mm trend: if trend_annual_runoff_mm is declining over the record period while cropping_intensity remains stable, glacial retreat rather than rainfall variability is the primary driver. Ask farmers whether water availability has changed in early summer (snowmelt timing) versus monsoon months. If canal_name references a kul or glacial channel, the pathway is melt-dependency rather than pure rainfed risk, and solutions should focus on glacier-fed storage rather than rainwater harvesting."
+    },
+    {
+      "confounder": "Structural land use constraint (short frost-free season) rather than water scarcity causing single-season cropping",
+      "how_to_distinguish": "In Ladakh and high Himalayan cold deserts, the growing season is thermally constrained to 3–4 months regardless of water availability. If mean_cropping_intensity is near 1.0 but nrega_irrigation_count is also low and canal_name is None, both thermal and water constraints co-occur. Distinguish by asking whether farmers would plant a second crop if water were available: if thermal limits are binding, water interventions alone will not increase cropping intensity, and the diagnosis should flag co-limiting factors rather than water scarcity alone."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "irrigated_area_ha",
+      "question_to_user": "What share of your cultivated land receives any form of irrigation — whether from a canal, kul (traditional channel), pump, or stored water — even for part of the season? Would you estimate it as less than 10%, 10–30%, or more than 30% of your total farmed area?",
+      "how_answer_updates_diagnosis": "If less than 10% of area is irrigated, this strongly confirms the rainfed risk pathway and justifies high-severity classification. If 10–30% is irrigated via traditional kuls, the pathway is partially confirmed but solutions should prioritise rehabilitation of existing traditional infrastructure rather than new construction. If more than 30% is irrigated, the rainfed risk pathway is weakened and groundwater stress or irrigation efficiency pathways should be re-evaluated.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "low",
+          "label": "Less than 10% of cultivated land is irrigated",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "percent_upper": 10
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "moderate",
+          "label": "Between 10% and 30% of cultivated land is irrigated",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "percent_lower": 10,
+            "percent_upper": 30
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "high",
+          "label": "More than 30% of cultivated land is irrigated",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "percent_lower": 30
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
+          }
+        }
+      ],
+      "question_mode": "magnitude"
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Devendra2002",
+      "title": "Rainfed Areas and Animal Agriculture in Asia: The Wanting Agenda for Transforming Productivity Growth and Rural Poverty",
+      "authors": [
+        "Devendra, C.",
+        "Thomas, D."
+      ],
+      "year": 2002,
+      "doi": "10.5713/ajas.2011.r.09",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents the extent and characteristics of arid/semi-arid rainfed systems in South Asia (116 million ha), describing their vulnerability to erratic rainfall, poor soil quality, and minimal development investment — directly relevant to the rainfed risk pathway in arid zones."
+    },
+    {
+      "source_id": "Daryanto2016",
+      "title": "Global Synthesis of Drought Effects on Maize and Wheat Production",
+      "authors": [
+        "Daryanto, S.",
+        "Wang, L.",
+        "Jacinthe, P.-A."
+      ],
+      "year": 2016,
+      "doi": "10.1371/journal.pone.0156362",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Provides evidence that dryland rainfed systems face disproportionate yield losses under water deficit, with wheat in dryland regions more prone to yield loss than in non-dryland regions, supporting the severity classification of rainfed risk in arid zones."
+    },
+    {
+      "source_id": "Daryanto2016mgmt",
+      "title": "Management of crop water under drought: a review",
+      "authors": [
+        "Daryanto, S.",
+        "Fu, B.",
+        "Wang, L.",
+        "Jacinthe, P.-A.",
+        "Zhao, W."
+      ],
+      "year": 2016,
+      "doi": "10.1007/s13593-015-0283-4",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Reviews unproductive water losses (runoff and evaporation) in rainfed systems and recommends in-situ water harvesting, mulching, and adapted cultivars as management responses — directly supporting the recommended solutions for this pathway including farm ponds and drought-tolerant varieties."
+    },
+    {
+      "source_id": "Fischer2005",
+      "title": "Socio-economic and climate change impacts on agriculture: an integrated assessment, 1990–2080",
+      "authors": [
+        "Fischer, G.",
+        "Shah, M.",
+        "Tubiello, F.N.",
+        "van Velhuizen, H."
+      ],
+      "year": 2005,
+      "doi": "10.1098/rstb.2005.1744",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Provides agro-ecological zone modelling framework showing that arid rainfed systems face the greatest climate-driven production risks, with adaptation of agricultural techniques central to limiting damages — supporting the diagnostic framing of arid rainfed vulnerability."
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-01-31",
+    "last_updated": "2025-01-31",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 20,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_04",
+      "sig_05"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_04",
+          "sig_05"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_04",
+            "sig_05"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
+  }
+}

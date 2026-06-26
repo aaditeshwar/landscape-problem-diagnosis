@@ -118,7 +118,26 @@ Apply script prefers `metadata/claude_review_edited_patches.json` over Claude su
 
 Apply only touches cards with `card_status.finalized` (use `--include-unfinalized` to override).
 
-### Variable highlighting (revise-cards UI)
+### User direct edits (`claude_review_user_card_edits.json`)
+
+Finalize also writes **`metadata/claude_review_user_card_edits.json`** when the direct card editor was used. Propagate to raw:
+
+```powershell
+py scripts/review/apply_user_card_edits.py --dry-run
+py scripts/review/apply_user_card_edits.py
+```
+
+Patches are **retained** after apply (not deleted). Each entry gets `propagated_at` + `applied_card_digest`. Re-finalizing overwrites that card's entry.
+
+**After bulk raw maintenance** (signal qual alignment, expression normalize, etc.) — patches can go stale and `apply_user_card_edits.py` may **revert** good raw cards. Run first:
+
+```powershell
+py scripts/maintenance/sync_user_edit_patches_from_raw.py
+```
+
+Full sequence: [19-evidence-card-prose-maintenance.md](./19-evidence-card-prose-maintenance.md).
+
+---
 
 - Green highlight: identifier in data dictionary + assembler + derived scalars (`GET /api/claude-review/variable-registry`)
 - Red highlight: variable-like token not in that set

@@ -25,16 +25,16 @@
     {
       "signal_id": "sig_01",
       "variables": [
-        "lulc_single_kharif_ha",
-        "lulc_double_crop_ha"
+        "mean_kharif_cropped_area_ha",
+        "mean_double_crop_area_ha"
       ],
       "condition": {
         "type": "quantitative",
         "expression": "(mean_kharif_cropped_area_ha  / (mean_kharif_cropped_area_ha + mean_double_crop_area_ha + 1e-9)) > 0.70",
         "qualitative_description": "More than 70% of cropland is under single kharif cropping, indicating that the vast majority of cultivation is rainfed and dependent on monsoon rainfall alone.",
         "variables": [
-          "lulc_single_kharif_ha",
-          "lulc_double_crop_ha"
+          "mean_kharif_cropped_area_ha",
+          "mean_double_crop_area_ha"
         ]
       },
       "severity": "high",
@@ -69,7 +69,7 @@
       "condition": {
         "type": "composite",
         "expression": "canal_name is None and nrega_irrigation_count <= 35",
-        "qualitative_description": "No irrigation canal intersects the micro-watershed and fewer than 3 MGNREGA irrigation works have been recorded, confirming minimal formal irrigation infrastructure.",
+        "qualitative_description": "No irrigation canal intersects the micro-watershed and 35 or fewer MGNREGA irrigation works have been recorded, confirming minimal formal irrigation infrastructure.",
         "variables": [
           "canal_name",
           "nrega_irrigation_count"

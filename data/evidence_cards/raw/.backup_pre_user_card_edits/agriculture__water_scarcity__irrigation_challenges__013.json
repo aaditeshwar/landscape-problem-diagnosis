@@ -1,0 +1,283 @@
+{
+  "card_id": "agriculture__water_scarcity__irrigation_challenges__013",
+  "production_system": "Agriculture",
+  "observed_stress": "water_scarcity",
+  "causal_pathway": "irrigation_challenges",
+  "context": {
+    "agro_climatic_zones": [
+      "perhumid"
+    ],
+    "aquifer_types": [
+      "semi-consolidated"
+    ],
+    "terrain_types": [
+      "hilly"
+    ],
+    "rainfall_regime": "humid",
+    "geographic_examples": [
+      "Meghalaya",
+      "Nagaland",
+      "Mizoram",
+      "Assam hills"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "trend_swb_total_area_ha",
+        "swb_count"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "trend_swb_total_area_ha < -2 and swb_count < 5",
+        "qualitative_description": "Surface water body area is declining at more than 2 ha/year and fewer than 5 distinct water bodies exist in the MWS, indicating shrinking storage infrastructure relative to irrigable area.",
+        "variables": [
+          "trend_swb_total_area_ha",
+          "swb_count"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "In the perhumid North-Eastern Hills, high annual rainfall (2000–12000 mm) paradoxically coexists with dry-season water scarcity because most precipitation falls in concentrated monsoon bursts and runs off rapidly on hilly terrain. Declining SWB area signals that existing storage structures are silting up, degrading, or being encroached upon, reducing the system's capacity to carry water into rabi and zaid seasons. A low SWB count relative to MWS area confirms an infrastructure gap rather than a natural abundance of storage.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "mean_swb_rabi_kharif_ratio"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "mean_swb_rabi_kharif_ratio < 0.4",
+        "qualitative_description": "The mean ratio of rabi-season SWB area to kharif-season SWB area is below 0.4, indicating that water bodies dry out rapidly after the monsoon and cannot sustain rabi irrigation.",
+        "variables": [
+          "mean_swb_rabi_kharif_ratio"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "A low rabi-to-kharif SWB area ratio reveals that surface water bodies shrink dramatically between the monsoon and post-monsoon seasons. This is a diagnostic marker of siltation (reduced storage capacity) or poor structural design that prevents retention of water into the dry season. Dashora et al. (2019) demonstrated that siltation in check dams reduces storage capacity and infiltration rates over time, directly impairing the ability of structures to sustain irrigation beyond the monsoon period. In hilly terrain with semi-consolidated aquifers, rapid drawdown of surface storage is the primary bottleneck for rabi cropping.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "nrega_swc_count"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "nrega_swc_count < 10",
+        "qualitative_description": "Fewer than 10 cumulative soil and water conservation or irrigation works recorded under MGNREGA in the MWS, indicating historically low investment in water harvesting infrastructure relative to the area's irrigation needs.",
+        "variables": [
+          "nrega_swc_count"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Low MGNREGA SWC investment in a perhumid hilly zone suggests that the potential for community-managed water harvesting structures — check dams, farm ponds, diversion weirs — has not been realised. Dashora et al. (2019) showed benefit-cost ratios averaging 4.1 for check dams in India, confirming that such structures are economically attractive when properly maintained. The absence of such works in a high-rainfall zone indicates an infrastructure gap rather than a resource scarcity problem, and points directly to the irrigation_challenges pathway.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "river_name",
+        "dist_cooperative_km"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "river_name is not None and dist_cooperative_km > 20",
+        "qualitative_description": "A named river is present (indicating potential for diversion or lift irrigation) but the nearest agricultural cooperative is more than 20 km away, suggesting that institutional credit and technical support for irrigation investment are inaccessible to farmers.",
+        "variables": [
+          "river_name",
+          "dist_cooperative_km"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "The presence of a river confirms that surface water is physically available for diversion or lift irrigation, yet the distance to the nearest cooperative society constrains farmers' ability to access credit for pump sets, pipes, or micro-irrigation equipment. In remote hilly areas of the North-Eastern Hills (AER-17), this combination — water physically present but institutionally inaccessible — is a classic irrigation_challenges signature. It distinguishes this pathway from pure water scarcity (where no water source exists) and from groundwater stress (where the aquifer itself is depleted).",
+      "active": true
+    },
+    {
+      "signal_id": "sig_05",
+      "variables": [
+        "annual_well_depth_m"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Farmers report that wells or springs used for irrigation have reduced flow or dried up during rabi or zaid seasons, even in years of normal monsoon rainfall, suggesting that storage and conveyance infrastructure rather than aquifer depletion is the binding constraint."
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "Well depth data are not available from the framework for this context. However, in semi-consolidated aquifers of the North-Eastern Hills, shallow springs and dug wells are common irrigation sources. Seasonal failure of these sources in a perhumid zone with >2000 mm annual rainfall is more likely attributable to poor storage infrastructure and rapid runoff on hilly terrain than to aquifer depletion, reinforcing the irrigation_challenges pathway over groundwater_stress.",
+      "active": true
+    }
+  ],
+  "confounders": [
+    {
+      "confounder": "Meteorological drought causing apparent irrigation failure through reduced monsoon recharge rather than infrastructure inadequacy",
+      "how_to_distinguish": "Check mean_annual_precipitation_mm and trend_annual_precipitation_mm. If precipitation has declined significantly (trend_annual_precipitation_mm < -50 mm/year) and drought_severe_return_period < 4 years, drought may be the primary driver. In the perhumid AER-17 zone with 2000–12000 mm baseline rainfall, a structural irrigation deficit persisting even in normal rainfall years is more consistent with irrigation_challenges than with meteorological drought."
+    },
+    {
+      "confounder": "Groundwater stress in semi-consolidated aquifers causing well and spring failure independent of surface storage infrastructure",
+      "how_to_distinguish": "In semi-consolidated (sedimentary soft rock) aquifers of the North-Eastern Hills, groundwater is generally recharged rapidly due to high perhumid rainfall. If swb_total_area_ha and swb_count are adequate but farmers still report water scarcity, investigate groundwater extraction rates and spring discharge trends. If SWB infrastructure is clearly degraded (declining trend_swb_total_area_ha, low mean_swb_rabi_kharif_ratio) and nrega_swc_count is low, irrigation_challenges is the more parsimonious explanation."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "annual_well_depth_m",
+      "question_to_user": "Do farmers in this area use wells or springs for irrigation during the dry season (rabi or zaid)? If yes, have these wells or springs been producing less water or drying up earlier in the season compared to 5–10 years ago, even in years when the monsoon was normal?",
+      "how_answer_updates_diagnosis": "If wells and springs are failing earlier in the dry season despite normal monsoon rainfall, this confirms that surface storage infrastructure is inadequate to recharge shallow aquifers and sustain dry-season flows — strongly supporting the irrigation_challenges pathway. If wells are deepening year-on-year, consider whether groundwater_stress is a co-occurring pathway.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "stable",
+          "label": "Well depth has stayed roughly the same (within ~1 m)",
+          "normalized": {
+            "trend": "stable",
+            "present": false
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
+          }
+        },
+        {
+          "id": "deepening",
+          "label": "Wells have deepened by more than 2–3 m in the last 5–10 years",
+          "normalized": {
+            "trend": "worsening",
+            "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "failed",
+          "label": "Springs or shallow wells have dried up permanently or for much longer",
+          "normalized": {
+            "trend": "worsening",
+            "present": true,
+            "band": "high"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
+          }
+        }
+      ],
+      "question_mode": "trend"
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Dashora2019",
+      "title": "Hydrologic and cost benefit analysis at local scale of streambed recharge structures in Rajasthan (India) and their value for securing irrigation water supplies",
+      "authors": [
+        "Dashora, Y.",
+        "Dillon, P.",
+        "Maheshwari, B.",
+        "Soni, P.",
+        "Mittal, H.K.",
+        "Dashora, R.",
+        "Singh, P.K.",
+        "Purohit, R.C.",
+        "Katara, P."
+      ],
+      "year": 2019,
+      "doi": "10.1007/s10040-019-01951-y",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Demonstrates that siltation of check dams reduces storage capacity and infiltration rates over time, impairing dry-season irrigation; manual desilting increased recharge by 84%; benefit-cost ratio of 4.1 confirms economic viability of surface water storage structures for irrigation. Directly supports sig_02 (siltation-driven SWB area decline) and the tank desilting recommendation."
+    },
+    {
+      "source_id": "IPCC2014SYR",
+      "title": "Climate Change 2014 - Synthesis Report",
+      "authors": [
+        "IPCC"
+      ],
+      "year": 2014,
+      "doi": "10.59327/ipcc_ar5-9789291691432",
+      "source_type": "government_report",
+      "relevance_note": "Documents increasing variability in precipitation patterns and seasonal water availability under climate change, relevant to the seasonal irrigation failure context in perhumid zones of Northeast India."
+    },
+    {
+      "source_id": "Mekonnen2016",
+      "title": "Global Monthly Water Scarcity: Blue Water Footprints versus Blue Water Availability",
+      "authors": [
+        "Mekonnen, M.M.",
+        "Hoekstra, A.Y."
+      ],
+      "year": 2016,
+      "doi": "10.1371/journal.pone.0032688",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Establishes that water scarcity can be severe during specific months even in high-rainfall basins, supporting the diagnosis of seasonal irrigation failure in perhumid zones where annual rainfall is high but dry-season storage is inadequate."
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-01-31",
+    "last_updated": "2025-01-31",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 20,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_05"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_05"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_05"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
+  }
+}

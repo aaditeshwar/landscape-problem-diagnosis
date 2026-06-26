@@ -1,0 +1,245 @@
+{
+  "card_id": "agriculture__water_scarcity__drought__010",
+  "production_system": "Agriculture",
+  "observed_stress": "water_scarcity",
+  "causal_pathway": "drought",
+  "context": {
+    "agro_climatic_zones": [
+      "humid",
+      "perhumid"
+    ],
+    "aquifer_types": [
+      "alluvium"
+    ],
+    "terrain_types": [
+      "plains"
+    ],
+    "rainfall_regime": "humid",
+    "geographic_examples": [
+      "West Bengal",
+      "Assam",
+      "eastern Bihar"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "drought_weeks_severe",
+        "drought_weeks_moderate"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "drought_weeks_severe[-1] >= 3 or drought_weeks_moderate[-1] >= 6",
+        "qualitative_description": "Three or more severe drought weeks, or six or more moderate drought weeks, in the most recent kharif season indicate a drought episode sufficient to cause significant crop water stress in an otherwise humid zone.",
+        "variables": [
+          "drought_weeks_severe",
+          "drought_weeks_moderate"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "In humid and perhumid alluvial plains such as the Bengal and Assam plains, crops are calibrated to high and reliable rainfall. Even a few weeks of severe drought during critical growth stages (tillering, panicle initiation) can cause yield losses disproportionate to the absolute rainfall deficit. SPI and VCI-based drought classification studies for kharif rice in eastern India show significant correlation between drought weeks and productivity index, confirming that week-count thresholds are meaningful diagnostic signals.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "dry_spell_weeks"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "dry_spell_weeks[-1] >= 4",
+        "qualitative_description": "Four or more dry spell weeks (4-week moving window with <50% historical rainfall) in the most recent kharif season indicate a prolonged moisture deficit disrupting crop growth stages.",
+        "variables": [
+          "dry_spell_weeks"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Dry spells of four or more consecutive weeks during kharif are particularly damaging in humid alluvial plains where crops such as transplanted aman rice have no drought-tolerant adaptation. The 4-week moving window criterion aligns with the India Drought Manual definition of agricultural dry spells. In perhumid zones, even a single prolonged dry spell can cause irreversible crop damage because farmers do not maintain supplemental irrigation infrastructure.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "drought_causality",
+        "drought_mild_vci_score_latest",
+        "drought_mild_spi_score_latest",
+        "drought_severe_moderate_spi_score_latest"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "drought_causality is not None and (drought_mild_spi_score_latest >= 26 or drought_severe_moderate_spi_score_latest >= 26) and drought_mild_vci_score_latest >= 26",
+        "qualitative_description": "SPI classification of moderate drought or worse, combined with VCI below 35 (indicating significant vegetation stress), jointly confirm both meteorological and agricultural drought are active.",
+        "variables": [
+          "drought_causality",
+          "drought_mild_vci_score_latest",
+          "drought_mild_spi_score_latest",
+          "drought_severe_moderate_spi_score_latest"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "The India Drought Manual recommends a composite approach using SPI for meteorological drought, MAI for soil moisture adequacy, and VCI for vegetation condition. Studies on kharif rice in eastern Uttar Pradesh and adjacent humid zones show that SPI and VCI are both positively correlated with productivity index, and that their joint use explains 69–76% of variability in kharif rice productivity index. A VCI below 35 is widely used as the threshold for moderate-to-severe agricultural drought stress.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "monsoon_onset_date",
+        "seasonal_precipitation_mm"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "monsoon_onset_date[-1] > monsoon_onset_date[0] and seasonal_precipitation_mm[-1].get('kharif', 9999) < 0.80 * (sum(v.get('kharif', 0) for v in seasonal_precipitation_mm.values()) / len(seasonal_precipitation_mm))",
+        "qualitative_description": "Monsoon onset is later than the earliest year on record AND kharif seasonal precipitation in the most recent year is below 80% of the multi-year mean, jointly indicating a delayed and deficient monsoon.",
+        "variables": [
+          "monsoon_onset_date",
+          "seasonal_precipitation_mm"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "Delayed monsoon onset shortens the effective kharif season and increases the probability of dry spells during critical crop establishment stages. When combined with below-normal kharif seasonal precipitation, it confirms meteorological drought as the primary driver of water scarcity. In the Bengal and Assam plains, transplanting windows for aman rice are tightly coupled to monsoon onset; a delay of even 2–3 weeks combined with a seasonal deficit amplifies crop failure risk substantially.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_05",
+      "variables": [
+        "trend_annual_precipitation_mm",
+        "mean_annual_precipitation_mm"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "trend_annual_precipitation_mm < -10 and mean_annual_precipitation_mm < 1800",
+        "qualitative_description": "A declining trend in annual precipitation of more than 10 mm/year combined with a long-term mean below 1800 mm suggests the zone is transitioning toward the lower boundary of the humid regime, increasing chronic drought risk.",
+        "variables": [
+          "trend_annual_precipitation_mm",
+          "mean_annual_precipitation_mm"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "AER-15 (Bengal and Assam Plains) receives 1600–3000 mm annually. Where the long-term mean is near the lower bound and a declining trend is observed, the buffer against inter-annual variability shrinks. Below-normal years then more frequently cross the threshold into agricultural drought. This signal amplifies the primary drought signals but does not confirm drought on its own, as high inter-annual variability is normal in this zone.",
+      "active": true
+    }
+  ],
+  "confounders": [
+    {
+      "confounder": "Irrigation infrastructure failure or canal water shortage causing water scarcity independent of meteorological drought",
+      "how_to_distinguish": "Check seasonal_precipitation_mm and drought_causality_json SPI values. If kharif rainfall is near or above normal (SPI > -0.5) but farmers still report water scarcity, the cause is likely canal or pump failure rather than drought. Drought pathway requires confirmation of below-normal SPI or elevated drought_weeks_severe alongside the reported stress."
+    },
+    {
+      "confounder": "Waterlogging or flood damage in kharif being misreported as water scarcity in rabi or zaid seasons",
+      "how_to_distinguish": "In perhumid alluvial plains, kharif excess water can damage crops and delay rabi sowing, creating apparent water scarcity in rabi that is actually a consequence of flooding rather than drought. Examine seasonal_precipitation_mm for kharif excess (>120% of mean) alongside rabi deficit. If kharif was above normal and rabi stress is reported, investigate flood-induced soil damage and delayed sowing rather than drought as the primary pathway."
+    }
+  ],
+  "missing_variable_questions": [],
+  "sources": [
+    {
+      "source_id": "Patel2022_SPI_VCI",
+      "title": "Drought assessment for kharif rice using standardized precipitation index (SPI) and vegetation condition index (VCI)",
+      "authors": [
+        "Patel, N.R.",
+        "et al."
+      ],
+      "year": 2022,
+      "doi": "10.54386/jam.v21i2.230",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Demonstrates that SPI and VCI are significantly correlated with kharif rice productivity index in eastern Indian districts; supports use of SPI class and VCI threshold of 35 in sig_03, and confirms drought week counts as meaningful diagnostic signals."
+    },
+    {
+      "source_id": "Webber2016_DroughtManagement",
+      "title": "Management of crop water under drought: a review",
+      "authors": [
+        "Webber, H.",
+        "et al."
+      ],
+      "year": 2016,
+      "doi": "10.1007/s13593-015-0283-4",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Reviews crop water stress mechanisms and the role of dry spells in disrupting crop growth stages; supports the dry spell threshold in sig_02 and the rationale for drought-tolerant variety promotion as a solution."
+    },
+    {
+      "source_id": "Mukherjee2018_WaterFoodEnergy",
+      "title": "Water–food–energy nexus with changing agricultural scenarios in India during recent decades",
+      "authors": [
+        "Mukherjee, A.",
+        "et al."
+      ],
+      "year": 2017,
+      "doi": "10.5194/hess-21-3041-2017",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents declining groundwater storage after drought years in the Ganga basin and the increasing dependency of agriculture on irrigation; supports the amplifying role of precipitation trend decline (sig_05) and the interaction between drought and water availability in alluvial plains."
+    },
+    {
+      "source_id": "IMD_DroughtManual2016",
+      "title": "Drought Management Manual",
+      "authors": [
+        "India Meteorological Department",
+        "National Disaster Management Authority"
+      ],
+      "year": 2016,
+      "source_type": "government_report",
+      "relevance_note": "Defines SPI, MAI, and VCI thresholds for drought classification in India; provides the methodological basis for drought_causality_json interpretation in sig_03 and the dry spell definition used in sig_02."
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-07-14",
+    "last_updated": "2025-07-14",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 24,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "overall_reasoning_note": "In the humid and perhumid alluvial plains of AER-15 (West Bengal, Assam, eastern Bihar), water scarcity from drought is a paradoxical but real phenomenon: high mean annual rainfall masks significant inter-annual and intra-seasonal variability. Diagnosis should require at least two of the three primary signals (sig_01 drought weeks, sig_02 dry spell weeks, sig_03 composite SPI+VCI) to confirm the drought pathway. A delayed monsoon onset combined with below-normal kharif precipitation (sig_04) provides strong corroborating evidence. The precipitation trend signal (sig_05) is an amplifier only and should not be used in isolation. Always distinguish drought-driven water scarcity from irrigation infrastructure failure or post-flood rabi water stress before recommending drought-specific interventions such as check dam repair or drought-tolerant variety promotion.",
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_03",
+      "sig_04"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_03",
+          "sig_04"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_04"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
+  }
+}

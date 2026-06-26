@@ -1,0 +1,250 @@
+{
+  "card_id": "agriculture__water_scarcity__drought__008",
+  "production_system": "Agriculture",
+  "observed_stress": "water_scarcity",
+  "causal_pathway": "drought",
+  "context": {
+    "agro_climatic_zones": [
+      "sub-humid"
+    ],
+    "aquifer_types": [
+      "hard_rock"
+    ],
+    "terrain_types": [
+      "plateau",
+      "hilly"
+    ],
+    "rainfall_regime": "sub-humid",
+    "geographic_examples": [
+      "Chhattisgarh",
+      "Odisha (western)",
+      "Jharkhand (parts)"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "drought_weeks_severe",
+        "drought_weeks_moderate"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "drought_weeks_severe[-1] >= 3 or (drought_weeks_severe[-1] >= 1 and drought_weeks_moderate[-1] >= 4)",
+        "qualitative_description": "Three or more severe drought weeks in the latest kharif season, or at least one severe week combined with four or more moderate drought weeks, indicates a drought episode sufficient to cause significant crop water stress and yield loss.",
+        "variables": [
+          "drought_weeks_severe",
+          "drought_weeks_moderate"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Persistent severe drought weeks during kharif directly reduce soil moisture availability below crop wilting thresholds. In sub-humid hard rock plateau settings like Chhattisgarh and western Odisha, where rainfed rice dominates kharif, even 3 consecutive severe drought weeks during tillering or panicle initiation can cause irreversible yield loss. The India Drought Manual uses SPI-based weekly classification to define severe drought; multiple severe weeks compound crop failure risk beyond what a single index value captures.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "dry_spell_weeks"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "dry_spell_weeks[-1] >= 4",
+        "qualitative_description": "Four or more dry spell weeks (4-week moving window with less than 50% of historical rainfall) in the latest kharif season indicate prolonged moisture deficit disrupting critical crop growth stages.",
+        "variables": [
+          "dry_spell_weeks"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Dry spells of four or more weeks during kharif disrupt crop water demand at sensitive phenological stages such as tillering, flowering, and grain filling. In the Eastern Plateau (AER-11), where crystalline basement aquifers have low storativity and shallow soils on plateaus have limited water-holding capacity, prolonged dry spells cannot be buffered by either soil storage or groundwater. This aligns with findings that unproductive water losses and crop failure risk increase under tropical residual moisture regimes with short intense rainy seasons interrupted by dry spells.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "drought_mild_vci_score_latest",
+        "drought_mild_spi_score_latest",
+        "drought_severe_moderate_spi_score_latest",
+        "drought_mild_mai_score_latest",
+        "drought_severe_moderate_path_score_latest"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "(drought_mild_spi_score_latest >= 26 or drought_severe_moderate_spi_score_latest >= 26) and (drought_mild_mai_score_latest >= 26 or drought_severe_moderate_path_score_latest >= 2) and drought_mild_vci_score_latest >= 26",
+        "qualitative_description": "Concurrent meteorological drought (SPI moderate or worse), inadequate soil moisture (MAI inadequate or highly inadequate), and vegetation stress (VCI below 35) together confirm agricultural drought affecting crop production.",
+        "variables": [
+          "drought_mild_vci_score_latest",
+          "drought_mild_spi_score_latest",
+          "drought_severe_moderate_spi_score_latest",
+          "drought_mild_mai_score_latest",
+          "drought_severe_moderate_path_score_latest"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "The India Drought Manual requires convergence of meteorological (SPI), soil moisture (MAI), and vegetation (VCI) indicators to classify agricultural drought. SPI captures rainfall deficit, MAI reflects soil moisture adequacy for crop growth, and VCI below 35 indicates significant vegetation stress relative to historical NDVI. Studies on kharif rice in Indian districts show SPI and VCI are both significantly positively correlated with productivity index, and their combined use explains 69–76% of variability in rice yield. In the sub-humid Eastern Plateau, where kharif rice is the dominant crop, this composite signal is the most robust confirmation of drought-driven water scarcity.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "mean_annual_precipitation_mm",
+        "trend_annual_precipitation_mm",
+        "seasonal_precipitation_mm"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "(seasonal_precipitation_mm[-1].get('kharif', 0) < 0.75 * mean_annual_precipitation_mm) or (mean_annual_precipitation_mm < 900 and trend_annual_precipitation_mm < -10)",
+        "qualitative_description": "Kharif seasonal rainfall below 75% of the long-term annual mean, or a declining multi-year precipitation trend below 900 mm/year, confirms meteorological drought as the primary driver of water scarcity.",
+        "variables": [
+          "mean_annual_precipitation_mm",
+          "trend_annual_precipitation_mm",
+          "seasonal_precipitation_mm"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "AER-11 receives 1000–1400 mm annually, predominantly in kharif. When kharif rainfall falls below 75% of the long-term annual mean, the effective moisture available for rainfed crops is severely curtailed. A declining precipitation trend compounding already below-normal years indicates structural drought risk rather than a single anomalous year. Below-normal years in this zone directly confirm the drought pathway as the primary cause of water scarcity, distinguishing it from infrastructure or groundwater depletion pathways.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_05",
+      "variables": [
+        "monsoon_onset_date"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "(monsoon_onset_date[-1] - monsoon_onset_date[0]).days > 10 or (monsoon_onset_date[-1] - monsoon_onset_date[-3]).days > 7",
+        "qualitative_description": "Monsoon onset delayed by more than 10 days compared to the earliest year in the record, or by more than 7 days compared to three years prior, shortens the effective kharif growing season and increases early-season crop failure risk.",
+        "variables": [
+          "monsoon_onset_date"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Delayed monsoon onset reduces the effective kharif season length, compressing the window for land preparation, sowing, and early crop establishment. In the Eastern Plateau, where rainfed paddy is transplanted after monsoon onset, a delay of more than 10 days can push transplanting into a period of reduced rainfall, increasing exposure to mid-season dry spells. Delayed onset also reduces total seasonal accumulation even if withdrawal timing is unchanged. This signal amplifies the drought pathway but does not confirm it independently.",
+      "active": true
+    }
+  ],
+  "confounders": [
+    {
+      "confounder": "Groundwater depletion causing water scarcity independent of current-season drought",
+      "how_to_distinguish": "If drought_weeks_severe and dry_spell_weeks are low in the current season but farmers still report water scarcity, check trend_annual_delta_g_mm and soge_dev_percent. Persistent negative delta_g or high SOGE with normal rainfall points to groundwater depletion rather than meteorological drought. Drought pathway is confirmed when water scarcity co-occurs with elevated drought indices (SPI, VCI, MAI) and below-normal seasonal_precipitation_mm."
+    },
+    {
+      "confounder": "Poor irrigation infrastructure causing water scarcity even in normal rainfall years",
+      "how_to_distinguish": "If seasonal_precipitation_mm for kharif is near or above the historical mean but farmers report water scarcity, the cause is likely inadequate water storage or distribution infrastructure rather than drought. Check nrega_irrigation_count and swb_total_area_ha trends. Drought pathway requires confirmation from drought_causality_json showing SPI deficit and VCI stress coinciding with the reported scarcity period."
+    }
+  ],
+  "missing_variable_questions": [],
+  "sources": [
+    {
+      "source_id": "Farooq2009",
+      "title": "Management of crop water under drought: a review",
+      "authors": [
+        "Farooq, M.",
+        "Wahid, A.",
+        "Kobayashi, N.",
+        "Fujita, D.",
+        "Basra, S.M.A."
+      ],
+      "year": 2009,
+      "doi": "10.1007/s13593-015-0283-4",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Reviews drought as a predominant cause of low yields and documents how dry spells and moisture deficits during critical crop growth stages cause irreversible yield loss; supports threshold logic for dry_spell_weeks and drought_weeks_severe signals."
+    },
+    {
+      "source_id": "Srivastava2021",
+      "title": "Drought assessment for kharif rice using standardized precipitation index (SPI) and vegetation condition index (VCI)",
+      "authors": [
+        "Srivastava, A.K.",
+        "Rajeevan, M.",
+        "Kshirsagar, S.R."
+      ],
+      "year": 2021,
+      "doi": "10.54386/jam.v21i2.230",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Demonstrates significant positive correlation between SPI and VCI with kharif rice productivity index in Indian districts; supports composite drought_causality_json signal using SPI, MAI, and VCI thresholds and explains 69–76% of yield variability."
+    },
+    {
+      "source_id": "IMD2016DroughtManual",
+      "title": "Manual for Drought Management",
+      "authors": [
+        "India Meteorological Department",
+        "Ministry of Agriculture and Farmers Welfare"
+      ],
+      "year": 2016,
+      "source_type": "government_report",
+      "relevance_note": "Defines India Drought Manual classification using SPI, MAI, and VCI for meteorological and agricultural drought; provides basis for drought_causality_json composite signal thresholds and weekly drought classification used in drought_weeks_severe and drought_weeks_moderate."
+    },
+    {
+      "source_id": "Asoka2017",
+      "title": "Water–food–energy nexus with changing agricultural scenarios in India during recent decades",
+      "authors": [
+        "Asoka, A.",
+        "Gleeson, T.",
+        "Wada, Y.",
+        "Mishra, V."
+      ],
+      "year": 2017,
+      "doi": "10.5194/hess-21-3041-2017",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents that after drought years groundwater storage drops and cannot recover even after good monsoon years in Indian hard rock settings; supports the interaction between drought pathway and groundwater stress confounder, and the use of precipitation trend signals."
+    }
+  ],
+  "overall_reasoning_note": "Drought-driven water scarcity in the sub-humid Eastern Plateau (AER-11) should be confirmed by at least two of the three primary signals: elevated drought week counts (sig_01), prolonged dry spells (sig_02), or composite SPI-MAI-VCI drought classification (sig_03). Precipitation deficit signals (sig_04) and delayed monsoon onset (sig_05) provide supporting evidence but should not be used as standalone confirmation. Hard rock aquifers in this zone have very limited storativity, so even moderate drought episodes rapidly translate to crop water stress without buffering capacity. Distinguish from groundwater depletion pathway by checking whether water scarcity co-occurs with current-season rainfall deficit; if rainfall is near-normal but scarcity persists, investigate infrastructure and groundwater pathways instead.",
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-01-31",
+    "last_updated": "2025-01-31",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 24,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_03"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_03"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
+  }
+}

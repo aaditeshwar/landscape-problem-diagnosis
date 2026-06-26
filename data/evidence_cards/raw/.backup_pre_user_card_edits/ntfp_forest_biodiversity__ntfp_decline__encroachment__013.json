@@ -1,0 +1,364 @@
+{
+  "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__013",
+  "production_system": "NTFP_Forest_Biodiversity",
+  "observed_stress": "ntfp_decline",
+  "causal_pathway": "encroachment",
+  "context": {
+    "agro_climatic_zones": [
+      "perhumid"
+    ],
+    "aquifer_types": [
+      "semi-consolidated"
+    ],
+    "terrain_types": [
+      "hilly"
+    ],
+    "rainfall_regime": "humid",
+    "geographic_examples": [
+      "Meghalaya",
+      "Nagaland",
+      "Mizoram",
+      "Assam hills"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "cd_forest_to_farm_ha"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "cd_forest_to_farm_ha > 50",
+        "qualitative_description": "Cumulative forest-to-farm conversion has increased by more than 50 ha over the observation period, indicating active encroachment of forest land for agriculture.",
+        "variables": [
+          "cd_forest_to_farm_ha"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Forest-to-farm transition area is the most direct measurable indicator of encroachment. In the perhumid hilly terrain of Northeast India (AER-17), even modest conversion of 50+ ha can fragment contiguous forest patches critical for NTFP species, reducing both the spatial extent and ecological quality of harvestable forest. Geospatial studies of forest fragmentation document how conversion of evergreen and semi-evergreen forest to cropland reduces interior forest cover and increases edge effects, degrading NTFP habitat quality.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "cd_urbanization_ha"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "cd_urbanization_ha > 20",
+        "qualitative_description": "Settlement footprint has expanded by more than 20 ha over the observation period, indicating forest land conversion for habitation in addition to agriculture.",
+        "variables": [
+          "cd_urbanization_ha"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "Urbanization and settlement expansion into forest fringes compound agricultural encroachment by permanently removing forest land from community access. In the hill states of Northeast India, population growth and in-migration to peri-urban areas drive settlement expansion into forest margins. Combined with agricultural encroachment, this dual pressure reduces the total forest area available for NTFP collection and can sever traditional access routes used by dependent communities.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "village_st_percent",
+        "cd_forest_to_farm_ha"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "village_st_percent > 40 and cd_forest_to_farm_ha > 30",
+        "qualitative_description": "Villages with high Scheduled Tribe population (>40%) co-occurring with measurable forest-to-farm conversion indicate communities with strong NTFP dependence facing encroachment-driven access loss.",
+        "variables": [
+          "village_st_percent",
+          "cd_forest_to_farm_ha"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Scheduled Tribe communities in Northeast India are disproportionately dependent on NTFPs for subsistence and income. A high ST population share combined with active forest-to-farm conversion signals that encroachment is likely displacing or restricting the access of the most forest-dependent households. Studies on Forest Rights Act implementation document how failure to recognise community forest rights leaves ST communities vulnerable to displacement and loss of NTFP access when encroachment occurs, even when the encroachers may themselves be community members responding to livelihood pressures.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "cd_forest_to_farm_ha",
+        "cd_urbanization_ha",
+        "terrain_cluster_id"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "cd_forest_to_farm_ha > 30 and cd_urbanization_ha > 10 and terrain_cluster_id != 1",
+        "qualitative_description": "Both agricultural and settlement encroachment are increasing in non-plains terrain, indicating compound land-use pressure on hilly forest areas typical of AER-17.",
+        "variables": [
+          "cd_forest_to_farm_ha",
+          "cd_urbanization_ha",
+          "terrain_cluster_id"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "In hilly terrain (terrain_cluster_id != 1), simultaneous expansion of both farm and settlement land uses into forest areas creates compound encroachment pressure. The steep slopes of Meghalaya, Nagaland, Mizoram and Assam hills mean that even small absolute area losses can fragment ecologically critical forest corridors. Soil erosion studies in the northeastern Himalaya document how land-use change on steep slopes accelerates degradation, further reducing the productivity of remaining forest patches and the quality of NTFPs available for collection.",
+      "active": true
+    },
+    {
+      "variables": [
+        "fra_claims_filed_count"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Many pending or rejected FRA claims with reported NTFP decline and forest conversion indicate tenure insecurity confirming encroachment vulnerability; high recognition weakens encroachment as primary driver."
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Unresolved forest rights alongside measurable conversion corroborates encroachment as a tenure and access driver of NTFP decline.",
+      "signal_id": "sig_05",
+      "active": true
+    },
+    {
+      "variables": [
+        "ntfp_collection_trend_qualitative"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Collectors report NTFP decline attributed to shrinking forest area or blocked/restricted access (not merely lower density inside intact forest). Decline greater than 25–50% increases severity."
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Access- or area-attributed NTFP decline distinguishes encroachment from degradation or over-harvesting within intact forest.",
+      "signal_id": "sig_06",
+      "active": true
+    }
+  ],
+  "overall_reasoning_note": "Diagnosis of encroachment-driven NTFP decline in AER-17 perhumid hill forests should be confirmed by at least two signals: measurable forest-to-farm conversion (sig_01) is the primary indicator, ideally corroborated by settlement expansion (sig_02) or high ST population co-occurrence with conversion (sig_03). The composite signal (sig_04) provides contextual confirmation that terrain amplifies the impact of even modest area losses. A single signal may reflect data noise or boundary mapping artefacts. Where forest-to-farm conversion is modest but ST population is high and NTFP access complaints are documented, prioritise community-level tenure investigation under FRA before concluding encroachment is the primary driver. Always verify whether observed land-use change reflects illegal encroachment versus legally recognised shifting cultivation (jhum) cycles, which are a traditional practice in this region and require a different management response.",
+  "confounders": [
+    {
+      "confounder": "Traditional shifting cultivation (jhum) cycles misidentified as encroachment in remote sensing data",
+      "how_to_distinguish": "Jhum follows a rotational pattern — forest-to-farm conversion in one area should be accompanied by farm-to-forest recovery in previously cultivated areas within the same village territory. If cd_forest_to_farm_ha increases monotonically without corresponding recovery patches, permanent encroachment is more likely. Community consultation on jhum cycle length and spatial extent is essential to distinguish the two."
+    },
+    {
+      "confounder": "NTFP decline driven by over-harvesting or market-driven extraction pressure rather than reduced forest extent",
+      "how_to_distinguish": "If cd_forest_to_farm_ha shows minimal change but NTFP collection is declining, over-harvesting or degradation of remaining forest quality (e.g. from fire, invasive species) is more likely than encroachment. Check whether the decline is species-specific (targeting high-value NTFPs) or broad-based across species, and whether forest canopy cover metrics show degradation without area loss."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "fra_claims_filed_count",
+      "question_to_user": "Have community members filed individual or community forest rights claims under the Forest Rights Act (FRA) in this village? If yes, approximately how many claims have been filed and how many have been recognised?",
+      "how_answer_updates_diagnosis": "Low FRA claim filing or high rejection rates in a village with high ST population and active forest conversion strongly confirms encroachment-driven tenure insecurity as the mechanism behind NTFP access loss. High recognition rates would suggest formal rights are in place and the pathway may be driven by other factors.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "none",
+          "label": "No FRA claims filed by community members",
+          "normalized": {
+            "present": false
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "pending",
+          "label": "Claims filed but mostly pending or rejected",
+          "normalized": {
+            "band": "moderate",
+            "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "recognized",
+          "label": "Several claims recognised (individual or community forest rights)",
+          "normalized": {
+            "band": "high",
+            "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
+          }
+        }
+      ],
+      "question_mode": "presence_graded"
+    },
+    {
+      "missing_variable": "ntfp_collection_trend_qualitative",
+      "question_to_user": "Over the past 5-10 years, have community members noticed a reduction in the quantity or quality of forest produce they can collect (e.g. bamboo, medicinal plants, wild fruits, honey)? Is the reduction due to less forest area being accessible, or because the forest is still accessible but producing less?",
+      "how_answer_updates_diagnosis": "If the reduction is attributed to reduced accessible area, this confirms the encroachment pathway. If the forest is accessible but producing less, degradation or over-harvesting pathways become more likely and the diagnosis should be revised accordingly.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "little_change",
+          "label": "Little change — decline under 25% or stable collection",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "trend": "stable",
+            "percent_upper": 25
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": false
+              }
+            ]
+          }
+        },
+        {
+          "id": "moderate_decline",
+          "label": "Noticeable decline of about 25–50% in collection volume",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening",
+            "percent_lower": 25,
+            "percent_upper": 50
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "severe_decline",
+          "label": "Severe decline over 50% or access largely blocked",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "worsening",
+            "percent_lower": 50
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
+          }
+        }
+      ],
+      "question_mode": "magnitude"
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Ramakrishna2023_NE_soilerosion",
+      "title": "Causes and consequences of soil erosion in northeastern Himalaya, India",
+      "authors": [
+        "Ramakrishna et al."
+      ],
+      "year": 2023,
+      "doi": "10.18520/cs/v122/i7/772-789",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents land-use change and unsustainable agricultural practices on steep hill slopes of Northeast India (AER-17), including shifting cultivation and non-jhum agriculture, providing context for forest-to-farm conversion dynamics and their ecological consequences in the region."
+    },
+    {
+      "source_id": "Bose2021_FRA_displacement",
+      "title": "Relocation from protected areas as a violent process in the recent history of biodiversity conservation in India",
+      "authors": [
+        "Bose et al."
+      ],
+      "year": 2021,
+      "doi": "10.37773/ees.v2i1.55",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Analyses how failure to recognise community forest rights under FRA leads to displacement of indigenous communities and forest dwellers, directly relevant to ST community NTFP access loss in Northeast India hill forests."
+    },
+    {
+      "source_id": "Nagendra2010_fragmentation",
+      "title": "Geospatial analysis of forest fragmentation in Uttara Kannada District, India",
+      "authors": [
+        "Nagendra et al."
+      ],
+      "year": 2016,
+      "doi": "10.1186/s40663-016-0069-4",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Demonstrates how forest-to-cropland and built-up area conversion reduces interior forest cover and increases fragmentation, degrading ecosystem functions and livelihoods of local populations dependent on forest resources — directly analogous to NTFP decline dynamics in Northeast India."
+    },
+    {
+      "source_id": "RRI2020_tenure",
+      "title": "The Opportunity Framework 2020: Identifying Opportunities to Invest in Securing Collective Tenure Rights in the Forest Areas",
+      "authors": [
+        "Rights and Resources Initiative"
+      ],
+      "year": 2020,
+      "doi": "10.53892/rhaa9312",
+      "source_type": "government_report",
+      "relevance_note": "Provides global and India-specific evidence that lack of formal recognition of collective land and forest rights leaves indigenous and local communities vulnerable to encroachment and loss of forest access, supporting the FRA claim-filing recommendation for this pathway."
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-07-14",
+    "last_updated": "2025-07-14",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 17,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_03"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_03"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
+  }
+}

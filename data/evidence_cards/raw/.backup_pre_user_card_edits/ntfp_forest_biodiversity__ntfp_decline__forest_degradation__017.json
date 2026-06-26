@@ -1,0 +1,310 @@
+{
+  "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__017",
+  "production_system": "NTFP_Forest_Biodiversity",
+  "observed_stress": "ntfp_decline",
+  "causal_pathway": "forest_degradation",
+  "context": {
+    "agro_climatic_zones": [
+      "humid",
+      "perhumid"
+    ],
+    "aquifer_types": [
+      "coastal"
+    ],
+    "terrain_types": [
+      "plains"
+    ],
+    "rainfall_regime": "humid",
+    "geographic_examples": [
+      "Andaman & Nicobar",
+      "Lakshadweep"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "lulc_tree_forest_ha"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "lulc_tree_forest_ha[-1] < lulc_tree_forest_ha[0]",
+        "qualitative_description": "Total forest area in the latest year is lower than the earliest year in the 2017–2024 record, indicating net forest cover loss over the period.",
+        "variables": [
+          "lulc_tree_forest_ha"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "A decline in lulc_tree_forest_ha over the monitoring period directly measures forest cover loss, which reduces the canopy and understory habitat that supports NTFP-bearing species. In the humid and perhumid island ecosystems of Andaman & Nicobar and Lakshadweep, even modest forest loss can disproportionately affect endemic NTFP species with restricted ranges. Forest degradation is the primary structural driver of NTFP decline as it removes the biological substrate on which collection depends.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "cd_total_deforestation_ha",
+        "cd_afforestation_ha"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "cd_total_deforestation_ha > 0 and (cd_afforestation_ha < cd_total_deforestation_ha)",
+        "qualitative_description": "Cumulative deforestation exceeds cumulative afforestation, indicating a net negative forest balance with insufficient recovery to offset habitat loss.",
+        "variables": [
+          "cd_total_deforestation_ha",
+          "cd_afforestation_ha"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "When total deforested area exceeds total afforested area, the forest system is in net deficit. In island ecosystems, natural regeneration is slow and afforestation programmes often use non-native species that do not support traditional NTFP collection. The imbalance confirms that forest degradation is structural and ongoing rather than episodic, directly reducing the availability of NTFP-bearing trees and understory species that dependent communities rely upon.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "cd_total_deforestation_ha"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "cd_total_deforestation_ha > 50",
+        "qualitative_description": "Cumulative deforestation exceeds 50 ha, representing a meaningful threshold of habitat loss in small island micro-watersheds where total forest extent is limited.",
+        "variables": [
+          "cd_total_deforestation_ha"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "In island contexts such as Andaman & Nicobar and Lakshadweep, micro-watersheds are small and total forest area is limited. A loss of 50 ha or more represents a significant proportion of the local forest estate and can eliminate entire patches of NTFP-bearing habitat. Studies on NTFP dependence in India document that forest fringe communities lose access to subsistence and commercial NTFPs when forest patches are fragmented or cleared, shifting communities from a win-win to a lose-lose livelihood trajectory.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "organization_domains"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "expression": "'Agroforestry' not in organization_domains and 'NTFP' not in organization_domains and 'Forest' not in organization_domains",
+        "qualitative_description": "No NGO or organisation active in the micro-watershed has a domain focus on agroforestry, NTFP management, or forest governance, indicating weak institutional support for forest protection and NTFP recovery.",
+        "variables": [
+          "organization_domains"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "The absence of organisations working in NTFP, agroforestry, or forest domains means there is no active institutional actor facilitating community forest protection, Joint Forest Management, or Community Forest Resource rights under the Forest Rights Act. Research on NTFP governance in India highlights that community-based institutions and NGO support are critical for transitioning from extractive to sustainable NTFP management. Without such support, forest degradation is likely to continue unchecked.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_05",
+      "variables": [
+        "ntfp_species_presence"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Direct field surveys or community reports indicate reduced abundance, local disappearance, or declining harvest of key NTFP species such as medicinal plants, fruits, resins, or honey-producing trees in the forest area."
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Direct evidence of NTFP species decline is the most diagnostic indicator of forest degradation impact on NTFP availability. India hosts over 46,000 plant species and NTFPs contribute substantially to tribal and forest-fringe livelihoods; declining species presence confirms that forest degradation has crossed a threshold affecting biological productivity. This variable is not available in the current data system and must be gathered through community surveys or field assessments.",
+      "active": true
+    }
+  ],
+  "confounders": [
+    {
+      "confounder": "Over-harvesting of NTFPs by communities causing species decline independent of forest cover loss",
+      "how_to_distinguish": "If lulc_tree_forest_ha is stable or increasing but NTFP yields are declining, over-harvesting rather than forest degradation is the primary driver. Check whether cd_total_deforestation_ha is low and forest cover trend is neutral. Community interviews about harvesting intensity and whether collection methods are destructive (e.g., bark stripping, uprooting) can distinguish this pathway. Forest degradation pathway is confirmed when both forest cover loss and NTFP decline co-occur."
+    },
+    {
+      "confounder": "Afforestation with non-native or monoculture species replacing natural forest without supporting NTFP species",
+      "how_to_distinguish": "If cd_total_afforestation_ha is high but lulc_tree_forest_ha shows no recovery in NTFP-relevant species, the afforestation may be replacing natural forest with plantations. In this case, forest area metrics may appear stable while NTFP availability declines. Ask communities whether newly planted areas contain traditional NTFP species or exotic timber species. This is particularly relevant in island contexts where compensatory afforestation programmes may use non-endemic species."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "ntfp_species_presence",
+      "question_to_user": "Have community members noticed a reduction in the availability of specific forest products they collect — such as medicinal plants, wild fruits, honey, resins, or fibres — over the past 5–10 years? Are there particular species that used to be common but are now hard to find?",
+      "how_answer_updates_diagnosis": "Confirmed decline in specific NTFP species, especially those associated with mature forest canopy or understory, strongly confirms the forest degradation pathway. If decline is limited to a few heavily harvested species while others remain abundant, over-harvesting rather than forest degradation may be the primary driver, shifting the recommended interventions toward sustainable harvesting protocols rather than forest restoration.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "abundant",
+          "label": "NTFP species are still common and easy to find",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "trend": "stable"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
+          }
+        },
+        {
+          "id": "reduced",
+          "label": "Some species are harder to find than 5–10 years ago",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "rare",
+          "label": "Several species that used to be common are now rare or absent",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "trend": "worsening"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
+          }
+        }
+      ],
+      "question_mode": "magnitude"
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Shaanker2004",
+      "title": "Livelihood gains and ecological costs of non-timber forest product dependence: assessing the roles of dependence, ecological knowledge and market structure in three contrasting human and ecological settings in south India",
+      "authors": [
+        "Shaanker, R. Uma",
+        "Ganeshaiah, K. N.",
+        "Krishnan, S.",
+        "Ramya, R.",
+        "Meera, C.",
+        "Aravind, N. A.",
+        "Kumar, A.",
+        "Rao, D.",
+        "Venugopal, V. S.",
+        "Bhattacharya, S.",
+        "Ghazoul, J."
+      ],
+      "year": 2004,
+      "doi": "10.1017/s0376892904001596",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents the win-lose and lose-lose dynamics of NTFP dependence in south India, showing how ecological costs of forest degradation translate directly into livelihood losses for forest-fringe communities; supports the causal link between forest degradation and NTFP decline."
+    },
+    {
+      "source_id": "Yadav2013",
+      "title": "Non-timber forest products certification in India: opportunities and challenges",
+      "authors": [
+        "Yadav, M.",
+        "Dugaya, D."
+      ],
+      "year": 2013,
+      "doi": "10.1007/s10668-012-9393-1",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents the socio-economic and cultural importance of NTFPs for forest-dwelling communities in India, notes that collection methods for most NTFP species are destructive and wild populations are declining, and highlights the need for sustainable management standards; supports the diagnosis of NTFP decline linked to forest degradation."
+    },
+    {
+      "source_id": "Springate-Baginski2010",
+      "title": "Potential for Recognition of Community Forest Resource Rights Under India's Forest Rights Act",
+      "authors": [
+        "Springate-Baginski, Oliver"
+      ],
+      "year": 2010,
+      "doi": "10.53892/ugvt5889",
+      "source_type": "grey_literature",
+      "relevance_note": "Documents the scale of forest-dependent communities in India (150 million people, 40 million hectares) and the role of Community Forest Resource rights under FRA in transforming forest governance; supports the recommended solution of CFR rights recognition as a pathway to reversing forest degradation and NTFP decline."
+    },
+    {
+      "source_id": "Vantomme2019",
+      "title": "Sustainable Forest Management Beyond the Timber-Oriented Status Quo: Transitioning to Co-production of Timber and Non-woody Forest Products",
+      "authors": [
+        "Vantomme, Paul"
+      ],
+      "year": 2019,
+      "doi": "10.1007/s40725-019-00107-1",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Reviews the global importance of NWFP/NTFP for livelihoods and the need to integrate NTFP into forest management; notes that policy and property rights affect availability and sustainability of NTFP resources, supporting the institutional and governance signals in this card."
+    },
+    {
+      "source_id": "Kumar2017",
+      "title": "The Role of Non-Timber Forest Products (NTFPs) in Tribal Economy of Jharkhand, India",
+      "authors": [
+        "Kumar, Arvind"
+      ],
+      "year": 2017,
+      "doi": "10.20546/ijcmas.2017.610.259",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Quantifies NTFP contribution to tribal household income in India (17% of gross annual income) and documents the diversity of NTFP species and categories; supports the severity assessment of NTFP decline as a significant livelihood stress."
+    }
+  ],
+  "overall_reasoning_note": "Diagnosis of forest degradation as the driver of NTFP decline in Andaman & Nicobar and Lakshadweep island contexts should be confirmed by at least two of the three primary forest cover signals (sig_01, sig_02, sig_03). The island context is critical: small total forest extents mean that even modest deforestation figures represent high proportional loss, and endemic NTFP species with restricted island ranges are especially vulnerable. The absence of institutional support (sig_04) amplifies degradation risk but does not confirm it independently. If forest cover is stable but NTFP yields are declining, investigate over-harvesting or species-specific pressures as alternative pathways. The ntfp_species_presence variable (sig_05) is not available in the data system and community surveys are essential to ground-truth remote sensing signals. Recommended interventions should prioritise Community Forest Resource rights under FRA, assisted natural regeneration, and community forest watch mechanisms given the island governance context.",
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-07-15",
+    "last_updated": "2025-07-15",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 25,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_03",
+      "sig_05"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_03",
+          "sig_05"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_05"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
+  }
+}

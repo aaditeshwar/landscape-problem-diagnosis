@@ -1,0 +1,220 @@
+{
+  "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__011",
+  "production_system": "NTFP_Forest_Biodiversity",
+  "observed_stress": "ntfp_decline",
+  "causal_pathway": "encroachment",
+  "context": {
+    "agro_climatic_zones": [
+      "sub-humid",
+      "humid"
+    ],
+    "aquifer_types": [
+      "hard_rock"
+    ],
+    "terrain_types": [
+      "hilly",
+      "slopes"
+    ],
+    "rainfall_regime": "sub-humid",
+    "geographic_examples": [
+      "Himachal Pradesh",
+      "Uttarakhand",
+      "Jammu division"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "cd_forest_to_farm_ha"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "cd_forest_to_farm_ha > 50",
+        "qualitative_description": "Cumulative forest-to-farm conversion has increased by more than 50 ha over the available record, indicating active encroachment of forest land for agriculture.",
+        "variables": [
+          "cd_forest_to_farm_ha"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Forest-to-farm transition is the most direct measurable indicator of encroachment. In hilly sub-humid zones of Uttarakhand and Himachal Pradesh, even modest conversion on steep slopes fragments contiguous forest patches, reducing interior forest area and NTFP availability. Studies on forest fragmentation in comparable Western Ghats landscapes document that interior forest cover can decline from over 60% to under 30% within decades of active land-use conversion, with cascading effects on NTFP species composition and abundance.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "cd_urbanization_ha"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "cd_urbanization_ha > 20",
+        "qualitative_description": "Settlement footprint has expanded by more than 20 ha over the record period, indicating encroachment pressure from habitation expansion into forest fringes.",
+        "variables": [
+          "cd_urbanization_ha"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "Urbanization and settlement expansion into forest fringes in hilly terrain reduces community access corridors to NTFP collection areas and fragments habitat. In Himalayan foothills, population-driven settlement expansion along forest edges is a documented driver of forest boundary erosion. Increased built-up area adjacent to forest land also signals reduced enforcement of forest boundaries and potential tenure conflicts that restrict NTFP collector access.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "village_st_percent",
+        "cd_forest_to_farm_ha"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "village_st_percent > 25 and cd_forest_to_farm_ha > 30",
+        "qualitative_description": "Village has a significant Scheduled Tribe population (>25%) coinciding with measurable forest-to-farm conversion, suggesting forest rights disputes or displacement of traditional NTFP collectors.",
+        "variables": [
+          "village_st_percent",
+          "cd_forest_to_farm_ha"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "High ST population share in villages adjacent to encroached forest areas is a social indicator of potential Forest Rights Act (FRA) tenure conflicts. Research on protected area displacement in India documents that indigenous and forest-dwelling communities are disproportionately affected by encroachment-driven access restrictions, often without legal recognition of their customary rights. Where encroachment by outsiders or settlement expansion occurs alongside a large ST population, NTFP decline is likely compounded by both physical forest loss and restricted access due to tenure insecurity.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "cd_forest_to_farm_ha",
+        "cd_urbanization_ha",
+        "terrain_cluster_id"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "cd_forest_to_farm_ha > 30 and cd_urbanization_ha > 10 and terrain_cluster_id != 1",
+        "qualitative_description": "Both forest-to-farm conversion and settlement expansion are occurring simultaneously in non-plains terrain, indicating compound encroachment pressure on hilly forest landscapes.",
+        "variables": [
+          "cd_forest_to_farm_ha",
+          "cd_urbanization_ha",
+          "terrain_cluster_id"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Simultaneous agricultural and settlement encroachment in hilly terrain (terrain_cluster_id not equal to 1, i.e., not mostly plains) represents compound pressure on forest extent. In sub-humid Himalayan foothills, this dual encroachment pattern is particularly damaging because hilly forest patches are already fragmented by topography; additional conversion reduces patch connectivity and eliminates NTFP-rich edge and interior habitats. Geospatial analyses of comparable landscapes show that combined cropland and built-up expansion can reduce interior forest cover by 30-40 percentage points over two to three decades.",
+      "active": true
+    }
+  ],
+  "overall_reasoning_note": "Diagnosis of encroachment-driven NTFP decline should be confirmed by at least two signals: a measurable increase in forest-to-farm conversion (sig_01) is the primary indicator, ideally corroborated by settlement expansion (sig_02) or social vulnerability indicators (sig_03). The composite signal (sig_04) provides the strongest confirmation when both land-use change types co-occur in hilly terrain. A high ST population share alone (sig_03) does not confirm encroachment but raises the prior probability of tenure-related access restriction. Always verify whether observed forest loss reflects encroachment versus legal land-use change or plantation conversion before recommending FRA-based interventions. In AER-14 landscapes (Himachal Pradesh, Uttarakhand, Jammu division), forest-to-farm conversion on slopes is particularly consequential because steep terrain limits alternative agricultural expansion, making forest land a target for marginal farming.",
+  "confounders": [
+    {
+      "confounder": "Legal afforestation or plantation expansion replacing natural forest, causing apparent NTFP decline without encroachment",
+      "how_to_distinguish": "Check whether forest-to-farm conversion (cd_forest_to_farm_ha) is increasing while total forest cover remains stable or increases — this would suggest plantation replacement rather than net encroachment. If cd_forest_to_farm_ha is rising but cd_total_urbanization_ha is stable and ST population is not reporting access restrictions, plantation conversion is more likely than encroachment."
+    },
+    {
+      "confounder": "Climate-driven forest degradation (drought, fire) reducing NTFP availability without physical encroachment",
+      "how_to_distinguish": "If cd_forest_to_farm_ha and cd_total_urbanization_ha show no significant increase but NTFP decline is reported, investigate fire frequency trends and precipitation anomalies. Encroachment is confirmed only when land-use change variables show measurable forest loss attributable to agricultural or settlement expansion rather than climate or fire disturbance."
+    }
+  ],
+  "missing_variable_questions": [],
+  "sources": [
+    {
+      "source_id": "Hegde2016",
+      "title": "Geospatial analysis of forest fragmentation in Uttara Kannada District, India",
+      "authors": [
+        "Hegde, R.",
+        "Hegde, G.R."
+      ],
+      "year": 2016,
+      "doi": "10.1186/s40663-016-0069-4",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents forest fragmentation dynamics driven by cropland and built-up expansion in hilly terrain; interior forest decline from 64% to 26% over three decades directly relevant to NTFP habitat loss from encroachment"
+    },
+    {
+      "source_id": "Bose2021",
+      "title": "Relocation from protected areas as a violent process in the recent history of biodiversity conservation in India",
+      "authors": [
+        "Bose, P."
+      ],
+      "year": 2021,
+      "doi": "10.37773/ees.v2i1.55",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents illegal displacement of indigenous and forest-dwelling communities from protected forest areas in India, and the failure to recognize tenure rights under FRA; directly relevant to ST population vulnerability and NTFP access restriction"
+    },
+    {
+      "source_id": "RRI2020",
+      "title": "The Opportunity Framework 2020: Identifying Opportunities to Invest in Securing Collective Tenure Rights in the Forest",
+      "authors": [
+        "Rights and Resources Initiative"
+      ],
+      "year": 2020,
+      "doi": "10.53892/rhaa9312",
+      "source_type": "government_report",
+      "relevance_note": "Provides global and India-relevant evidence that governments recognize legal ownership of only 10% of customarily managed forest land, underpinning the tenure insecurity mechanism linking encroachment to NTFP access decline for forest-dependent communities"
+    },
+    {
+      "source_id": "Mondal2020",
+      "title": "Estimation of Forest Canopy Cover and Forest Fragmentation Mapping Using Landsat Satellite Data of Silabati River Basin",
+      "authors": [
+        "Mondal, I.",
+        "Thakur, S.",
+        "De, T.K.",
+        "Bandyopadhyay, J."
+      ],
+      "year": 2020,
+      "doi": "10.1007/s42489-020-00060-1",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Demonstrates spatiotemporal forest canopy decline of 116 km² over 11 years driven by population expansion and urbanization; validates use of land-use change variables as proxies for encroachment pressure on forest biodiversity"
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-07-14",
+    "last_updated": "2025-07-14",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 17,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_04"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_04"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_04"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
+  }
+}

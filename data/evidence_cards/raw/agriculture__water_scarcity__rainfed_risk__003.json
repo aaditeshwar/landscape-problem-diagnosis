@@ -24,16 +24,16 @@
     {
       "signal_id": "sig_01",
       "variables": [
-        "lulc_single_kharif_ha",
-        "lulc_double_crop_ha"
+        "mean_kharif_cropped_area_ha",
+        "mean_double_crop_area_ha"
       ],
       "condition": {
         "type": "quantitative",
         "expression": "(mean_kharif_cropped_area_ha / (mean_kharif_cropped_area_ha + mean_double_crop_area_ha + 1e-9)) > 0.65",
         "qualitative_description": "More than 65% of cropped area is under single kharif season only, indicating that the majority of farmland lacks irrigation access for a second crop.",
         "variables": [
-          "lulc_single_kharif_ha",
-          "lulc_double_crop_ha"
+          "mean_kharif_cropped_area_ha",
+          "mean_double_crop_area_ha"
         ]
       },
       "severity": "high",
@@ -68,7 +68,7 @@
       "condition": {
         "type": "composite",
         "expression": "canal_name is None and nrega_irrigation_count <= 35",
-        "qualitative_description": "No canal irrigation infrastructure intersects the micro-watershed and fewer than 3 MGNREGA irrigation works have been recorded, jointly confirming absence of surface irrigation investment.",
+        "qualitative_description": "No canal irrigation infrastructure intersects the micro-watershed and 35 or fewer MGNREGA irrigation works have been recorded, jointly confirming absence of surface irrigation investment.",
         "variables": [
           "canal_name",
           "nrega_irrigation_count"

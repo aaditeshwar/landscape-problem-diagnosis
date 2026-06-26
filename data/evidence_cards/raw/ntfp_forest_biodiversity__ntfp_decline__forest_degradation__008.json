@@ -49,7 +49,7 @@
       "condition": {
         "type": "composite",
         "expression": "cd_total_deforestation_ha > 20 and (cd_afforestation_ha / (cd_total_deforestation_ha + 1e-9)) < 0.5",
-        "qualitative_description": "Cumulative deforestation exceeds 50 ha and afforestation has replaced less than half the lost area, indicating a net forest deficit with weak recovery.",
+        "qualitative_description": "Cumulative deforestation exceeds 20 ha and afforestation has replaced less than half the lost area, indicating a net forest deficit with weak recovery.",
         "variables": [
           "cd_total_deforestation_ha",
           "cd_afforestation_ha"
@@ -68,7 +68,7 @@
       "condition": {
         "type": "quantitative",
         "expression": "cd_total_deforestation_ha > 30",
-        "qualitative_description": "Cumulative deforestation in the micro-watershed exceeds 100 ha, representing a substantial absolute loss of forest habitat.",
+        "qualitative_description": "Cumulative deforestation in the micro-watershed exceeds 30 ha, representing a substantial absolute loss of forest habitat.",
         "variables": [
           "cd_total_deforestation_ha"
         ]

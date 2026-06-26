@@ -148,7 +148,9 @@ Requires FastAPI on `http://127.0.0.1:8000` and Mongo loaded.
 
 | Script | Purpose |
 |--------|---------|
-| `maintenance/normalize_evidence_card_expressions.py` | Registry-based expression rewrites on raw cards |
+| `maintenance/normalize_evidence_card_expressions.py` | Registry-based expression rewrites on raw cards; also syncs `variables` into user-edit patches |
+| `maintenance/sync_user_edit_patches_from_raw.py` | Refresh user-edit patches + `applied_card_digest` from current raw cards (run after raw maintenance) |
+| `maintenance/align_qualitative_descriptions.py` | Template-based `qualitative_description` alignment; mirrors qual into user-edit patches |
 | `maintenance/derive_confirmation_policy.py` | Auto-generate `confirmation_policy` from signals + note |
 | `maintenance/apply_policy_corrections.py` | Apply reviewed policy corrections to raw cards |
 | `maintenance/propagate_follow_up_templates.py` | Propagate reviewed follow-up templates by fingerprint |

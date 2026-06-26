@@ -1,0 +1,300 @@
+{
+  "card_id": "agriculture__water_scarcity__irrigation_challenges__008",
+  "production_system": "Agriculture",
+  "observed_stress": "water_scarcity",
+  "causal_pathway": "irrigation_challenges",
+  "context": {
+    "agro_climatic_zones": [
+      "sub-humid"
+    ],
+    "aquifer_types": [
+      "hard_rock"
+    ],
+    "terrain_types": [
+      "plateau",
+      "hilly"
+    ],
+    "rainfall_regime": "sub-humid",
+    "geographic_examples": [
+      "Chhattisgarh",
+      "Odisha (western)",
+      "Jharkhand (parts)"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "trend_swb_total_area_ha",
+        "swb_total_area_ha",
+        "mean_swb_total_area_ha"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "trend_swb_total_area_ha < -5 or (swb_total_area_ha[-1] < mean_swb_total_area_ha * 0.85)",
+        "qualitative_description": "Surface water body area is declining at more than 5 ha/year, or the latest year area is below 85% of the multi-year mean, indicating siltation, structural failure, or reduced catchment inflows.",
+        "variables": [
+          "trend_swb_total_area_ha",
+          "swb_total_area_ha",
+          "mean_swb_total_area_ha"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "In sub-humid hard-rock plateau terrain (AER-11), surface tanks and ponds are the primary irrigation source for rabi and zaid seasons. A declining trend in total SWB area signals either progressive siltation reducing storage capacity or structural deterioration. Dashora et al. (2019) demonstrated that siltation in hard-rock check dams in Rajasthan reduced infiltration and storage capacity substantially — a 5-year-old check dam in Gujarat had filled completely with silt at 40 cm/year accumulation. Similar dynamics apply to tanks in Chhattisgarh and Odisha (western), where maintenance investment is low.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "mean_swb_rabi_kharif_ratio"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "mean_swb_rabi_kharif_ratio < 0.35",
+        "qualitative_description": "The rabi-to-kharif SWB area ratio is below 0.35, meaning water bodies lose more than 65% of their kharif-season area by rabi, indicating rapid post-monsoon drying and insufficient carry-over storage for the second season.",
+        "variables": [
+          "mean_swb_rabi_kharif_ratio"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "A low rabi/kharif SWB ratio reveals that tanks and ponds fill during the monsoon but drain rapidly, leaving insufficient water for rabi irrigation. This is a hallmark of siltation (reduced storage volume) or poor tank design in hard-rock plateau settings. In AER-11 (Chhattisgarh, Odisha western), where crystalline basement aquifers have low storativity, surface storage is critical for bridging the dry season. Rapid drying of SWBs directly causes the farmer-reported water scarcity in rabi and zaid seasons.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "nrega_swc_count"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "nrega_swc_count < 10",
+        "qualitative_description": "Fewer than 10 cumulative soil and water conservation or irrigation works recorded under MGNREGA for the micro-watershed, indicating historically low investment in water harvesting infrastructure.",
+        "variables": [
+          "nrega_swc_count"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "Low MGNREGA SWC investment means that existing tanks have not been desilted, new check dams have not been constructed, and farm bunds have not been strengthened. Dashora et al. (2019) showed that manual desilting of check dams increased recharge by 84% in the following year, with a benefit-cost ratio of 4.1 across four structures. The absence of such works in MGNREGA records indicates a missed opportunity to restore storage capacity and amplifies the irrigation failure signal from sig_01 and sig_02.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "swb_count",
+        "dist_cooperative_km"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "(swb_count < 3) and (dist_cooperative_km > 15)",
+        "qualitative_description": "Fewer than 3 surface water bodies in the MWS combined with cooperative distance exceeding 15 km, indicating both a structural infrastructure gap and limited access to institutional credit for irrigation investment.",
+        "variables": [
+          "swb_count",
+          "dist_cooperative_km"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "A low count of surface water bodies relative to MWS area signals an absolute infrastructure gap rather than merely degraded infrastructure. When combined with poor access to agricultural cooperatives (PACS), farmers cannot easily obtain credit for pump installation, micro-irrigation equipment, or tank repair contributions. In hilly and plateau terrain of Jharkhand and Odisha (western), remoteness compounds the infrastructure deficit, making solar pump adoption and micro-irrigation promotion particularly relevant interventions.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_05",
+      "variables": [
+        "annual_well_depth_m"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Farmers report that open wells or borewells have become shallower in yield or require deeper drilling each season, particularly during rabi. In hard-rock crystalline basement aquifers (AER-11), groundwater storage is confined to weathered and fractured zones typically 10–30 m deep, making wells highly sensitive to seasonal recharge failure when surface storage is inadequate."
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "Well depth data are not available in the framework for this MWS. However, in hard-rock plateau terrain with low SWB carry-over (sig_02), groundwater recharge from tank seepage is a critical secondary source. When tanks dry rapidly, this recharge pathway is lost, causing well yields to decline in rabi. Dashora et al. (2019) documented that check dam recharge in hard-rock Rajasthan directly sustained nearby well levels, with groundwater peaks correlating with check dam storage periods. The same mechanism applies to tanks in AER-11.",
+      "active": true
+    }
+  ],
+  "overall_reasoning_note": "Diagnosis of irrigation infrastructure failure in AER-11 sub-humid hard-rock plateau terrain should be anchored by at least two of the three primary signals: declining SWB area trend (sig_01), low rabi/kharif SWB ratio (sig_02), or very low SWB count with poor cooperative access (sig_04). Low MGNREGA SWC investment (sig_03) amplifies but does not independently confirm the pathway. The qualitative well depth signal (sig_05) should be elicited from the user when available variables are ambiguous. If SWB area is stable but the rabi/kharif ratio is very low, prioritise tank desilting and repair as the primary intervention. If SWB count is low, community-managed new storage structures and solar lift irrigation are more appropriate. Always distinguish from the groundwater stress pathway by checking whether SWB infrastructure is present but degraded versus absent entirely.",
+  "confounders": [
+    {
+      "confounder": "Meteorological drought reducing SWB fill rather than infrastructure failure causing storage loss",
+      "how_to_distinguish": "Compare trend_annual_precipitation_mm and drought_severe_return_period against the SWB area trend. If SWB area decline co-occurs with years of below-normal rainfall (mean_annual_precipitation_mm well below 1000 mm for AER-11), drought is the primary driver and infrastructure rehabilitation alone will be insufficient. If SWB area declines even in normal rainfall years, siltation or structural failure is more likely. Check whether nrega_swc_count is low — drought combined with zero desilting investment confirms compounding causes."
+    },
+    {
+      "confounder": "Groundwater stress (over-extraction) rather than surface storage failure causing rabi water scarcity",
+      "how_to_distinguish": "If swb_rabi_kharif_ratio is adequate (>0.5) but farmers still report water scarcity, the pathway is more likely groundwater stress than irrigation infrastructure failure. In hard-rock aquifers, check whether river_name is null (no perennial surface source) and whether nrega_swc_count is high (infrastructure exists) — if both are true and scarcity persists, groundwater over-extraction or declining recharge is the primary pathway, not infrastructure insufficiency."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "annual_well_depth_m",
+      "question_to_user": "Have farmers in this area noticed that their open wells or borewells are producing less water during the rabi season compared to 5–10 years ago? Have any wells gone dry or required deepening? If possible, what is the approximate current depth to water in the dry season (January–March)?",
+      "how_answer_updates_diagnosis": "If wells are shallower in yield or have required deepening, this confirms that surface storage failure (rapid tank drying) is reducing groundwater recharge from tank seepage, compounding the irrigation challenge. If well yields are stable despite low SWB rabi/kharif ratios, groundwater may be recharged from other sources (river connectivity, regional aquifer), and the diagnosis should focus on surface storage rehabilitation rather than groundwater interventions.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "stable",
+          "label": "Well depth has stayed roughly the same (within ~1 m)",
+          "normalized": {
+            "trend": "stable",
+            "present": false
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": false
+              }
+            ]
+          }
+        },
+        {
+          "id": "deepening",
+          "label": "Wells have deepened by more than 2–3 m in the last 5–10 years",
+          "normalized": {
+            "trend": "worsening",
+            "present": true
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "failed",
+          "label": "Springs or shallow wells have dried up permanently or for much longer",
+          "normalized": {
+            "trend": "worsening",
+            "present": true,
+            "band": "high"
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_05",
+                "result": true
+              }
+            ]
+          }
+        }
+      ],
+      "question_mode": "trend"
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Dashora2019",
+      "title": "Hydrologic and cost benefit analysis at local scale of streambed recharge structures in Rajasthan (India) and their value for securing irrigation water supplies",
+      "authors": [
+        "Dashora, Y.",
+        "Dillon, P.",
+        "Maheshwari, B.",
+        "Soni, P.",
+        "Mittal, H.K.",
+        "Dashora, R.",
+        "Singh, P.K.",
+        "Purohit, R.C.",
+        "Katara, P."
+      ],
+      "year": 2019,
+      "doi": "10.1007/s10040-019-01951-y",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Quantifies siltation impacts on check dam storage and recharge capacity in hard-rock monsoonal terrain in India; demonstrates 84% recharge increase from manual desilting and benefit-cost ratio of 4.1, directly supporting tank desilting recommendations and the SWB area decline signal."
+    },
+    {
+      "source_id": "IPCC2014SYR",
+      "title": "Climate Change 2014 - Synthesis Report",
+      "authors": [
+        "IPCC"
+      ],
+      "year": 2014,
+      "doi": "10.59327/ipcc_ar5-9789291691432",
+      "source_type": "government_report",
+      "relevance_note": "Provides global context for increasing water scarcity under climate variability, relevant to distinguishing meteorological drought from infrastructure failure as causes of seasonal water stress in sub-humid India."
+    },
+    {
+      "source_id": "MoRD_MGNREGA_2023",
+      "title": "MGNREGA Annual Report 2022-23",
+      "authors": [
+        "Ministry of Rural Development, Government of India"
+      ],
+      "year": 2023,
+      "url": "https://nrega.nic.in",
+      "source_type": "government_report",
+      "relevance_note": "Documents MGNREGA investment in water conservation and irrigation works including tank desilting, check dam construction, and farm pond creation across Chhattisgarh, Jharkhand, and Odisha, providing the basis for using nrega_swc_count as a proxy for historical infrastructure investment."
+    },
+    {
+      "source_id": "Hoekstra2012",
+      "title": "Global Monthly Water Scarcity: Blue Water Footprints versus Blue Water Availability",
+      "authors": [
+        "Hoekstra, A.Y.",
+        "Mekonnen, M.M.",
+        "Chapagain, A.K.",
+        "Mathews, R.E.",
+        "Richter, B.D."
+      ],
+      "year": 2012,
+      "doi": "10.1371/journal.pone.0032688",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Establishes the importance of seasonal (monthly) water scarcity assessment, supporting the diagnostic focus on rabi and zaid season water availability rather than annual averages in sub-humid regions."
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-01-31",
+    "last_updated": "2025-01-31",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 20,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_04"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_04"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_04"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
+  }
+}

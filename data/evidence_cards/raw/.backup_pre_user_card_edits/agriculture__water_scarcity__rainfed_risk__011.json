@@ -1,0 +1,317 @@
+{
+  "card_id": "agriculture__water_scarcity__rainfed_risk__011",
+  "production_system": "Agriculture",
+  "observed_stress": "water_scarcity",
+  "causal_pathway": "rainfed_risk",
+  "context": {
+    "agro_climatic_zones": [
+      "sub-humid",
+      "humid"
+    ],
+    "aquifer_types": [
+      "hard_rock"
+    ],
+    "terrain_types": [
+      "hilly",
+      "slopes"
+    ],
+    "rainfall_regime": "sub-humid",
+    "geographic_examples": [
+      "Himachal Pradesh",
+      "Uttarakhand",
+      "Jammu division"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "mean_kharif_cropped_area_ha",
+        "mean_double_crop_area_ha"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "(mean_kharif_cropped_area_ha / (mean_kharif_cropped_area_ha + mean_double_crop_area_ha + 1e-9)) > 0.75",
+        "qualitative_description": "More than 75% of the mean cropped area is under single kharif cultivation, with minimal double-cropped area, confirming high rainfed dependence and negligible post-monsoon irrigation access.",
+        "variables": [
+          "mean_kharif_cropped_area_ha",
+          "mean_double_crop_area_ha"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "In sub-humid hilly zones such as Himachal Pradesh and Uttarakhand, the dominance of single kharif cropping over double cropping is a direct indicator of rainfed dependence. Rainfed areas in South Asia are characterised by a single cropping season tied to monsoon rainfall, with no reliable water source for rabi or zaid cultivation. When over three-quarters of cropland is single-season kharif, it confirms that irrigation infrastructure is absent or insufficient to support year-round farming.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "mean_cropping_intensity",
+        "trend_cropping_intensity"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "mean_cropping_intensity <= 1.15 and trend_cropping_intensity <= 0.0",
+        "qualitative_description": "Mean cropping intensity at or below 1.15 with a flat or declining trend indicates persistent single-season rainfed farming with no expansion of irrigated double cropping over the observation period.",
+        "variables": [
+          "mean_cropping_intensity",
+          "trend_cropping_intensity"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "Cropping intensity near 1.0 indicates that farmers harvest only one crop per year, consistent with exclusive dependence on monsoon rainfall. In irrigated systems, cropping intensity typically exceeds 1.5 as farmers cultivate rabi and sometimes zaid crops. A flat or declining trend rules out gradual irrigation expansion. This signal is particularly diagnostic in AER-14 hilly terrain where terraced fields may support kharif but lack water storage for subsequent seasons.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "canal_name",
+        "nrega_irrigation_count"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "canal_name is None and nrega_irrigation_count < 3",
+        "qualitative_description": "No canal irrigation infrastructure intersects the micro-watershed, and fewer than 3 MGNREGA irrigation works have been recorded, confirming absence of both surface and publicly-invested irrigation.",
+        "variables": [
+          "canal_name",
+          "nrega_irrigation_count"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "The absence of a named canal combined with very low MGNREGA irrigation investment confirms that neither surface diversion nor publicly-funded small-scale irrigation has been developed in the watershed. In hilly sub-humid zones of Himachal Pradesh and Uttarakhand, canal irrigation is limited to valley floors; upland and slope areas remain entirely rainfed. Low MGNREGA irrigation counts signal a missed opportunity for farm pond or check dam construction that could buffer dry spells within the kharif season and enable limited rabi cultivation.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "terrain_cluster_id",
+        "mean_annual_runoff_mm"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "terrain_cluster_id == 3 and mean_annual_runoff_mm > 300",
+        "qualitative_description": "Broad plains and slopes terrain (cluster 3) combined with high mean annual runoff indicates rapid water loss from sloping fields, reducing in-field moisture retention and amplifying crop water stress during dry spells.",
+        "variables": [
+          "terrain_cluster_id",
+          "mean_annual_runoff_mm"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "In sloping hilly terrain, high runoff relative to rainfall means that a large fraction of monsoon precipitation is lost as surface flow rather than infiltrating to support crop growth or recharge shallow aquifers. This amplifies rainfed risk because even adequate total seasonal rainfall may not translate into sufficient soil moisture for crops during inter-monsoon dry spells. The combination of slope terrain and high runoff also indicates strong potential for in-situ water harvesting interventions such as farm ponds, contour bunds, and broad-bed furrows to capture and retain runoff.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_05",
+      "variables": [
+        "mean_swb_rabi_kharif_ratio"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "mean_swb_rabi_kharif_ratio < 0.25",
+        "qualitative_description": "The mean ratio of surface water body area in rabi to kharif season is below 0.25, indicating that surface water storage does not persist into the post-monsoon season and cannot support rabi irrigation.",
+        "variables": [
+          "mean_swb_rabi_kharif_ratio"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "confirms",
+      "explanation": "A low rabi-to-kharif surface water body ratio confirms that ponds, tanks, and other surface water bodies dry up rapidly after the monsoon, leaving no stored water for post-monsoon crop irrigation. In sub-humid hilly zones, this is consistent with the absence of large storage infrastructure and the rapid drainage of water from sloping terrain. This signal directly explains why rabi and zaid cropping is absent or minimal even in years with adequate kharif rainfall.",
+      "active": true
+    },
+    {
+      "variables": [
+        "irrigated_area_ha"
+      ],
+      "condition": {
+        "type": "qualitative",
+        "qualitative_description": "Irrigated share of cultivated land is negligible (under roughly 5–10%), confirming structural rainfed dependence; meaningful irrigated area (above roughly 20%) weakens the rainfed-risk diagnosis."
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "User-reported irrigated area is the most direct confirmatory variable for rainfed risk when landscape proxies are ambiguous.",
+      "signal_id": "sig_06",
+      "active": true
+    }
+  ],
+  "confounders": [
+    {
+      "confounder": "Meteorological drought causing apparent rainfed risk through reduced seasonal rainfall rather than structural absence of irrigation infrastructure",
+      "how_to_distinguish": "Compare mean_annual_precipitation_mm against the AER-14 baseline range of 750–2000 mm. If precipitation is within the normal range but cropping intensity remains low and single-kharif dominance persists across wet and dry years alike, the pathway is structural rainfed dependence rather than drought. If low cropping intensity co-occurs only with drought years (drought_severe_return_period < 4 years), drought is the primary driver. Check whether canal_name is None and nrega_irrigation_count is low regardless of rainfall year — structural absence of infrastructure confirms rainfed_risk over meteorological drought."
+    },
+    {
+      "confounder": "Voluntary fallow or land-use change (e.g. horticulture, agroforestry) misread as rainfed single-season dependence",
+      "how_to_distinguish": "In Himachal Pradesh and Uttarakhand, farmers increasingly shift from cereal kharif to apple orchards, vegetable cultivation, or agroforestry, which may appear as low cropping intensity or reduced kharif area without indicating water scarcity. Verify by asking whether uncropped land is intentionally fallowed or under perennial crops. If lulc_single_kharif_ha is declining but farmers report adequate water for their chosen crops, the rainfed_risk pathway is less applicable. The rainfed_risk diagnosis is strengthened when farmers explicitly report insufficient water as the binding constraint on cropping decisions."
+    }
+  ],
+  "missing_variable_questions": [
+    {
+      "missing_variable": "irrigated_area_ha",
+      "question_to_user": "Approximately what share of your village's cropland receives any irrigation — from canals, lift irrigation, springs (naulas), or pumped groundwater — during the rabi (winter) or zaid (summer) season? Would you say it is less than 10%, between 10 and 30%, or more than 30% of total farmland?",
+      "how_answer_updates_diagnosis": "If irrigated area is less than 10% of total cropland, this strongly confirms the rainfed_risk pathway and justifies high severity. If 10–30% is irrigated, the pathway is partially confirmed and solutions should focus on expanding existing irrigation sources. If more than 30% is irrigated, the rainfed_risk pathway may be secondary and groundwater stress or canal reliability should be investigated as alternative causal pathways.",
+      "response_type": "mcq",
+      "choices": [
+        {
+          "id": "low",
+          "label": "Less than 10% of cultivated land is irrigated",
+          "normalized": {
+            "band": "low",
+            "present": true,
+            "percent_upper": 10
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "moderate",
+          "label": "Between 10% and 30% of cultivated land is irrigated",
+          "normalized": {
+            "band": "moderate",
+            "present": true,
+            "percent_lower": 10,
+            "percent_upper": 30
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "high",
+          "label": "More than 30% of cultivated land is irrigated",
+          "normalized": {
+            "band": "high",
+            "present": true,
+            "percent_lower": 30
+          },
+          "effects": {
+            "signals": [
+              {
+                "signal_id": "sig_06",
+                "result": false
+              }
+            ]
+          }
+        }
+      ],
+      "question_mode": "magnitude"
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Devendra2011",
+      "title": "Rainfed Areas and Animal Agriculture in Asia: The Wanting Agenda for Transforming Productivity Growth and Rural Poverty",
+      "authors": [
+        "Devendra, C."
+      ],
+      "year": 2011,
+      "doi": "10.5713/ajas.2011.r.09",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents the biophysical characteristics of rainfed less-favoured areas in South Asia, including variable rainfall, poor soil quality, and limited development attention; confirms that rainfed ecosystems in India occupy 68% of cultivated area and face chronic water vulnerability."
+    },
+    {
+      "source_id": "Daryanto2016",
+      "title": "Global Synthesis of Drought Effects on Maize and Wheat Production",
+      "authors": [
+        "Daryanto, S.",
+        "Wang, L.",
+        "Jacinthe, P.A."
+      ],
+      "year": 2016,
+      "doi": "10.1371/journal.pone.0156362",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Demonstrates that dryland rainfed cultivation is more prone to yield loss from water stress than irrigated systems, supporting the severity assessment of rainfed risk in sub-humid hilly zones."
+    },
+    {
+      "source_id": "Hsiao2015",
+      "title": "Management of crop water under drought: a review",
+      "authors": [
+        "Hsiao, T.C.",
+        "Steduto, P.",
+        "Fereres, E."
+      ],
+      "year": 2015,
+      "doi": "10.1007/s13593-015-0283-4",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Reviews unproductive water losses via runoff and evaporation in rainfed systems, supporting the signal linking high runoff on sloping terrain to amplified crop water stress; recommends in-situ water harvesting and mulching as management responses."
+    },
+    {
+      "source_id": "NITI2018",
+      "title": "Composite Water Management Index: A Tool for Water Management",
+      "authors": [
+        "NITI Aayog"
+      ],
+      "year": 2018,
+      "source_type": "government_report",
+      "relevance_note": "Provides India-specific benchmarks for irrigation coverage and cropping intensity as indicators of water access; confirms that states in the Himalayan foothills have low net irrigated area relative to net sown area, consistent with rainfed dependence."
+    }
+  ],
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-01-31",
+    "last_updated": "2025-01-31",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 20,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_03",
+      "sig_05"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_03",
+          "sig_05"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_05"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
+  }
+}

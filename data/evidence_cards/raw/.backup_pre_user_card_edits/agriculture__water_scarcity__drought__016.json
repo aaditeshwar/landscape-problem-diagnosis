@@ -1,0 +1,240 @@
+{
+  "card_id": "agriculture__water_scarcity__drought__016",
+  "production_system": "Agriculture",
+  "observed_stress": "water_scarcity",
+  "causal_pathway": "drought",
+  "context": {
+    "agro_climatic_zones": [
+      "arid"
+    ],
+    "aquifer_types": [
+      "hard_rock"
+    ],
+    "terrain_types": [
+      "hilly",
+      "valley"
+    ],
+    "rainfall_regime": "arid",
+    "geographic_examples": [
+      "Ladakh",
+      "high Himalaya cold desert"
+    ]
+  },
+  "diagnostic_signals": [
+    {
+      "signal_id": "sig_01",
+      "variables": [
+        "drought_weeks_severe",
+        "drought_weeks_moderate"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "drought_weeks_severe[-1] >= 3 or (drought_weeks_severe[-1] >= 1 and drought_weeks_moderate[-1] >= 4)",
+        "variables": [
+          "drought_weeks_severe",
+          "drought_weeks_moderate"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "In an arid cold desert context with baseline annual rainfall below 150 mm, even a single severe drought week during the short kharif growing window can cause crop failure. Three or more severe weeks, or a combination of one severe and four moderate weeks, indicates a season-level drought event sufficient to cause near-total crop loss. SPI-based drought classification has been validated against kharif rice productivity indices in Indian conditions, with September SPI showing significant correlation (r=0.70) with productivity.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_02",
+      "variables": [
+        "dry_spell_weeks"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "dry_spell_weeks[-1] >= 4",
+        "variables": [
+          "dry_spell_weeks"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "In Ladakh and high Himalayan cold desert zones, the effective cropping window is extremely short (typically 90-120 days). Four or more consecutive dry spell weeks (each with less than 50% of historical rainfall in a 4-week moving window) during this window can disrupt critical crop growth stages including germination, tillering, and grain fill. Sites with a climatic dry season require adaptation via phenology and water saving to ensure stable yields; intermittent droughts cannot be buffered adequately in such shallow, rocky soils.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_03",
+      "variables": [
+        "mean_annual_precipitation_mm",
+        "trend_annual_precipitation_mm",
+        "seasonal_precipitation_mm"
+      ],
+      "condition": {
+        "type": "composite",
+        "expression": "mean_annual_precipitation_mm < 150 and (trend_annual_precipitation_mm < -2) and (seasonal_precipitation_mm[-1].get('kharif', 0) < 0.6 * (sum(v.get('kharif', 0) for v in list(seasonal_precipitation_mm.values())[:-1]) / max(len(seasonal_precipitation_mm) - 1, 1)))",
+        "qualitative_description": "Mean annual precipitation is below 150 mm (arid threshold for Ladakh), the long-term trend is declining, and the most recent kharif seasonal total is below 60% of the multi-year kharif mean — confirming both chronic aridity and an acute deficit year.",
+        "variables": [
+          "mean_annual_precipitation_mm",
+          "trend_annual_precipitation_mm",
+          "seasonal_precipitation_mm"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "The Western Himalayan cold arid ecoregion (AER-1) receives less than 150 mm annually. A declining precipitation trend combined with a kharif seasonal deficit below 60% of the historical mean confirms meteorological drought as the primary driver of water scarcity. Below-normal years in already-arid systems leave no buffer from soil moisture storage, particularly in hard rock terrain where infiltration is limited and runoff is rapid.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_04",
+      "variables": [
+        "monsoon_onset_date"
+      ],
+      "condition": {
+        "type": "trend",
+        "expression": "monsoon_onset_date[-1] > monsoon_onset_date[0]",
+        "qualitative_description": "Monsoon onset date in the most recent year is later than the earliest year in the record, indicating a trend toward delayed onset that shortens the effective kharif season.",
+        "variables": [
+          "monsoon_onset_date"
+        ]
+      },
+      "severity": "moderate",
+      "direction": "amplifies",
+      "explanation": "In the cold desert of Ladakh, the growing season is already constrained by temperature. A delayed monsoon onset further compresses the window available for kharif crop establishment and maturation. Delayed onset increases the probability that crops will face terminal drought stress before harvest, and reduces the feasibility of rabi or zaid cropping that depends on residual soil moisture or snowmelt timing.",
+      "active": true
+    },
+    {
+      "signal_id": "sig_05",
+      "variables": [
+        "drought_mild_vci_score_latest",
+        "drought_mild_spi_score_latest",
+        "drought_severe_moderate_spi_score_latest"
+      ],
+      "condition": {
+        "type": "quantitative",
+        "expression": "(drought_mild_spi_score_latest >= 26 or drought_severe_moderate_spi_score_latest >= 26) and drought_mild_vci_score_latest >= 26",
+        "qualitative_description": "SPI classification indicates at least moderate meteorological drought AND VCI below 35 confirms concurrent vegetation stress, together satisfying the India Drought Manual composite criterion for agricultural drought declaration.",
+        "variables": [
+          "drought_mild_vci_score_latest",
+          "drought_mild_spi_score_latest",
+          "drought_severe_moderate_spi_score_latest"
+        ]
+      },
+      "severity": "high",
+      "direction": "confirms",
+      "explanation": "The India Drought Manual requires convergence of meteorological (SPI), soil moisture (MAI), and vegetation (VCI) indicators to classify agricultural drought. SPI and VCI have been shown to be positively correlated with kharif productivity indices across Indian districts, with VCI below 35 indicating severe vegetation stress. In the arid cold desert context, even moderate SPI drought combined with low VCI is sufficient to confirm crop-level water scarcity given the absence of irrigation buffers.",
+      "active": true
+    }
+  ],
+  "confounders": [
+    {
+      "confounder": "Glacial melt or snowmelt reduction causing water scarcity independent of precipitation drought",
+      "how_to_distinguish": "In Ladakh, irrigation water is primarily sourced from glacial meltwater channels (kuls) rather than direct rainfall. If annual_precipitation_mm is near-normal but seasonal_precipitation_mm shows a winter snowfall deficit, or if farmers report reduced kul flow in early summer, the driver is upstream cryosphere change rather than meteorological drought. Check whether drought_causality_json SPI is near-normal while VCI is still low — this dissociation suggests irrigation source failure rather than rainfall deficit as the proximate cause."
+    },
+    {
+      "confounder": "Irrigation infrastructure failure (damaged kuls or check dams) mimicking drought-induced water scarcity",
+      "how_to_distinguish": "If drought_weeks_severe and dry_spell_weeks are low but farmers still report water scarcity, the cause is likely infrastructure failure rather than meteorological drought. Verify by checking whether water scarcity is spatially concentrated along specific irrigation channels rather than uniformly distributed across the landscape. NREGA irrigation asset counts can indicate whether recent investment in water infrastructure has occurred; very low nrega_irrigation_count combined with reported scarcity in a non-drought year points to infrastructure rather than climate as the driver."
+    }
+  ],
+  "missing_variable_questions": [],
+  "sources": [
+    {
+      "source_id": "Bodner2015",
+      "title": "Management of crop water under drought: a review",
+      "authors": [
+        "Bodner, G.",
+        "Nakhforoosh, A.",
+        "Kaul, H.-P."
+      ],
+      "year": 2015,
+      "doi": "10.1007/s13593-015-0283-4",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Reviews drought stress hydrology across climatic types; establishes that sites with a climatic dry season require phenological adaptation and water saving; documents that unproductive losses increase in storage-dependent rainfall climates analogous to cold arid systems."
+    },
+    {
+      "source_id": "Patel2022",
+      "title": "Drought assessment for kharif rice using standardized precipitation index (SPI) and vegetation condition index (VCI)",
+      "authors": [
+        "Patel, N.R.",
+        "et al."
+      ],
+      "year": 2022,
+      "doi": "10.54386/jam.v21i2.230",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Validates SPI and VCI as complementary indicators of agricultural drought in kharif season; shows significant positive correlation between SPI/VCI and kharif productivity index; supports composite drought_causality_json signal design."
+    },
+    {
+      "source_id": "Biemans2017",
+      "title": "Water–food–energy nexus with changing agricultural scenarios in India during recent decades",
+      "authors": [
+        "Biemans, H.",
+        "et al."
+      ],
+      "year": 2017,
+      "doi": "10.5194/hess-21-3041-2017",
+      "source_type": "peer_reviewed_journal",
+      "relevance_note": "Documents declining groundwater storage after drought years and the inability of aquifers to recover even after good monsoon years; supports the amplifying role of hard rock aquifer limitations in arid drought contexts."
+    },
+    {
+      "source_id": "IMD_DroughtManual2016",
+      "title": "Manual for Drought Management",
+      "authors": [
+        "Government of India, Ministry of Agriculture and Farmers Welfare"
+      ],
+      "year": 2016,
+      "source_type": "government_report",
+      "relevance_note": "Defines India's composite drought classification framework using SPI, MAI, and VCI; establishes thresholds for moderate, severe, and extreme drought declarations used in sig_05."
+    }
+  ],
+  "overall_reasoning_note": "Drought confirmation in the Ladakh cold arid context requires at least two converging signals: (1) a quantitative drought week count (sig_01) or dry spell count (sig_02) confirming within-season stress, AND (2) either a precipitation deficit signal (sig_03) or composite SPI/VCI confirmation (sig_05). Delayed monsoon onset (sig_04) amplifies but does not independently confirm the pathway. The extremely low baseline rainfall (<150 mm/year) means that even moderate drought classifications carry high crop failure risk. Always distinguish glacial melt reduction from meteorological drought before finalising diagnosis, as solution pathways differ substantially between these two drivers in the Himalayan cold desert context.",
+  "metadata": {
+    "created_by": "llm_extraction_v1",
+    "reviewed_by_expert": false,
+    "created_at": "2025-01-30",
+    "last_updated": "2025-01-30",
+    "extraction_model": "claude-sonnet-4-6",
+    "confidence_overall": "medium",
+    "embedding_includes_aliases": true,
+    "semantic_alias_count": 24,
+    "semantic_aliases_source": "metadata/semantic_aliases.json"
+  },
+  "confirmation_policy": {
+    "version": 1,
+    "primary_confirm_signals": [
+      "sig_01",
+      "sig_02",
+      "sig_03",
+      "sig_05"
+    ],
+    "confirm_when": {
+      "min_confirms_true": 2,
+      "amplifiers_do_not_confirm": true,
+      "min_from_set": {
+        "signals": [
+          "sig_01",
+          "sig_02",
+          "sig_03",
+          "sig_05"
+        ],
+        "min": 2
+      }
+    },
+    "confidence_when": [
+      {
+        "level": "high",
+        "min_from_set": {
+          "signals": [
+            "sig_01",
+            "sig_02",
+            "sig_03",
+            "sig_05"
+          ],
+          "min": 2
+        },
+        "min_high_severity_confirms": 2
+      },
+      {
+        "level": "medium",
+        "min_confirms_true": 1
+      },
+      {
+        "level": "low",
+        "default": true
+      }
+    ]
+  }
+}
