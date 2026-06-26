@@ -4,6 +4,8 @@ import { ExternalLink } from '../components/ExternalLink'
 
 import { CommandFooter } from '../components/CommandFooter'
 
+import { appHref } from '../appBase'
+
 import {
 
   fetchQueryEvalBatch,
@@ -454,6 +456,42 @@ function personaLabel(persona: string): string {
 
 
 
+function productionSystemLabel(productionSystem: string): string {
+
+  return productionSystem.replace(/_/g, ' ')
+
+}
+
+
+
+function normalizeDiagnosticsUrl(url: string): string {
+
+  try {
+
+    const parsed = new URL(url, window.location.origin)
+
+    const uid = parsed.searchParams.get('uid') || parsed.searchParams.get('mws')
+
+    const path = parsed.pathname.replace(/\/$/, '') || '/'
+
+    if (uid && (path === '/' || path.endsWith('/core-insights'))) {
+
+      return appHref(`/diagnose?uid=${encodeURIComponent(uid)}`)
+
+    }
+
+    return url
+
+  } catch {
+
+    return url
+
+  }
+
+}
+
+
+
 function PersonaSummaryTable({ batch }: { batch: QueryEvalBatch }) {
 
   const byPersona = new Map<string, { modes: Record<string, number[]>; queryCount: number }>()
@@ -576,6 +614,121 @@ function PersonaSummaryTable({ batch }: { batch: QueryEvalBatch }) {
 
 
 
+function aggregateScoresByProductionSystem(
+  batch: QueryEvalBatch,
+  includeRun: (run: QueryRun) => boolean,
+): Map<string, { modes: Record<string, number[]>; queryCount: number }> {
+  const byProductionSystem = new Map<string, { modes: Record<string, number[]>; queryCount: number }>()
+
+  for (const cs of batch.case_studies ?? []) {
+    for (const run of cs.query_runs ?? []) {
+      if (!includeRun(run)) continue
+
+      const productionSystem = run.production_system || cs.production_system || 'unknown'
+      const entry = byProductionSystem.get(productionSystem) ?? { modes: {}, queryCount: 0 }
+      entry.queryCount += 1
+
+      for (const mode of EVAL_MODES) {
+        const score = run.evaluations?.[mode]?.weighted_total
+        if (typeof score !== 'number' || run.evaluations?.[mode]?.error) continue
+        const rows = entry.modes[mode] ?? []
+        rows.push(score)
+        entry.modes[mode] = rows
+      }
+
+      byProductionSystem.set(productionSystem, entry)
+    }
+  }
+
+  return byProductionSystem
+}
+
+function ProductionSystemScoreTable({
+  title,
+  description,
+  byProductionSystem,
+}: {
+  title: string
+  description: string
+  byProductionSystem: Map<string, { modes: Record<string, number[]>; queryCount: number }>
+}) {
+  const productionSystems = [...byProductionSystem.keys()].sort((a, b) => a.localeCompare(b))
+  if (!productionSystems.length) return null
+
+  return (
+    <section className="rounded-lg border border-stone-200 bg-white p-4 shadow-sm">
+      <h2 className="text-sm font-semibold text-stone-900">{title}</h2>
+      <p className="mt-1 text-xs text-stone-500">{description}</p>
+      <div className="mt-3 overflow-x-auto">
+        <table className="w-full min-w-[32rem] text-sm">
+          <thead>
+            <tr className="border-b border-stone-200 text-left text-xs text-stone-500">
+              <th className="py-2 pr-4 font-medium">Production system</th>
+              {EVAL_MODES.map((mode) => (
+                <th key={mode} className="py-2 pr-4 font-medium">
+                  {MODE_LABELS[mode]}
+                </th>
+              ))}
+              <th className="py-2 font-medium">Queries</th>
+            </tr>
+          </thead>
+          <tbody>
+            {productionSystems.map((productionSystem) => {
+              const entry = byProductionSystem.get(productionSystem) ?? { modes: {}, queryCount: 0 }
+              return (
+                <tr key={productionSystem} className="border-b border-stone-100 align-top">
+                  <td className="py-2 pr-4 font-medium text-stone-800">
+                    {productionSystemLabel(productionSystem)}
+                  </td>
+                  {EVAL_MODES.map((mode) => {
+                    const stats = meanStd(entry.modes[mode] ?? [])
+                    return (
+                      <td key={mode} className="py-2 pr-4 font-mono text-xs text-stone-700">
+                        {stats ? formatMeanStd(stats.mean, stats.std) : '—'}
+                      </td>
+                    )
+                  })}
+                  <td className="py-2 font-mono text-xs text-stone-600">{entry.queryCount || '—'}</td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  )
+}
+
+function isDiagnosticsEngineRun(run: QueryRun): boolean {
+  return run.query_id === 'Q000' || run.persona === 'diagnostics_engine'
+}
+
+function ProductionSystemSummaryTable({ batch }: { batch: QueryEvalBatch }) {
+  const diagnosticsByPs = aggregateScoresByProductionSystem(batch, isDiagnosticsEngineRun)
+  const personaByPs = aggregateScoresByProductionSystem(batch, (run) => !isDiagnosticsEngineRun(run))
+
+  const hasDiagnostics = diagnosticsByPs.size > 0
+  const hasPersona = personaByPs.size > 0
+  if (!hasDiagnostics && !hasPersona) return null
+
+  return (
+    <div className="space-y-4">
+      <ProductionSystemScoreTable
+        title="Score summary by production system — diagnostics engine (Q000)"
+        description="Mean ± std dev across multi-system Q000 runs, grouped by query production system tag."
+        byProductionSystem={diagnosticsByPs}
+      />
+      <ProductionSystemScoreTable
+        title="Score summary by production system — persona queries"
+        description="Mean ± std dev across bank queries (excluding Q000), grouped by production system."
+        byProductionSystem={personaByPs}
+      />
+    </div>
+  )
+}
+
+
+
 function CaseStudyCard({ row }: { row: CaseStudyEval }) {
 
   const location = [row.tehsil, row.district, row.state].filter(Boolean).join(', ')
@@ -622,7 +775,7 @@ function CaseStudyCard({ row }: { row: CaseStudyEval }) {
 
             <ExternalLink
 
-              to={row.diagnostics_url}
+              to={normalizeDiagnosticsUrl(row.diagnostics_url)}
 
               className="rounded bg-amber-100 px-3 py-1 text-sm font-medium text-amber-900 hover:bg-amber-200"
 
@@ -702,7 +855,9 @@ export function ReviewPage() {
 
         setBatches(sorted)
 
-        if (sorted.length) setSelectedBatchId(sorted[0].batch_id)
+        const preferred = sorted.find((row) => row.batch_id.includes('pilot_v3')) ?? sorted[0]
+
+        if (preferred) setSelectedBatchId(preferred.batch_id)
 
       })
 
@@ -856,6 +1011,8 @@ export function ReviewPage() {
 
             <PersonaSummaryTable batch={batch} />
 
+            <ProductionSystemSummaryTable batch={batch} />
+
             {(batch.case_studies ?? []).map((row) => (
 
               <CaseStudyCard key={`${row.case_study_id}-${row.mws_id}`} row={row} />
@@ -886,21 +1043,21 @@ export function ReviewPage() {
 
             {
 
-              label: 'Augment pilot batch (re-eval all modes)',
+              label: 'Augment pilot v3 batch (repair links + re-eval)',
 
               command:
 
-                '.\\.venv\\Scripts\\python.exe scripts/eval/augment_query_eval_batch.py --batch-id query_eval__pilot_v2_20260625T131416Z --force-re-eval',
+                '.\\.venv\\Scripts\\python.exe scripts/eval/augment_query_eval_batch.py --batch-id query_eval__pilot_v3_20260626T184910Z --force-re-eval',
 
             },
 
             {
 
-              label: 'New pilot run',
+              label: 'Append agriculture case study to pilot v3',
 
               command:
 
-                '.\\.venv\\Scripts\\python.exe scripts/eval/run_query_eval.py --case-study-id 5 --limit-queries 2 --batch-label pilot',
+                '.\\.venv\\Scripts\\python.exe scripts/eval/run_query_eval.py --append --case-study-id 5 --query-id Q000 --query-id Q001 --query-id Q003 --query-id Q020 --batch-label pilot_v3',
 
             },
 

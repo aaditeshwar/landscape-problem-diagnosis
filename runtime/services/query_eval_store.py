@@ -35,7 +35,7 @@ def batch_manifest_path(batch_id: str) -> Path:
     return batch_dir(batch_id) / "manifest.json"
 
 
-def list_batches() -> list[dict[str, Any]]:
+def list_batches(*, include_dry_run: bool = False) -> list[dict[str, Any]]:
     if not EVAL_DIR.is_dir():
         return []
     batches: list[dict[str, Any]] = []
@@ -49,9 +49,24 @@ def list_batches() -> list[dict[str, Any]]:
             manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         except (json.JSONDecodeError, OSError):
             continue
-        if isinstance(manifest, dict):
-            batches.append(manifest)
+        if not isinstance(manifest, dict):
+            continue
+        if manifest.get("dry_run") and not include_dry_run:
+            continue
+        batches.append(manifest)
     return batches
+
+
+def latest_batch_id_for_label(label: str) -> str | None:
+    """Return the newest batch id for a label slug (e.g. pilot_v3)."""
+    slug = re.sub(r"[^a-zA-Z0-9_-]+", "_", label.strip())[:48] or "run"
+    prefix = f"{BATCH_PREFIX}{slug}_"
+    matches = sorted(
+        path.name
+        for path in EVAL_DIR.iterdir()
+        if path.is_dir() and path.name.startswith(prefix) and (path / "manifest.json").is_file()
+    )
+    return matches[-1] if matches else None
 
 
 def load_batch(batch_id: str) -> dict[str, Any]:

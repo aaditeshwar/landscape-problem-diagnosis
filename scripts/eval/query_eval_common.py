@@ -33,7 +33,7 @@ def feedback_url(frontend_base: str, diagnosis: dict[str, Any]) -> str:
 
 def diagnostics_url(frontend_base: str, mws_id: str) -> str:
     base = frontend_base.rstrip("/")
-    return f"{base}/?uid={quote(mws_id, safe='')}"
+    return f"{base}/diagnose?uid={quote(mws_id, safe='')}"
 
 
 def session_ref(diagnosis: dict[str, Any], frontend_base: str) -> dict[str, Any]:

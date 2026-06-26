@@ -15,6 +15,7 @@ import { DiagnosisPanel } from '../components/DiagnosisPanel'
 import { InfoPanel } from '../components/InfoPanel'
 import { LocationSearch } from '../components/LocationSearch'
 import { MapView } from '../components/MapView'
+import { PanelResizeHandle } from '../components/PanelResizeHandle'
 import type { DiagnosisResponse, FeatureCollection, FollowUpExchange, MwsDocument, MwsFeatureCollection, TehsilFeatureCollection, TehsilRef } from '../types'
 import {
   askedQuestionsFromHistory,
@@ -24,6 +25,23 @@ import {
 
 function tehsilKey(ref: TehsilRef): string {
   return `${ref.state}__${ref.district}__${ref.tehsil}`
+}
+
+const LEFT_PANEL_WIDTH_KEY = 'diagnose-left-panel-width'
+const RIGHT_PANEL_WIDTH_KEY = 'diagnose-right-panel-width'
+const DEFAULT_LEFT_PANEL_WIDTH = 320
+const DEFAULT_RIGHT_PANEL_WIDTH = 380
+
+function clampPanelWidth(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value))
+}
+
+function readStoredPanelWidth(key: string, fallback: number): number {
+  if (typeof window === 'undefined') return fallback
+  const stored = window.localStorage.getItem(key)
+  if (!stored) return fallback
+  const parsed = Number(stored)
+  return Number.isFinite(parsed) ? parsed : fallback
 }
 
 export function DiagnosisApp() {
@@ -53,6 +71,17 @@ export function DiagnosisApp() {
   const [diagnosisSessionTehsil, setDiagnosisSessionTehsil] = useState<TehsilRef | null>(null)
   const [analysisMwsDoc, setAnalysisMwsDoc] = useState<MwsDocument | null>(null)
   const [mwsHighlightEpoch, setMwsHighlightEpoch] = useState(0)
+  const [leftPanelWidth, setLeftPanelWidth] = useState(() =>
+    readStoredPanelWidth(LEFT_PANEL_WIDTH_KEY, DEFAULT_LEFT_PANEL_WIDTH),
+  )
+  const [rightPanelWidth, setRightPanelWidth] = useState(() =>
+    readStoredPanelWidth(RIGHT_PANEL_WIDTH_KEY, DEFAULT_RIGHT_PANEL_WIDTH),
+  )
+  const [mapLayoutEpoch, setMapLayoutEpoch] = useState(0)
+  const leftPanelWidthRef = useRef(leftPanelWidth)
+  const rightPanelWidthRef = useRef(rightPanelWidth)
+  leftPanelWidthRef.current = leftPanelWidth
+  rightPanelWidthRef.current = rightPanelWidth
 
   const activeSessionId = sessionId ?? diagnosis?.session_id ?? null
   const askedVariables = useMemo(() => askedVariablesFromHistory(followUpHistory), [followUpHistory])
@@ -535,6 +564,28 @@ export function DiagnosisApp() {
 
   const clearFlyTarget = useCallback(() => setFlyTarget(null), [])
 
+  const persistPanelWidths = useCallback(() => {
+    window.localStorage.setItem(LEFT_PANEL_WIDTH_KEY, String(leftPanelWidthRef.current))
+    window.localStorage.setItem(RIGHT_PANEL_WIDTH_KEY, String(rightPanelWidthRef.current))
+    setMapLayoutEpoch((value) => value + 1)
+  }, [])
+
+  const handleLeftPanelDrag = useCallback((deltaX: number) => {
+    setLeftPanelWidth((width) => {
+      const next = clampPanelWidth(width + deltaX, 240, 520)
+      leftPanelWidthRef.current = next
+      return next
+    })
+  }, [])
+
+  const handleRightPanelDrag = useCallback((deltaX: number) => {
+    setRightPanelWidth((width) => {
+      const next = clampPanelWidth(width - deltaX, 280, 560)
+      rightPanelWidthRef.current = next
+      return next
+    })
+  }, [])
+
   const ingestedCount = ingestedKeys.size
 
   return (
@@ -568,8 +619,11 @@ export function DiagnosisApp() {
         </div>
       </header>
 
-      <div className="grid min-h-0 flex-1 grid-cols-[320px_1fr_380px]">
-        <aside className="flex min-h-0 flex-col border-r border-stone-300 bg-[#faf7f2]">
+      <div className="flex min-h-0 flex-1">
+        <aside
+          className="flex min-h-0 shrink-0 flex-col border-r border-stone-300 bg-[#faf7f2]"
+          style={{ width: leftPanelWidth }}
+        >
           <LocationSearch onSelect={handleLocationSelect} disabled={diagnosisLoading} />
           <DiagnosisPanel
             selectedMwsUid={selectedMwsUid}
@@ -607,7 +661,9 @@ export function DiagnosisApp() {
           />
         </aside>
 
-        <main className="relative min-h-0">
+        <PanelResizeHandle onDrag={handleLeftPanelDrag} onDragEnd={persistPanelWidths} />
+
+        <main className="relative min-h-0 min-w-0 flex-1">
           {mapError && (
             <div className="absolute left-3 right-3 top-3 z-[1000] rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 shadow">
               {mapError}
@@ -620,6 +676,7 @@ export function DiagnosisApp() {
             selectedTehsil={selectedTehsil}
             selectedMwsUid={selectedMwsUid}
             mwsHighlightEpoch={mwsHighlightEpoch}
+            layoutEpoch={mapLayoutEpoch}
             showVillages={showVillages}
             flyTarget={flyTarget}
             onFlyComplete={clearFlyTarget}
@@ -636,7 +693,12 @@ export function DiagnosisApp() {
           />
         </main>
 
-        <aside className="min-h-0 border-l border-stone-300 bg-[#faf7f2]">
+        <PanelResizeHandle onDrag={handleRightPanelDrag} onDragEnd={persistPanelWidths} />
+
+        <aside
+          className="min-h-0 shrink-0 border-l border-stone-300 bg-[#faf7f2]"
+          style={{ width: rightPanelWidth }}
+        >
           <InfoPanel
             mws={mwsData}
             loading={mwsLoading}

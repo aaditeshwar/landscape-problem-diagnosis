@@ -69,3 +69,13 @@ export function mergeSectionDraft(
     },
   }
 }
+
+/** Feedback page: server auto-reasoning embeds a truncated evidence-note excerpt (diagnosis app keeps it short). */
+export function expandPathwayAutoReasoning(autoReasoning: string, fullReasoningNote?: string): string {
+  const note = fullReasoningNote?.trim()
+  if (!note || !autoReasoning.includes('Evidence note:')) {
+    return autoReasoning
+  }
+  const head = autoReasoning.replace(/\s*Evidence note:\s*.+$/s, '').trimEnd()
+  return `${head} Evidence note: ${note}`
+}

@@ -11,6 +11,7 @@ interface Props {
   selectedTehsil: TehsilRef | null
   selectedMwsUid: string | null
   mwsHighlightEpoch?: number
+  layoutEpoch?: number
   showVillages: boolean
   flyTarget: { lat: number; lon: number; zoom?: number; seq: number } | null
   onFlyComplete?: () => void
@@ -72,6 +73,16 @@ function FlyToTarget({
   return null
 }
 
+function InvalidateMapSize({ layoutEpoch }: { layoutEpoch?: number }) {
+  const map = useMap()
+  useEffect(() => {
+    if (layoutEpoch == null) return
+    const timer = window.setTimeout(() => map.invalidateSize(), 0)
+    return () => window.clearTimeout(timer)
+  }, [layoutEpoch, map])
+  return null
+}
+
 export function MapView({
   tehsils,
   mwsBoundaries,
@@ -79,6 +90,7 @@ export function MapView({
   selectedTehsil,
   selectedMwsUid,
   mwsHighlightEpoch = 0,
+  layoutEpoch = 0,
   showVillages,
   flyTarget,
   onFlyComplete,
@@ -207,6 +219,7 @@ export function MapView({
         <FitBounds data={visibleMws} layerKey={activeTehsilKey} focusUid={selectedMwsUid} />
       )}
       <FlyToTarget target={flyTarget} onComplete={onFlyComplete} />
+      <InvalidateMapSize layoutEpoch={layoutEpoch} />
     </MapContainer>
   )
 }

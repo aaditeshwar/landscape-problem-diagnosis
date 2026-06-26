@@ -112,6 +112,8 @@ export type QueryRun = {
 
   persona?: string
 
+  production_system?: string
+
   query?: string
 
   sessions: Record<string, SessionRef>

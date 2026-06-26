@@ -25,6 +25,7 @@ from eval.pathway_agreement import query_run_agreement  # noqa: E402
 from eval.query_bank_index import built_systems_query  # noqa: E402
 from eval.query_eval_common import (  # noqa: E402
     EVAL_MODES,
+    diagnostics_url,
     evaluation_artifact_name,
     feedback_url,
     load_evaluation_artifact,
@@ -84,6 +85,12 @@ def _query_dict(query_run: dict[str, Any]) -> dict[str, Any]:
         "query": query_run.get("query") or "",
         "expected_pathway_candidates": query_run.get("expected_pathway_candidates") or [],
     }
+
+
+def _repair_diagnostics_urls(cs_entry: dict[str, Any], *, frontend_base: str) -> None:
+    mws_id = str(cs_entry.get("mws_id") or "")
+    if mws_id:
+        cs_entry["diagnostics_url"] = diagnostics_url(frontend_base, mws_id)
 
 
 def _repair_session_refs(
@@ -199,6 +206,8 @@ def augment_batch(
         case_study_id = int(cs_entry.get("case_study_id") or 0)
         mws_id = str(cs_entry.get("mws_id") or "")
         print(f"Augmenting case study {case_study_id} · {mws_id}")
+
+        _repair_diagnostics_urls(cs_entry, frontend_base=frontend_base)
 
         _repair_session_refs(
             cs_entry,
