@@ -159,7 +159,8 @@ def list_catalog_manifests() -> list[dict[str, Any]]:
         return []
     manifests: list[dict[str, Any]] = []
     for path in sorted(PATCHES_DIR.glob("*.json")):
-        doc = load_catalog_doc(path.name, prune_stale=True)
+        doc = load_catalog_doc(path.name, prune_stale=False)
+        doc = enrich_catalog_doc(doc)
         cards = doc.get("cards") or {}
         if not isinstance(cards, dict) or not cards:
             continue
@@ -235,8 +236,8 @@ def is_catalog_patch_stale(
 
     stored_digest = entry.get("raw_card_digest")
     if raw_card is not None and stored_digest:
-        if card_digest(raw_card) != stored_digest:
-            return True
+        # Digest is authoritative; do not also compare mtime (git pull resets mtimes).
+        return card_digest(raw_card) != stored_digest
 
     patch_updated = _parse_iso_timestamp(entry.get("updated_at"))
     raw_path = RAW_DIR / f"{card_id}.json"

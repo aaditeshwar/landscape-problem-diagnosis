@@ -231,7 +231,7 @@ def triage_save_draft(card_id: str, body: SaveDraftBody):
 
 @router.get("/patches/{catalog_filename}")
 def triage_get_catalog_patches(catalog_filename: str):
-    doc = patch_store.load_catalog_doc(catalog_filename, prune_stale=True)
+    doc = patch_store.load_catalog_doc(catalog_filename, prune_stale=False)
     return patch_store.enrich_catalog_doc(doc)
 
 
