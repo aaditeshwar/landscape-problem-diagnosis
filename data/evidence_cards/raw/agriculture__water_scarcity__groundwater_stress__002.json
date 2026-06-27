@@ -29,10 +29,7 @@
   "diagnostic_signals": [
     {
       "signal_id": "sig_01",
-      "variables": [
-        "soge_dev_percent",
-        "soge_class_name"
-      ],
+      "variables": [],
       "condition": {
         "type": "quantitative",
         "expression": "soge_dev_percent > 90 or soge_class_name in ['Critical', 'Over-exploited']",
@@ -49,9 +46,7 @@
     },
     {
       "signal_id": "sig_02",
-      "variables": [
-        "mean_annual_delta_g_mm"
-      ],
+      "variables": [],
       "condition": {
         "type": "trend",
         "expression": "mean_annual_delta_g_mm < 0",
@@ -67,10 +62,7 @@
     },
     {
       "signal_id": "sig_03",
-      "variables": [
-        "aquifer_class",
-        "acwadam_class_percent"
-      ],
+      "variables": [],
       "condition": {
         "type": "composite",
         "expression": "aquifer_class in ['crystalline_basement'] and acwadam_class_percent.get('alluvium', 0) < 20",
@@ -87,9 +79,7 @@
     },
     {
       "signal_id": "sig_04",
-      "variables": [
-        "nrega_swc_count"
-      ],
+      "variables": [],
       "condition": {
         "type": "quantitative",
         "expression": "nrega_swc_count < 10",

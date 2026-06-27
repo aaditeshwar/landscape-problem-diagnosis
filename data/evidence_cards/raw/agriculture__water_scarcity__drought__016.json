@@ -24,15 +24,13 @@
     {
       "signal_id": "sig_01",
       "variables": [
-        "drought_severe_return_period",
-        "drought_moderate_return_period"
+        "drought_severe_return_period"
       ],
       "condition": {
         "type": "quantitative",
         "expression": "drought_severe_return_period <= 4 or drought_moderate_return_period <= 4",
         "variables": [
-          "drought_severe_return_period",
-          "drought_moderate_return_period"
+          "drought_severe_return_period"
         ],
         "qualitative_description": "Severe drought return period is 4 years or less, or moderate drought return period is 4 years or less, indicating recurrent drought episodes sufficient to cause significant crop water stress and yield loss."
       },
@@ -43,10 +41,7 @@
     },
     {
       "signal_id": "sig_02",
-      "variables": [
-        "mean",
-        "dry_spell_weeks"
-      ],
+      "variables": [],
       "condition": {
         "type": "quantitative",
         "expression": "mean(dry_spell_weeks) >= 3",
@@ -64,8 +59,6 @@
     {
       "signal_id": "sig_03",
       "variables": [
-        "mean_annual_precipitation_mm",
-        "trend_annual_precipitation_mm",
         "seasonal_precipitation_mm"
       ],
       "condition": {
@@ -73,8 +66,6 @@
         "expression": "mean_annual_precipitation_mm < 150 and (trend_annual_precipitation_mm < -2) and (seasonal_precipitation_mm[-1].get('kharif', 0) < 0.6 * (sum(v.get('kharif', 0) for v in list(seasonal_precipitation_mm.values())[:-1]) / max(len(seasonal_precipitation_mm) - 1, 1)))",
         "qualitative_description": "Mean annual precipitation is below 150 mm (arid threshold for Ladakh), the long-term trend is declining, and the most recent kharif seasonal total is below 60% of the multi-year kharif mean — confirming both chronic aridity and an acute deficit year.",
         "variables": [
-          "mean_annual_precipitation_mm",
-          "trend_annual_precipitation_mm",
           "seasonal_precipitation_mm"
         ]
       },
@@ -86,14 +77,14 @@
     {
       "signal_id": "sig_04",
       "variables": [
-        "monsoon_onset_date"
+        "monsoon_onset_delay_first_year_days"
       ],
       "condition": {
         "type": "trend",
-        "expression": "monsoon_onset_date[-1] > monsoon_onset_date[0]",
+        "expression": "monsoon_onset_delay_first_year_days > 0",
         "qualitative_description": "Monsoon onset date in the most recent year is later than the earliest year in the record, indicating a trend toward delayed onset that shortens the effective kharif season.",
         "variables": [
-          "monsoon_onset_date"
+          "monsoon_onset_delay_first_year_days"
         ]
       },
       "severity": "moderate",
@@ -103,11 +94,7 @@
     },
     {
       "signal_id": "sig_05",
-      "variables": [
-        "drought_mild_vci_score_latest",
-        "drought_mild_spi_score_latest",
-        "drought_severe_moderate_spi_score_latest"
-      ],
+      "variables": [],
       "condition": {
         "type": "quantitative",
         "expression": "(drought_mild_spi_score_latest >= 26 or drought_severe_moderate_spi_score_latest >= 26) and drought_mild_vci_score_latest >= 26",

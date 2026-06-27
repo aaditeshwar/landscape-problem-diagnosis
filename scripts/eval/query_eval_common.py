@@ -79,3 +79,34 @@ def response_artifact_name(case_study_id: int | str, query_id: str | None, mode:
 
 def evaluation_artifact_name(case_study_id: int | str, query_id: str, mode: str) -> str:
     return f"cs{case_study_id}__{query_id}__{mode}.json"
+
+
+def missing_query_run_artifacts(
+    batch_id: str,
+    case_study_id: int | str,
+    query_id: str,
+) -> list[str]:
+    """Return missing artifact labels for one query run across all eval modes."""
+    missing: list[str] = []
+    if not load_response_artifact(batch_id, response_artifact_name(case_study_id, None, "server")):
+        missing.append("server_resp")
+    if not load_response_artifact(batch_id, response_artifact_name(case_study_id, query_id, "llm_ollama")):
+        missing.append("llm_ollama_resp")
+    if not load_response_artifact(batch_id, response_artifact_name(case_study_id, query_id, "llm_claude")):
+        missing.append("llm_claude_resp")
+    for mode in EVAL_MODES:
+        if not load_evaluation_artifact(batch_id, evaluation_artifact_name(case_study_id, query_id, mode)):
+            missing.append(f"{mode}_eval")
+    return missing
+
+
+def query_run_artifacts_complete(batch_id: str, case_study_id: int | str, query_id: str) -> bool:
+    return not missing_query_run_artifacts(batch_id, case_study_id, query_id)
+
+
+def case_study_queries_complete(
+    batch_id: str,
+    case_study_id: int | str,
+    query_ids: list[str],
+) -> bool:
+    return all(query_run_artifacts_complete(batch_id, case_study_id, qid) for qid in query_ids)

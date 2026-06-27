@@ -152,7 +152,8 @@ python scripts/build_spatial_index.py
 
 # Variable dashboard (/dashboard) — precomputes CDF charts under data/triage_dashboard/
 # Sections = case-study catalog + evidence-card sections (empty charts when no built cards).
-python scripts/triage/build_variable_dashboard.py
+# After Excel re-ingest, pass --refresh-exports so raw_jsons/ and CDFs match fresh Mongo data.
+python scripts/triage/build_variable_dashboard.py --refresh-exports
 ```
 
 Verify Mongo before going live:

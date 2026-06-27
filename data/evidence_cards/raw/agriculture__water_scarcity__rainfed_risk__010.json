@@ -24,10 +24,7 @@
   "diagnostic_signals": [
     {
       "signal_id": "sig_01",
-      "variables": [
-        "mean_kharif_cropped_area_ha",
-        "mean_double_crop_area_ha"
-      ],
+      "variables": [],
       "condition": {
         "type": "quantitative",
         "expression": "(mean_kharif_cropped_area_ha  / (mean_kharif_cropped_area_ha + mean_double_crop_area_ha + 1e-9)) > 0.70",
@@ -62,10 +59,7 @@
     },
     {
       "signal_id": "sig_03",
-      "variables": [
-        "canal_name",
-        "nrega_irrigation_count"
-      ],
+      "variables": [],
       "condition": {
         "type": "composite",
         "expression": "canal_name is None and nrega_irrigation_count <= 35",
@@ -82,10 +76,7 @@
     },
     {
       "signal_id": "sig_04",
-      "variables": [
-        "mean_annual_runoff_mm",
-        "terrain_cluster_id"
-      ],
+      "variables": [],
       "condition": {
         "type": "composite",
         "expression": "mean_annual_runoff_mm > 600 and terrain_cluster_id == 1",
@@ -102,9 +93,7 @@
     },
     {
       "signal_id": "sig_05",
-      "variables": [
-        "mean_swb_rabi_kharif_ratio"
-      ],
+      "variables": [],
       "condition": {
         "type": "trend",
         "expression": "mean_swb_rabi_kharif_ratio < 0.25",

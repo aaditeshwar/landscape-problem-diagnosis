@@ -2,7 +2,37 @@
 
 > **Purpose:** Ready reckoner for scripts — what they do, when to run them, which plan introduced them, and known gotchas.  
 > **Quick index (commands only):** [`scripts/README.md`](../scripts/README.md)  
-> **Last updated:** 2026-06-26 (Plan 19 prose maintenance workflow + policy audit baseline)
+> **Last updated:** 2026-06-27 (post–re-ingest MWS export refresh workflow)
+
+---
+
+## Post Excel re-ingest — refresh `data/raw_jsons/`
+
+**When:** After `ingest_excel.py` / `batch_ingest_excel.py --force` updates Mongo `mws_data`.
+
+**Why:** Triage dashboards, signal tuning, and query eval read assembler-resolved variables from `data/raw_jsons/{uid}.json`. By default `ensure_mws_export()` **returns cached files** and does not detect stale Mongo data.
+
+**Required steps (in order):**
+
+```powershell
+# 1. Re-ingest (example)
+.\.venv\Scripts\python.exe scripts/batch_ingest_excel.py --force
+
+# 2a. Case-study snapshots (tuning, query eval MWS context, audits)
+.\.venv\Scripts\python.exe scripts/export_case_study_mws_variables.py
+
+# 2b. Full corpus cache + variable dashboard CDFs (always pass --refresh-exports after re-ingest)
+.\.venv\Scripts\python.exe scripts/triage/build_variable_dashboard.py --refresh-exports
+```
+
+| Step | Script | Scope |
+|------|--------|-------|
+| 2a | `export_case_study_mws_variables.py` | Case-study MWS only; always overwrites targets |
+| 2b | `triage/build_variable_dashboard.py --refresh-exports` | All `mws_data` UIDs → `raw_jsons/` + `data/triage_dashboard/` |
+
+**Gotcha:** Running `build_variable_dashboard.py` **without** `--refresh-exports` after re-ingest leaves stale variable values in charts and triage Play.
+
+**Related plans:** 14 (re-ingest / tuning), 18 (triage app)
 
 ---
 
@@ -108,6 +138,15 @@ py scripts/reload_evidence_cards.py --prefix <card_id>
 
 ---
 
+### `scripts/tuning/tune_pathway_signals.py`
+- **Category:** pipeline
+- **Purpose:** Fine-tune evidence-card signal thresholds against case-study corpora (Plan 14 Phase 3, algorithm v4)
+- **When:** After raw_jsons refresh; before applying card changes
+- **Produces:** `reports/signal_tuning/*`, `metadata/triage_patches/case_study_locations_signal_tuning.json`
+- **Depends on:** `data/raw_jsons/`, evidence cards, case-study catalog v3, variable registry
+- **Related plans:** 14, 18
+- **Gotchas:** Does not modify raw cards; review patches in triaging app; composite signals may get `GRID_TOO_LARGE`
+
 ## Pipeline (core data path)
 
 ### `scripts/ingest_excel.py`
@@ -118,7 +157,26 @@ py scripts/reload_evidence_cards.py --prefix <card_id>
 - **Produces:** Mongo collections; canonical drought nested keys on ingest
 - **Depends on:** `metadata/data_dictionary_v2.json`, `data/raw_excel/*.xlsx`
 - **Related plans:** 05, 09, 08 (multi-tehsil)
-- **Gotchas:** Drought keys normalized to canonical names; stale Mongo if Excel re-ingested without this script
+- **Gotchas:** Drought keys normalized to canonical names; after re-ingest run **Post Excel re-ingest** checklist (refresh `raw_jsons/`)
+
+### `scripts/export_case_study_mws_variables.py`
+- **Category:** pipeline
+- **Purpose:** Export assembler-resolved variables for case-study MWS → `data/raw_jsons/{uid}.json`
+- **When:** After re-ingest; before signal tuning / query eval; ad hoc (`--uid`)
+- **Added:** Plan 14 (~2026-06)
+- **Produces:** JSON with `present_variables`, `derived_variables`, `case_study_refs`
+- **Depends on:** Mongo `mws_data`, case-study catalog, `services/mws_export.py`
+- **Related plans:** 14, 18
+- **Gotchas:** Overwrites listed UIDs only; full corpus refresh uses dashboard script
+
+### `scripts/triage/build_variable_dashboard.py`
+- **Category:** pipeline
+- **Purpose:** Precompute variable CDF dashboards → `data/triage_dashboard/`; may populate all `raw_jsons/`
+- **When:** After re-ingest with `--refresh-exports`; add dashboard variables (`--add-variable`)
+- **Added:** Plan 18 (~2026-06)
+- **Depends on:** Mongo `mws_data`, evidence cards, case-study catalog
+- **Related plans:** 18
+- **Gotchas:** Without `--refresh-exports`, serves stale cached `raw_jsons/` after re-ingest
 
 ### `scripts/sync_active_excels.py`
 - **Category:** pipeline

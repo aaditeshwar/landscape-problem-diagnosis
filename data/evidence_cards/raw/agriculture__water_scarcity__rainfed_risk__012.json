@@ -23,10 +23,7 @@
   "diagnostic_signals": [
     {
       "signal_id": "sig_01",
-      "variables": [
-        "mean_kharif_cropped_area_ha",
-        "mean_double_crop_area_ha"
-      ],
+      "variables": [],
       "condition": {
         "type": "quantitative",
         "expression": "(mean_kharif_cropped_area_ha / (mean_kharif_cropped_area_ha + mean_double_crop_area_ha + 1e-9)) > 0.75",
@@ -61,10 +58,7 @@
     },
     {
       "signal_id": "sig_03",
-      "variables": [
-        "mean_annual_runoff_mm",
-        "terrain_cluster_id"
-      ],
+      "variables": [],
       "condition": {
         "type": "composite",
         "expression": "mean_annual_runoff_mm > 600 and terrain_cluster_id == 3",
@@ -81,10 +75,7 @@
     },
     {
       "signal_id": "sig_04",
-      "variables": [
-        "nrega_irrigation_count",
-        "canal_name"
-      ],
+      "variables": [],
       "condition": {
         "type": "composite",
         "expression": "nrega_irrigation_count <= 35 and canal_name is None",

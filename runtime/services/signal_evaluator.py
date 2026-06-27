@@ -345,10 +345,19 @@ def _wrap_eval_value(value: Any) -> Any:
 
 def merge_export_variables(export: dict[str, Any]) -> dict[str, Any]:
     """Combine present_variables and derived_variables from a case-study export."""
+    from services.derived_variables import ASSEMBLER_DERIVED_VARIABLE_NAMES, mws_stub_from_present_variables, resolve_derived
+
     merged = dict(export.get("present_variables") or {})
     merged.update(export.get("derived_variables") or {})
     for name in export.get("missing_variables") or []:
         merged.setdefault(name, None)
+    stub = mws_stub_from_present_variables(merged)
+    for name in ASSEMBLER_DERIVED_VARIABLE_NAMES:
+        if merged.get(name) is not None:
+            continue
+        value = resolve_derived(stub, name)
+        if value is not None:
+            merged[name] = value
     return merged
 
 
@@ -399,6 +408,15 @@ def eval_context(present_variables: dict[str, Any], injected: dict[str, Any] | N
             ctx[name] = 999.0
         else:
             ctx[name] = 0
+    from services.derived_variables import ASSEMBLER_DERIVED_VARIABLE_NAMES, mws_stub_from_present_variables, resolve_derived
+
+    stub = mws_stub_from_present_variables(present_variables or {})
+    for name in ASSEMBLER_DERIVED_VARIABLE_NAMES:
+        if ctx.get(name) is not None:
+            continue
+        value = resolve_derived(stub, name)
+        if value is not None:
+            ctx[name] = value
     for key, value in list(ctx.items()):
         if value is not None:
             continue
@@ -413,7 +431,7 @@ def eval_context(present_variables: dict[str, Any], injected: dict[str, Any] | N
         elif key in _STATIC_DICT_WHEN_NULL:
             ctx[key] = {}
         elif key in _NUMERIC_DERIVED_DEFAULTS or key.startswith(
-            ("dist_", "cd_", "nrega_", "village_", "soge_", "mean_", "trend_", "drought_", "swb_", "slopy_")
+            ("dist_", "cd_", "nrega_", "village_", "soge_", "mean_", "trend_", "drought_", "swb_", "slopy_", "monsoon_onset_", "lulc_cropland_")
         ):
             ctx[key] = 0
     return ctx
@@ -624,7 +642,6 @@ def _variable_values_for_expression(expression: str, variables: dict[str, Any]) 
         value = resolve_access_value(access, lookup)
         rows.append({"access": access, "formatted": format_access_value(value)})
     return rows
-
 
 def evaluate_pathway_signals(
     pathway_data: dict[str, Any],

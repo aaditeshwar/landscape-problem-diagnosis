@@ -24,11 +24,7 @@
   "diagnostic_signals": [
     {
       "signal_id": "sig_01",
-      "variables": [
-        "trend_swb_total_area_ha",
-        "swb_total_area_ha",
-        "mean_swb_total_area_ha"
-      ],
+      "variables": [],
       "condition": {
         "type": "trend",
         "expression": "trend_swb_total_area_ha < 1 or (swb_total_area_ha[-1] < mean_swb_total_area_ha * 0.85)",
@@ -46,9 +42,7 @@
     },
     {
       "signal_id": "sig_02",
-      "variables": [
-        "mean_swb_rabi_kharif_ratio"
-      ],
+      "variables": [],
       "condition": {
         "type": "quantitative",
         "expression": "mean_swb_rabi_kharif_ratio < 0.35",
@@ -64,9 +58,7 @@
     },
     {
       "signal_id": "sig_03",
-      "variables": [
-        "nrega_swc_count"
-      ],
+      "variables": [],
       "condition": {
         "type": "quantitative",
         "expression": "nrega_swc_count <= 20",
@@ -82,10 +74,7 @@
     },
     {
       "signal_id": "sig_04",
-      "variables": [
-        "swb_count",
-        "dist_cooperative_km"
-      ],
+      "variables": [],
       "condition": {
         "type": "composite",
         "expression": "(swb_count <= 15) and (dist_cooperative_km > 15)",

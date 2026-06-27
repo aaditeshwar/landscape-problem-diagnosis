@@ -402,7 +402,7 @@ def build_section_dashboard(
     }
 
 
-def load_all_exports(db, *, limit: int | None = None) -> dict[str, dict[str, Any]]:
+def load_all_exports(db, *, limit: int | None = None, force_refresh: bool = False) -> dict[str, dict[str, Any]]:
     exports: dict[str, dict[str, Any]] = {}
     cursor = db.mws_data.find({}, {"uid": 1})
     if limit:
@@ -411,7 +411,7 @@ def load_all_exports(db, *, limit: int | None = None) -> dict[str, dict[str, Any
         uid = str(doc.get("uid") or "").strip()
         if not uid:
             continue
-        export = ensure_mws_export(db, uid)
+        export = ensure_mws_export(db, uid, force_refresh=force_refresh)
         if export and has_minimum_export_coverage(export):
             exports[uid] = export
     return exports
@@ -431,11 +431,16 @@ def main() -> int:
     parser.add_argument("--section", action="append", help="Only build Agriculture/water_scarcity (repeatable)")
     parser.add_argument("--add-variable", action="append", help="Extra variable access key for all built sections")
     parser.add_argument("--limit-mws", type=int, help="Limit MWS count (debug)")
+    parser.add_argument(
+        "--refresh-exports",
+        action="store_true",
+        help="Re-export every MWS from Mongo (required after Excel re-ingest; default reads cached raw_jsons)",
+    )
     args = parser.parse_args()
 
     db = get_db()
     print("Loading global MWS exports…")
-    exports = load_all_exports(db, limit=args.limit_mws)
+    exports = load_all_exports(db, limit=args.limit_mws, force_refresh=args.refresh_exports)
     print(f"  {len(exports)} MWS with export coverage")
 
     sections = dashboard_sections(args.catalog)

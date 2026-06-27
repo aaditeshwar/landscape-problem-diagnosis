@@ -2,7 +2,11 @@ import { useEffect, useState } from 'react'
 
 import { ExternalLink } from '../components/ExternalLink'
 
+import { RubricHint } from '../components/RubricHint'
+
 import { CommandFooter } from '../components/CommandFooter'
+
+import { DIMENSION_IDS, RUBRIC_DIMENSIONS, RUBRIC_ERROR_FLAGS, dimensionScorePct, dimensionScoreTooltip, formatDimensionScore, rubricTooltip } from '../eval/evalRubricHelp'
 
 import { appHref } from '../appBase'
 
@@ -37,6 +41,26 @@ const MODE_LABELS: Record<string, string> = {
   server_plus_llm_ollama: 'Srv+Ollama',
 
   llm_claude: 'Claude',
+
+}
+
+
+
+const OUTDATED_EVAL_MODES = new Set(['llm_ollama', 'server_plus_llm_ollama'])
+
+
+
+function evalModeLabel(mode: string, markOutdated = false): string {
+
+  const base = MODE_LABELS[mode] ?? mode
+
+  if (markOutdated && OUTDATED_EVAL_MODES.has(mode)) {
+
+    return `${base} (outdated)`
+
+  }
+
+  return base
 
 }
 
@@ -262,7 +286,36 @@ function SessionLinks({
 
 
 
-function CollapsedScores({ run }: { run: QueryRun }) {
+function RubricLegend() {
+  return (
+    <div className="rounded border border-stone-200 bg-stone-50 px-3 py-2 text-xs text-stone-600">
+      <p className="font-medium text-stone-700">Evaluation rubric</p>
+      <p className="mt-1 text-xs text-stone-500">
+        Dimensions scored 0–3 (shown as % of max). Weighted total is 0–100%.
+      </p>
+      <p className="mt-1">
+        <span className="mr-2 font-medium text-stone-500">Dimensions:</span>
+        {DIMENSION_IDS.map((id, index) => (
+          <span key={id}>
+            {index > 0 ? ' · ' : null}
+            <RubricHint id={id} />
+          </span>
+        ))}
+      </p>
+      <p className="mt-1">
+        <span className="mr-2 font-medium text-stone-500">Error flags:</span>
+        {Object.keys(RUBRIC_ERROR_FLAGS).map((id, index) => (
+          <span key={id}>
+            {index > 0 ? ' · ' : null}
+            <RubricHint id={id} />
+          </span>
+        ))}
+      </p>
+    </div>
+  )
+}
+
+function CollapsedScores({ run, markOutdatedModes = false }: { run: QueryRun; markOutdatedModes?: boolean }) {
 
   return (
 
@@ -272,7 +325,11 @@ function CollapsedScores({ run }: { run: QueryRun }) {
 
         <span key={mode} className="inline-flex items-center gap-1 rounded bg-stone-50 px-1.5 py-0.5">
 
-          <span className="text-[10px] uppercase tracking-wide text-stone-500">{MODE_LABELS[mode]}</span>
+          <span className="text-[10px] uppercase tracking-wide text-stone-500">
+
+            {evalModeLabel(mode, markOutdatedModes)}
+
+          </span>
 
           {scoreCell(run.evaluations[mode])}
 
@@ -291,6 +348,8 @@ function CollapsedScores({ run }: { run: QueryRun }) {
 function QueryRunRow({ run, serverSession }: { run: QueryRun; serverSession?: { feedback_url?: string } }) {
 
   const [open, setOpen] = useState(false)
+
+  const markOutdatedModes = isDiagnosticsEngineRun(run)
 
   const sessionsWithServer = {
 
@@ -328,7 +387,7 @@ function QueryRunRow({ run, serverSession }: { run: QueryRun; serverSession?: { 
 
           </div>
 
-          {!open ? <CollapsedScores run={run} /> : null}
+          {!open ? <CollapsedScores run={run} markOutdatedModes={markOutdatedModes} /> : null}
 
           {!open ? <AgreementStrip agreement={run.agreement} /> : null}
 
@@ -356,6 +415,18 @@ function QueryRunRow({ run, serverSession }: { run: QueryRun; serverSession?: { 
 
                 <th className="py-1 text-left font-medium">Score</th>
 
+                {DIMENSION_IDS.map((id) => (
+
+                  <th key={id} className="py-1 px-1 text-left font-medium">
+
+                    <RubricHint id={id} />
+
+                  </th>
+
+                ))}
+
+                <th className="py-1 text-left font-medium">Flags</th>
+
                 <th className="py-1 text-left font-medium">Summary</th>
 
               </tr>
@@ -372,9 +443,95 @@ function QueryRunRow({ run, serverSession }: { run: QueryRun; serverSession?: { 
 
                   <tr key={mode} className="align-top">
 
-                    <td className="py-1 pr-3 text-stone-700">{MODE_LABELS[mode]}</td>
+                    <td className="py-1 pr-3 text-stone-700">{evalModeLabel(mode, markOutdatedModes)}</td>
 
                     <td className="py-1 pr-3">{scoreCell(ev)}</td>
+
+                    {DIMENSION_IDS.map((id) => {
+
+                      const dim = ev?.dimension_scores?.[id]
+
+                      const dimScore = dim?.score
+
+                      return (
+
+                        <td
+
+                          key={id}
+
+                          className="py-1 px-1 font-mono text-stone-700"
+
+                          title={typeof dimScore === 'number' ? dimensionScoreTooltip(dimScore, dim?.justification) : dim?.justification}
+
+                        >
+
+                          {typeof dimScore === 'number' ? formatDimensionScore(dimScore) : '—'}
+
+                        </td>
+
+                      )
+
+                    })}
+
+                    <td className="py-1 pr-3">
+
+                      {ev?.error_flags_triggered?.length ? (
+
+                        <div className="flex flex-wrap gap-1">
+
+                          {ev.error_flags_triggered.map((flag, index) => {
+
+                            const flagId = flag.flag_id || `EF?${index}`
+
+                            return (
+
+                              <span
+
+                                key={`${flagId}-${index}`}
+
+                                className="rounded bg-red-50 px-1 font-mono text-[10px] text-red-700"
+
+                                title={
+
+                                  flag.detail
+
+                                    ? `${rubricTooltip(RUBRIC_ERROR_FLAGS[flagId] ?? { id: flagId, name: flagId, description: flag.detail })} — ${flag.detail}`
+
+                                    : rubricTooltip(
+
+                                        RUBRIC_ERROR_FLAGS[flagId] ?? {
+
+                                          id: flagId,
+
+                                          name: flagId,
+
+                                          description: 'Rubric error flag',
+
+                                        },
+
+                                      )
+
+                                }
+
+                              >
+
+                                <RubricHint id={flagId} className="border-none" />
+
+                              </span>
+
+                            )
+
+                          })}
+
+                        </div>
+
+                      ) : (
+
+                        <span className="text-stone-400">—</span>
+
+                      )}
+
+                    </td>
 
                     <td className="py-1 text-stone-600">
 
@@ -448,6 +605,382 @@ function formatMeanStd(mean: number, std: number): string {
 
 
 
+type ScoreBucket = {
+
+  modes: Record<string, number[]>
+
+  queryCount: number
+
+  caseStudyIds: Set<number>
+
+  errorFlagsByMode: Record<string, Record<string, number>>
+
+  runtimeErrorsByMode: Record<string, number>
+
+  dimensionScoresByMode: Record<string, Record<string, number[]>>
+
+}
+
+
+
+type ScoreTableRow = {
+
+  key: string
+
+  label: string
+
+  bucket: ScoreBucket
+
+  indent?: boolean
+
+}
+
+
+
+function emptyScoreBucket(): ScoreBucket {
+
+  return {
+
+    modes: {},
+
+    queryCount: 0,
+
+    caseStudyIds: new Set(),
+
+    errorFlagsByMode: {},
+
+    runtimeErrorsByMode: {},
+
+    dimensionScoresByMode: {},
+
+  }
+
+}
+
+
+
+function addQueryRunToBucket(bucket: ScoreBucket, caseStudyId: number, run: QueryRun) {
+
+  bucket.queryCount += 1
+
+  bucket.caseStudyIds.add(caseStudyId)
+
+  for (const mode of EVAL_MODES) {
+
+    const ev = run.evaluations?.[mode]
+
+    if (!ev) continue
+
+    if (ev.error) {
+
+      bucket.runtimeErrorsByMode[mode] = (bucket.runtimeErrorsByMode[mode] ?? 0) + 1
+
+      continue
+
+    }
+
+    const score = ev.weighted_total
+
+    if (typeof score === 'number') {
+
+      const rows = bucket.modes[mode] ?? []
+
+      rows.push(score)
+
+      bucket.modes[mode] = rows
+
+    }
+
+    for (const flag of ev.error_flags_triggered ?? []) {
+
+      const flagId = flag.flag_id
+
+      if (!flagId) continue
+
+      const byFlag = bucket.errorFlagsByMode[mode] ?? {}
+
+      byFlag[flagId] = (byFlag[flagId] ?? 0) + 1
+
+      bucket.errorFlagsByMode[mode] = byFlag
+
+    }
+
+    for (const dimId of DIMENSION_IDS) {
+
+      const dimScore = ev.dimension_scores?.[dimId]?.score
+
+      if (typeof dimScore !== 'number') continue
+
+      const byDim = bucket.dimensionScoresByMode[mode] ?? {}
+
+      const rows = byDim[dimId] ?? []
+
+      rows.push(dimScore)
+
+      byDim[dimId] = rows
+
+      bucket.dimensionScoresByMode[mode] = byDim
+
+    }
+
+  }
+
+}
+
+
+
+function ErrorCountStrip({ mode, bucket }: { mode: string; bucket: ScoreBucket }) {
+
+  const flags = bucket.errorFlagsByMode[mode] ?? {}
+
+  const flagEntries = Object.entries(flags).sort(([a], [b]) => a.localeCompare(b))
+
+  const runtimeCount = bucket.runtimeErrorsByMode[mode] ?? 0
+
+  if (!flagEntries.length && !runtimeCount) return null
+
+  return (
+
+    <div className="mt-1 flex flex-wrap gap-1">
+
+      {flagEntries.map(([id, count]) => {
+
+        const entry = RUBRIC_ERROR_FLAGS[id]
+
+        return (
+
+          <span
+
+            key={id}
+
+            className="cursor-help rounded bg-red-50 px-1 font-mono text-[10px] text-red-700"
+
+            title={entry ? rubricTooltip(entry) : id}
+
+          >
+
+            {id}:{count}
+
+          </span>
+
+        )
+
+      })}
+
+      {runtimeCount > 0 ? (
+
+        <span
+
+          className="cursor-help rounded bg-stone-100 px-1 font-mono text-[10px] text-stone-600"
+
+          title="Evaluation failed (runtime or API error), not a rubric error flag"
+
+        >
+
+          err:{runtimeCount}
+
+        </span>
+
+      ) : null}
+
+    </div>
+
+  )
+
+}
+
+
+
+function DimensionScoreStrip({ mode, bucket }: { mode: string; bucket: ScoreBucket }) {
+
+  const dims = bucket.dimensionScoresByMode[mode] ?? {}
+
+  const entries: Array<{ id: (typeof DIMENSION_IDS)[number]; meanPct: number }> = []
+
+  for (const id of DIMENSION_IDS) {
+
+    const stats = meanStd(dims[id] ?? [])
+
+    if (stats) entries.push({ id, meanPct: dimensionScorePct(stats.mean) })
+
+  }
+
+  if (!entries.length) return null
+
+  return (
+
+    <div className="mt-1 flex flex-wrap gap-1">
+
+      {entries.map(({ id, meanPct }) => {
+
+        const entry = RUBRIC_DIMENSIONS[id]
+
+        return (
+
+          <span
+
+            key={id}
+
+            className="cursor-help rounded bg-sky-50 px-1 font-mono text-[10px] text-sky-800"
+
+            title={entry ? `${rubricTooltip(entry)} Mean ${meanPct}% across queries.` : `${id} mean ${meanPct}%`}
+
+          >
+
+            {id}:{meanPct}
+
+          </span>
+
+        )
+
+      })}
+
+    </div>
+
+  )
+
+}
+
+
+
+function ScoreSummaryTable({
+
+  title,
+
+  description,
+
+  labelHeader,
+
+  rows,
+
+  showErrorCounts = false,
+
+  showDimensionScores = false,
+
+  markOutdatedModes = false,
+
+}: {
+
+  title: string
+
+  description: string
+
+  labelHeader: string
+
+  rows: ScoreTableRow[]
+
+  showErrorCounts?: boolean
+
+  showDimensionScores?: boolean
+
+  markOutdatedModes?: boolean
+
+}) {
+
+  if (!rows.length) return null
+
+  return (
+
+    <section className="rounded-lg border border-stone-200 bg-white p-4 shadow-sm">
+
+      <h2 className="text-sm font-semibold text-stone-900">{title}</h2>
+
+      <p className="mt-1 text-xs text-stone-500">{description}</p>
+
+      <div className="mt-3 overflow-x-auto">
+
+        <table className="w-full min-w-[36rem] text-sm">
+
+          <thead>
+
+            <tr className="border-b border-stone-200 text-left text-xs text-stone-500">
+
+              <th className="py-2 pr-4 font-medium">{labelHeader}</th>
+
+              {EVAL_MODES.map((mode) => (
+
+                <th key={mode} className="py-2 pr-4 font-medium">
+
+                  {evalModeLabel(mode, markOutdatedModes)}
+
+                </th>
+
+              ))}
+
+              <th className="py-2 pr-4 font-medium">Queries</th>
+
+              <th className="py-2 font-medium">Case studies</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            {rows.map(({ key, label, bucket, indent }) => (
+
+              <tr key={key} className="border-b border-stone-100 align-top">
+
+                <td
+
+                  className={`py-2 pr-4 font-medium text-stone-800 ${indent ? 'pl-6 font-normal' : ''}`}
+
+                >
+
+                  {label}
+
+                </td>
+
+                {EVAL_MODES.map((mode) => {
+
+                  const stats = meanStd(bucket.modes[mode] ?? [])
+
+                  return (
+
+                    <td key={mode} className="py-2 pr-4 font-mono text-xs text-stone-700">
+
+                      {stats ? formatMeanStd(stats.mean, stats.std) : '—'}
+
+                      {showDimensionScores ? <DimensionScoreStrip mode={mode} bucket={bucket} /> : null}
+
+                      {showErrorCounts ? <ErrorCountStrip mode={mode} bucket={bucket} /> : null}
+
+                    </td>
+
+                  )
+
+                })}
+
+                <td className="py-2 pr-4 font-mono text-xs text-stone-600">
+
+                  {bucket.queryCount || '—'}
+
+                </td>
+
+                <td className="py-2 font-mono text-xs text-stone-600">
+
+                  {bucket.caseStudyIds.size || '—'}
+
+                </td>
+
+              </tr>
+
+            ))}
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </section>
+
+  )
+
+}
+
+
+
 function personaLabel(persona: string): string {
 
   return persona.replace(/_/g, ' ')
@@ -494,31 +1027,19 @@ function normalizeDiagnosticsUrl(url: string): string {
 
 function PersonaSummaryTable({ batch }: { batch: QueryEvalBatch }) {
 
-  const byPersona = new Map<string, { modes: Record<string, number[]>; queryCount: number }>()
+  const byPersona = new Map<string, ScoreBucket>()
 
   for (const cs of batch.case_studies ?? []) {
 
     for (const run of cs.query_runs ?? []) {
 
+      if (isDiagnosticsEngineRun(run)) continue
+
       const persona = run.persona || 'unknown'
 
-      const entry = byPersona.get(persona) ?? { modes: {}, queryCount: 0 }
+      const entry = byPersona.get(persona) ?? emptyScoreBucket()
 
-      entry.queryCount += 1
-
-      for (const mode of EVAL_MODES) {
-
-        const score = run.evaluations?.[mode]?.weighted_total
-
-        if (typeof score !== 'number' || run.evaluations?.[mode]?.error) continue
-
-        const rows = entry.modes[mode] ?? []
-
-        rows.push(score)
-
-        entry.modes[mode] = rows
-
-      }
+      addQueryRunToBucket(entry, cs.case_study_id, run)
 
       byPersona.set(persona, entry)
 
@@ -526,87 +1047,29 @@ function PersonaSummaryTable({ batch }: { batch: QueryEvalBatch }) {
 
   }
 
-  const personas = [...byPersona.keys()].sort((a, b) => a.localeCompare(b))
+  const rows: ScoreTableRow[] = [...byPersona.keys()].sort((a, b) => a.localeCompare(b)).map((persona) => ({
 
-  if (!personas.length) return null
+    key: persona,
+
+    label: personaLabel(persona),
+
+    bucket: byPersona.get(persona) ?? emptyScoreBucket(),
+
+  }))
 
   return (
 
-    <section className="rounded-lg border border-stone-200 bg-white p-4 shadow-sm">
+    <ScoreSummaryTable
 
-      <h2 className="text-sm font-semibold text-stone-900">Score summary by persona</h2>
+      title="Score summary by persona"
 
-      <p className="mt-1 text-xs text-stone-500">Mean ± std dev of weighted rubric scores across queries in this batch.</p>
+      description="Mean ± std dev of weighted rubric scores across queries in this batch."
 
-      <div className="mt-3 overflow-x-auto">
+      labelHeader="Persona"
 
-        <table className="w-full min-w-[32rem] text-sm">
+      rows={rows}
 
-          <thead>
-
-            <tr className="border-b border-stone-200 text-left text-xs text-stone-500">
-
-              <th className="py-2 pr-4 font-medium">Persona</th>
-
-              {EVAL_MODES.map((mode) => (
-
-                <th key={mode} className="py-2 pr-4 font-medium">
-
-                  {MODE_LABELS[mode]}
-
-                </th>
-
-              ))}
-
-              <th className="py-2 font-medium">Queries</th>
-
-            </tr>
-
-          </thead>
-
-          <tbody>
-
-            {personas.map((persona) => {
-
-              const entry = byPersona.get(persona) ?? { modes: {}, queryCount: 0 }
-
-              return (
-
-                <tr key={persona} className="border-b border-stone-100 align-top">
-
-                  <td className="py-2 pr-4 font-medium text-stone-800">{personaLabel(persona)}</td>
-
-                  {EVAL_MODES.map((mode) => {
-
-                    const stats = meanStd(entry.modes[mode] ?? [])
-
-                    return (
-
-                      <td key={mode} className="py-2 pr-4 font-mono text-xs text-stone-700">
-
-                        {stats ? formatMeanStd(stats.mean, stats.std) : '—'}
-
-                      </td>
-
-                    )
-
-                  })}
-
-                  <td className="py-2 font-mono text-xs text-stone-600">{entry.queryCount || '—'}</td>
-
-                </tr>
-
-              )
-
-            })}
-
-          </tbody>
-
-        </table>
-
-      </div>
-
-    </section>
+    />
 
   )
 
@@ -617,25 +1080,16 @@ function PersonaSummaryTable({ batch }: { batch: QueryEvalBatch }) {
 function aggregateScoresByProductionSystem(
   batch: QueryEvalBatch,
   includeRun: (run: QueryRun) => boolean,
-): Map<string, { modes: Record<string, number[]>; queryCount: number }> {
-  const byProductionSystem = new Map<string, { modes: Record<string, number[]>; queryCount: number }>()
+): Map<string, ScoreBucket> {
+  const byProductionSystem = new Map<string, ScoreBucket>()
 
   for (const cs of batch.case_studies ?? []) {
     for (const run of cs.query_runs ?? []) {
       if (!includeRun(run)) continue
 
       const productionSystem = run.production_system || cs.production_system || 'unknown'
-      const entry = byProductionSystem.get(productionSystem) ?? { modes: {}, queryCount: 0 }
-      entry.queryCount += 1
-
-      for (const mode of EVAL_MODES) {
-        const score = run.evaluations?.[mode]?.weighted_total
-        if (typeof score !== 'number' || run.evaluations?.[mode]?.error) continue
-        const rows = entry.modes[mode] ?? []
-        rows.push(score)
-        entry.modes[mode] = rows
-      }
-
+      const entry = byProductionSystem.get(productionSystem) ?? emptyScoreBucket()
+      addQueryRunToBucket(entry, cs.case_study_id, run)
       byProductionSystem.set(productionSystem, entry)
     }
   }
@@ -643,85 +1097,82 @@ function aggregateScoresByProductionSystem(
   return byProductionSystem
 }
 
-function ProductionSystemScoreTable({
-  title,
-  description,
-  byProductionSystem,
-}: {
-  title: string
-  description: string
-  byProductionSystem: Map<string, { modes: Record<string, number[]>; queryCount: number }>
-}) {
-  const productionSystems = [...byProductionSystem.keys()].sort((a, b) => a.localeCompare(b))
-  if (!productionSystems.length) return null
-
-  return (
-    <section className="rounded-lg border border-stone-200 bg-white p-4 shadow-sm">
-      <h2 className="text-sm font-semibold text-stone-900">{title}</h2>
-      <p className="mt-1 text-xs text-stone-500">{description}</p>
-      <div className="mt-3 overflow-x-auto">
-        <table className="w-full min-w-[32rem] text-sm">
-          <thead>
-            <tr className="border-b border-stone-200 text-left text-xs text-stone-500">
-              <th className="py-2 pr-4 font-medium">Production system</th>
-              {EVAL_MODES.map((mode) => (
-                <th key={mode} className="py-2 pr-4 font-medium">
-                  {MODE_LABELS[mode]}
-                </th>
-              ))}
-              <th className="py-2 font-medium">Queries</th>
-            </tr>
-          </thead>
-          <tbody>
-            {productionSystems.map((productionSystem) => {
-              const entry = byProductionSystem.get(productionSystem) ?? { modes: {}, queryCount: 0 }
-              return (
-                <tr key={productionSystem} className="border-b border-stone-100 align-top">
-                  <td className="py-2 pr-4 font-medium text-stone-800">
-                    {productionSystemLabel(productionSystem)}
-                  </td>
-                  {EVAL_MODES.map((mode) => {
-                    const stats = meanStd(entry.modes[mode] ?? [])
-                    return (
-                      <td key={mode} className="py-2 pr-4 font-mono text-xs text-stone-700">
-                        {stats ? formatMeanStd(stats.mean, stats.std) : '—'}
-                      </td>
-                    )
-                  })}
-                  <td className="py-2 font-mono text-xs text-stone-600">{entry.queryCount || '—'}</td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-      </div>
-    </section>
-  )
+function productionSystemRows(byProductionSystem: Map<string, ScoreBucket>): ScoreTableRow[] {
+  return [...byProductionSystem.keys()].sort((a, b) => a.localeCompare(b)).map((productionSystem) => ({
+    key: productionSystem,
+    label: productionSystemLabel(productionSystem),
+    bucket: byProductionSystem.get(productionSystem) ?? emptyScoreBucket(),
+  }))
 }
 
 function isDiagnosticsEngineRun(run: QueryRun): boolean {
   return run.query_id === 'Q000' || run.persona === 'diagnostics_engine'
 }
 
-function ProductionSystemSummaryTable({ batch }: { batch: QueryEvalBatch }) {
-  const diagnosticsByPs = aggregateScoresByProductionSystem(batch, isDiagnosticsEngineRun)
-  const personaByPs = aggregateScoresByProductionSystem(batch, (run) => !isDiagnosticsEngineRun(run))
+function diagnosticsEngineScoreRows(batch: QueryEvalBatch): ScoreTableRow[] {
+  const overall = emptyScoreBucket()
+  const byCaseStudyProductionSystem = new Map<string, ScoreBucket>()
 
-  const hasDiagnostics = diagnosticsByPs.size > 0
-  const hasPersona = personaByPs.size > 0
-  if (!hasDiagnostics && !hasPersona) return null
+  for (const cs of batch.case_studies ?? []) {
+    const caseStudyProductionSystem = cs.production_system || 'unknown'
+
+    for (const run of cs.query_runs ?? []) {
+      if (!isDiagnosticsEngineRun(run)) continue
+
+      addQueryRunToBucket(overall, cs.case_study_id, run)
+
+      const entry = byCaseStudyProductionSystem.get(caseStudyProductionSystem) ?? emptyScoreBucket()
+      addQueryRunToBucket(entry, cs.case_study_id, run)
+      byCaseStudyProductionSystem.set(caseStudyProductionSystem, entry)
+    }
+  }
+
+  if (overall.queryCount === 0) return []
+
+  const rows: ScoreTableRow[] = [
+    {
+      key: 'multi-system',
+      label: productionSystemLabel('Multi-system'),
+      bucket: overall,
+    },
+  ]
+
+  for (const productionSystem of [...byCaseStudyProductionSystem.keys()].sort((a, b) => a.localeCompare(b))) {
+    rows.push({
+      key: `case-study-ps-${productionSystem}`,
+      label: productionSystemLabel(productionSystem),
+      bucket: byCaseStudyProductionSystem.get(productionSystem) ?? emptyScoreBucket(),
+      indent: true,
+    })
+  }
+
+  return rows
+}
+
+function ProductionSystemSummaryTable({ batch }: { batch: QueryEvalBatch }) {
+  const diagnosticsRows = diagnosticsEngineScoreRows(batch)
+  const personaRows = productionSystemRows(
+    aggregateScoresByProductionSystem(batch, (run) => !isDiagnosticsEngineRun(run)),
+  )
+
+  if (!diagnosticsRows.length && !personaRows.length) return null
 
   return (
     <div className="space-y-4">
-      <ProductionSystemScoreTable
+      <ScoreSummaryTable
         title="Score summary by production system — diagnostics engine (Q000)"
-        description="Mean ± std dev across multi-system Q000 runs, grouped by query production system tag."
-        byProductionSystem={diagnosticsByPs}
+        description="Overall multi-system Q000 scores, with breakdown by case-study production system. D1–D6 show mean dimension score (% of 3); EF1–EF5 show error-flag counts. Hover for definitions. Ollama and Srv+Ollama columns predate current server card set."
+        labelHeader="Production system"
+        rows={diagnosticsRows}
+        showDimensionScores
+        showErrorCounts
+        markOutdatedModes
       />
-      <ProductionSystemScoreTable
+      <ScoreSummaryTable
         title="Score summary by production system — persona queries"
         description="Mean ± std dev across bank queries (excluding Q000), grouped by production system."
-        byProductionSystem={personaByPs}
+        labelHeader="Production system"
+        rows={personaRows}
       />
     </div>
   )
@@ -1009,9 +1460,11 @@ export function ReviewPage() {
 
             </p>
 
-            <PersonaSummaryTable batch={batch} />
+            <RubricLegend />
 
             <ProductionSystemSummaryTable batch={batch} />
+
+            <PersonaSummaryTable batch={batch} />
 
             {(batch.case_studies ?? []).map((row) => (
 

@@ -277,6 +277,70 @@ def card_aquifer_tags_for_mws(mws_doc: dict) -> list[str]:
     )
 
 
+# Fractional similarity between evidence-card aquifer_tags for retrieval fallback.
+# Sedimentary / semi-consolidated aquifers are closer to hard-rock (fractured) than to alluvium.
+CARD_AQUIFER_TAG_SIMILARITY: dict[str, dict[str, float]] = {
+    "hard_rock": {
+        "hard_rock": 1.0,
+        "semi-consolidated": 0.75,
+        "coastal": 0.25,
+        "alluvium": 0.0,
+    },
+    "semi-consolidated": {
+        "semi-consolidated": 1.0,
+        "hard_rock": 0.75,
+        "coastal": 0.2,
+        "alluvium": 0.1,
+    },
+    "alluvium": {
+        "alluvium": 1.0,
+        "coastal": 0.7,
+        "semi-consolidated": 0.1,
+        "hard_rock": 0.0,
+    },
+    "coastal": {
+        "coastal": 1.0,
+        "alluvium": 0.7,
+        "semi-consolidated": 0.2,
+        "hard_rock": 0.25,
+    },
+}
+
+
+def card_aquifer_tag_from_evidence_card(card: dict) -> str | None:
+    tags = card.get("aquifer_tags")
+    if isinstance(tags, list) and tags:
+        return str(tags[0])
+    if isinstance(tags, str):
+        return tags
+    return None
+
+
+def aquifer_tag_similarity(mws_aquifer_tags: list[str], card_aquifer_tag: str | None) -> float:
+    if not card_aquifer_tag or not mws_aquifer_tags:
+        return 0.0
+    return max(
+        CARD_AQUIFER_TAG_SIMILARITY.get(mws_tag, {}).get(card_aquifer_tag, 0.0)
+        for mws_tag in mws_aquifer_tags
+    )
+
+
+def expand_aquifer_tags_by_similarity(
+    mws_aquifer_tags: list[str],
+    *,
+    min_score: float = 0.05,
+) -> list[str]:
+    """Return card aquifer_tags at or above min_score similarity to the MWS tags."""
+    if not mws_aquifer_tags:
+        return []
+    expanded: set[str] = set(mws_aquifer_tags)
+    for mws_tag in mws_aquifer_tags:
+        for tag, score in CARD_AQUIFER_TAG_SIMILARITY.get(mws_tag, {}).items():
+            if score >= min_score:
+                expanded.add(tag)
+    return sorted(expanded)
+
+
 def build_aquifer_payload(
     raw_class: str,
     lithology_percent: dict[str, Any],

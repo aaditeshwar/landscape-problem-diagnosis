@@ -25,9 +25,7 @@
   "diagnostic_signals": [
     {
       "signal_id": "sig_01",
-      "variables": [
-        "lulc_tree_forest_ha"
-      ],
+      "variables": [],
       "condition": {
         "type": "trend",
         "expression": "lulc_tree_forest_ha[-1] < lulc_tree_forest_ha[0]",
@@ -43,9 +41,7 @@
     },
     {
       "signal_id": "sig_02",
-      "variables": [
-        "cd_total_deforestation_ha"
-      ],
+      "variables": [],
       "condition": {
         "type": "quantitative",
         "expression": "cd_total_deforestation_ha > 30",
@@ -61,10 +57,7 @@
     },
     {
       "signal_id": "sig_03",
-      "variables": [
-        "cd_total_deforestation_ha",
-        "cd_afforestation_ha"
-      ],
+      "variables": [],
       "condition": {
         "type": "composite",
         "expression": "cd_total_deforestation_ha > cd_afforestation_ha and (cd_total_deforestation_ha - cd_afforestation_ha) > 20",
@@ -95,9 +88,7 @@
     },
     {
       "signal_id": "sig_05",
-      "variables": [
-        "organization_domains"
-      ],
+      "variables": [],
       "condition": {
         "type": "qualitative",
         "expression": "'Agroforestry' not in organization_domains and 'NTFP' not in organization_domains and 'Forest' not in organization_domains",

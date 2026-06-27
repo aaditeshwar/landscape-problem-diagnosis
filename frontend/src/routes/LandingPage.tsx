@@ -60,7 +60,7 @@ export function LandingPage() {
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-4 py-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-800">CoRE Stack</p>
-            <h1 className="text-2xl font-bold tracking-tight text-stone-900">CoRE insights</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-stone-900">CoRE insights v0.1</h1>
           </div>
           <nav className="flex flex-wrap gap-2 text-sm">
             <a href="#diagnose" className="rounded-md px-2 py-1 text-stone-600 hover:bg-stone-100 hover:text-stone-900">
@@ -75,6 +75,12 @@ export function LandingPage() {
             <a href="#about" className="rounded-md px-2 py-1 text-stone-600 hover:bg-stone-100 hover:text-stone-900">
               About
             </a>
+            <ExternalLink
+              to="https://github.com/aaditeshwar/landscape-problem-diagnosis"
+              className="rounded-md px-2 py-1 text-stone-600 hover:bg-stone-100 hover:text-stone-900"
+            >
+              GitHub
+            </ExternalLink>
           </nav>
         </div>
       </header>

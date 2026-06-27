@@ -22,7 +22,7 @@ class FakeCollection:
     def __init__(self, docs: list[dict]):
         self.docs = docs
 
-    def find(self, query: dict):
+    def find(self, query: dict, projection: dict | None = None):
         def matches(doc: dict) -> bool:
             for key, expected in query.items():
                 value = doc.get(key)
@@ -100,7 +100,37 @@ def test_card_query_coastal_alluvium_pair():
 
 def test_aer_neighbors_for_aer11():
     tags = _aer_tags_for_retrieval({"nbss_lup_aer_code": "AER-11"})
-    assert tags == ["AER-11", "AER-12", "AER-10", "AER-7", "AER-8"]
+    assert tags == ["AER-11", "AER-12", "AER-7", "AER-8", "AER-10"]
+
+
+def test_fetch_similar_aquifer_prefers_direct_aer():
+    db = FakeDB(
+        [
+            {
+                "_id": "gw_008",
+                "card_id": "gw_008",
+                "causal_pathway": "groundwater_stress",
+                "aer_tags": ["AER-11"],
+                "aquifer_tags": ["hard_rock"],
+            },
+            {
+                "_id": "gw_005",
+                "card_id": "gw_005",
+                "causal_pathway": "groundwater_stress",
+                "aer_tags": ["AER-10"],
+                "aquifer_tags": ["semi-consolidated"],
+            },
+        ]
+    )
+    aer_tags = ["AER-11", "AER-12", "AER-7", "AER-8", "AER-10"]
+    candidates = _fetch_candidates(
+        db,
+        ["semi-consolidated"],
+        aer_tags,
+        mws_aer="AER-11",
+    )
+    ids = {c["card_id"] for c in candidates}
+    assert ids == {"gw_008"}
 
 
 def test_direct_aer_bonus_prefers_mws_aer_card():
@@ -115,6 +145,7 @@ def test_direct_aer_bonus_prefers_mws_aer_card():
 def main() -> int:
     test_aer_neighbors_for_aer3()
     test_aer_neighbors_for_aer11()
+    test_fetch_similar_aquifer_prefers_direct_aer()
     test_fetch_candidates_excludes_wrong_aer()
     test_card_query_uses_in_for_multiple_aers()
     test_card_query_coastal_alluvium_pair()

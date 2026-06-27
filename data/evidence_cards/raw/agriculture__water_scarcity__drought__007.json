@@ -26,16 +26,14 @@
     {
       "signal_id": "sig_01",
       "variables": [
-        "drought_severe_return_period",
-        "drought_moderate_return_period"
+        "drought_severe_return_period"
       ],
       "condition": {
         "type": "quantitative",
         "expression": "drought_severe_return_period <= 4 or drought_moderate_return_period <= 4",
         "qualitative_description": "Severe drought return period is 4 years or less, or moderate drought return period is 4 years or less, indicates a drought episode sufficient to cause significant crop water stress and yield loss.",
         "variables": [
-          "drought_severe_return_period",
-          "drought_moderate_return_period"
+          "drought_severe_return_period"
         ]
       },
       "severity": "high",
@@ -45,10 +43,7 @@
     },
     {
       "signal_id": "sig_02",
-      "variables": [
-        "mean",
-        "dry_spell_weeks"
-      ],
+      "variables": [],
       "condition": {
         "type": "quantitative",
         "expression": "mean(dry_spell_weeks) >= 3",
@@ -65,11 +60,7 @@
     },
     {
       "signal_id": "sig_03",
-      "variables": [
-        "drought_mild_spi_score_latest",
-        "drought_mild_mai_score_latest",
-        "drought_mild_vci_score_latest"
-      ],
+      "variables": [],
       "condition": {
         "type": "composite",
         "expression": "drought_mild_spi_score_latest >= 26 and (drought_mild_mai_score_latest >= 26 or drought_mild_vci_score_latest >= 26)",
@@ -88,18 +79,14 @@
     {
       "signal_id": "sig_04",
       "variables": [
-        "mean_kharif_precipitation",
-        "mean_annual_precipitation_mm",
-        "trend_annual_precipitation_mm"
+        "mean_kharif_precipitation"
       ],
       "condition": {
         "type": "composite",
         "expression": "(mean_kharif_precipitation < 0.75 * mean_annual_precipitation_mm * 0.85) or (mean_annual_precipitation_mm < 1000 and trend_annual_precipitation_mm < -10)",
         "qualitative_description": "Kharif seasonal precipitation below 75% of the long-run kharif normal, or mean annual precipitation below 1000 mm with a declining trend exceeding 10 mm/year, confirms a rainfall deficit context consistent with recurrent drought.",
         "variables": [
-          "mean_kharif_precipitation",
-          "mean_annual_precipitation_mm",
-          "trend_annual_precipitation_mm"
+          "mean_kharif_precipitation"
         ]
       },
       "severity": "moderate",
@@ -110,14 +97,16 @@
     {
       "signal_id": "sig_05",
       "variables": [
-        "monsoon_onset_date"
+        "monsoon_onset_delay_first_year_days",
+        "monsoon_onset_latest_doy"
       ],
       "condition": {
         "type": "trend",
-        "expression": "(monsoon_onset_date[-1] - monsoon_onset_date[0]) > 7 or monsoon_onset_date[-1] > 175",
+        "expression": "monsoon_onset_delay_first_year_days > 7 or monsoon_onset_latest_doy > 175",
         "qualitative_description": "Monsoon onset delayed by more than 7 days relative to the earliest year in the record, or onset occurring after day 175 (approximately June 24), shortens the effective kharif growing season and increases early-season crop failure risk.",
         "variables": [
-          "monsoon_onset_date"
+          "monsoon_onset_delay_first_year_days",
+          "monsoon_onset_latest_doy"
         ]
       },
       "severity": "moderate",

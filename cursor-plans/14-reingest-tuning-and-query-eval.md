@@ -106,20 +106,30 @@ Refresh all `mws_data` documents from current `data/raw_excel/*.xlsx` so Mongo m
 
 ---
 
-## Phase 2 — Regenerate case-study raw JSONs
+## Phase 2 — Regenerate MWS raw JSON exports
 
 ### Goal
 
-Update `data/raw_jsons/{mws_id}.json` for every case-study MWS with a built pathway, using post-re-ingest Mongo data.
+Refresh `data/raw_jsons/{mws_id}.json` from post-re-ingest Mongo so tuning, triage, and query evaluation use current assembler output.
+
+**Two scopes:**
+
+| Scope | When | Command |
+|-------|------|---------|
+| Case-study MWS | Tuning corpus, query eval MWS summaries, case-study audits | `python scripts/export_case_study_mws_variables.py` |
+| Full corpus (~all `mws_data`) | Variable dashboard CDFs, triage Play lazy cache | `python scripts/triage/build_variable_dashboard.py --refresh-exports` |
+
+Without `--refresh-exports`, `ensure_mws_export()` serves **existing** JSON files and ignores updated Mongo values.
 
 ### Steps
 
 | Step | Action | Command / artifact |
 |------|--------|-------------------|
-| 2a | Extend or run existing exporter | `python scripts/export_case_study_mws_variables.py` |
-| 2b | Filter export to built-pathway MWS only | Add `--built-pathways-only` flag (skip `__stress_only__` and unmapped pathways) |
-| 2c | Write diff summary | Compare file hashes / key scalar fields before vs after → `reports/raw_jsons_refresh_summary.json` |
-| 2d | Validate assembler coverage | Each export includes `present_variables`, `derived_variables`, `location_context`, `case_study_refs` |
+| 2a | Export case-study MWS | `python scripts/export_case_study_mws_variables.py` |
+| 2b | Refresh full corpus + rebuild dashboards | `python scripts/triage/build_variable_dashboard.py --refresh-exports` |
+| 2c | Filter export to built-pathway MWS only (optional) | Add `--built-pathways-only` flag to 2a (skip `__stress_only__`) |
+| 2d | Write diff summary | Compare file hashes / key scalar fields before vs after → `reports/raw_jsons_refresh_summary.json` |
+| 2e | Validate assembler coverage | Each export includes `present_variables`, `derived_variables`, `location_context`; case-study files include `case_study_refs` |
 
 ### Output shape (existing convention)
 
@@ -192,18 +202,17 @@ These entries have no named causal pathway in the field index — the audit chec
 
 ### Goal
 
-Implement `expression_tuning_algorithm_v2.md` as executable Python. Produce a **review artifact** comparing old and proposed signal expressions — do **not** write to evidence cards until approved.
+Implement `expression_tuning_algorithm_v4.md` as executable Python. Produce a **review artifact** comparing old and proposed signal expressions — do **not** write to evidence cards until approved. Proposed expressions are written to **`metadata/triage_patches/case_study_locations_signal_tuning.json`** for review in the triaging app (select catalog `case_study_locations_signal_tuning.json`).
 
 ### New scripts
 
 | Script | Purpose |
 |--------|---------|
-| `scripts/tuning/tune_pathway_signals.py` | CLI: `--pathway drought --production-system Agriculture --stress water_scarcity` |
-| `scripts/tuning/expression_evaluator.py` | Safe `eval_signal()` with time-series `[-1]` indexing (from reference §4) |
-| `scripts/tuning/template_canonicalisation.py` | `extract_template_and_thresholds`, template grouping (reference §2) |
-| `scripts/tuning/grid_search.py` | Threshold grid search with TPR/FPR targets (reference §5–§7) |
-| `scripts/tuning/corpus_builder.py` | Load raw_jsons + assign positive/negative labels (reference §3) |
-| `scripts/tuning/report_writer.py` | Emit review JSON + human-readable Markdown |
+| `scripts/tuning/tune_pathway_signals.py` | CLI: `--pathway drought` or `--all-built --write-patches` |
+| `scripts/tuning/grid_search.py` | Empirical grid + pathway-level objective (v4) |
+| `scripts/tuning/template_canonicalisation.py` | AST template/threshold extraction |
+| `scripts/tuning/corpus_builder.py` | Case-study positives/negatives from raw_jsons |
+| `scripts/tuning/patch_writer.py` | Triage patch catalog + JSON/MD reports |
 
 ### Algorithm summary (from reference v2)
 
@@ -407,9 +416,9 @@ Phases 3 and 4 can run in parallel after Phase 2. Phase 5 requires Phase 4 outpu
 - [ ] `verify_ingest.py` passes
 
 ### Phase 2 — raw_jsons
-- [ ] `export_case_study_mws_variables.py` run with built-pathway filter
-- [ ] 32 MWS JSON files refreshed
-- [ ] Refresh summary report written
+- [ ] `export_case_study_mws_variables.py` run (case-study MWS)
+- [ ] `build_variable_dashboard.py --refresh-exports` run (full corpus + CDFs)
+- [ ] Refresh summary report written (optional)
 
 ### Phase 2b — Stress-only audit
 - [ ] `audit_stress_only_case_studies.py` implemented
@@ -417,10 +426,11 @@ Phases 3 and 4 can run in parallel after Phase 2. Phase 5 requires Phase 4 outpu
 - [ ] `reports/stress_only_pathway_audit.json` + `.md` written
 
 ### Phase 3 — Signal tuning
-- [ ] `expression_evaluator.py` + template + grid search implemented
-- [ ] Drought pathway tuning report (JSON + MD)
-- [ ] All 12 built pathways with case studies processed or marked insufficient data
-- [ ] No evidence cards modified
+- [x] Grid search + template canonicalisation implemented (`scripts/tuning/`)
+- [x] All built pathways processed (reports in `reports/signal_tuning/`)
+- [x] Triage patch catalog: `metadata/triage_patches/case_study_locations_signal_tuning.json` (65 cards)
+- [ ] Human review in triaging app → revise-cards finalize
+- [ ] No evidence card raw JSON modified yet
 
 ### Phase 4 — Query harness
 - [ ] Query filter: 23 eligible, 7 excluded documented
@@ -443,7 +453,7 @@ Phases 3 and 4 can run in parallel after Phase 2. Phase 5 requires Phase 4 outpu
 |----------|------|
 | Case study index | `metadata/case_study_locations_v2.json` |
 | Framework (built pathways) | `metadata/diagnosis_framework.json` |
-| Tuning algorithm reference | `scripts/reference/expression_tuning_algorithm_v2.md` |
+| Tuning algorithm reference | `scripts/reference/expression_tuning_algorithm_v4.md` |
 | Query bank | `scripts/reference/query_bank.json` |
 | Evaluation rubric | `scripts/reference/evaluation_rubric.json` |
 | Batch re-ingest | `scripts/batch_ingest_excel.py` |

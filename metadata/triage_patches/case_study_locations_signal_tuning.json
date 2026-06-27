@@ -1,0 +1,2175 @@
+{
+  "schema_version": 1,
+  "catalog_filename": "case_study_locations_signal_tuning.json",
+  "batch_id": "triage__case_study_locations_signal_tuning",
+  "updated_at": "2026-06-27T11:13:19.669865+00:00",
+  "reviewer": "signal_tuning",
+  "source": "signal_tuning_phase3",
+  "cards": {
+    "agriculture__water_scarcity__drought__014": {
+      "card_id": "agriculture__water_scarcity__drought__014",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "mean_annual_precipitation_mm < 1069.68435 and mean_kharif_precipitation < 654.7337 * mean_annual_precipitation_mm"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "6b9e022b5f409a3bec5fe1e5d03f2bd50e5cee5253b701cdd4ecd49e41d6147d",
+      "tuning_updates": {
+        "sig_03": "mean_annual_precipitation_mm < 1069.68435 and mean_kharif_precipitation < 654.7337 * mean_annual_precipitation_mm"
+      },
+      "updated_at": "2026-06-27T11:13:19.640333+00:00"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__encroachment__001": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__001",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "village_st_percent > -0.7793"
+            }
+          },
+          {
+            "signal_id": "sig_04",
+            "condition": {
+              "expression": "cd_forest_to_farm_ha > 29 and village_st_percent > -0.7793"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_03": [
+            "expression"
+          ],
+          "sig_04": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "bdbaab9c8dad9b5ba553673579f23a37cfec4d4a2453ad9505a6a3c992f0db3f",
+      "tuning_updates": {
+        "sig_03": "village_st_percent > -0.7793",
+        "sig_04": "cd_forest_to_farm_ha > 29 and village_st_percent > -0.7793"
+      },
+      "updated_at": "2026-06-27T11:13:19.640934+00:00"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__encroachment__002": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__002",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "village_st_percent > -0.7793 and cd_forest_to_farm_ha > 29"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "077938a3f77f6e037d6b530b8a7b27d2f398cd3d58e9c283518b96bbcd19208f",
+      "tuning_updates": {
+        "sig_03": "village_st_percent > -0.7793 and cd_forest_to_farm_ha > 29"
+      },
+      "updated_at": "2026-06-27T11:13:19.641528+00:00"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__encroachment__003": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__003",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_05",
+            "condition": {
+              "expression": "cd_forest_to_farm_ha > 29 and village_st_percent > -0.7793 and (cd_urbanization_ha > 0)"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_05": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "3bb41fe19cec24110f6b19bd42ca58118d507874717e02545d9a6a0a5e0d1d00",
+      "tuning_updates": {
+        "sig_05": "cd_forest_to_farm_ha > 29 and village_st_percent > -0.7793 and (cd_urbanization_ha > 0)"
+      },
+      "updated_at": "2026-06-27T11:13:19.642138+00:00"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__encroachment__004": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__004",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "cd_urbanization_ha > 0"
+            }
+          },
+          {
+            "signal_id": "sig_04",
+            "condition": {
+              "expression": "cd_forest_to_farm_ha > 29 and cd_urbanization_ha > 0"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_04": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "3e05c7917dcb22afce0ca82c9a6e6a0f8291100ea9613feac20d1ad934216864",
+      "tuning_updates": {
+        "sig_02": "cd_urbanization_ha > 0",
+        "sig_04": "cd_forest_to_farm_ha > 29 and cd_urbanization_ha > 0"
+      },
+      "updated_at": "2026-06-27T11:13:19.642622+00:00"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__encroachment__006": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__006",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "cd_urbanization_ha > 0"
+            }
+          },
+          {
+            "signal_id": "sig_04",
+            "condition": {
+              "expression": "cd_forest_to_farm_ha > 29 and cd_urbanization_ha > 0 and (village_st_percent > -0.7793)"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_04": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "b09623e63bee7eefd767afe0286209eb522fa893dd386eb345dd29977f65ec51",
+      "tuning_updates": {
+        "sig_02": "cd_urbanization_ha > 0",
+        "sig_04": "cd_forest_to_farm_ha > 29 and cd_urbanization_ha > 0 and (village_st_percent > -0.7793)"
+      },
+      "updated_at": "2026-06-27T11:13:19.643111+00:00"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__encroachment__007": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__007",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "cd_urbanization_ha > 0"
+            }
+          },
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "village_st_percent > -0.7793 and cd_forest_to_farm_ha > 29"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "1588fc5153c1c00cdda67f58c0c215ae7dc062dc71b7877a7929196762823e63",
+      "tuning_updates": {
+        "sig_02": "cd_urbanization_ha > 0",
+        "sig_03": "village_st_percent > -0.7793 and cd_forest_to_farm_ha > 29"
+      },
+      "updated_at": "2026-06-27T11:13:19.643590+00:00"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__encroachment__008": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__008",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "village_st_percent > -0.7793 and cd_forest_to_farm_ha > 29"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "b88fd134da64d713ac5ede0d4933f558004f5c83e7d773aea6a9bb7254c76b34",
+      "tuning_updates": {
+        "sig_03": "village_st_percent > -0.7793 and cd_forest_to_farm_ha > 29"
+      },
+      "updated_at": "2026-06-27T11:13:19.644071+00:00"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__encroachment__009": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__009",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_04",
+            "condition": {
+              "expression": "cd_forest_to_farm_ha > 29 and cd_urbanization_ha > 0 and (village_st_percent > -0.7793)"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_04": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "96983d78edfcaedba79f3ce9da09e79912db74f2a0ce289cb502d8eb260340ef",
+      "tuning_updates": {
+        "sig_04": "cd_forest_to_farm_ha > 29 and cd_urbanization_ha > 0 and (village_st_percent > -0.7793)"
+      },
+      "updated_at": "2026-06-27T11:13:19.644412+00:00"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__encroachment__010": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__010",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "cd_urbanization_ha > 0"
+            }
+          },
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "village_st_percent > -0.7793"
+            }
+          },
+          {
+            "signal_id": "sig_04",
+            "condition": {
+              "expression": "cd_forest_to_farm_ha > 29 and village_st_percent > -0.7793"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_03": [
+            "expression"
+          ],
+          "sig_04": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "afa70989a5ed8dbd857f7da7a757652a385d44a82b78210558191598a648904e",
+      "tuning_updates": {
+        "sig_02": "cd_urbanization_ha > 0",
+        "sig_03": "village_st_percent > -0.7793",
+        "sig_04": "cd_forest_to_farm_ha > 29 and village_st_percent > -0.7793"
+      },
+      "updated_at": "2026-06-27T11:13:19.644875+00:00"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__encroachment__011": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__011",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "cd_urbanization_ha > 0"
+            }
+          },
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "village_st_percent > -0.7793 and cd_forest_to_farm_ha > 29"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "132bf57f58710d9cf6804190044e58047d7c0cd965503b9a466a18976f3895e1",
+      "tuning_updates": {
+        "sig_02": "cd_urbanization_ha > 0",
+        "sig_03": "village_st_percent > -0.7793 and cd_forest_to_farm_ha > 29"
+      },
+      "updated_at": "2026-06-27T11:13:19.645260+00:00"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__encroachment__012": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__012",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "cd_urbanization_ha > 0"
+            }
+          },
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "village_st_percent > -0.7793 and cd_forest_to_farm_ha > 29"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "25e8955401df9a387a97adabc6fae0da7257dbc570ae364117e49004e271a52d",
+      "tuning_updates": {
+        "sig_02": "cd_urbanization_ha > 0",
+        "sig_03": "village_st_percent > -0.7793 and cd_forest_to_farm_ha > 29"
+      },
+      "updated_at": "2026-06-27T11:13:19.645752+00:00"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__encroachment__013": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__013",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "cd_urbanization_ha > 0"
+            }
+          },
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "village_st_percent > -0.7793 and cd_forest_to_farm_ha > 29"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "98ae91a8e8024d095c3412f25e6fc5caf5d538eb58d82d47404539733409c2b5",
+      "tuning_updates": {
+        "sig_02": "cd_urbanization_ha > 0",
+        "sig_03": "village_st_percent > -0.7793 and cd_forest_to_farm_ha > 29"
+      },
+      "updated_at": "2026-06-27T11:13:19.646244+00:00"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__encroachment__014": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__014",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "village_st_percent > -0.7793 and cd_forest_to_farm_ha > 29"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "9e36ffd01c62fb99a68151e8a25b074c02eb9aa97b653f6d32ef8166d8ffebf2",
+      "tuning_updates": {
+        "sig_03": "village_st_percent > -0.7793 and cd_forest_to_farm_ha > 29"
+      },
+      "updated_at": "2026-06-27T11:13:19.646727+00:00"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__encroachment__015": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__015",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_04",
+            "condition": {
+              "expression": "village_st_percent > -0.7793 and cd_forest_to_farm_ha > 29"
+            }
+          },
+          {
+            "signal_id": "sig_05",
+            "condition": {
+              "expression": "cd_forest_to_farm_ha + cd_urbanization_ha > 29"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_04": [
+            "expression"
+          ],
+          "sig_05": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "0cb4e3b11d64b6d458e2a5c2ffaba8d4aa1ba5220ff3da9c1ad0e96995179c3a",
+      "tuning_updates": {
+        "sig_04": "village_st_percent > -0.7793 and cd_forest_to_farm_ha > 29",
+        "sig_05": "cd_forest_to_farm_ha + cd_urbanization_ha > 29"
+      },
+      "updated_at": "2026-06-27T11:13:19.647236+00:00"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__encroachment__016": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__016",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "cd_urbanization_ha > 0"
+            }
+          },
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "village_st_percent > -0.7793"
+            }
+          },
+          {
+            "signal_id": "sig_04",
+            "condition": {
+              "expression": "cd_forest_to_farm_ha > 29 and cd_urbanization_ha > 0 and (village_st_percent > -0.7793)"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_03": [
+            "expression"
+          ],
+          "sig_04": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "601c3f5a095966c659cbe39d934f46b9d46edcb1ec748f0c0ed109125a95f571",
+      "tuning_updates": {
+        "sig_02": "cd_urbanization_ha > 0",
+        "sig_03": "village_st_percent > -0.7793",
+        "sig_04": "cd_forest_to_farm_ha > 29 and cd_urbanization_ha > 0 and (village_st_percent > -0.7793)"
+      },
+      "updated_at": "2026-06-27T11:13:19.647800+00:00"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__encroachment__017": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__encroachment__017",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_04",
+            "condition": {
+              "expression": "village_st_percent > -0.7793 and cd_forest_to_farm_ha > 29"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_04": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "2f7a42dd0a672e0578cd1b2ff98f24192946f444f8685df8fea3c5614b348abd",
+      "tuning_updates": {
+        "sig_04": "village_st_percent > -0.7793 and cd_forest_to_farm_ha > 29"
+      },
+      "updated_at": "2026-06-27T11:13:19.648275+00:00"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__001": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__001",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "cd_total_deforestation_ha > 48"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "b50e5aa06839bb984f542553172b7f3aa7b55adf4ecbb2bf1e704f92ea8234c6",
+      "tuning_updates": {
+        "sig_03": "cd_total_deforestation_ha > 48"
+      },
+      "updated_at": "2026-06-27T11:13:19.648720+00:00"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__002": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__002",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "cd_total_deforestation_ha > 53 and cd_afforestation_ha / (cd_total_deforestation_ha + 32) < 32"
+            }
+          },
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "cd_total_deforestation_ha > 48"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "4c37c5443d391961c4fc8bf943204f8caef1b79a9429d89b5df85013c2512825",
+      "tuning_updates": {
+        "sig_02": "cd_total_deforestation_ha > 53 and cd_afforestation_ha / (cd_total_deforestation_ha + 32) < 32",
+        "sig_03": "cd_total_deforestation_ha > 48"
+      },
+      "updated_at": "2026-06-27T11:13:19.649228+00:00"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__003": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__003",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "cd_total_deforestation_ha > 48"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "cbd8b4cf392cf3f5fd0b36c6e4ff0fb8bb4eb719b461a904fa62e537c1d602d4",
+      "tuning_updates": {
+        "sig_03": "cd_total_deforestation_ha > 48"
+      },
+      "updated_at": "2026-06-27T11:13:19.649758+00:00"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__004": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__004",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "cd_total_deforestation_ha > 48"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "a9b0850075c8ef5bbabc5462c85bb86767603eaed6dea3c259665e679186e3e5",
+      "tuning_updates": {
+        "sig_03": "cd_total_deforestation_ha > 48"
+      },
+      "updated_at": "2026-06-27T11:13:19.650258+00:00"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__005": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__005",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "cd_total_deforestation_ha > 53 and cd_afforestation_ha / (cd_total_deforestation_ha + 32) < 32"
+            }
+          },
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "cd_total_deforestation_ha > 48"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "cf0ff0cc995e3cac78266dec5389ece35c3a734a33fdd7f3ccae9cd12e753708",
+      "tuning_updates": {
+        "sig_02": "cd_total_deforestation_ha > 53 and cd_afforestation_ha / (cd_total_deforestation_ha + 32) < 32",
+        "sig_03": "cd_total_deforestation_ha > 48"
+      },
+      "updated_at": "2026-06-27T11:13:19.650711+00:00"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__006": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__006",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "cd_total_deforestation_ha > 48"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "7320ed0692ef87f66b6898d6a404e6eef706486369a255eab3c7e15c8dd9ce0d",
+      "tuning_updates": {
+        "sig_02": "cd_total_deforestation_ha > 48"
+      },
+      "updated_at": "2026-06-27T11:13:19.651211+00:00"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__007": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__007",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "cd_total_deforestation_ha > 53 and cd_afforestation_ha / (cd_total_deforestation_ha + 32) < 32"
+            }
+          },
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "cd_total_deforestation_ha > 48"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "0715feed69485c72d31787ec26e933c2097cadb344ca4b7d1383c249cdcb9b6f",
+      "tuning_updates": {
+        "sig_02": "cd_total_deforestation_ha > 53 and cd_afforestation_ha / (cd_total_deforestation_ha + 32) < 32",
+        "sig_03": "cd_total_deforestation_ha > 48"
+      },
+      "updated_at": "2026-06-27T11:13:19.651713+00:00"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__008": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__008",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "cd_total_deforestation_ha > 53 and cd_afforestation_ha / (cd_total_deforestation_ha + 32) < 32"
+            }
+          },
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "cd_total_deforestation_ha > 48"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "5f420b15ab7d68aa92718e4a1c02c80df175f09c5a21b988112d29dc11ef40f5",
+      "tuning_updates": {
+        "sig_02": "cd_total_deforestation_ha > 53 and cd_afforestation_ha / (cd_total_deforestation_ha + 32) < 32",
+        "sig_03": "cd_total_deforestation_ha > 48"
+      },
+      "updated_at": "2026-06-27T11:13:19.652215+00:00"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__011": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__011",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "cd_total_deforestation_ha > 48"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "47182d42e3184ba0c3e45d7429b11c852eb06a33e1e4eecd7f15ec2bad13f5e5",
+      "tuning_updates": {
+        "sig_03": "cd_total_deforestation_ha > 48"
+      },
+      "updated_at": "2026-06-27T11:13:19.652643+00:00"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__012": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__012",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "cd_total_deforestation_ha > 53 and cd_afforestation_ha < cd_total_deforestation_ha * 32"
+            }
+          },
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "cd_total_deforestation_ha > 48"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "5ba69e423bab0a751a60ba223a68be5a0162f31d6ad2bf397d070ef672adc347",
+      "tuning_updates": {
+        "sig_02": "cd_total_deforestation_ha > 53 and cd_afforestation_ha < cd_total_deforestation_ha * 32",
+        "sig_03": "cd_total_deforestation_ha > 48"
+      },
+      "updated_at": "2026-06-27T11:13:19.653084+00:00"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__013": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__013",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "cd_total_deforestation_ha > 53 and cd_afforestation_ha / (cd_total_deforestation_ha + 32) < 32"
+            }
+          },
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "cd_total_deforestation_ha > 48"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "234c13a78d4275160d99c3a41c6f9a56fea739afe793727affb19628ec664c19",
+      "tuning_updates": {
+        "sig_02": "cd_total_deforestation_ha > 53 and cd_afforestation_ha / (cd_total_deforestation_ha + 32) < 32",
+        "sig_03": "cd_total_deforestation_ha > 48"
+      },
+      "updated_at": "2026-06-27T11:13:19.653525+00:00"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__014": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__014",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "cd_total_deforestation_ha > 53 and cd_afforestation_ha / (cd_total_deforestation_ha + 32) < 32"
+            }
+          },
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "cd_total_deforestation_ha > 48"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "1bdb99057ad57bb36824a8f0c1e5ba5e13780aaa00c237b82754f20af4a42b2e",
+      "tuning_updates": {
+        "sig_02": "cd_total_deforestation_ha > 53 and cd_afforestation_ha / (cd_total_deforestation_ha + 32) < 32",
+        "sig_03": "cd_total_deforestation_ha > 48"
+      },
+      "updated_at": "2026-06-27T11:13:19.654005+00:00"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__015": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__015",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "cd_total_deforestation_ha > 48"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "6675d40d535751a02491be1cfe062be2724d23494694670056de7ef87e3005fb",
+      "tuning_updates": {
+        "sig_03": "cd_total_deforestation_ha > 48"
+      },
+      "updated_at": "2026-06-27T11:13:19.654417+00:00"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__016": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__016",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "cd_total_deforestation_ha > 48"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "7a5580149ff72f19641cb61a12f9181f4ec74c555d14c73f552b908db7989a90",
+      "tuning_updates": {
+        "sig_03": "cd_total_deforestation_ha > 48"
+      },
+      "updated_at": "2026-06-27T11:13:19.654842+00:00"
+    },
+    "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__017": {
+      "card_id": "ntfp_forest_biodiversity__ntfp_decline__forest_degradation__017",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "cd_total_deforestation_ha > 48"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "627d94069d4b35c2cc92b473bb9944f5c612580225c89b7b8199402331deead3",
+      "tuning_updates": {
+        "sig_03": "cd_total_deforestation_ha > 48"
+      },
+      "updated_at": "2026-06-27T11:13:19.655278+00:00"
+    },
+    "agriculture__water_scarcity__irrigation_challenges__001": {
+      "card_id": "agriculture__water_scarcity__irrigation_challenges__001",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "mean_swb_rabi_kharif_ratio < 1"
+            }
+          },
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "nrega_swc_count <= 98"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "aeeff1d373bd0c121bbb42eb483bb89a6a6579cc74030f38363800c6c9c8bbb3",
+      "tuning_updates": {
+        "sig_02": "mean_swb_rabi_kharif_ratio < 1",
+        "sig_03": "nrega_swc_count <= 98"
+      },
+      "updated_at": "2026-06-27T11:13:19.655704+00:00"
+    },
+    "agriculture__water_scarcity__irrigation_challenges__002": {
+      "card_id": "agriculture__water_scarcity__irrigation_challenges__002",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "mean_swb_rabi_kharif_ratio < 1"
+            }
+          },
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "nrega_swc_count <= 98"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "19e70e89c975327414d7ff03671f692367b621164458dce039a25a1081b44d16",
+      "tuning_updates": {
+        "sig_02": "mean_swb_rabi_kharif_ratio < 1",
+        "sig_03": "nrega_swc_count <= 98"
+      },
+      "updated_at": "2026-06-27T11:13:19.656109+00:00"
+    },
+    "agriculture__water_scarcity__irrigation_challenges__003": {
+      "card_id": "agriculture__water_scarcity__irrigation_challenges__003",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "mean_swb_rabi_kharif_ratio < 1"
+            }
+          },
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "nrega_swc_count <= 98"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "a65e36255db627c274e69822237b4277cccd1923769222055699355111d566c8",
+      "tuning_updates": {
+        "sig_02": "mean_swb_rabi_kharif_ratio < 1",
+        "sig_03": "nrega_swc_count <= 98"
+      },
+      "updated_at": "2026-06-27T11:13:19.656528+00:00"
+    },
+    "agriculture__water_scarcity__irrigation_challenges__004": {
+      "card_id": "agriculture__water_scarcity__irrigation_challenges__004",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "mean_swb_rabi_kharif_ratio < 1"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "331c51ae8d528fc86857f4f2e8777cdbd8c751a0ca852e46f7592357919660e3",
+      "tuning_updates": {
+        "sig_02": "mean_swb_rabi_kharif_ratio < 1"
+      },
+      "updated_at": "2026-06-27T11:13:19.656955+00:00"
+    },
+    "agriculture__water_scarcity__irrigation_challenges__005": {
+      "card_id": "agriculture__water_scarcity__irrigation_challenges__005",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "mean_swb_rabi_kharif_ratio < 1"
+            }
+          },
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "nrega_swc_count <= 98"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "4b999dc4d3401bccc1a981fa0e5f399ff436cbf74093e43b395d151fb8ed349c",
+      "tuning_updates": {
+        "sig_02": "mean_swb_rabi_kharif_ratio < 1",
+        "sig_03": "nrega_swc_count <= 98"
+      },
+      "updated_at": "2026-06-27T11:13:19.657389+00:00"
+    },
+    "agriculture__water_scarcity__irrigation_challenges__006": {
+      "card_id": "agriculture__water_scarcity__irrigation_challenges__006",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "mean_swb_rabi_kharif_ratio < 1"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "aba521becb2ecebfe8db8856b9c1c1ece4560d636162f7bb580bb5d8015b011c",
+      "tuning_updates": {
+        "sig_02": "mean_swb_rabi_kharif_ratio < 1"
+      },
+      "updated_at": "2026-06-27T11:13:19.657792+00:00"
+    },
+    "agriculture__water_scarcity__irrigation_challenges__007": {
+      "card_id": "agriculture__water_scarcity__irrigation_challenges__007",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "mean_swb_rabi_kharif_ratio < 1 and trend_swb_rabi_kharif_ratio < 0.05"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "a89e7edbb9c6b17adeb6ad4e5675aacf0bb13c32f6f1193a2b285ce5b012f764",
+      "tuning_updates": {
+        "sig_02": "mean_swb_rabi_kharif_ratio < 1 and trend_swb_rabi_kharif_ratio < 0.05"
+      },
+      "updated_at": "2026-06-27T11:13:19.658207+00:00"
+    },
+    "agriculture__water_scarcity__irrigation_challenges__008": {
+      "card_id": "agriculture__water_scarcity__irrigation_challenges__008",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "mean_swb_rabi_kharif_ratio < 1"
+            }
+          },
+          {
+            "signal_id": "sig_04",
+            "condition": {
+              "expression": "swb_count <= 20 and dist_cooperative_km > 0.556"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_04": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "566796aa1f909ac52f0ba772a97c5cccfb4520f9c064b1d3ec2909fb57904860",
+      "tuning_updates": {
+        "sig_02": "mean_swb_rabi_kharif_ratio < 1",
+        "sig_04": "swb_count <= 20 and dist_cooperative_km > 0.556"
+      },
+      "updated_at": "2026-06-27T11:13:19.658641+00:00"
+    },
+    "agriculture__water_scarcity__irrigation_challenges__009": {
+      "card_id": "agriculture__water_scarcity__irrigation_challenges__009",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "mean_swb_rabi_kharif_ratio < 1"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "603ee90170def136619e460d52c7e1d3f622c79e07f0d4b9bced780114cde779",
+      "tuning_updates": {
+        "sig_02": "mean_swb_rabi_kharif_ratio < 1"
+      },
+      "updated_at": "2026-06-27T11:13:19.659126+00:00"
+    },
+    "agriculture__water_scarcity__irrigation_challenges__010": {
+      "card_id": "agriculture__water_scarcity__irrigation_challenges__010",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "mean_swb_rabi_kharif_ratio < 1"
+            }
+          },
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "nrega_swc_count <= 98"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "9237a6926418e5d16f6ce6dceaf6d0dab54f5241ba47d710403d04dfcd3bcd1d",
+      "tuning_updates": {
+        "sig_02": "mean_swb_rabi_kharif_ratio < 1",
+        "sig_03": "nrega_swc_count <= 98"
+      },
+      "updated_at": "2026-06-27T11:13:19.659609+00:00"
+    },
+    "agriculture__water_scarcity__irrigation_challenges__011": {
+      "card_id": "agriculture__water_scarcity__irrigation_challenges__011",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "mean_swb_rabi_kharif_ratio < 1"
+            }
+          },
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "nrega_swc_count <= 98"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "9b75a1eae99b2efea48ae74d84e13e813060558a3baefb67c6bfbba09d501412",
+      "tuning_updates": {
+        "sig_02": "mean_swb_rabi_kharif_ratio < 1",
+        "sig_03": "nrega_swc_count <= 98"
+      },
+      "updated_at": "2026-06-27T11:13:19.660044+00:00"
+    },
+    "agriculture__water_scarcity__irrigation_challenges__012": {
+      "card_id": "agriculture__water_scarcity__irrigation_challenges__012",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "mean_swb_rabi_kharif_ratio < 1"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "3229a3fbd6c3fac403ea8cb27cd578743e5f6b36002e399e441de0d9577e4d3f",
+      "tuning_updates": {
+        "sig_02": "mean_swb_rabi_kharif_ratio < 1"
+      },
+      "updated_at": "2026-06-27T11:13:19.660458+00:00"
+    },
+    "agriculture__water_scarcity__irrigation_challenges__013": {
+      "card_id": "agriculture__water_scarcity__irrigation_challenges__013",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "mean_swb_rabi_kharif_ratio < 1"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "74555ba63d07bd7734fa3f3aeaf101c1904acc4d85d6c99779fd2a19cd8205f3",
+      "tuning_updates": {
+        "sig_02": "mean_swb_rabi_kharif_ratio < 1"
+      },
+      "updated_at": "2026-06-27T11:13:19.660887+00:00"
+    },
+    "agriculture__water_scarcity__irrigation_challenges__014": {
+      "card_id": "agriculture__water_scarcity__irrigation_challenges__014",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "mean_swb_rabi_kharif_ratio < 1"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "b043780abc0005288656ecb7ff100abe2e5804add3e5086ca6391b60ba2a90a1",
+      "tuning_updates": {
+        "sig_02": "mean_swb_rabi_kharif_ratio < 1"
+      },
+      "updated_at": "2026-06-27T11:13:19.661387+00:00"
+    },
+    "agriculture__water_scarcity__irrigation_challenges__015": {
+      "card_id": "agriculture__water_scarcity__irrigation_challenges__015",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "mean_swb_rabi_kharif_ratio < 1"
+            }
+          },
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "nrega_swc_count < 98"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "41ce468dc7516aa36924df9c7b8cfaf1fc4ef74259e0a0d81d796a9a17198829",
+      "tuning_updates": {
+        "sig_02": "mean_swb_rabi_kharif_ratio < 1",
+        "sig_03": "nrega_swc_count < 98"
+      },
+      "updated_at": "2026-06-27T11:13:19.661808+00:00"
+    },
+    "agriculture__water_scarcity__irrigation_challenges__017": {
+      "card_id": "agriculture__water_scarcity__irrigation_challenges__017",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "mean_swb_rabi_kharif_ratio < 1"
+            }
+          },
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "nrega_swc_count <= 98"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "a42d7ccf4fcc07a4e4f93a90a63a44b7b7f50fca8f2ff357498c38b0d469cee5",
+      "tuning_updates": {
+        "sig_02": "mean_swb_rabi_kharif_ratio < 1",
+        "sig_03": "nrega_swc_count <= 98"
+      },
+      "updated_at": "2026-06-27T11:13:19.662231+00:00"
+    },
+    "agriculture__water_scarcity__rainfed_risk__001": {
+      "card_id": "agriculture__water_scarcity__rainfed_risk__001",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "mean_cropping_intensity <= 1.255 and trend_cropping_intensity <= 0.0524"
+            }
+          },
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "canal_name is None and nrega_irrigation_count <= 6"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "f9132948519cf911fd23ccd6697d9a64c1b3f4a3a422a59c4d2c97d223a54ee0",
+      "tuning_updates": {
+        "sig_02": "mean_cropping_intensity <= 1.255 and trend_cropping_intensity <= 0.0524",
+        "sig_03": "canal_name is None and nrega_irrigation_count <= 6"
+      },
+      "updated_at": "2026-06-27T11:13:19.662676+00:00"
+    },
+    "agriculture__water_scarcity__rainfed_risk__002": {
+      "card_id": "agriculture__water_scarcity__rainfed_risk__002",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "mean_cropping_intensity <= 1.255 and trend_cropping_intensity <= 0.0524"
+            }
+          },
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "canal_name is None and nrega_irrigation_count <= 6"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "af73e13e4dc55375971db9292913638e6264bbc79316817f1ebe760f674e5e0e",
+      "tuning_updates": {
+        "sig_02": "mean_cropping_intensity <= 1.255 and trend_cropping_intensity <= 0.0524",
+        "sig_03": "canal_name is None and nrega_irrigation_count <= 6"
+      },
+      "updated_at": "2026-06-27T11:13:19.663144+00:00"
+    },
+    "agriculture__water_scarcity__rainfed_risk__003": {
+      "card_id": "agriculture__water_scarcity__rainfed_risk__003",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "mean_cropping_intensity <= 1.6625"
+            }
+          },
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "canal_name is None and nrega_irrigation_count <= 6"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "e92f2a917abc71154766794dcffa7f20d3c9cb3796d96e67d64de1463bce85fb",
+      "tuning_updates": {
+        "sig_02": "mean_cropping_intensity <= 1.6625",
+        "sig_03": "canal_name is None and nrega_irrigation_count <= 6"
+      },
+      "updated_at": "2026-06-27T11:13:19.663582+00:00"
+    },
+    "agriculture__water_scarcity__rainfed_risk__004": {
+      "card_id": "agriculture__water_scarcity__rainfed_risk__004",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "mean_cropping_intensity <= 1.6625"
+            }
+          },
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "canal_name is None and nrega_irrigation_count <= 6"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "4caa4a842ca266778628b37a4d4312ca0f2c238a11bedc1f6a0039362bf5df38",
+      "tuning_updates": {
+        "sig_02": "mean_cropping_intensity <= 1.6625",
+        "sig_03": "canal_name is None and nrega_irrigation_count <= 6"
+      },
+      "updated_at": "2026-06-27T11:13:19.664022+00:00"
+    },
+    "agriculture__water_scarcity__rainfed_risk__005": {
+      "card_id": "agriculture__water_scarcity__rainfed_risk__005",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "mean_cropping_intensity <= 1.6625"
+            }
+          },
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "canal_name is None and nrega_irrigation_count <= 6"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "c27c500680d7cdf5a62afbc1916aa5a1e49a83d607aefa36455f3e7e81c996c4",
+      "tuning_updates": {
+        "sig_02": "mean_cropping_intensity <= 1.6625",
+        "sig_03": "canal_name is None and nrega_irrigation_count <= 6"
+      },
+      "updated_at": "2026-06-27T11:13:19.664472+00:00"
+    },
+    "agriculture__water_scarcity__rainfed_risk__006": {
+      "card_id": "agriculture__water_scarcity__rainfed_risk__006",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "mean_cropping_intensity <= 1.255 and trend_cropping_intensity <= 0.0524"
+            }
+          },
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "mean_swb_rabi_kharif_ratio < 2 and canal_name is None"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "1574f0daaa74fbbc691891de03bf03f3f4bf5994d090c01a572870715b0e27f2",
+      "tuning_updates": {
+        "sig_02": "mean_cropping_intensity <= 1.255 and trend_cropping_intensity <= 0.0524",
+        "sig_03": "mean_swb_rabi_kharif_ratio < 2 and canal_name is None"
+      },
+      "updated_at": "2026-06-27T11:13:19.664955+00:00"
+    },
+    "agriculture__water_scarcity__rainfed_risk__007": {
+      "card_id": "agriculture__water_scarcity__rainfed_risk__007",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "mean_cropping_intensity <= 1.255 and trend_cropping_intensity <= 0.0524"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "8d16b0705b15b6c23ff39a15b03f9374b2f17841c12d15c3b1bea4b5378895bf",
+      "tuning_updates": {
+        "sig_02": "mean_cropping_intensity <= 1.255 and trend_cropping_intensity <= 0.0524"
+      },
+      "updated_at": "2026-06-27T11:13:19.665432+00:00"
+    },
+    "agriculture__water_scarcity__rainfed_risk__008": {
+      "card_id": "agriculture__water_scarcity__rainfed_risk__008",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "mean_cropping_intensity <= 1.6625"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "1c21b44f648172697f52c37c2e28caff0fba30b629c061dfbb1f0092e5358e54",
+      "tuning_updates": {
+        "sig_02": "mean_cropping_intensity <= 1.6625"
+      },
+      "updated_at": "2026-06-27T11:13:19.665887+00:00"
+    },
+    "agriculture__water_scarcity__rainfed_risk__009": {
+      "card_id": "agriculture__water_scarcity__rainfed_risk__009",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "mean_cropping_intensity <= 1.6625"
+            }
+          },
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "canal_name is None and nrega_irrigation_count <= 6"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "c8ad09e499258703969c397606a83ded5083740087ee5173f2bd24a9154f6603",
+      "tuning_updates": {
+        "sig_02": "mean_cropping_intensity <= 1.6625",
+        "sig_03": "canal_name is None and nrega_irrigation_count <= 6"
+      },
+      "updated_at": "2026-06-27T11:13:19.666329+00:00"
+    },
+    "agriculture__water_scarcity__rainfed_risk__010": {
+      "card_id": "agriculture__water_scarcity__rainfed_risk__010",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "mean_cropping_intensity <= 1.6625"
+            }
+          },
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "canal_name is None and nrega_irrigation_count <= 6"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "14d6e1b1bc28000c8d4c28ab02f0e189f5bdb8f3a44bae6927c9e74a905e8a93",
+      "tuning_updates": {
+        "sig_02": "mean_cropping_intensity <= 1.6625",
+        "sig_03": "canal_name is None and nrega_irrigation_count <= 6"
+      },
+      "updated_at": "2026-06-27T11:13:19.666784+00:00"
+    },
+    "agriculture__water_scarcity__rainfed_risk__011": {
+      "card_id": "agriculture__water_scarcity__rainfed_risk__011",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "mean_cropping_intensity <= 1.255 and trend_cropping_intensity <= 0.0524"
+            }
+          },
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "canal_name is None and nrega_irrigation_count <= 6"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "43d69cb1a1ca46dadd51540146c5ac5c34b2d785f40fee4a87e48efa1719b36a",
+      "tuning_updates": {
+        "sig_02": "mean_cropping_intensity <= 1.255 and trend_cropping_intensity <= 0.0524",
+        "sig_03": "canal_name is None and nrega_irrigation_count <= 6"
+      },
+      "updated_at": "2026-06-27T11:13:19.667242+00:00"
+    },
+    "agriculture__water_scarcity__rainfed_risk__012": {
+      "card_id": "agriculture__water_scarcity__rainfed_risk__012",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "mean_cropping_intensity <= 1.6625"
+            }
+          },
+          {
+            "signal_id": "sig_04",
+            "condition": {
+              "expression": "nrega_irrigation_count <= 6 and canal_name is None"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_04": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "5b00bbb9d33482518fd293ca2aedd3e38051c61e131df897699b099385d89f7b",
+      "tuning_updates": {
+        "sig_02": "mean_cropping_intensity <= 1.6625",
+        "sig_04": "nrega_irrigation_count <= 6 and canal_name is None"
+      },
+      "updated_at": "2026-06-27T11:13:19.667669+00:00"
+    },
+    "agriculture__water_scarcity__rainfed_risk__013": {
+      "card_id": "agriculture__water_scarcity__rainfed_risk__013",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "mean_cropping_intensity <= 1.6625"
+            }
+          },
+          {
+            "signal_id": "sig_04",
+            "condition": {
+              "expression": "nrega_irrigation_count <= 6 and canal_name is None"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_04": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "169b3a90ce981345877a00c750f34987eb555274794a768d16c3664ad3ce0143",
+      "tuning_updates": {
+        "sig_02": "mean_cropping_intensity <= 1.6625",
+        "sig_04": "nrega_irrigation_count <= 6 and canal_name is None"
+      },
+      "updated_at": "2026-06-27T11:13:19.668093+00:00"
+    },
+    "agriculture__water_scarcity__rainfed_risk__014": {
+      "card_id": "agriculture__water_scarcity__rainfed_risk__014",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "mean_cropping_intensity <= 1.6625"
+            }
+          },
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "canal_name is None and nrega_irrigation_count <= 6"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "7ce98b22645802cb4689e38f7c5a5c26b2d0f62066d49ecac680d76e018e6d40",
+      "tuning_updates": {
+        "sig_02": "mean_cropping_intensity <= 1.6625",
+        "sig_03": "canal_name is None and nrega_irrigation_count <= 6"
+      },
+      "updated_at": "2026-06-27T11:13:19.668533+00:00"
+    },
+    "agriculture__water_scarcity__rainfed_risk__015": {
+      "card_id": "agriculture__water_scarcity__rainfed_risk__015",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "mean_cropping_intensity <= 1.6625"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "0f4fafbf68fe89ffbd0e1a82d1703ac83c9c7507bbcd8a6b58f80e03e9a04e13",
+      "tuning_updates": {
+        "sig_02": "mean_cropping_intensity <= 1.6625"
+      },
+      "updated_at": "2026-06-27T11:13:19.668970+00:00"
+    },
+    "agriculture__water_scarcity__rainfed_risk__016": {
+      "card_id": "agriculture__water_scarcity__rainfed_risk__016",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_04",
+            "condition": {
+              "expression": "mean_swb_rabi_kharif_ratio < 2"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_04": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "f573b842d69ca1a8c2df2069c3f650c2b82e2db175933d5b7f5940d6bb7f89cc",
+      "tuning_updates": {
+        "sig_04": "mean_swb_rabi_kharif_ratio < 2"
+      },
+      "updated_at": "2026-06-27T11:13:19.669385+00:00"
+    },
+    "agriculture__water_scarcity__rainfed_risk__017": {
+      "card_id": "agriculture__water_scarcity__rainfed_risk__017",
+      "patch": {
+        "diagnostic_signals": [
+          {
+            "signal_id": "sig_02",
+            "condition": {
+              "expression": "mean_cropping_intensity <= 1.6625"
+            }
+          },
+          {
+            "signal_id": "sig_03",
+            "condition": {
+              "expression": "canal_name is None and nrega_irrigation_count <= 6"
+            }
+          }
+        ]
+      },
+      "changed_fields": {
+        "signals": {
+          "sig_02": [
+            "expression"
+          ],
+          "sig_03": [
+            "expression"
+          ]
+        },
+        "confirmation_policy": false
+      },
+      "reviewer": "signal_tuning",
+      "raw_card_digest": "cc91260284e61eae425132afb3f7d3fabfed421188067fe216db2c67527f899d",
+      "tuning_updates": {
+        "sig_02": "mean_cropping_intensity <= 1.6625",
+        "sig_03": "canal_name is None and nrega_irrigation_count <= 6"
+      },
+      "updated_at": "2026-06-27T11:13:19.669859+00:00"
+    }
+  }
+}

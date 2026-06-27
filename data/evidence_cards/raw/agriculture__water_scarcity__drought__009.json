@@ -24,16 +24,14 @@
     {
       "signal_id": "sig_01",
       "variables": [
-        "drought_severe_return_period",
-        "drought_moderate_return_period"
+        "drought_severe_return_period"
       ],
       "condition": {
         "type": "quantitative",
         "expression": "drought_severe_return_period <= 4 or drought_moderate_return_period <= 4",
         "qualitative_description": "Severe drought return period is 4 years or less, or moderate drought return period is 4 years or less, indicate persistent crop-season water deficit sufficient to cause yield loss in rice and other kharif crops.",
         "variables": [
-          "drought_severe_return_period",
-          "drought_moderate_return_period"
+          "drought_severe_return_period"
         ]
       },
       "severity": "high",
@@ -43,11 +41,7 @@
     },
     {
       "signal_id": "sig_02",
-      "variables": [
-        "drought_mild_vci_score_latest",
-        "drought_mild_spi_score_latest",
-        "drought_severe_moderate_spi_score_latest"
-      ],
+      "variables": [],
       "condition": {
         "type": "composite",
         "expression": "(drought_mild_spi_score_latest >= 26 or drought_severe_moderate_spi_score_latest >= 26) and drought_mild_vci_score_latest >= 26",
@@ -65,10 +59,7 @@
     },
     {
       "signal_id": "sig_03",
-      "variables": [
-        "mean",
-        "dry_spell_weeks"
-      ],
+      "variables": [],
       "condition": {
         "type": "quantitative",
         "expression": "mean(dry_spell_weeks) >= 3",
@@ -86,16 +77,14 @@
     {
       "signal_id": "sig_04",
       "variables": [
-        "mean_kharif_precipitation",
-        "mean_annual_precipitation_mm"
+        "mean_kharif_precipitation"
       ],
       "condition": {
         "type": "composite",
         "expression": "mean_kharif_precipitation < 0.75 * mean_annual_precipitation_mm or mean_annual_precipitation_mm < 1200",
         "qualitative_description": "Kharif seasonal rainfall in the most recent year below 75% of the long-term annual mean, or mean annual precipitation below 1200 mm, indicates a below-normal rainfall year consistent with meteorological drought in AER-13.",
         "variables": [
-          "mean_kharif_precipitation",
-          "mean_annual_precipitation_mm"
+          "mean_kharif_precipitation"
         ]
       },
       "severity": "moderate",
@@ -106,16 +95,14 @@
     {
       "signal_id": "sig_05",
       "variables": [
-        "drought_severe_return_period",
-        "drought_moderate_return_period"
+        "drought_severe_return_period"
       ],
       "condition": {
         "type": "trend",
         "expression": "drought_severe_return_period <= 4 or drought_moderate_return_period <= 2",
         "qualitative_description": "Severe drought returning on average every 4 years or fewer, or moderate drought every 2 years or fewer, indicates a structurally drought-prone cropping environment rather than an isolated event.",
         "variables": [
-          "drought_severe_return_period",
-          "drought_moderate_return_period"
+          "drought_severe_return_period"
         ]
       },
       "severity": "moderate",

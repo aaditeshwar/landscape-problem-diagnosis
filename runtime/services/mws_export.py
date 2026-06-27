@@ -122,11 +122,13 @@ def ensure_mws_export(
     *,
     case_study_refs: list[dict[str, Any]] | None = None,
     write: bool = True,
+    force_refresh: bool = False,
 ) -> dict[str, Any] | None:
     """Load export JSON or create it from Mongo mws_data."""
-    existing = load_mws_export(uid)
-    if existing is not None:
-        return existing
+    if not force_refresh:
+        existing = load_mws_export(uid)
+        if existing is not None:
+            return existing
 
     raw = db.mws_data.find_one({"uid": uid})
     if not raw:

@@ -24,16 +24,14 @@
     {
       "signal_id": "sig_01",
       "variables": [
-        "drought_severe_return_period",
-        "drought_moderate_return_period"
+        "drought_severe_return_period"
       ],
       "condition": {
         "type": "quantitative",
         "expression": "drought_severe_return_period <= 4 or drought_moderate_return_period <= 4",
         "qualitative_description": "Severe drought return period is 4 years or less, or moderate drought return period is 4 years or less, indicates persistent crop-season water deficit sufficient to cause yield loss.",
         "variables": [
-          "drought_severe_return_period",
-          "drought_moderate_return_period"
+          "drought_severe_return_period"
         ]
       },
       "severity": "high",
@@ -43,10 +41,7 @@
     },
     {
       "signal_id": "sig_02",
-      "variables": [
-        "mean",
-        "dry_spell_weeks"
-      ],
+      "variables": [],
       "condition": {
         "type": "quantitative",
         "expression": "mean(dry_spell_weeks) >= 3",
@@ -64,7 +59,6 @@
     {
       "signal_id": "sig_03",
       "variables": [
-        "mean_annual_precipitation_mm",
         "mean_kharif_precipitation"
       ],
       "condition": {
@@ -72,7 +66,6 @@
         "expression": "mean_annual_precipitation_mm < 600 and mean_kharif_precipitation < (0.75 * mean_annual_precipitation_mm)",
         "qualitative_description": "Long-run mean annual precipitation below 600 mm combined with a kharif season receiving less than 75% of the long-run annual mean confirms a below-normal monsoon year in an already moisture-limited zone.",
         "variables": [
-          "mean_annual_precipitation_mm",
           "mean_kharif_precipitation"
         ]
       },
@@ -84,14 +77,14 @@
     {
       "signal_id": "sig_04",
       "variables": [
-        "monsoon_onset_date"
+        "monsoon_onset_delay_first_year_days"
       ],
       "condition": {
         "type": "trend",
-        "expression": "monsoon_onset_date[-1] > monsoon_onset_date[0] and (monsoon_onset_date[-1] - monsoon_onset_date[0]) > 7",
+        "expression": "monsoon_onset_delay_first_year_days > 7",
         "qualitative_description": "Monsoon onset in the latest year is more than 7 days later than the earliest year in the record, indicating a trend toward delayed onset that shortens the effective kharif growing season.",
         "variables": [
-          "monsoon_onset_date"
+          "monsoon_onset_delay_first_year_days"
         ]
       },
       "severity": "moderate",
@@ -101,11 +94,7 @@
     },
     {
       "signal_id": "sig_05",
-      "variables": [
-        "drought_mild_vci_score_latest",
-        "drought_mild_spi_score_latest",
-        "drought_severe_moderate_spi_score_latest"
-      ],
+      "variables": [],
       "condition": {
         "type": "composite",
         "expression": "(drought_mild_spi_score_latest >= 26 or drought_severe_moderate_spi_score_latest >= 26) and drought_mild_vci_score_latest >= 26",

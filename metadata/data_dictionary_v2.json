@@ -679,7 +679,11 @@
       "trend_swb_total_area_ha": {"type": "derived", "unit": "ha/year", "description": "Linear trend slope of total SWB area.", "computation": "trend(swb_annual.total_ha)", "availability": "derived"},
       "mean_swb_rabi_kharif_ratio": {"type": "derived", "unit": "unitless ratio", "description": "Mean ratio of rabi to kharif SWB area (rabi ⊆ kharif).", "computation": "mean(rabi_ha / kharif_ha per year)", "availability": "derived"},
       "trend_swb_rabi_kharif_ratio": {"type": "derived", "unit": "ratio/year", "description": "Linear trend slope of rabi/kharif SWB persistence ratio.", "computation": "trend(rabi_ha / kharif_ha per year)", "availability": "derived"},
-      "tree_cover_percent_mws": {"type": "derived", "unit": "percent", "description": "Latest LULC tree/forest cover as percent of total MWS area.", "computation": "latest(lulc_ha.tree_forest) / area_ha * 100", "availability": "derived"}
+      "tree_cover_percent_mws": {"type": "derived", "unit": "percent", "description": "Latest LULC tree/forest cover as percent of total MWS area.", "computation": "latest(lulc_ha.tree_forest) / area_ha * 100", "availability": "derived"},
+      "monsoon_onset_delay_first_year_days": {"type": "derived", "unit": "days", "description": "Within-season delay: day-of-year of latest monsoon onset minus day-of-year of earliest year in the series (not calendar-year span).", "computation": "doy(monsoon_onset_date[-1]) - doy(monsoon_onset_date[0])", "availability": "derived"},
+      "monsoon_onset_delay_lag3_days": {"type": "derived", "unit": "days", "description": "Within-season delay: day-of-year of latest monsoon onset minus day-of-year of the third-from-latest year.", "computation": "doy(monsoon_onset_date[-1]) - doy(monsoon_onset_date[-3])", "availability": "derived"},
+      "monsoon_onset_latest_doy": {"type": "derived", "unit": "day-of-year", "description": "Day-of-year (1–366) of the latest monsoon onset date in the series.", "computation": "doy(monsoon_onset_date[-1])", "availability": "derived"},
+      "lulc_cropland_latest_ha": {"type": "derived", "unit": "hectares", "description": "Latest LULC cropland area (sum of crop classes), preferring the most recent year with area > 0.", "computation": "latest positive lulc_cropland_ha year", "availability": "derived"}
     }
   }
 }

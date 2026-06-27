@@ -217,6 +217,17 @@ def _numeric_series_values(value: Any) -> list[float]:
     return out
 
 
+def _is_year_keyed_dict(value: dict[Any, Any]) -> bool:
+    if not value:
+        return False
+    sample = list(value.keys())[:5]
+    return all(str(key).isdigit() for key in sample)
+
+
+def _sorted_year_keys(value: dict[Any, Any]) -> list[str]:
+    return sorted(value.keys(), key=lambda y: int(y))
+
+
 def resolve_access_value(access_key: str, variables: dict[str, Any]) -> Any:
     """Resolve a display access key against merged export variables."""
     key = str(access_key or "").strip()
@@ -261,6 +272,14 @@ def resolve_access_value(access_key: str, variables: dict[str, Any]) -> Any:
             index = index_text.strip("'\"")
 
         if isinstance(value, dict):
+            if _is_year_keyed_dict(value) and isinstance(index, int):
+                years = _sorted_year_keys(value)
+                if not years:
+                    return None
+                try:
+                    return value[years[index]]
+                except IndexError:
+                    return None
             if index in value:
                 return value[index]
             str_index = str(index)

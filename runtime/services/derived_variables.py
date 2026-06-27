@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import date, datetime
 from typing import Any
 
 # India Drought Manual indicator trigger score on the stored 0–100 causality scale.
@@ -46,6 +47,10 @@ ASSEMBLER_DERIVED_VARIABLE_NAMES = frozenset(
         "mean_swb_rabi_kharif_ratio",
         "trend_swb_rabi_kharif_ratio",
         "tree_cover_percent_mws",
+        "monsoon_onset_delay_first_year_days",
+        "monsoon_onset_delay_lag3_days",
+        "monsoon_onset_latest_doy",
+        "lulc_cropland_latest_ha",
     }
 )
 
@@ -321,6 +326,140 @@ def tree_cover_percent_mws(mws_doc: dict) -> float | None:
         return None
 
 
+def _parse_iso_date(value: Any) -> date | None:
+    if isinstance(value, date):
+        return value
+    if isinstance(value, datetime):
+        return value.date()
+    if isinstance(value, str):
+        parts = value.split("-")
+        if len(parts) >= 3:
+            try:
+                return date(int(parts[0]), int(parts[1]), int(parts[2]))
+            except ValueError:
+                pass
+        try:
+            return date.fromisoformat(value[:10])
+        except ValueError:
+            return None
+    return None
+
+
+def monsoon_onset_date_series(mws_doc: dict) -> dict[str, str] | None:
+    drought = mws_doc.get("drought_kharif") or {}
+    out: dict[str, str] = {}
+    for year, row in drought.items():
+        if not isinstance(row, dict):
+            continue
+        value = row.get("monsoon_onset")
+        if value is not None:
+            out[str(year)] = str(value)
+    return out or None
+
+
+def _within_season_delay_days(later: Any, earlier: Any) -> int | None:
+    """Within-season delay: later minus earlier monsoon onset (month/day only)."""
+    d_later = _parse_iso_date(later)
+    d_earlier = _parse_iso_date(earlier)
+    if not d_later or not d_earlier:
+        return None
+    anchor_later = date(2000, d_later.month, d_later.day)
+    anchor_earlier = date(2000, d_earlier.month, d_earlier.day)
+    return (anchor_later - anchor_earlier).days
+
+
+def monsoon_onset_delay_first_year_days(mws_doc: dict) -> int | None:
+    series = monsoon_onset_date_series(mws_doc)
+    if not series:
+        return None
+    years = sorted(series.keys(), key=lambda y: int(y))
+    if len(years) < 2:
+        return None
+    return _within_season_delay_days(series[years[-1]], series[years[0]])
+
+
+def monsoon_onset_delay_lag3_days(mws_doc: dict) -> int | None:
+    series = monsoon_onset_date_series(mws_doc)
+    if not series:
+        return None
+    years = sorted(series.keys(), key=lambda y: int(y))
+    if len(years) < 4:
+        return None
+    return _within_season_delay_days(series[years[-1]], series[years[-3]])
+
+
+def monsoon_onset_latest_doy(mws_doc: dict) -> int | None:
+    series = monsoon_onset_date_series(mws_doc)
+    if not series:
+        return None
+    years = sorted(series.keys(), key=lambda y: int(y))
+    latest = _parse_iso_date(series[years[-1]])
+    return latest.timetuple().tm_yday if latest else None
+
+
+def lulc_cropland_latest_ha(mws_doc: dict) -> float | None:
+    """Latest cropland area (ha), preferring the most recent year with positive area."""
+    series: dict[str, float] = {}
+    precomputed = mws_doc.get("lulc_cropland_ha")
+    if isinstance(precomputed, dict):
+        for year, value in precomputed.items():
+            if value is None:
+                continue
+            try:
+                series[str(year)] = float(value)
+            except (TypeError, ValueError):
+                continue
+    if not series:
+        lulc = mws_doc.get("lulc_ha") or {}
+        components = ("single_kharif", "single_non_kharif", "double_crop", "triple_crop")
+        for year, row in lulc.items():
+            if not isinstance(row, dict):
+                continue
+            parts = [row.get(key) for key in components]
+            if not any(v is not None for v in parts):
+                continue
+            series[str(year)] = round(sum(v or 0 for v in parts), 4)
+    if not series:
+        return None
+    years = sorted(series.keys(), key=lambda y: int(y))
+    for year in reversed(years):
+        value = series[year]
+        if value is not None and float(value) > 0:
+            return float(value)
+    try:
+        return float(series[years[-1]])
+    except (TypeError, ValueError, KeyError):
+        return None
+
+
+def mws_stub_from_present_variables(present: dict[str, Any]) -> dict[str, Any]:
+    """Minimal MWS-shaped doc for resolve_derived from a flat present_variables map."""
+    stub: dict[str, Any] = {}
+    monsoon = present.get("monsoon_onset_date")
+    if isinstance(monsoon, dict):
+        stub["drought_kharif"] = {
+            str(year): {"monsoon_onset": value} for year, value in monsoon.items() if value is not None
+        }
+    lulc_cropland = present.get("lulc_cropland_ha")
+    if isinstance(lulc_cropland, dict):
+        stub["lulc_cropland_ha"] = lulc_cropland
+    if isinstance(present.get("lulc_ha"), dict):
+        stub["lulc_ha"] = present["lulc_ha"]
+    if present.get("area_ha") is not None:
+        stub["area_ha"] = present["area_ha"]
+    for key in (
+        "hydrological_annual",
+        "hydrological_seasonal",
+        "cropping_intensity",
+        "swb_annual",
+        "drought_causality",
+        "drought_kharif",
+    ):
+        if key in present and key not in stub:
+            stub[key] = present[key]
+    return stub
+
+
 def resolve_derived(mws_doc: dict, variable: str) -> Any:
     """Resolve a derived diagnostic variable name to a scalar or series."""
     if variable == "mean_annual_precipitation_mm":
@@ -385,4 +524,12 @@ def resolve_derived(mws_doc: dict, variable: str) -> Any:
         return latest_drought_path_score(mws_doc)
     if variable == "tree_cover_percent_mws":
         return tree_cover_percent_mws(mws_doc)
+    if variable == "monsoon_onset_delay_first_year_days":
+        return monsoon_onset_delay_first_year_days(mws_doc)
+    if variable == "monsoon_onset_delay_lag3_days":
+        return monsoon_onset_delay_lag3_days(mws_doc)
+    if variable == "monsoon_onset_latest_doy":
+        return monsoon_onset_latest_doy(mws_doc)
+    if variable == "lulc_cropland_latest_ha":
+        return lulc_cropland_latest_ha(mws_doc)
     return None

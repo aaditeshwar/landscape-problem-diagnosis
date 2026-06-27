@@ -189,7 +189,7 @@
         "flag_id": "EF3",
         "name": "Wrong direction of inference",
         "description": "A reasoning field asserts a direction of change that contradicts the plain meaning of the variable (e.g. positive cumulative_g_mm cited as evidence of depletion, or increasing lulc tree_forest cited as evidence of deforestation).",
-        "check": "Spot-check direction claims for delta_g_mm, cumulative_g_mm, lulc_ha tree_forest, cd_deforestation_ha, cd_afforestation_ha, drought_weeks, soge_dev_percent.",
+        "check": "Spot-check direction claims for delta_g_mm, cumulative_g_mm, lulc_ha tree_forest, cd_deforestation_ha, cd_afforestation_ha, drought_weeks, soge_dev_percent. Do not flag monsoon_onset_date as missing when monsoon_onset_date_series or monsoon_onset_delay_* derived values are present.",
         "penalty": -0.10
       },
       {

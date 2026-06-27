@@ -24,16 +24,14 @@
     {
       "signal_id": "sig_01",
       "variables": [
-        "drought_severe_return_period",
-        "drought_moderate_return_period"
+        "drought_severe_return_period"
       ],
       "condition": {
         "type": "composite",
         "expression": "drought_severe_return_period <= 4 or drought_moderate_return_period <= 4",
         "qualitative_description": "Severe drought return period is 4 years or less, or moderate drought return period is 4 years or less, indicates sustained crop-season water deficit.",
         "variables": [
-          "drought_severe_return_period",
-          "drought_moderate_return_period"
+          "drought_severe_return_period"
         ]
       },
       "severity": "high",
@@ -43,12 +41,7 @@
     },
     {
       "signal_id": "sig_02",
-      "variables": [
-        "drought_mild_vci_score_latest",
-        "drought_mild_mai_score_latest",
-        "drought_mild_spi_score_latest",
-        "drought_severe_moderate_spi_score_latest"
-      ],
+      "variables": [],
       "condition": {
         "type": "quantitative",
         "expression": "(drought_mild_spi_score_latest >= 26 or drought_severe_moderate_spi_score_latest >= 26) or drought_mild_vci_score_latest >= 26 or drought_mild_mai_score_latest >= 26",
@@ -67,10 +60,7 @@
     },
     {
       "signal_id": "sig_03",
-      "variables": [
-        "mean",
-        "dry_spell_weeks"
-      ],
+      "variables": [],
       "condition": {
         "type": "quantitative",
         "expression": "mean(dry_spell_weeks) >= 3",
@@ -88,18 +78,14 @@
     {
       "signal_id": "sig_04",
       "variables": [
-        "mean_kharif_precipitation",
-        "mean_annual_precipitation_mm",
-        "trend_annual_precipitation_mm"
+        "mean_kharif_precipitation"
       ],
       "condition": {
         "type": "composite",
         "expression": "mean_kharif_precipitation < 0.75 * mean_annual_precipitation_mm or mean_annual_precipitation_mm < 700 or trend_annual_precipitation_mm < -5",
         "qualitative_description": "Kharif seasonal rainfall below 75% of the long-term annual mean, or mean annual precipitation below 700 mm, or a declining trend exceeding 5 mm/year confirms structural precipitation deficit underpinning drought risk.",
         "variables": [
-          "mean_kharif_precipitation",
-          "mean_annual_precipitation_mm",
-          "trend_annual_precipitation_mm"
+          "mean_kharif_precipitation"
         ]
       },
       "severity": "moderate",
@@ -111,17 +97,17 @@
       "signal_id": "sig_05",
       "variables": [
         "drought_severe_return_period",
-        "monsoon_onset_date",
-        "drought_weeks_severe"
+        "drought_weeks_severe",
+        "monsoon_onset_delay_first_year_days"
       ],
       "condition": {
         "type": "trend",
-        "expression": "drought_severe_return_period < 5 or (monsoon_onset_date[-1] > monsoon_onset_date[0] and drought_weeks_severe[-1] >= 2)",
+        "expression": "drought_severe_return_period < 5 or (monsoon_onset_delay_first_year_days > 0 and drought_weeks_severe[-1] >= 2)",
         "qualitative_description": "Severe drought return period shorter than 5 years, or a later monsoon onset in the most recent year combined with at least 2 severe drought weeks, indicates increasing drought frequency and shortened effective kharif season.",
         "variables": [
           "drought_severe_return_period",
-          "monsoon_onset_date",
-          "drought_weeks_severe"
+          "drought_weeks_severe",
+          "monsoon_onset_delay_first_year_days"
         ]
       },
       "severity": "moderate",

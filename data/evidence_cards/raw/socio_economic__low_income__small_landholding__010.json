@@ -25,12 +25,12 @@
     {
       "signal_id": "sig_01",
       "variables": [
-        "lulc_cropland_ha",
+        "lulc_cropland_latest_ha",
         "village_total_population"
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "(lulc_cropland_ha[-1] / (village_total_population + 1e-9)) < 0.2",
+        "expression": "(lulc_cropland_latest_ha / (village_total_population + 1e-9)) < 0.2",
         "qualitative_description": "Per-capita cropland availability below 0.2 ha per person is a strong proxy for marginal or sub-marginal landholding size, consistent with the national average of ~0.15 ha per rural person in densely populated eastern plains.",
         "variables": [
           "lulc_cropland_ha",
@@ -62,9 +62,7 @@
     },
     {
       "signal_id": "sig_03",
-      "variables": [
-        "dist_apmc_km"
-      ],
+      "variables": [],
       "condition": {
         "type": "quantitative",
         "expression": "dist_apmc_km > 30",
@@ -80,10 +78,7 @@
     },
     {
       "signal_id": "sig_04",
-      "variables": [
-        "nrega_community_assets_count",
-        "organization_domains"
-      ],
+      "variables": [],
       "condition": {
         "type": "composite",
         "expression": "nrega_community_assets_count < 10 and ('livelihoods' not in organization_domains and 'fisheries' not in organization_domains)",
@@ -100,9 +95,7 @@
     },
     {
       "signal_id": "sig_05",
-      "variables": [
-        "dist_dairy_km"
-      ],
+      "variables": [],
       "condition": {
         "type": "quantitative",
         "expression": "dist_dairy_km > 20",

@@ -52,6 +52,10 @@ DERIVED_VARIABLE_NAMES = frozenset(
         "drought_severe_moderate_mai_score_latest",
         "drought_severe_moderate_vci_score_latest",
         "drought_severe_moderate_path_score_latest",
+        "monsoon_onset_delay_first_year_days",
+        "monsoon_onset_delay_lag3_days",
+        "monsoon_onset_latest_doy",
+        "lulc_cropland_latest_ha",
     }
 )
 
@@ -71,6 +75,10 @@ DERIVED_VARIABLE_HINTS: dict[str, str] = {
     "mean_zaid_precipitation": "mean zaid-season precipitation (mm/agricultural year)",
     "drought_moderate_return_period": "average years between moderate drought kharif seasons",
     "drought_severe_return_period": "average years between severe drought kharif seasons",
+    "monsoon_onset_delay_first_year_days": "within-season day-of-year delay of latest vs earliest monsoon onset date",
+    "monsoon_onset_delay_lag3_days": "within-season day-of-year delay of latest vs third-from-latest monsoon onset",
+    "monsoon_onset_latest_doy": "day-of-year (1–366) of the latest monsoon onset date",
+    "lulc_cropland_latest_ha": "latest positive LULC cropland area (ha), skipping trailing zero/missing years",
     "drought_mild_spi_score_latest": "latest-year mild drought SPI trigger score (India Drought Manual)",
     "drought_mild_mai_score_latest": "latest-year mild drought MAI trigger score",
     "drought_mild_vci_score_latest": "latest-year mild drought VCI trigger score",

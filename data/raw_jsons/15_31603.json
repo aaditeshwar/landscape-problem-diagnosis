@@ -1,32 +1,23 @@
 {
   "uid": "15_31603",
-  "case_study_refs": [
-    {
-      "case_study_id": 42,
-      "lat": 22.42396,
-      "lng": 80.668758,
-      "production_system": "NTFP_Forest_Biodiversity",
-      "observed_stress": "biodiversity_loss",
-      "causal_pathway": "encroachment"
-    },
-    {
-      "case_study_id": 42,
-      "lat": 22.42396,
-      "lng": 80.668758,
-      "production_system": "NTFP_Forest_Biodiversity",
-      "observed_stress": "biodiversity_loss",
-      "causal_pathway": "genetic_erosion"
-    }
-  ],
+  "case_study_refs": [],
   "location_context": {
     "uid": "15_31603",
     "state": "Madhya Pradesh",
     "district": "Mandla",
     "tehsil": "Bichhiya",
+    "tehsils": [
+      {
+        "state": "Madhya Pradesh",
+        "district": "Mandla",
+        "tehsil": "Bichhiya"
+      }
+    ],
+    "tehsil_label": "Bichhiya, Mandla, Madhya Pradesh",
     "area_ha": 864.6170466061508,
     "nbss_lup_aer_code": "AER-10",
     "nbss_lup_aer_name": "Central Highlands (Malwa, Bundelkhand and Eastern Satpura), hot sub-humid ecoregion",
-    "aquifer_class": "crystalline_basement",
+    "aquifer_class": "volcanic",
     "aquifer_raw": "Hard Rock",
     "terrain_cluster": 3,
     "terrain_description": "Broad Plains and Slopes",
@@ -102,6 +93,14 @@
     ]
   },
   "present_variables": {
+    "acwadam_class_percent": {
+      "alluvium": 0.0,
+      "himalayan_and_sub_himalayan": 0.0,
+      "volcanic": 100.0,
+      "sedimentary_soft_rock": 0.0,
+      "sedimentary_hard_rock": 0.0,
+      "crystalline_basement": 0.0
+    },
     "annual_delta_g_mm": {
       "2017": 92.41,
       "2018": 141.4,
@@ -142,7 +141,8 @@
       "2023": 207.2,
       "2024": 190.54
     },
-    "aquifer_class": "crystalline_basement",
+    "aquifer_class": "volcanic",
+    "aquifer_dominant_lithology": "Basalt",
     "aquifer_lithology_percent": {
       "Alluvium": 0,
       "Banded Gneissic Complex": 0,
@@ -160,15 +160,119 @@
       "Shale": 0,
       "None": 0
     },
+    "aquifer_raw_class": "Hard Rock",
+    "basin_code": "12",
+    "cd_afforestation_forest_to_forest_ha": 471.63,
     "cd_afforestation_ha": 54.88,
+    "cd_barren_shrub_to_built_up_ha": 0.54,
+    "cd_barren_to_forest_ha": 0,
+    "cd_built_up_to_built_up_ha": 0.21,
+    "cd_built_up_to_forest_ha": 0.12,
+    "cd_crop_intensity_ha": {
+      "single_to_single_ha": 129.34,
+      "single_to_double_ha": 31.62,
+      "single_to_triple_ha": 0.35,
+      "double_to_single_ha": 16.31,
+      "double_to_double_ha": 0,
+      "double_to_triple_ha": 3.4,
+      "triple_to_single_ha": 0,
+      "triple_to_double_ha": 1.21,
+      "triple_to_triple_ha": 0,
+      "total_change_ha": 52.89
+    },
+    "cd_crop_intensity_total_change_ha": 52.89,
+    "cd_deforestation_forest_to_forest_ha": 471.63,
+    "cd_deforestation_ha": {
+      "forest_to_barren_ha": 0,
+      "forest_to_built_up_ha": 1.5,
+      "forest_to_farm_ha": 48.48,
+      "forest_to_forest_ha": 471.63,
+      "forest_to_scrubland_ha": 2.21,
+      "total_ha": 52.19
+    },
+    "cd_degradation_ha": {
+      "farm_to_barren_ha": 0,
+      "farm_to_built_up_ha": 0.99,
+      "farm_to_farm_ha": 213.56,
+      "farm_to_scrubland_ha": 13.75,
+      "total_ha": 14.74
+    },
+    "cd_double_to_double_ha": 0,
+    "cd_double_to_single_ha": 16.31,
+    "cd_double_to_triple_ha": 3.4,
     "cd_farm_to_barren_ha": 0,
+    "cd_farm_to_built_up_ha": 0.99,
+    "cd_farm_to_farm_ha": 213.56,
+    "cd_farm_to_forest_ha": 37.74,
+    "cd_farm_to_scrubland_ha": 13.75,
+    "cd_forest_to_barren_ha": 0,
+    "cd_forest_to_built_up_ha": 1.5,
     "cd_forest_to_farm_ha": 48.48,
+    "cd_forest_to_scrubland_ha": 2.21,
+    "cd_scrubland_to_forest_ha": 17.03,
     "cd_single_to_double_ha": 31.62,
+    "cd_single_to_single_ha": 129.34,
+    "cd_single_to_triple_ha": 0.35,
     "cd_total_afforestation_ha": 54.88,
     "cd_total_deforestation_ha": 52.19,
     "cd_total_degradation_ha": 14.74,
     "cd_total_urbanization_ha": 2.53,
+    "cd_tree_farm_to_built_up_ha": 1.98,
+    "cd_triple_to_double_ha": 1.21,
+    "cd_triple_to_single_ha": 0,
+    "cd_triple_to_triple_ha": 0,
     "cd_urbanization_ha": 2.53,
+    "cd_water_to_built_up_ha": 0,
+    "crop_type_area_ha": {
+      "2017": {
+        "single_kharif": 149,
+        "single_non_kharif": 0,
+        "double": 121.88,
+        "triple": 3.63
+      },
+      "2018": {
+        "single_kharif": 179.67,
+        "single_non_kharif": 0,
+        "double": 72.78,
+        "triple": 7.09
+      },
+      "2019": {
+        "single_kharif": 36.19,
+        "single_non_kharif": 0.81,
+        "double": 183.08,
+        "triple": 34.74
+      },
+      "2020": {
+        "single_kharif": 112.29,
+        "single_non_kharif": 0,
+        "double": 89.4,
+        "triple": 81.49
+      },
+      "2021": {
+        "single_kharif": 142.55,
+        "single_non_kharif": 0.05,
+        "double": 155.13,
+        "triple": 3.26
+      },
+      "2022": {
+        "single_kharif": 105.27,
+        "single_non_kharif": 1.28,
+        "double": 133.95,
+        "triple": 74.84
+      },
+      "2023": {
+        "single_kharif": 102.76,
+        "single_non_kharif": 0.07,
+        "double": 170.48,
+        "triple": 11.99
+      },
+      "2024": {
+        "single_kharif": 162.14,
+        "single_non_kharif": 0.2,
+        "double": 65.95,
+        "triple": 5.38
+      }
+    },
     "cropping_intensity": {
       "2017": 0.87,
       "2018": 0.75,
@@ -191,6 +295,7 @@
     },
     "dist_agri_market_km": 3.431,
     "dist_agri_processing_km": 5.025,
+    "dist_agri_support_km": 127.761,
     "dist_apmc_km": 6.544,
     "dist_bank_km": 0.469,
     "dist_chc_km": 24.622,
@@ -203,10 +308,24 @@
     "dist_markets_trading_km": 3.431,
     "dist_pds_km": 48.686,
     "dist_phc_km": 9.862,
+    "dist_school_higher_secondary_km": 3.77,
     "dist_school_primary_km": 0.114,
     "dist_school_secondary_km": 2.47,
+    "dist_school_upper_primary_km": 0.935,
     "dist_storage_warehousing_km": 4.485,
     "dist_sub_centre_km": 1.185,
+    "dist_university_km": 29.18,
+    "double_crop_area_ha": {
+      "2017": 121.88,
+      "2018": 72.78,
+      "2019": 183.08,
+      "2020": 89.4,
+      "2021": 155.13,
+      "2022": 133.95,
+      "2023": 170.48,
+      "2024": 65.95
+    },
+    "downstream_uid": "15_31208",
     "drought_causality": {
       "2017": {
         "severe_moderate": {},
@@ -263,7 +382,7 @@
         "mild": {
           "spi_score": 14.0,
           "cropping_area_sown_score": 9.0,
-          "mild_drought_dryspell_score": 4.0
+          "dryspell_score": 4.0
         }
       },
       "2024": {
@@ -331,7 +450,7 @@
         "mild": {
           "spi_score": 14.0,
           "cropping_area_sown_score": 9.0,
-          "mild_drought_dryspell_score": 4.0
+          "dryspell_score": 4.0
         }
       },
       "2024": {
@@ -343,36 +462,89 @@
         }
       }
     },
+    "drought_weeks": {
+      "2017": {
+        "no_drought": 0,
+        "mild": 21,
+        "moderate": 0,
+        "severe": 0
+      },
+      "2018": {
+        "no_drought": 0,
+        "mild": 21,
+        "moderate": 0,
+        "severe": 0
+      },
+      "2019": {
+        "no_drought": 2,
+        "mild": 19,
+        "moderate": 0,
+        "severe": 0
+      },
+      "2020": {
+        "no_drought": 1,
+        "mild": 20,
+        "moderate": 0,
+        "severe": 0
+      },
+      "2021": {
+        "no_drought": 4,
+        "mild": 17,
+        "moderate": 0,
+        "severe": 0
+      },
+      "2022": {
+        "no_drought": 1,
+        "mild": 20,
+        "moderate": 0,
+        "severe": 0
+      },
+      "2023": {
+        "no_drought": 0,
+        "mild": 21,
+        "moderate": 0,
+        "severe": 0
+      },
+      "2024": {
+        "no_drought": 0,
+        "mild": 21,
+        "moderate": 0,
+        "severe": 0
+      }
+    },
     "drought_weeks_moderate": {
-      "2017": 0,
-      "2018": 0,
-      "2019": 0,
-      "2020": 0,
-      "2021": 0,
-      "2022": 0,
-      "2023": 0,
-      "2024": 0
+      "2017": 0.0,
+      "2018": 0.0,
+      "2019": 0.0,
+      "2020": 0.0,
+      "2021": 0.0,
+      "2022": 0.0,
+      "2023": 0.0,
+      "2024": 0.0
     },
     "drought_weeks_severe": {
-      "2017": 0,
-      "2018": 0,
-      "2019": 0,
-      "2020": 0,
-      "2021": 0,
-      "2022": 0,
-      "2023": 0,
-      "2024": 0
+      "2017": 0.0,
+      "2018": 0.0,
+      "2019": 0.0,
+      "2020": 0.0,
+      "2021": 0.0,
+      "2022": 0.0,
+      "2023": 0.0,
+      "2024": 0.0
     },
     "dry_spell_weeks": {
-      "2017": 4,
-      "2018": 0,
-      "2019": 0,
-      "2020": 4,
-      "2021": 0,
-      "2022": 0,
-      "2023": 7,
-      "2024": 0
+      "2017": 4.0,
+      "2018": 0.0,
+      "2019": 0.0,
+      "2020": 4.0,
+      "2021": 0.0,
+      "2022": 0.0,
+      "2023": 7.0,
+      "2024": 0.0
     },
+    "elevation_max_m": 713.42,
+    "elevation_mean_m": 607.35,
+    "elevation_min_m": 544.22,
     "et_mm": {
       "2017": 761.47,
       "2018": 632.62,
@@ -383,8 +555,41 @@
       "2023": 648.33,
       "2024": 562.42
     },
+    "facility_distances_km": {
+      "dist_school_primary_km": 0.114,
+      "dist_school_upper_primary_km": 0.935,
+      "dist_school_secondary_km": 2.47,
+      "dist_school_higher_secondary_km": 3.77,
+      "dist_college_km": 31.731,
+      "dist_university_km": 29.18,
+      "dist_chc_km": 24.622,
+      "dist_phc_km": 9.862,
+      "dist_sub_centre_km": 1.185,
+      "dist_district_hospital_km": 76.806,
+      "dist_cooperative_km": 106.232,
+      "dist_markets_trading_km": 3.431,
+      "dist_storage_warehousing_km": 4.485,
+      "dist_agri_processing_km": 5.025,
+      "dist_agri_support_km": 127.761,
+      "dist_apmc_km": 6.544,
+      "dist_dairy_km": 92.732,
+      "dist_bank_km": 0.469,
+      "dist_csc_km": 4.531,
+      "dist_pds_km": 48.686
+    },
+    "flow_direction": 5,
+    "kharif_cropped_area_ha": {
+      "2017": 298.0,
+      "2018": 282.0,
+      "2019": 276.0,
+      "2020": 308.0,
+      "2021": 327.0,
+      "2022": 341.0,
+      "2023": 310.0,
+      "2024": 254.0
+    },
     "kharif_cropped_area_percent": {
-      "2017": 100,
+      "2017": 100.0,
       "2018": 80.96,
       "2019": 67.32,
       "2020": 69.63,
@@ -392,6 +597,26 @@
       "2022": 71.68,
       "2023": 64.13,
       "2024": 50.29
+    },
+    "kharif_cropped_sqkm": {
+      "2017": 2.98,
+      "2018": 2.82,
+      "2019": 2.76,
+      "2020": 3.08,
+      "2021": 3.27,
+      "2022": 3.41,
+      "2023": 3.1,
+      "2024": 2.54
+    },
+    "kharif_drought_total_weeks": {
+      "2017": 21.0,
+      "2018": 21.0,
+      "2019": 21.0,
+      "2020": 21.0,
+      "2021": 21.0,
+      "2022": 21.0,
+      "2023": 21.0,
+      "2024": 21.0
     },
     "lulc_barrenland_ha": {
       "2017": 0.03,
@@ -422,6 +647,120 @@
       "2022": 133.95,
       "2023": 170.48,
       "2024": 65.95
+    },
+    "lulc_ha": {
+      "2017": {
+        "barrenland": 0.03,
+        "built_up": 0,
+        "cropland": 0,
+        "double_crop": 121.88,
+        "triple_crop": 3.63,
+        "tree_forest": 465.41,
+        "shrub_scrub": 122.36,
+        "single_kharif": 149,
+        "single_non_kharif": 0,
+        "k_water": 0,
+        "kr_water": 0,
+        "krz_water": 0
+      },
+      "2018": {
+        "barrenland": 0.61,
+        "built_up": 0.02,
+        "cropland": 0,
+        "double_crop": 72.78,
+        "triple_crop": 7.09,
+        "tree_forest": 499.22,
+        "shrub_scrub": 102.94,
+        "single_kharif": 179.67,
+        "single_non_kharif": 0,
+        "k_water": 0,
+        "kr_water": 0,
+        "krz_water": 0
+      },
+      "2019": {
+        "barrenland": 0.01,
+        "built_up": 2.43,
+        "cropland": 0,
+        "double_crop": 183.08,
+        "triple_crop": 34.74,
+        "tree_forest": 575.67,
+        "shrub_scrub": 29.39,
+        "single_kharif": 36.19,
+        "single_non_kharif": 0.81,
+        "k_water": 0,
+        "kr_water": 0,
+        "krz_water": 0
+      },
+      "2020": {
+        "barrenland": 0.01,
+        "built_up": 3.09,
+        "cropland": 0,
+        "double_crop": 89.4,
+        "triple_crop": 81.49,
+        "tree_forest": 537.58,
+        "shrub_scrub": 38.47,
+        "single_kharif": 112.29,
+        "single_non_kharif": 0,
+        "k_water": 0,
+        "kr_water": 0,
+        "krz_water": 0
+      },
+      "2021": {
+        "barrenland": 0.03,
+        "built_up": 3.85,
+        "cropland": 0,
+        "double_crop": 155.13,
+        "triple_crop": 3.26,
+        "tree_forest": 509.78,
+        "shrub_scrub": 47.68,
+        "single_kharif": 142.55,
+        "single_non_kharif": 0.05,
+        "k_water": 0,
+        "kr_water": 0,
+        "krz_water": 0
+      },
+      "2022": {
+        "barrenland": 0.05,
+        "built_up": 3.93,
+        "cropland": 0,
+        "double_crop": 133.95,
+        "triple_crop": 74.84,
+        "tree_forest": 506.99,
+        "shrub_scrub": 36.02,
+        "single_kharif": 105.27,
+        "single_non_kharif": 1.28,
+        "k_water": 0,
+        "kr_water": 0,
+        "krz_water": 0
+      },
+      "2023": {
+        "barrenland": 0,
+        "built_up": 2.81,
+        "cropland": 0,
+        "double_crop": 170.48,
+        "triple_crop": 11.99,
+        "tree_forest": 528.23,
+        "shrub_scrub": 45.98,
+        "single_kharif": 102.76,
+        "single_non_kharif": 0.07,
+        "k_water": 0,
+        "kr_water": 0,
+        "krz_water": 0
+      },
+      "2024": {
+        "barrenland": 0.06,
+        "built_up": 4.05,
+        "cropland": 0,
+        "double_crop": 65.95,
+        "triple_crop": 5.38,
+        "tree_forest": 504.81,
+        "shrub_scrub": 119.72,
+        "single_kharif": 162.14,
+        "single_non_kharif": 0.2,
+        "k_water": 0,
+        "kr_water": 0,
+        "krz_water": 0
+      }
     },
     "lulc_krz_water_ha": {
       "2017": 0,
@@ -473,9 +812,194 @@
       "2023": "2023-6-11",
       "2024": "2024-6-11"
     },
+    "mws_area_ha": 864.6170466061508,
+    "nbss_lup_aer_code": "AER-10",
+    "nbss_lup_aer_name": "Central Highlands (Malwa, Bundelkhand and Eastern Satpura), hot sub-humid ecoregion",
     "nrega_community_assets_count": 25,
     "nrega_irrigation_count": 136,
     "nrega_land_restoration_count": 0,
+    "nrega_mws": {
+      "2005": {
+        "soil_and_water_conservation": 0,
+        "land_restoration": 0,
+        "plantations": 0,
+        "irrigation_on_farms": 0,
+        "other_farm_works": 0,
+        "off_farm_livelihood_assets": 0,
+        "community_assets": 0
+      },
+      "2006": {
+        "soil_and_water_conservation": 0,
+        "land_restoration": 0,
+        "plantations": 0,
+        "irrigation_on_farms": 0,
+        "other_farm_works": 0,
+        "off_farm_livelihood_assets": 0,
+        "community_assets": 0
+      },
+      "2007": {
+        "soil_and_water_conservation": 0,
+        "land_restoration": 0,
+        "plantations": 0,
+        "irrigation_on_farms": 0,
+        "other_farm_works": 0,
+        "off_farm_livelihood_assets": 0,
+        "community_assets": 0
+      },
+      "2008": {
+        "soil_and_water_conservation": 0,
+        "land_restoration": 0,
+        "plantations": 0,
+        "irrigation_on_farms": 0,
+        "other_farm_works": 0,
+        "off_farm_livelihood_assets": 0,
+        "community_assets": 0
+      },
+      "2009": {
+        "soil_and_water_conservation": 0,
+        "land_restoration": 0,
+        "plantations": 0,
+        "irrigation_on_farms": 0,
+        "other_farm_works": 0,
+        "off_farm_livelihood_assets": 0,
+        "community_assets": 0
+      },
+      "2010": {
+        "soil_and_water_conservation": 0,
+        "land_restoration": 0,
+        "plantations": 0,
+        "irrigation_on_farms": 0,
+        "other_farm_works": 0,
+        "off_farm_livelihood_assets": 0,
+        "community_assets": 0
+      },
+      "2011": {
+        "soil_and_water_conservation": 0,
+        "land_restoration": 0,
+        "plantations": 0,
+        "irrigation_on_farms": 0,
+        "other_farm_works": 0,
+        "off_farm_livelihood_assets": 0,
+        "community_assets": 0
+      },
+      "2012": {
+        "soil_and_water_conservation": 0,
+        "land_restoration": 0,
+        "plantations": 0,
+        "irrigation_on_farms": 0,
+        "other_farm_works": 0,
+        "off_farm_livelihood_assets": 0,
+        "community_assets": 0
+      },
+      "2013": {
+        "soil_and_water_conservation": 0,
+        "land_restoration": 0,
+        "plantations": 0,
+        "irrigation_on_farms": 0,
+        "other_farm_works": 0,
+        "off_farm_livelihood_assets": 0,
+        "community_assets": 0
+      },
+      "2014": {
+        "soil_and_water_conservation": 0,
+        "land_restoration": 0,
+        "plantations": 0,
+        "irrigation_on_farms": 0,
+        "other_farm_works": 0,
+        "off_farm_livelihood_assets": 0,
+        "community_assets": 0
+      },
+      "2015": {
+        "soil_and_water_conservation": 0,
+        "land_restoration": 0,
+        "plantations": 0,
+        "irrigation_on_farms": 0,
+        "other_farm_works": 0,
+        "off_farm_livelihood_assets": 0,
+        "community_assets": 0
+      },
+      "2016": {
+        "soil_and_water_conservation": 0,
+        "land_restoration": 0,
+        "plantations": 0,
+        "irrigation_on_farms": 0,
+        "other_farm_works": 0,
+        "off_farm_livelihood_assets": 0,
+        "community_assets": 0
+      },
+      "2017": {
+        "soil_and_water_conservation": 7,
+        "land_restoration": 0,
+        "plantations": 0,
+        "irrigation_on_farms": 91,
+        "other_farm_works": 0,
+        "off_farm_livelihood_assets": 0,
+        "community_assets": 6
+      },
+      "2018": {
+        "soil_and_water_conservation": 34,
+        "land_restoration": 0,
+        "plantations": 1,
+        "irrigation_on_farms": 38,
+        "other_farm_works": 0,
+        "off_farm_livelihood_assets": 0,
+        "community_assets": 15
+      },
+      "2019": {
+        "soil_and_water_conservation": 0,
+        "land_restoration": 0,
+        "plantations": 0,
+        "irrigation_on_farms": 4,
+        "other_farm_works": 0,
+        "off_farm_livelihood_assets": 0,
+        "community_assets": 1
+      },
+      "2020": {
+        "soil_and_water_conservation": 0,
+        "land_restoration": 0,
+        "plantations": 0,
+        "irrigation_on_farms": 0,
+        "other_farm_works": 0,
+        "off_farm_livelihood_assets": 0,
+        "community_assets": 1
+      },
+      "2021": {
+        "soil_and_water_conservation": 1,
+        "land_restoration": 0,
+        "plantations": 1,
+        "irrigation_on_farms": 3,
+        "other_farm_works": 0,
+        "off_farm_livelihood_assets": 0,
+        "community_assets": 2
+      },
+      "2022": {
+        "soil_and_water_conservation": 0,
+        "land_restoration": 0,
+        "plantations": 0,
+        "irrigation_on_farms": 0,
+        "other_farm_works": 0,
+        "off_farm_livelihood_assets": 0,
+        "community_assets": 0
+      },
+      "2023": {
+        "soil_and_water_conservation": 0,
+        "land_restoration": 0,
+        "plantations": 0,
+        "irrigation_on_farms": 0,
+        "other_farm_works": 0,
+        "off_farm_livelihood_assets": 0,
+        "community_assets": 0
+      },
+      "2024": {
+        "soil_and_water_conservation": 0,
+        "land_restoration": 0,
+        "plantations": 0,
+        "irrigation_on_farms": 0,
+        "other_farm_works": 0,
+        "off_farm_livelihood_assets": 0,
+        "community_assets": 0
+      }
+    },
     "nrega_plantation_count": 2,
     "nrega_swc_count": 42,
     "precipitation_mm": {
@@ -497,6 +1021,330 @@
       "2022": 220.95,
       "2023": 207.2,
       "2024": 190.54
+    },
+    "seasonal_delta_g_mm": {
+      "2017": {
+        "kharif": {
+          "precipitation_mm": 736.65,
+          "et_mm": 506.24,
+          "runoff_mm": 23.4,
+          "delta_g_mm": 207.01
+        },
+        "rabi": {
+          "precipitation_mm": 53.59,
+          "et_mm": 173.21,
+          "runoff_mm": 3.31,
+          "delta_g_mm": -122.93
+        },
+        "zaid": {
+          "precipitation_mm": 262.58,
+          "et_mm": 79.32,
+          "runoff_mm": 45.52,
+          "delta_g_mm": 137.74
+        }
+      },
+      "2018": {
+        "kharif": {
+          "precipitation_mm": 620.27,
+          "et_mm": 439.8,
+          "runoff_mm": 0.0,
+          "delta_g_mm": 180.47
+        },
+        "rabi": {
+          "precipitation_mm": 48.36,
+          "et_mm": 126.87,
+          "runoff_mm": 0.0,
+          "delta_g_mm": -78.51
+        },
+        "zaid": {
+          "precipitation_mm": 250.94,
+          "et_mm": 63.98,
+          "runoff_mm": 37.82,
+          "delta_g_mm": 149.14
+        }
+      },
+      "2019": {
+        "kharif": {
+          "precipitation_mm": 964.72,
+          "et_mm": 417.61,
+          "runoff_mm": 0.96,
+          "delta_g_mm": 546.15
+        },
+        "rabi": {
+          "precipitation_mm": 35.05,
+          "et_mm": 220.26,
+          "runoff_mm": 0.01,
+          "delta_g_mm": -185.22
+        },
+        "zaid": {
+          "precipitation_mm": 409.31,
+          "et_mm": 112.93,
+          "runoff_mm": 51.22,
+          "delta_g_mm": 245.16
+        }
+      },
+      "2020": {
+        "kharif": {
+          "precipitation_mm": 1040.05,
+          "et_mm": 471.93,
+          "runoff_mm": 7.45,
+          "delta_g_mm": 560.67
+        },
+        "rabi": {
+          "precipitation_mm": 16.13,
+          "et_mm": 181.46,
+          "runoff_mm": 0.0,
+          "delta_g_mm": -165.33
+        },
+        "zaid": {
+          "precipitation_mm": 289.86,
+          "et_mm": 102.74,
+          "runoff_mm": 18.98,
+          "delta_g_mm": 168.14
+        }
+      },
+      "2021": {
+        "kharif": {
+          "precipitation_mm": 513.67,
+          "et_mm": 403.52,
+          "runoff_mm": 0.0,
+          "delta_g_mm": 110.15
+        },
+        "rabi": {
+          "precipitation_mm": 83.85,
+          "et_mm": 158.59,
+          "runoff_mm": 11,
+          "delta_g_mm": -85.74
+        },
+        "zaid": {
+          "precipitation_mm": 140.52,
+          "et_mm": 57.35,
+          "runoff_mm": 0.02,
+          "delta_g_mm": 83.15
+        }
+      },
+      "2022": {
+        "kharif": {
+          "precipitation_mm": 889.66,
+          "et_mm": 451.06,
+          "runoff_mm": 7.08,
+          "delta_g_mm": 431.52
+        },
+        "rabi": {
+          "precipitation_mm": 3.88,
+          "et_mm": 163.93,
+          "runoff_mm": 0.0,
+          "delta_g_mm": -160.05
+        },
+        "zaid": {
+          "precipitation_mm": 305.99,
+          "et_mm": 66.73,
+          "runoff_mm": 0.13,
+          "delta_g_mm": 239.13
+        }
+      },
+      "2023": {
+        "kharif": {
+          "precipitation_mm": 682.13,
+          "et_mm": 5834.97,
+          "runoff_mm": 8.78,
+          "delta_g_mm": -5161.62
+        },
+        "rabi": {
+          "precipitation_mm": 47.58,
+          "et_mm": 5834.97,
+          "runoff_mm": 0.16,
+          "delta_g_mm": -5787.55
+        },
+        "zaid": {
+          "precipitation_mm": 352.27,
+          "et_mm": 5241.56,
+          "runoff_mm": 3.69,
+          "delta_g_mm": -4892.98
+        }
+      },
+      "2024": {
+        "kharif": {
+          "precipitation_mm": 719.29,
+          "et_mm": 378.44,
+          "runoff_mm": 0.0,
+          "delta_g_mm": 340.85
+        },
+        "rabi": {
+          "precipitation_mm": 0.65,
+          "et_mm": 23.69,
+          "runoff_mm": 0.0,
+          "delta_g_mm": -23.04
+        },
+        "zaid": {
+          "precipitation_mm": 125.08,
+          "et_mm": 106.3,
+          "runoff_mm": 0.08,
+          "delta_g_mm": 18.7
+        }
+      }
+    },
+    "seasonal_et_mm": {
+      "2017": {
+        "kharif": {
+          "precipitation_mm": 736.65,
+          "et_mm": 506.24,
+          "runoff_mm": 23.4,
+          "delta_g_mm": 207.01
+        },
+        "rabi": {
+          "precipitation_mm": 53.59,
+          "et_mm": 173.21,
+          "runoff_mm": 3.31,
+          "delta_g_mm": -122.93
+        },
+        "zaid": {
+          "precipitation_mm": 262.58,
+          "et_mm": 79.32,
+          "runoff_mm": 45.52,
+          "delta_g_mm": 137.74
+        }
+      },
+      "2018": {
+        "kharif": {
+          "precipitation_mm": 620.27,
+          "et_mm": 439.8,
+          "runoff_mm": 0.0,
+          "delta_g_mm": 180.47
+        },
+        "rabi": {
+          "precipitation_mm": 48.36,
+          "et_mm": 126.87,
+          "runoff_mm": 0.0,
+          "delta_g_mm": -78.51
+        },
+        "zaid": {
+          "precipitation_mm": 250.94,
+          "et_mm": 63.98,
+          "runoff_mm": 37.82,
+          "delta_g_mm": 149.14
+        }
+      },
+      "2019": {
+        "kharif": {
+          "precipitation_mm": 964.72,
+          "et_mm": 417.61,
+          "runoff_mm": 0.96,
+          "delta_g_mm": 546.15
+        },
+        "rabi": {
+          "precipitation_mm": 35.05,
+          "et_mm": 220.26,
+          "runoff_mm": 0.01,
+          "delta_g_mm": -185.22
+        },
+        "zaid": {
+          "precipitation_mm": 409.31,
+          "et_mm": 112.93,
+          "runoff_mm": 51.22,
+          "delta_g_mm": 245.16
+        }
+      },
+      "2020": {
+        "kharif": {
+          "precipitation_mm": 1040.05,
+          "et_mm": 471.93,
+          "runoff_mm": 7.45,
+          "delta_g_mm": 560.67
+        },
+        "rabi": {
+          "precipitation_mm": 16.13,
+          "et_mm": 181.46,
+          "runoff_mm": 0.0,
+          "delta_g_mm": -165.33
+        },
+        "zaid": {
+          "precipitation_mm": 289.86,
+          "et_mm": 102.74,
+          "runoff_mm": 18.98,
+          "delta_g_mm": 168.14
+        }
+      },
+      "2021": {
+        "kharif": {
+          "precipitation_mm": 513.67,
+          "et_mm": 403.52,
+          "runoff_mm": 0.0,
+          "delta_g_mm": 110.15
+        },
+        "rabi": {
+          "precipitation_mm": 83.85,
+          "et_mm": 158.59,
+          "runoff_mm": 11,
+          "delta_g_mm": -85.74
+        },
+        "zaid": {
+          "precipitation_mm": 140.52,
+          "et_mm": 57.35,
+          "runoff_mm": 0.02,
+          "delta_g_mm": 83.15
+        }
+      },
+      "2022": {
+        "kharif": {
+          "precipitation_mm": 889.66,
+          "et_mm": 451.06,
+          "runoff_mm": 7.08,
+          "delta_g_mm": 431.52
+        },
+        "rabi": {
+          "precipitation_mm": 3.88,
+          "et_mm": 163.93,
+          "runoff_mm": 0.0,
+          "delta_g_mm": -160.05
+        },
+        "zaid": {
+          "precipitation_mm": 305.99,
+          "et_mm": 66.73,
+          "runoff_mm": 0.13,
+          "delta_g_mm": 239.13
+        }
+      },
+      "2023": {
+        "kharif": {
+          "precipitation_mm": 682.13,
+          "et_mm": 5834.97,
+          "runoff_mm": 8.78,
+          "delta_g_mm": -5161.62
+        },
+        "rabi": {
+          "precipitation_mm": 47.58,
+          "et_mm": 5834.97,
+          "runoff_mm": 0.16,
+          "delta_g_mm": -5787.55
+        },
+        "zaid": {
+          "precipitation_mm": 352.27,
+          "et_mm": 5241.56,
+          "runoff_mm": 3.69,
+          "delta_g_mm": -4892.98
+        }
+      },
+      "2024": {
+        "kharif": {
+          "precipitation_mm": 719.29,
+          "et_mm": 378.44,
+          "runoff_mm": 0.0,
+          "delta_g_mm": 340.85
+        },
+        "rabi": {
+          "precipitation_mm": 0.65,
+          "et_mm": 23.69,
+          "runoff_mm": 0.0,
+          "delta_g_mm": -23.04
+        },
+        "zaid": {
+          "precipitation_mm": 125.08,
+          "et_mm": 106.3,
+          "runoff_mm": 0.08,
+          "delta_g_mm": 18.7
+        }
+      }
     },
     "seasonal_precipitation_mm": {
       "2017": {
@@ -660,6 +1508,188 @@
         }
       }
     },
+    "seasonal_runoff_mm": {
+      "2017": {
+        "kharif": {
+          "precipitation_mm": 736.65,
+          "et_mm": 506.24,
+          "runoff_mm": 23.4,
+          "delta_g_mm": 207.01
+        },
+        "rabi": {
+          "precipitation_mm": 53.59,
+          "et_mm": 173.21,
+          "runoff_mm": 3.31,
+          "delta_g_mm": -122.93
+        },
+        "zaid": {
+          "precipitation_mm": 262.58,
+          "et_mm": 79.32,
+          "runoff_mm": 45.52,
+          "delta_g_mm": 137.74
+        }
+      },
+      "2018": {
+        "kharif": {
+          "precipitation_mm": 620.27,
+          "et_mm": 439.8,
+          "runoff_mm": 0.0,
+          "delta_g_mm": 180.47
+        },
+        "rabi": {
+          "precipitation_mm": 48.36,
+          "et_mm": 126.87,
+          "runoff_mm": 0.0,
+          "delta_g_mm": -78.51
+        },
+        "zaid": {
+          "precipitation_mm": 250.94,
+          "et_mm": 63.98,
+          "runoff_mm": 37.82,
+          "delta_g_mm": 149.14
+        }
+      },
+      "2019": {
+        "kharif": {
+          "precipitation_mm": 964.72,
+          "et_mm": 417.61,
+          "runoff_mm": 0.96,
+          "delta_g_mm": 546.15
+        },
+        "rabi": {
+          "precipitation_mm": 35.05,
+          "et_mm": 220.26,
+          "runoff_mm": 0.01,
+          "delta_g_mm": -185.22
+        },
+        "zaid": {
+          "precipitation_mm": 409.31,
+          "et_mm": 112.93,
+          "runoff_mm": 51.22,
+          "delta_g_mm": 245.16
+        }
+      },
+      "2020": {
+        "kharif": {
+          "precipitation_mm": 1040.05,
+          "et_mm": 471.93,
+          "runoff_mm": 7.45,
+          "delta_g_mm": 560.67
+        },
+        "rabi": {
+          "precipitation_mm": 16.13,
+          "et_mm": 181.46,
+          "runoff_mm": 0.0,
+          "delta_g_mm": -165.33
+        },
+        "zaid": {
+          "precipitation_mm": 289.86,
+          "et_mm": 102.74,
+          "runoff_mm": 18.98,
+          "delta_g_mm": 168.14
+        }
+      },
+      "2021": {
+        "kharif": {
+          "precipitation_mm": 513.67,
+          "et_mm": 403.52,
+          "runoff_mm": 0.0,
+          "delta_g_mm": 110.15
+        },
+        "rabi": {
+          "precipitation_mm": 83.85,
+          "et_mm": 158.59,
+          "runoff_mm": 11,
+          "delta_g_mm": -85.74
+        },
+        "zaid": {
+          "precipitation_mm": 140.52,
+          "et_mm": 57.35,
+          "runoff_mm": 0.02,
+          "delta_g_mm": 83.15
+        }
+      },
+      "2022": {
+        "kharif": {
+          "precipitation_mm": 889.66,
+          "et_mm": 451.06,
+          "runoff_mm": 7.08,
+          "delta_g_mm": 431.52
+        },
+        "rabi": {
+          "precipitation_mm": 3.88,
+          "et_mm": 163.93,
+          "runoff_mm": 0.0,
+          "delta_g_mm": -160.05
+        },
+        "zaid": {
+          "precipitation_mm": 305.99,
+          "et_mm": 66.73,
+          "runoff_mm": 0.13,
+          "delta_g_mm": 239.13
+        }
+      },
+      "2023": {
+        "kharif": {
+          "precipitation_mm": 682.13,
+          "et_mm": 5834.97,
+          "runoff_mm": 8.78,
+          "delta_g_mm": -5161.62
+        },
+        "rabi": {
+          "precipitation_mm": 47.58,
+          "et_mm": 5834.97,
+          "runoff_mm": 0.16,
+          "delta_g_mm": -5787.55
+        },
+        "zaid": {
+          "precipitation_mm": 352.27,
+          "et_mm": 5241.56,
+          "runoff_mm": 3.69,
+          "delta_g_mm": -4892.98
+        }
+      },
+      "2024": {
+        "kharif": {
+          "precipitation_mm": 719.29,
+          "et_mm": 378.44,
+          "runoff_mm": 0.0,
+          "delta_g_mm": 340.85
+        },
+        "rabi": {
+          "precipitation_mm": 0.65,
+          "et_mm": 23.69,
+          "runoff_mm": 0.0,
+          "delta_g_mm": -23.04
+        },
+        "zaid": {
+          "precipitation_mm": 125.08,
+          "et_mm": 106.3,
+          "runoff_mm": 0.08,
+          "delta_g_mm": 18.7
+        }
+      }
+    },
+    "single_kharif_area_ha": {
+      "2017": 149,
+      "2018": 179.67,
+      "2019": 36.19,
+      "2020": 112.29,
+      "2021": 142.55,
+      "2022": 105.27,
+      "2023": 102.76,
+      "2024": 162.14
+    },
+    "single_non_kharif_area_ha": {
+      "2017": 0,
+      "2018": 0,
+      "2019": 0.81,
+      "2020": 0,
+      "2021": 0.05,
+      "2022": 1.28,
+      "2023": 0.07,
+      "2024": 0.2
+    },
     "slopy_area_percent": 36,
     "soge_class_name": "Safe",
     "soge_dev_percent": 11.18,
@@ -676,15 +1706,105 @@
       "10": 0,
       "11": 0
     },
+    "stream_order_area_percent": {
+      "1": 59.4670268626347,
+      "2": 18.27052188623086,
+      "3": 22.06512857947871,
+      "4": 0.193284452928191,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0,
+      "9": 0,
+      "10": 0,
+      "11": 0
+    },
+    "sub_basin_code": "NAU",
+    "terrain_area_percent": {
+      "hill_slope": 1.61,
+      "plain": 46.16,
+      "ridge": 8.78,
+      "slopy": 36,
+      "valley": 7.44
+    },
     "terrain_cluster_id": 3,
+    "terrain_lulc_plain": {
+      "cluster_id": 3,
+      "cluster_name": "Mostly Trees/Forests(~41%)",
+      "barren_percent": 0,
+      "forest_percent": 30.14,
+      "shrub_scrub_percent": 4.09,
+      "single_kharif_percent": 13.39,
+      "single_non_kharif_percent": 0,
+      "double_crop_percent": 8.02,
+      "triple_crop_percent": 0.36
+    },
+    "terrain_lulc_plain_barren_percent": 0,
+    "terrain_lulc_plain_forest_percent": 30.14,
+    "terrain_lulc_plain_percent": {
+      "barren": 0,
+      "forest": 30.14,
+      "shrub_scrub": 4.09,
+      "single_kharif": 13.39,
+      "single_non_kharif": 0,
+      "double_crop": 8.02,
+      "triple_crop": 0.36
+    },
+    "terrain_lulc_plain_shrub_scrub_percent": 4.09,
+    "terrain_lulc_slope": {
+      "cluster_id": 3,
+      "cluster_name": "~43% Tree/Forests",
+      "barren_percent": 0,
+      "forest_percent": 37.68,
+      "shrub_scrub_percent": 0.63,
+      "single_kharif_percent": 1.39,
+      "single_non_kharif_percent": 0,
+      "double_crop_percent": 3.6,
+      "triple_crop_percent": 0.41
+    },
+    "terrain_lulc_slope_barren_percent": 0,
+    "terrain_lulc_slope_forest_percent": 37.68,
+    "terrain_lulc_slope_percent": {
+      "barren": 0,
+      "forest": 37.68,
+      "shrub_scrub": 0.63,
+      "single_kharif": 1.39,
+      "single_non_kharif": 0,
+      "double_crop": 3.6,
+      "triple_crop": 0.41
+    },
+    "terrain_lulc_slope_shrub_scrub_percent": 0.63,
+    "tree_cover_percent_mws": 58.39,
+    "triple_crop_area_ha": {
+      "2017": 3.63,
+      "2018": 7.09,
+      "2019": 34.74,
+      "2020": 81.49,
+      "2021": 3.26,
+      "2022": 74.84,
+      "2023": 11.99,
+      "2024": 5.38
+    },
+    "uid": "15_31603",
+    "upstream_uids": [],
     "village_literacy_rate": 45.3829,
+    "village_population": 3173,
     "village_sc_percent": 0.4097,
     "village_st_percent": 77.2455,
-    "village_total_population": 3173
+    "village_total_population": 3173,
+    "watershed_code": "B12NAU19"
   },
   "derived_variables": {
     "drought_mild_mai_score_latest": 2.67,
     "drought_mild_spi_score_latest": 15.0,
+    "drought_mild_vci_score_latest": 0.0,
+    "drought_moderate_return_period": 8.0,
+    "drought_severe_moderate_mai_score_latest": 0.0,
+    "drought_severe_moderate_path_score_latest": 0.0,
+    "drought_severe_moderate_spi_score_latest": 0.0,
+    "drought_severe_moderate_vci_score_latest": 0.0,
+    "drought_severe_return_period": 8.0,
+    "lulc_cropland_latest_ha": 233.67,
     "mean_annual_delta_g_mm": 172.37,
     "mean_annual_et_mm": 678.1237,
     "mean_annual_precipitation_mm": 1074.0125,
@@ -692,6 +1812,12 @@
     "mean_cropping_intensity": 0.9812,
     "mean_double_crop_area_ha": 124.0812,
     "mean_kharif_cropped_area_ha": 299.5,
+    "mean_kharif_precipitation": 770.805,
+    "mean_rabi_precipitation": 36.1362,
+    "mean_zaid_precipitation": 267.0688,
+    "monsoon_onset_delay_first_year_days": 0,
+    "monsoon_onset_delay_lag3_days": -1,
+    "monsoon_onset_latest_doy": 163,
     "trend_annual_delta_g_mm": 4.2926,
     "trend_annual_et_mm": -19.7427,
     "trend_annual_precipitation_mm": -20.2048,
@@ -702,17 +1828,12 @@
   },
   "missing_variables": [
     "canal_name",
-    "drought_mild_vci_score_latest",
-    "drought_moderate_return_period",
-    "drought_severe_moderate_mai_score_latest",
-    "drought_severe_moderate_path_score_latest",
-    "drought_severe_moderate_spi_score_latest",
-    "drought_severe_moderate_vci_score_latest",
-    "drought_severe_return_period",
+    "drainage_density_km_per_km2",
     "mean_swb_rabi_kharif_ratio",
     "mean_swb_total_area_ha",
     "organization_domains",
     "river_name",
+    "swb_area_ha",
     "swb_count",
     "swb_kharif_area_ha",
     "swb_rabi_area_ha",
@@ -722,26 +1843,60 @@
     "trend_swb_total_area_ha"
   ],
   "variable_schema": {
+    "acwadam_class_percent": "static",
     "annual_delta_g_mm": "time_series",
     "annual_et_mm": "time_series",
     "annual_precipitation_mm": "time_series",
     "annual_runoff_mm": "time_series",
     "aquifer_class": "static",
+    "aquifer_dominant_lithology": "static",
     "aquifer_lithology_percent": "static",
+    "aquifer_raw_class": "static",
+    "basin_code": "static",
     "canal_name": "static",
+    "cd_afforestation_forest_to_forest_ha": "static",
     "cd_afforestation_ha": "static",
+    "cd_barren_shrub_to_built_up_ha": "static",
+    "cd_barren_to_forest_ha": "static",
+    "cd_built_up_to_built_up_ha": "static",
+    "cd_built_up_to_forest_ha": "static",
+    "cd_crop_intensity_ha": "static",
+    "cd_crop_intensity_total_change_ha": "static",
+    "cd_deforestation_forest_to_forest_ha": "static",
+    "cd_deforestation_ha": "static",
+    "cd_degradation_ha": "static",
+    "cd_double_to_double_ha": "static",
+    "cd_double_to_single_ha": "static",
+    "cd_double_to_triple_ha": "static",
     "cd_farm_to_barren_ha": "static",
+    "cd_farm_to_built_up_ha": "static",
+    "cd_farm_to_farm_ha": "static",
+    "cd_farm_to_forest_ha": "static",
+    "cd_farm_to_scrubland_ha": "static",
+    "cd_forest_to_barren_ha": "static",
+    "cd_forest_to_built_up_ha": "static",
     "cd_forest_to_farm_ha": "static",
+    "cd_forest_to_scrubland_ha": "static",
+    "cd_scrubland_to_forest_ha": "static",
     "cd_single_to_double_ha": "static",
+    "cd_single_to_single_ha": "static",
+    "cd_single_to_triple_ha": "static",
     "cd_total_afforestation_ha": "static",
     "cd_total_deforestation_ha": "static",
     "cd_total_degradation_ha": "static",
     "cd_total_urbanization_ha": "static",
+    "cd_tree_farm_to_built_up_ha": "static",
+    "cd_triple_to_double_ha": "static",
+    "cd_triple_to_single_ha": "static",
+    "cd_triple_to_triple_ha": "static",
     "cd_urbanization_ha": "static",
+    "cd_water_to_built_up_ha": "static",
+    "crop_type_area_ha": "time_series",
     "cropping_intensity": "time_series",
     "delta_g_mm": "static",
     "dist_agri_market_km": "static",
     "dist_agri_processing_km": "static",
+    "dist_agri_support_km": "static",
     "dist_apmc_km": "static",
     "dist_bank_km": "static",
     "dist_chc_km": "static",
@@ -754,10 +1909,16 @@
     "dist_markets_trading_km": "static",
     "dist_pds_km": "static",
     "dist_phc_km": "static",
+    "dist_school_higher_secondary_km": "static",
     "dist_school_primary_km": "static",
     "dist_school_secondary_km": "static",
+    "dist_school_upper_primary_km": "static",
     "dist_storage_warehousing_km": "static",
     "dist_sub_centre_km": "static",
+    "dist_university_km": "static",
+    "double_crop_area_ha": "static",
+    "downstream_uid": "static",
+    "drainage_density_km_per_km2": "static",
     "drought_causality": "time_series",
     "drought_causality_json": "time_series",
     "drought_mild_mai_score_latest": "derived",
@@ -769,14 +1930,25 @@
     "drought_severe_moderate_spi_score_latest": "derived",
     "drought_severe_moderate_vci_score_latest": "derived",
     "drought_severe_return_period": "derived",
+    "drought_weeks": "time_series",
     "drought_weeks_moderate": "time_series",
     "drought_weeks_severe": "time_series",
     "dry_spell_weeks": "time_series",
+    "elevation_max_m": "static",
+    "elevation_mean_m": "static",
+    "elevation_min_m": "static",
     "et_mm": "static",
+    "facility_distances_km": "static",
+    "flow_direction": "static",
+    "kharif_cropped_area_ha": "static",
     "kharif_cropped_area_percent": "time_series",
+    "kharif_cropped_sqkm": "static",
+    "kharif_drought_total_weeks": "static",
     "lulc_barrenland_ha": "time_series",
     "lulc_cropland_ha": "time_series",
+    "lulc_cropland_latest_ha": "derived",
     "lulc_double_crop_ha": "time_series",
+    "lulc_ha": "time_series",
     "lulc_krz_water_ha": "time_series",
     "lulc_shrub_scrub_ha": "time_series",
     "lulc_single_kharif_ha": "time_series",
@@ -788,29 +1960,59 @@
     "mean_cropping_intensity": "derived",
     "mean_double_crop_area_ha": "derived",
     "mean_kharif_cropped_area_ha": "derived",
+    "mean_kharif_precipitation": "derived",
+    "mean_rabi_precipitation": "derived",
     "mean_swb_rabi_kharif_ratio": "derived",
     "mean_swb_total_area_ha": "derived",
+    "mean_zaid_precipitation": "derived",
     "monsoon_onset_date": "time_series",
+    "monsoon_onset_delay_first_year_days": "derived",
+    "monsoon_onset_delay_lag3_days": "derived",
+    "monsoon_onset_latest_doy": "derived",
+    "mws_area_ha": "static",
+    "nbss_lup_aer_code": "static",
+    "nbss_lup_aer_name": "static",
     "nrega_community_assets_count": "static",
     "nrega_irrigation_count": "static",
     "nrega_land_restoration_count": "static",
+    "nrega_mws": "time_series",
     "nrega_plantation_count": "static",
     "nrega_swc_count": "static",
     "organization_domains": "static",
     "precipitation_mm": "static",
     "river_name": "static",
     "runoff_mm": "static",
+    "seasonal_delta_g_mm": "time_series",
+    "seasonal_et_mm": "time_series",
     "seasonal_precipitation_mm": "time_series",
+    "seasonal_runoff_mm": "time_series",
+    "single_kharif_area_ha": "static",
+    "single_non_kharif_area_ha": "static",
     "slopy_area_percent": "static",
     "soge_class_name": "static",
     "soge_dev_percent": "static",
     "stream_order_N_area_percent": "static",
+    "stream_order_area_percent": "static",
+    "sub_basin_code": "static",
+    "swb_area_ha": "time_series",
     "swb_count": "static",
     "swb_kharif_area_ha": "time_series",
     "swb_rabi_area_ha": "time_series",
     "swb_total_area_ha": "time_series",
     "swb_zaid_area_ha": "time_series",
+    "terrain_area_percent": "static",
     "terrain_cluster_id": "static",
+    "terrain_lulc_plain": "static",
+    "terrain_lulc_plain_barren_percent": "static",
+    "terrain_lulc_plain_forest_percent": "static",
+    "terrain_lulc_plain_percent": "static",
+    "terrain_lulc_plain_shrub_scrub_percent": "static",
+    "terrain_lulc_slope": "static",
+    "terrain_lulc_slope_barren_percent": "static",
+    "terrain_lulc_slope_forest_percent": "static",
+    "terrain_lulc_slope_percent": "static",
+    "terrain_lulc_slope_shrub_scrub_percent": "static",
+    "tree_cover_percent_mws": "static",
     "trend_annual_delta_g_mm": "derived",
     "trend_annual_et_mm": "derived",
     "trend_annual_precipitation_mm": "derived",
@@ -820,9 +2022,14 @@
     "trend_kharif_cropped_area_ha": "derived",
     "trend_swb_rabi_kharif_ratio": "derived",
     "trend_swb_total_area_ha": "derived",
+    "triple_crop_area_ha": "static",
+    "uid": "static",
+    "upstream_uids": "static",
     "village_literacy_rate": "static",
+    "village_population": "static",
     "village_sc_percent": "static",
     "village_st_percent": "static",
-    "village_total_population": "static"
+    "village_total_population": "static",
+    "watershed_code": "static"
   }
 }

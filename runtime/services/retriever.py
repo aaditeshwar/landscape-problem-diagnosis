@@ -10,7 +10,12 @@ from typing import Any
 from pymongo.database import Database
 
 from services.diagnosis_trace import RetrievalMetrics, RetrievalResult
-from services.aquifer_classification import card_aquifer_tags_for_mws
+from services.aquifer_classification import (
+    aquifer_tag_similarity,
+    card_aquifer_tag_from_evidence_card,
+    card_aquifer_tags_for_mws,
+    expand_aquifer_tags_by_similarity,
+)
 from services.ollama_client import embed_text
 
 log = logging.getLogger(__name__)
@@ -37,9 +42,9 @@ AER_RETRIEVAL_NEIGHBORS: dict[str, list[str]] = {
     "AER-8": ["AER-3", "AER-6", "AER-7", "AER-8"],
     "AER-9": ["AER-4", "AER-9", "AER-10", "AER-13"],
     "AER-10": ["AER-5", "AER-9", "AER-10", "AER-7", "AER-8"],
-    # Eastern plateau / Chhota Nagpur — proxy to peninsular hard-rock cards until dedicated cluster exists.
-    "AER-11": ["AER-11", "AER-12", "AER-10", "AER-7", "AER-8"],
-    "AER-12": ["AER-12", "AER-11", "AER-10", "AER-7", "AER-8"],
+    # Eastern plateau / Chhota Nagpur — AER-10 (Bundelkhand sedimentary) is a last-resort proxy only.
+    "AER-11": ["AER-11", "AER-12", "AER-7", "AER-8", "AER-10"],
+    "AER-12": ["AER-12", "AER-11", "AER-7", "AER-8", "AER-10"],
     "AER-13": ["AER-9", "AER-13", "AER-15", "AER-10"],
     # Himalayan / NE / delta — weak proxies until dedicated cards exist.
     "AER-14": ["AER-14", "AER-1", "AER-16", "AER-10", "AER-9"],
@@ -58,6 +63,63 @@ SYSTEM_DIVERSITY_WEIGHT = 0.08
 PATHWAY_DIVERSITY_WEIGHT = 0.08
 # Prefer evidence cards whose aer_tags include the MWS AER over neighbor-proxy cards.
 DIRECT_AER_MATCH_WEIGHT = 0.06
+
+_aer_aquifer_inventory_cache: dict[str, set[str]] | None = None
+
+
+def clear_aer_aquifer_inventory_cache() -> None:
+    """Reset cached AER→aquifer_tags inventory (for tests)."""
+    global _aer_aquifer_inventory_cache
+    _aer_aquifer_inventory_cache = None
+
+
+def _get_aer_aquifer_inventory(db: Database) -> dict[str, set[str]]:
+    global _aer_aquifer_inventory_cache
+    if _aer_aquifer_inventory_cache is None:
+        inventory: dict[str, set[str]] = {}
+        for doc in db.evidence_cards.find({}, {"aer_tags": 1, "aquifer_tags": 1}):
+            raw_tags = doc.get("aquifer_tags")
+            card_tags: list[str]
+            if isinstance(raw_tags, list):
+                card_tags = [str(tag) for tag in raw_tags if tag]
+            elif isinstance(raw_tags, str) and raw_tags:
+                card_tags = [raw_tags]
+            else:
+                card_tags = []
+            for aer in doc.get("aer_tags") or []:
+                bucket = inventory.setdefault(str(aer), set())
+                bucket.update(card_tags)
+        _aer_aquifer_inventory_cache = inventory
+    return _aer_aquifer_inventory_cache
+
+
+def _order_aer_tags_by_aquifer_inventory(
+    aer_tags: list[str],
+    mws_aquifer_tags: list[str],
+    inventory: dict[str, set[str]],
+) -> list[str]:
+    """Keep MWS AER first; demote neighbors lacking same/similar aquifer card inventory."""
+    if len(aer_tags) <= 1 or not mws_aquifer_tags:
+        return aer_tags
+
+    def priority(aer: str) -> tuple[int, float, int]:
+        available = inventory.get(aer, set())
+        if any(tag in available for tag in mws_aquifer_tags):
+            tier, similarity = 0, 1.0
+        else:
+            similarity = max(
+                (aquifer_tag_similarity(mws_aquifer_tags, tag) for tag in available),
+                default=0.0,
+            )
+            tier = 1 if similarity > 0.05 else 2
+        try:
+            original_index = aer_tags.index(aer)
+        except ValueError:
+            original_index = 999
+        return (tier, -similarity, original_index)
+
+    head, *tail = aer_tags
+    return [head, *sorted(tail, key=priority)]
 
 
 def _cosine(a: list[float], b: list[float]) -> float:
@@ -86,17 +148,24 @@ def _card_aer_tag(mws_doc: dict) -> str | None:
     return None
 
 
-def _aer_tags_for_retrieval(mws_doc: dict) -> list[str] | None:
+def _aer_tags_for_retrieval(mws_doc: dict, db: Database | None = None) -> list[str] | None:
     """Expand MWS AER to a retrieval set of related AER codes."""
     aer = _card_aer_tag(mws_doc)
     if not aer:
         return None
-    neighbors = AER_RETRIEVAL_NEIGHBORS.get(aer, [aer])
+    neighbors = list(AER_RETRIEVAL_NEIGHBORS.get(aer, [aer]))
     # Preserve order while deduplicating (MWS AER first).
     ordered: list[str] = []
     for tag in [aer, *neighbors]:
         if tag not in ordered:
             ordered.append(tag)
+    if db is not None:
+        inventory = _get_aer_aquifer_inventory(db)
+        ordered = _order_aer_tags_by_aquifer_inventory(
+            ordered,
+            _card_aquifer_tags(mws_doc),
+            inventory,
+        )
     return ordered
 
 
@@ -186,14 +255,70 @@ def _fetch_candidates(
     db: Database,
     aquifer_tags: list[str],
     aer_tags: list[str] | None,
+    *,
+    mws_aer: str | None = None,
 ) -> list[dict]:
     """Load evidence cards matching aquifer and (optional) AER constraints."""
-    query = _card_query(aquifer_tags, aer_tags)
-    candidates = list(db.evidence_cards.find(query))
-    if candidates or not aer_tags:
+    if not aer_tags:
+        return list(db.evidence_cards.find(_aquifer_query(aquifer_tags)))
+
+    similar_only = [
+        tag
+        for tag in expand_aquifer_tags_by_similarity(aquifer_tags)
+        if tag not in set(aquifer_tags)
+    ]
+    direct_aer = [mws_aer] if mws_aer else []
+
+    if direct_aer:
+        candidates = list(db.evidence_cards.find(_card_query(aquifer_tags, direct_aer)))
+        if candidates:
+            return candidates
+        if similar_only:
+            candidates = list(db.evidence_cards.find(_card_query(similar_only, direct_aer)))
+            if candidates:
+                log.debug(
+                    "Similar-aquifer match for direct AER %s (tags=%s, %s cards)",
+                    mws_aer,
+                    similar_only,
+                    len(candidates),
+                )
+                return candidates
+
+    candidates = list(db.evidence_cards.find(_card_query(aquifer_tags, aer_tags)))
+    if candidates:
         return candidates
 
-    # Last resort: same AER neighborhood without aquifer filter (never drop AER entirely).
+    if similar_only:
+        candidates = list(db.evidence_cards.find(_card_query(similar_only, aer_tags)))
+        if candidates:
+            log.debug(
+                "Similar-aquifer match within AER set %s (tags=%s, %s cards)",
+                aer_tags,
+                similar_only,
+                len(candidates),
+            )
+            return candidates
+
+    candidates = list(db.evidence_cards.find(_aquifer_query(aquifer_tags)))
+    if candidates:
+        log.debug(
+            "Exact-aquifer match outside AER set (aquifer=%s, %s cards)",
+            aquifer_tags,
+            len(candidates),
+        )
+        return candidates
+
+    expanded = expand_aquifer_tags_by_similarity(aquifer_tags)
+    if set(expanded) != set(aquifer_tags):
+        candidates = list(db.evidence_cards.find(_aquifer_query(expanded)))
+        if candidates:
+            log.debug(
+                "Similar-aquifer match outside AER set (tags=%s, %s cards)",
+                expanded,
+                len(candidates),
+            )
+            return candidates
+
     aer_only = {"aer_tags": {"$in": aer_tags} if len(aer_tags) > 1 else aer_tags[0]}
     candidates = list(db.evidence_cards.find(aer_only))
     if candidates:
@@ -220,7 +345,7 @@ def _score_candidates(
     aer_tags: list[str] | None = None,
     mws_aer: str | None = None,
 ) -> list[tuple[float, dict]]:
-    candidates = _fetch_candidates(db, aquifer_tags, aer_tags)
+    candidates = _fetch_candidates(db, aquifer_tags, aer_tags, mws_aer=mws_aer)
     if len(candidates) < CANDIDATE_POOL and not aer_tags:
         candidates = list(db.evidence_cards.find({}))
 
@@ -275,7 +400,31 @@ def _vector_search_scored(
         scored.sort(key=lambda item: item[0], reverse=True)
         return _apply_direct_aer_bonus(scored, mws_aer)
 
-    scored = _run(_card_query(aquifer_tags, aer_tags))
+    similar_only = [
+        tag
+        for tag in expand_aquifer_tags_by_similarity(aquifer_tags)
+        if tag not in set(aquifer_tags)
+    ]
+    direct_aer = [mws_aer] if mws_aer else []
+    scored = None
+
+    if direct_aer:
+        scored = _run(_card_query(aquifer_tags, direct_aer))
+        if not scored and similar_only:
+            scored = _run(_card_query(similar_only, direct_aer))
+    if aer_tags and not scored:
+        scored = _run(_card_query(aquifer_tags, aer_tags))
+    if aer_tags and not scored and similar_only:
+        log.debug("Vector search: retrying similar-aquifer filter within AER set")
+        scored = _run(_card_query(similar_only, aer_tags))
+    if aer_tags and not scored:
+        log.debug("Vector search: retrying exact-aquifer filter without AER constraint")
+        scored = _run(_aquifer_query(aquifer_tags))
+    if aer_tags and not scored:
+        expanded = expand_aquifer_tags_by_similarity(aquifer_tags)
+        if set(expanded) != set(aquifer_tags):
+            log.debug("Vector search: retrying similar-aquifer filter without AER constraint")
+            scored = _run(_aquifer_query(expanded))
     if aer_tags and not scored:
         aer_only = {"aer_tags": {"$in": aer_tags} if len(aer_tags) > 1 else aer_tags[0]}
         log.debug("Vector search found no hits for aquifer+AER; retrying AER-only filter")
@@ -314,15 +463,27 @@ def _fetch_paper_chunks(
     return out
 
 
-def _card_scope_score(card: dict, *, mws_aer: str | None) -> tuple[int, str]:
-    """Rank cards for the same pathway: prefer direct AER match, then stable card_id."""
+def _card_scope_score(
+    card: dict,
+    *,
+    mws_aer: str | None,
+    mws_aquifer_tags: list[str] | None = None,
+) -> tuple[int, int, str]:
+    """Rank cards for the same pathway: AER match, aquifer similarity, then stable card_id."""
     aer_tags = card.get("aer_tags") or []
     direct_aer = 1 if mws_aer and mws_aer in aer_tags else 0
+    card_aq = card_aquifer_tag_from_evidence_card(card)
+    aquifer_bucket = int(round(aquifer_tag_similarity(mws_aquifer_tags or [], card_aq) * 100))
     card_id = str(card.get("card_id") or "")
-    return (direct_aer, card_id)
+    return (direct_aer, aquifer_bucket, card_id)
 
 
-def _best_card_per_pathway(cards: list[dict], *, mws_aer: str | None) -> list[dict]:
+def _best_card_per_pathway(
+    cards: list[dict],
+    *,
+    mws_aer: str | None,
+    mws_aquifer_tags: list[str] | None = None,
+) -> list[dict]:
     """Pick one evidence card per causal pathway for MWS-scoped server diagnosis."""
     by_pathway: dict[str, dict] = {}
     for card in cards:
@@ -330,8 +491,14 @@ def _best_card_per_pathway(cards: list[dict], *, mws_aer: str | None) -> list[di
         if not pathway_id:
             continue
         existing = by_pathway.get(pathway_id)
-        if existing is None or _card_scope_score(card, mws_aer=mws_aer) > _card_scope_score(
-            existing, mws_aer=mws_aer
+        if existing is None or _card_scope_score(
+            card,
+            mws_aer=mws_aer,
+            mws_aquifer_tags=mws_aquifer_tags,
+        ) > _card_scope_score(
+            existing,
+            mws_aer=mws_aer,
+            mws_aquifer_tags=mws_aquifer_tags,
         ):
             by_pathway[pathway_id] = card
     return [by_pathway[key] for key in sorted(by_pathway)]
@@ -340,10 +507,14 @@ def _best_card_per_pathway(cards: list[dict], *, mws_aer: str | None) -> list[di
 def load_mws_scoped_evidence_cards(db: Database, mws_doc: dict) -> RetrievalResult:
     """Load all MWS-relevant pathways without embedding (server-only diagnosis)."""
     aquifer_tags = _card_aquifer_tags(mws_doc)
-    aer_tags = _aer_tags_for_retrieval(mws_doc)
+    aer_tags = _aer_tags_for_retrieval(mws_doc, db)
     mws_aer = _card_aer_tag(mws_doc)
-    candidates = _fetch_candidates(db, aquifer_tags, aer_tags)
-    selected = _best_card_per_pathway(candidates, mws_aer=mws_aer)
+    candidates = _fetch_candidates(db, aquifer_tags, aer_tags, mws_aer=mws_aer)
+    selected = _best_card_per_pathway(
+        candidates,
+        mws_aer=mws_aer,
+        mws_aquifer_tags=aquifer_tags,
+    )
     enriched: list[dict] = []
     for rank, card in enumerate(selected):
         item = _strip_embedding(dict(card))
@@ -375,7 +546,7 @@ def retrieve_evidence_cards(
     embed_ms = (time.perf_counter() - t0) * 1000
 
     aquifer_tags = _card_aquifer_tags(mws_doc)
-    aer_tags = _aer_tags_for_retrieval(mws_doc)
+    aer_tags = _aer_tags_for_retrieval(mws_doc, db)
     mws_aer = _card_aer_tag(mws_doc)
 
     t1 = time.perf_counter()

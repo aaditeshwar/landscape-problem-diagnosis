@@ -24,16 +24,14 @@
     {
       "signal_id": "sig_01",
       "variables": [
-        "drought_severe_return_period",
-        "drought_moderate_return_period"
+        "drought_severe_return_period"
       ],
       "condition": {
         "type": "quantitative",
         "expression": "drought_severe_return_period <= 4 or drought_moderate_return_period <= 4",
         "qualitative_description": "Severe drought return period is 4 years or less, or moderate drought return period is 4 years or less, indicate significant meteorological drought stress even in a normally humid island ecoregion.",
         "variables": [
-          "drought_severe_return_period",
-          "drought_moderate_return_period"
+          "drought_severe_return_period"
         ]
       },
       "severity": "high",
@@ -46,10 +44,7 @@
     },
     {
       "signal_id": "sig_02",
-      "variables": [
-        "mean",
-        "dry_spell_weeks"
-      ],
+      "variables": [],
       "condition": {
         "type": "quantitative",
         "expression": "mean(dry_spell_weeks) >= 3",
@@ -70,13 +65,7 @@
     },
     {
       "signal_id": "sig_03",
-      "variables": [
-        "drought_mild_vci_score_latest",
-        "drought_mild_spi_score_latest",
-        "drought_severe_moderate_spi_score_latest",
-        "drought_mild_mai_score_latest",
-        "drought_severe_moderate_path_score_latest"
-      ],
+      "variables": [],
       "condition": {
         "type": "composite",
         "expression": "(drought_mild_spi_score_latest >= 26 or drought_severe_moderate_spi_score_latest >= 26) and (drought_mild_mai_score_latest >= 26 or drought_severe_moderate_path_score_latest >= 2) and drought_mild_vci_score_latest >= 26",
@@ -100,7 +89,6 @@
     {
       "signal_id": "sig_04",
       "variables": [
-        "mean_annual_precipitation_mm",
         "seasonal_precipitation_mm"
       ],
       "condition": {
@@ -108,7 +96,6 @@
         "expression": "mean_annual_precipitation_mm < 1600 or (seasonal_precipitation_mm[-1].get('kharif', 9999) < 0.6 * (sum(v.get('kharif', 0) for v in list(seasonal_precipitation_mm.values())) / max(len(seasonal_precipitation_mm), 1)))",
         "qualitative_description": "Mean annual precipitation below the AER-20 lower bound of 1600 mm, or kharif seasonal precipitation in the latest year below 60% of the multi-year kharif mean, confirms a below-normal rainfall year consistent with meteorological drought.",
         "variables": [
-          "mean_annual_precipitation_mm",
           "seasonal_precipitation_mm"
         ]
       },
@@ -124,14 +111,14 @@
     {
       "signal_id": "sig_05",
       "variables": [
-        "monsoon_onset_date"
+        "monsoon_onset_delay_first_year_days"
       ],
       "condition": {
         "type": "trend",
-        "expression": "monsoon_onset_date[-1] > monsoon_onset_date[0] + 10",
+        "expression": "monsoon_onset_delay_first_year_days > 10",
         "qualitative_description": "Monsoon onset in the latest year is more than 10 days later than the earliest recorded onset, indicating a delayed monsoon that shortens the effective kharif season.",
         "variables": [
-          "monsoon_onset_date"
+          "monsoon_onset_delay_first_year_days"
         ]
       },
       "severity": "moderate",

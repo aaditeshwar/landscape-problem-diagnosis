@@ -2,6 +2,7 @@
 
 > **Status:** Reference documentation (implemented)  
 > **Created:** 2026-06-07  
+> **Updated:** 2026-06-20 — aquifer phased fetch and MWS→cluster matching moved to [20-aquifer-taxonomy-and-mws-cluster-matching.md](./20-aquifer-taxonomy-and-mws-cluster-matching.md)  
 > **Code:** `runtime/services/retriever.py` (`AER_RETRIEVAL_NEIGHBORS`), `runtime/services/aer_alignment.py`
 
 ---
@@ -36,13 +37,19 @@ neighbors = AER_RETRIEVAL_NEIGHBORS.get(aer, [aer])
 ordered = dedupe([aer, *neighbors])  # MWS AER always first
 ```
 
-This list is exposed to the API as `retrieval_aer_tags` and used in Mongo queries:
+This list is exposed to the API as `retrieval_aer_tags` and used in Mongo queries. After building the list, `_order_aer_tags_by_aquifer_inventory()` demotes neighbours whose card inventory lacks same/similar aquifer tags (AER-11/12 keep AER-10 last as a weak sedimentary proxy).
 
-```python
-{"aquifer_tags": ..., "aer_tags": {"$in": ordered}}
-```
+**Candidate fetch** (`_fetch_candidates()`) uses a **phased fallback** (not a single aquifer+AER query):
 
-If aquifer + AER filter returns no vector hits, the retriever retries **AER-only** (same neighbour set, aquifer filter dropped) — never global retrieval without AER constraint.
+1. Exact aquifer + **direct MWS AER**
+2. Similar aquifer (fractional similarity matrix) + direct MWS AER
+3. Exact aquifer + full AER neighbour set
+4. Similar aquifer + neighbour set
+5. Exact aquifer, any AER
+6. Similar aquifer, any AER
+7. **AER-only last resort** (same neighbour set, aquifer filter dropped)
+
+Never global retrieval without an AER constraint. Full aquifer taxonomy, similarity matrix, and execution-mode comparison: [20-aquifer-taxonomy-and-mws-cluster-matching.md](./20-aquifer-taxonomy-and-mws-cluster-matching.md).
 
 ---
 
@@ -57,13 +64,7 @@ Both retrieval routes start from the same MWS context:
 | **3. Card aquifer filter** | `card_aquifer_tags_for_mws()` / `card_aquifer_tags()` | Mongo `aquifer_tags` filter (e.g. `hard_rock`, or `coastal` + `alluvium` for AER-18 alluvium) |
 | **4. AER retrieval set** | `_aer_tags_for_retrieval()` + `AER_RETRIEVAL_NEIGHBORS` | Ordered list ending in neighbour expansion (e.g. `AER-6, AER-3, AER-7, AER-8`) |
 
-Mongo pre-filter for both routes:
-
-```python
-{"aquifer_tags": ..., "aer_tags": {"$in": retrieval_aer_tags}}
-```
-
-If that returns nothing, `_fetch_candidates` falls back to **AER-only** (same neighbour set, aquifer filter dropped).
+Both routes call `_fetch_candidates()` with the phased fallback above. Among candidates for the same pathway, `_card_scope_score()` ranks: direct AER match → aquifer similarity tier → stable `card_id`.
 
 Evidence cards are authored per **CONTEXT_CLUSTER** suffix (`__001` … `__017` on `card_id`). Cluster eligibility (aquifer type ∩ AER tag overlap) is documented in the 300-row matrix export — see below.
 
@@ -89,8 +90,7 @@ flowchart LR
 
 1. **No embedding** — all matching cards are loaded from Mongo (subject to aquifer + AER filters).
 2. **`_best_card_per_pathway`** — for each distinct `causal_pathway`, keep exactly one card:
-   - Prefer cards whose `aer_tags` include the **MWS’s exact AER** (`_card_scope_score`: direct AER match first).
-   - Tie-break: highest `card_id` (stable ordering).
+   - Rank via `_card_scope_score`: direct AER match → aquifer similarity → `card_id` (stable ordering).
 3. **Result:** typically 8 pathway cards (one per pathway in the framework), each with a cluster suffix on `card_id` (e.g. `…__groundwater_stress__006` for Deccan semi-arid).
 
 This route is deterministic and exhaustive over the filtered pool — it does not rank by semantic similarity to a user question.
@@ -141,7 +141,7 @@ The LLM reviewer (`run_llm_reviewer_diagnosis`) then interprets signals for what
 | User question | Optional (ignored for retrieval) | Drives embedding / ranking |
 | Diagnosis | `run_server_diagnosis` | `run_llm_reviewer_diagnosis` |
 
-Both routes share **`AER_RETRIEVAL_NEIGHBORS`**, aquifer inference, and AER-only fallback.
+Both routes share **`AER_RETRIEVAL_NEIGHBORS`**, aquifer inference, phased `_fetch_candidates()`, and aquifer-similarity ranking.
 
 ---
 
@@ -295,7 +295,8 @@ When adding cards for a new region or pathway:
 | `runtime/services/retriever.py` | Neighbour table, `_aer_tags_for_retrieval`, candidate fetch |
 | `runtime/services/aer_alignment.py` | exact / neighbor / mismatch classification |
 | `runtime/services/aer_lookup.py` | MWS → dominant AER (spatial, not neighbours) |
-| `runtime/services/aquifer_classification.py` | Lithology → ACWADAM → card aquifer tags |
+| `runtime/services/aquifer_classification.py` | Lithology → ACWADAM → card aquifer tags + similarity matrix |
+| `cursor-plans/20-aquifer-taxonomy-and-mws-cluster-matching.md` | Aquifer vocabularies, phased fetch, execution modes |
 | `runtime/routers/query.py` | Chooses non-LLM vs LLM retrieval on `want_llm_opinion` |
 | `scripts/maintenance/export_aquifer_aer_cluster_matrix.py` | 300-row matrix + gap JSON |
 | `data/reports/aquifer_aer_cluster_matrix.csv` | Lithology × AER simulation export |

@@ -26,16 +26,14 @@
     {
       "signal_id": "sig_01",
       "variables": [
-        "drought_severe_return_period",
-        "drought_moderate_return_period"
+        "drought_severe_return_period"
       ],
       "condition": {
         "type": "quantitative",
         "expression": "drought_severe_return_period <= 4 or drought_moderate_return_period <= 4",
         "qualitative_description": "Severe drought return period is 4 years or less, or moderate drought return period is 4 years or less, indicates persistent crop-season water deficit sufficient to cause yield loss.",
         "variables": [
-          "drought_severe_return_period",
-          "drought_moderate_return_period"
+          "drought_severe_return_period"
         ]
       },
       "severity": "high",
@@ -45,10 +43,7 @@
     },
     {
       "signal_id": "sig_02",
-      "variables": [
-        "mean",
-        "dry_spell_weeks"
-      ],
+      "variables": [],
       "condition": {
         "type": "quantitative",
         "expression": "mean(dry_spell_weeks) >= 3",
@@ -65,11 +60,7 @@
     },
     {
       "signal_id": "sig_03",
-      "variables": [
-        "drought_mild_spi_score_latest",
-        "drought_mild_mai_score_latest",
-        "drought_mild_vci_score_latest"
-      ],
+      "variables": [],
       "condition": {
         "type": "composite",
         "expression": "drought_mild_spi_score_latest >= 26 and drought_mild_mai_score_latest >= 26 and drought_mild_vci_score_latest >= 26",
@@ -88,7 +79,6 @@
     {
       "signal_id": "sig_04",
       "variables": [
-        "mean_annual_precipitation_mm",
         "seasonal_precipitation_mm"
       ],
       "condition": {
@@ -96,7 +86,6 @@
         "expression": "mean_annual_precipitation_mm < 400 and seasonal_precipitation_mm[-1].get('kharif', 9999) < (0.75 * (sum(v.get('kharif', 0) for v in list(seasonal_precipitation_mm.values())[:-1]) / max(len(seasonal_precipitation_mm) - 1, 1)))",
         "qualitative_description": "Mean annual precipitation below 400 mm (AER-2 threshold) and current kharif seasonal rainfall more than 25% below the multi-year kharif mean confirm a below-normal monsoon year in an already water-scarce baseline.",
         "variables": [
-          "mean_annual_precipitation_mm",
           "seasonal_precipitation_mm"
         ]
       },
@@ -108,14 +97,14 @@
     {
       "signal_id": "sig_05",
       "variables": [
-        "monsoon_onset_date"
+        "monsoon_onset_delay_first_year_days"
       ],
       "condition": {
         "type": "trend",
-        "expression": "monsoon_onset_date[-1] > monsoon_onset_date[0] and (monsoon_onset_date[-1] - monsoon_onset_date[0]).days > 10",
+        "expression": "monsoon_onset_delay_first_year_days > 10",
         "qualitative_description": "Monsoon onset in the latest year is more than 10 days later than the earliest year in the record, indicating a trend toward delayed onset that shortens the effective kharif growing window.",
         "variables": [
-          "monsoon_onset_date"
+          "monsoon_onset_delay_first_year_days"
         ]
       },
       "severity": "moderate",

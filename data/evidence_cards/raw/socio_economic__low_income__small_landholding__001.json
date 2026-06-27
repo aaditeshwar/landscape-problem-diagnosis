@@ -25,12 +25,12 @@
     {
       "signal_id": "sig_01",
       "variables": [
-        "lulc_cropland_ha",
+        "lulc_cropland_latest_ha",
         "village_total_population"
       ],
       "condition": {
         "type": "quantitative",
-        "expression": "(lulc_cropland_ha[-1] / (village_total_population + 1e-9)) < 0.4",
+        "expression": "(lulc_cropland_latest_ha / (village_total_population + 1e-9)) < 0.4",
         "qualitative_description": "Per-capita cropland availability below 0.4 ha/person is a proxy for marginal or sub-marginal average farm size, consistent with landholding fragmentation in densely populated semi-arid villages.",
         "variables": [
           "lulc_cropland_ha",
@@ -69,10 +69,7 @@
     },
     {
       "signal_id": "sig_03",
-      "variables": [
-        "dist_apmc_km",
-        "dist_dairy_km"
-      ],
+      "variables": [],
       "condition": {
         "type": "composite",
         "expression": "dist_apmc_km > 30 and dist_dairy_km > 20",
@@ -93,10 +90,7 @@
     },
     {
       "signal_id": "sig_04",
-      "variables": [
-        "nrega_community_assets_count",
-        "organization_domains"
-      ],
+      "variables": [],
       "condition": {
         "type": "composite",
         "expression": "nrega_community_assets_count < 10 and ('livelihoods' not in organization_domains and 'fisheries' not in organization_domains)",

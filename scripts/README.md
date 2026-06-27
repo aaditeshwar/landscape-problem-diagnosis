@@ -28,6 +28,24 @@ Shared bootstrap: `scripts/_bootstrap.py` (repo `ROOT`, optional `runtime/` on `
 
 Paper manifest helpers: `validate_manifest.py`, `sync_manifest_pdfs.py`, `restore_manifest_exclusions.py`
 
+### After Excel re-ingest — refresh MWS exports
+
+Mongo ingest alone does not update `data/raw_jsons/`. Downstream tools (triage dashboard, tuning, query eval) read cached assembler exports. **Required after every re-ingest:**
+
+```powershell
+# Case-study snapshots (tuning, query eval)
+.\.venv\Scripts\python.exe scripts/export_case_study_mws_variables.py
+
+# Full corpus + variable dashboard (pass --refresh-exports so CDFs use fresh Mongo values)
+.\.venv\Scripts\python.exe scripts/triage/build_variable_dashboard.py --refresh-exports
+```
+
+See `cursor-plans/00-tooling-registry.md` → **Post Excel re-ingest**.
+
+| Script | Purpose |
+|--------|---------|
+| `export_case_study_mws_variables.py` | Case-study MWS → `data/raw_jsons/` (with `case_study_refs`) |
+
 ## `lib/` — shared modules
 
 | Module | Used by |
@@ -133,6 +151,28 @@ Requires FastAPI on `http://127.0.0.1:8000` and Mongo loaded.
 | `test/test_panel_updates.py` | Panel update mapping (extend for new pathways) |
 | `test/smoke_test_diagnosis.py` | Live API smoke tests |
 
+## `tuning/` — signal expression fine-tuning (Plan 14 Phase 3)
+
+Uses `expression_tuning_algorithm_v4.md`: empirical threshold grids, production `signal_evaluator`, pathway-level `confirmation_policy` objective.
+
+```powershell
+# One pathway
+.\.venv\Scripts\python.exe scripts/tuning/tune_pathway_signals.py --pathway drought --write-patches
+
+# All built pathways → reports + triage patches
+.\.venv\Scripts\python.exe scripts/tuning/tune_pathway_signals.py --all-built --write-patches
+```
+
+| Output | Location |
+|--------|----------|
+| Per-pathway JSON + MD | `reports/signal_tuning/{pathway}_tuning_report.*` |
+| Summary CSV | `reports/signal_tuning/summary.csv` |
+| Triage patches (review) | `metadata/triage_patches/case_study_locations_signal_tuning.json` |
+
+**Review in triaging app:** select catalog **`case_study_locations_signal_tuning.json`** (same case-study instances as v3). Patches overlay proposed signal expressions; use Play to compare, then Save patches / revise-cards when satisfied.
+
+**Prerequisite:** fresh `data/raw_jsons/` after re-ingest (`export_case_study_mws_variables.py`).
+
 ## `triage/` — case-study triaging dashboards
 
 | Script | Purpose |
@@ -142,6 +182,8 @@ Requires FastAPI on `http://127.0.0.1:8000` and Mongo loaded.
 ```powershell
 .\.venv\Scripts\python.exe scripts/triage/build_variable_dashboard.py
 .\.venv\Scripts\python.exe scripts/triage/build_variable_dashboard.py --section Agriculture/water_scarcity
+# After Excel re-ingest — refresh all MWS exports from Mongo, then rebuild CDFs:
+.\.venv\Scripts\python.exe scripts/triage/build_variable_dashboard.py --refresh-exports
 ```
 
 ## `maintenance/` — occasional ops

@@ -321,6 +321,60 @@ def build_eval_response_payload(
     }
 
 
+def enrich_mws_variable_summary_for_eval(summary: dict[str, Any]) -> dict[str, Any]:
+    """Add derived diagnostics and compact monsoon series for evaluator clarity."""
+    enriched = dict(summary or {})
+    monsoon = enriched.get("monsoon_onset_date")
+    if isinstance(monsoon, dict) and monsoon:
+        years = sorted(monsoon.keys(), key=lambda y: int(y))
+        enriched["monsoon_onset_date_series"] = {y: monsoon[y] for y in years}
+        if years:
+            enriched["monsoon_onset_date_latest"] = monsoon[years[-1]]
+            enriched["monsoon_onset_date_earliest"] = monsoon[years[0]]
+    for key in (
+        "monsoon_onset_delay_first_year_days",
+        "monsoon_onset_delay_lag3_days",
+        "monsoon_onset_latest_doy",
+        "lulc_cropland_latest_ha",
+    ):
+        if key in summary and summary[key] is not None:
+            enriched[key] = summary[key]
+    enriched["_eval_note"] = (
+        "Derived monsoon_onset_delay_* variables are within-season day-of-year differences "
+        "(not multi-year calendar spans). Do not treat monsoon_onset_date[-1] as missing when "
+        "monsoon_onset_date_series or monsoon_onset_delay_* values are present."
+    )
+    return enriched
+
+
+def postprocess_evaluation_result(
+    parsed: dict[str, Any],
+    *,
+    mode: str,
+    eval_response: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Drop stale EF3 flags that contradict available MWS data."""
+    if mode != "server" or not isinstance(parsed.get("error_flags_triggered"), list):
+        return parsed
+    flags = []
+    for flag in parsed["error_flags_triggered"]:
+        if not isinstance(flag, dict):
+            continue
+        flag_id = str(flag.get("flag_id") or "")
+        detail = str(flag.get("detail") or "").lower()
+        if flag_id == "EF3" and "monsoon_onset_date" in detail and (
+            "—" in str(flag.get("detail") or "")
+            or "unresolved" in detail
+            or "missing" in detail
+            or "null" in detail
+            or "undefined" in detail
+        ):
+            continue
+        flags.append(flag)
+    parsed["error_flags_triggered"] = flags
+    return parsed
+
+
 def build_evaluator_prompt(
     *,
     query: dict[str, Any],
@@ -339,6 +393,10 @@ def build_evaluator_prompt(
             "Read the `similarity_context` field first: pathway evidence notes may describe a matched cluster "
             "context (e.g. volcanic hard-rock Malwa/Gujarat) that differs from this MWS's own aquifer_class — "
             "do not penalise D3 for cluster-context wording when `similarity_context` explains the mismatch. "
+            "Monsoon onset delay uses derived variables `monsoon_onset_delay_first_year_days` / "
+            "`monsoon_onset_delay_lag3_days` (within-season day-of-year differences). Do not treat "
+            "monsoon_onset_date[-1] style indexing as missing when monsoon_onset_date_series or derived delay "
+            "values are present in mws_variable_summary. "
             "For D1 (Query Relevance), score whether the response contains information that *could* help "
             "answer the query, not whether it was tailored to the query. "
             "Add a `server_query_alignment` field (string, 2–3 sentences) describing how the generic server "
@@ -369,7 +427,12 @@ def build_evaluator_prompt(
         persona=str(query.get("persona") or ""),
         production_system=str(query.get("production_system") or ""),
         query_text=str(query.get("query") or "").replace('"', '\\"'),
-        mws_variable_summary_json=json.dumps(mws_variable_summary, ensure_ascii=False, indent=2),
+        mws_variable_summary_json=json.dumps(
+            enrich_mws_variable_summary_for_eval(mws_variable_summary),
+            ensure_ascii=False,
+            indent=2,
+            default=str,
+        ),
         diagnosis_response_json=json.dumps(eval_response, ensure_ascii=False, indent=2),
         evaluation_rubric_json=json.dumps(rubric, ensure_ascii=False, indent=2),
     )
@@ -409,6 +472,7 @@ def evaluate_response(
         raw = chat_json(full_prompt, reviewer=True)
 
     parsed = _extract_json(raw)
+    parsed = postprocess_evaluation_result(parsed, mode=mode, eval_response=eval_response)
     parsed.setdefault("query_id", query.get("id"))
     parsed.setdefault("persona", query.get("persona"))
     parsed["eval_mode"] = mode

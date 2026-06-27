@@ -23,9 +23,7 @@
   "diagnostic_signals": [
     {
       "signal_id": "sig_01",
-      "variables": [
-        "cd_forest_to_farm_ha"
-      ],
+      "variables": [],
       "condition": {
         "type": "trend",
         "expression": "cd_forest_to_farm_ha > 29",
@@ -41,9 +39,7 @@
     },
     {
       "signal_id": "sig_02",
-      "variables": [
-        "cd_forest_to_farm_ha"
-      ],
+      "variables": [],
       "condition": {
         "type": "quantitative",
         "expression": "cd_forest_to_farm_ha > 29",
@@ -59,9 +55,7 @@
     },
     {
       "signal_id": "sig_03",
-      "variables": [
-        "cd_urbanization_ha"
-      ],
+      "variables": [],
       "condition": {
         "type": "trend",
         "expression": "cd_urbanization_ha > 20",
@@ -77,9 +71,7 @@
     },
     {
       "signal_id": "sig_04",
-      "variables": [
-        "village_st_percent"
-      ],
+      "variables": [],
       "condition": {
         "type": "quantitative",
         "expression": "village_st_percent > 10",
@@ -95,11 +87,7 @@
     },
     {
       "signal_id": "sig_05",
-      "variables": [
-        "cd_forest_to_farm_ha",
-        "village_st_percent",
-        "cd_urbanization_ha"
-      ],
+      "variables": [],
       "condition": {
         "type": "composite",
         "expression": "(cd_forest_to_farm_ha > 29) and (village_st_percent > 10) and (cd_urbanization_ha > 20)",

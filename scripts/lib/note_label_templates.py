@@ -134,6 +134,18 @@ EXPRESSION_NOTE_LABEL_PATTERNS: list[tuple[re.Pattern[str], str]] = [
         "Declining multi-year precipitation trend",
     ),
     (
+        re.compile(r"monsoon_onset_delay_first_year_days\s*>\s*7", re.I),
+        "Monsoon onset delayed > 7 days vs earliest year",
+    ),
+    (
+        re.compile(r"monsoon_onset_delay_first_year_days\s*>\s*10", re.I),
+        "Monsoon onset delayed > 10 days vs earliest year",
+    ),
+    (
+        re.compile(r"monsoon_onset_delay_lag3_days\s*>\s*7", re.I),
+        "Monsoon onset delayed > 7 days vs three years ago",
+    ),
+    (
         re.compile(r"\(monsoon_onset_date\[.*\]\s*-\s*monsoon_onset_date\[.*\]\)\s*>\s*7", re.I),
         "Monsoon onset delayed > 7 days vs earliest year",
     ),
