@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 280" role="img" aria-label="Structure of a causal pathway evidence card">
+  <defs>
+    <style>
+      .box { fill: #fff; stroke: #78716c; stroke-width: 1.5; rx: 6; }
+      .sig { fill: #fef3c7; stroke: #b45309; }
+      .pol { fill: #dbeafe; stroke: #2563eb; }
+      .fu { fill: #f3e8ff; stroke: #7c3aed; }
+      .t { font: 11px monospace; fill: #1c1917; }
+      .h { font: bold 12px sans-serif; fill: #44403c; }
+    </style>
+  </defs>
+  <text class="h" x="320" y="22" text-anchor="middle">Agriculture ’ water_scarcity ’ groundwater_stress (simplified)</text>
+  <rect class="box sig" x="20" y="40" width="600" height="100"/>
+  <text class="h" x="32" y="58">Diagnostic signals (boolean expressions over MWS variables)</text>
+  <text class="t" x="32" y="78">sig_01: soge_dev_percent &gt; 70  ’ confirms</text>
+  <text class="t" x="32" y="94">sig_02: mean_annual_delta_g_mm &lt; 0  ’ confirms</text>
+  <text class="t" x="32" y="110">sig_03: aquifer_class == alluvium  ’ amplifies</text>
+  <text class="t" x="32" y="126">sig_05: annual_well_depth_m (MCQ follow-up)  ’ confirms</text>
+  <rect class="box pol" x="20" y="155" width="600" height="52"/>
+  <text class="h" x="32" y="173">Confirmation policy</text>
+  <text class="t" x="32" y="192">Confirm pathway when e2 of {sig_01, sig_02, sig_05} are true; amplifiers alone do not confirm</text>
+  <rect class="box fu" x="20" y="220" width="600" height="48"/>
+  <text class="h" x="32" y="238">Follow-up questions</text>
+  <text class="t" x="32" y="256">MCQ on well depth trend · optional questions for not-available variables (e.g. borewell_density)</text>
+</svg>
