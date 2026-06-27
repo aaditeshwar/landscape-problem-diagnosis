@@ -231,7 +231,7 @@ export function LandingPage() {
         </SectionCard>
 
         <footer className="border-t border-stone-200 pt-6 text-center text-xs text-stone-500">
-          CoRE insights · landscape problem diagnosis · built with Claude and Cursor, guided by Aaditeshwar Seth
+          CoRE insights · landscape problem diagnosis · built with Claude and Cursor, guided by Aaditeshwar Seth, Shivani A. Mehta, Riti Verma, Immanuel Shadrach (IIT Delhi)
         </footer>
       </main>
     </div>
