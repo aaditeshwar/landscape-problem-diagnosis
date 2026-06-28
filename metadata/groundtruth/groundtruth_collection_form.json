@@ -1,0 +1,1232 @@
+{
+  "meta": {
+    "form_id": "landscape_groundtruth_v1",
+    "version": 1,
+    "title": "Landscape pathway ground truth - field collection form",
+    "description": "Structured yes/no hierarchy for stewards and field enablers: production system -> observed stress -> causal pathway -> follow-up MCQs. Use alongside CoRE Stack MWS data for signal tuning and query evaluation.",
+    "sources": [
+      "metadata/diagnosis_framework.json",
+      "data/evidence_cards/raw/*.json",
+      "runtime/services/follow_up_mcq.py"
+    ],
+    "generated_at": "2026-06-27T19:33:25Z",
+    "field_types": {
+      "yes_no": {
+        "response_options": [
+          {
+            "id": "yes",
+            "label": "Yes"
+          },
+          {
+            "id": "no",
+            "label": "No"
+          },
+          {
+            "id": "unknown",
+            "label": "Don't know"
+          }
+        ]
+      },
+      "mcq": {
+        "response_type": "single_select"
+      }
+    },
+    "collection_notes": [
+      "Complete location fields first, then walk production systems top to bottom.",
+      "Only answer pathway yes/no when the parent stress is yes.",
+      "Answer follow-up MCQs only for pathways marked yes.",
+      "Prefer the MWS UID from Commons Connect or the CoRE insights map."
+    ]
+  },
+  "respondent_fields": [
+    {
+      "id": "mws_uid",
+      "field_type": "text",
+      "label": "Micro-watershed UID",
+      "required": true,
+      "placeholder": "e.g. 4_100672"
+    },
+    {
+      "id": "village_names",
+      "field_type": "text",
+      "label": "Village(s) covered",
+      "required": false,
+      "placeholder": "Comma-separated village names"
+    },
+    {
+      "id": "state",
+      "field_type": "text",
+      "label": "State",
+      "required": false
+    },
+    {
+      "id": "district",
+      "field_type": "text",
+      "label": "District",
+      "required": false
+    },
+    {
+      "id": "tehsil",
+      "field_type": "text",
+      "label": "Tehsil / block",
+      "required": false
+    },
+    {
+      "id": "collector_name",
+      "field_type": "text",
+      "label": "Collector name",
+      "required": false
+    },
+    {
+      "id": "organisation",
+      "field_type": "text",
+      "label": "Organisation (CSO / department)",
+      "required": false
+    },
+    {
+      "id": "collection_date",
+      "field_type": "date",
+      "label": "Date of visit / interview",
+      "required": true
+    },
+    {
+      "id": "notes",
+      "field_type": "textarea",
+      "label": "Additional context",
+      "required": false,
+      "placeholder": "Season, respondent group, uncertainties, local terms used"
+    }
+  ],
+  "production_systems": [
+    {
+      "id": "Agriculture",
+      "label": "Agriculture",
+      "field_type": "yes_no",
+      "prompt": "Is \"Agriculture\" an important production system in your micro-watershed?",
+      "show_when": null,
+      "observed_stresses": [
+        {
+          "id": "water_scarcity",
+          "label": "Water scarcity",
+          "field_type": "yes_no",
+          "prompt": "Do people in your area report \"Water scarcity\"?",
+          "description": "Farmers report insufficient water for crop production, particularly for rabi and zaid seasons or during dry spells in kharif.",
+          "show_when": {
+            "production_system": "Agriculture",
+            "value": "yes"
+          },
+          "causal_pathways": [
+            {
+              "id": "drought",
+              "label": "Drought",
+              "field_type": "yes_no",
+              "prompt": "Is \"Drought\" a plausible causal explanation for this stress in your area?",
+              "description": "Meteorological or agricultural drought reducing water availability during the cropping season.",
+              "has_evidence_cards": true,
+              "show_when": {
+                "observed_stress": "water_scarcity",
+                "value": "yes"
+              },
+              "follow_up_mcqs": []
+            },
+            {
+              "id": "groundwater_stress",
+              "label": "Groundwater stress",
+              "field_type": "yes_no",
+              "prompt": "Is \"Groundwater stress\" a plausible causal explanation for this stress in your area?",
+              "description": "Declining or insufficient groundwater availability due to overextraction, poor recharge, or aquifer limitations.",
+              "has_evidence_cards": true,
+              "show_when": {
+                "observed_stress": "water_scarcity",
+                "value": "yes"
+              },
+              "follow_up_mcqs": [
+                {
+                  "variable": "annual_well_depth_m",
+                  "field_type": "mcq",
+                  "label": "Annual Well Depth M",
+                  "question": "Has the depth of your borewell or dug-well increased over the past 5–10 years? If yes, by roughly how many feet or metres? Have any shallow dug wells in your village gone completely dry during the rabi or summer season?",
+                  "required_when_pathway_yes": true,
+                  "show_when": {
+                    "pathway_confirmed": "yes"
+                  },
+                  "choices": [
+                    {
+                      "id": "stable",
+                      "label": "Well depth has stayed roughly the same (within ~1 m)"
+                    },
+                    {
+                      "id": "deepening",
+                      "label": "Wells have deepened by more than 2–3 m in the last 5–10 years"
+                    },
+                    {
+                      "id": "failed",
+                      "label": "Springs or shallow wells have dried up permanently or for much longer"
+                    }
+                  ],
+                  "allow_unknown": {
+                    "id": "unknown",
+                    "label": "Don't know / not applicable in our area"
+                  }
+                },
+                {
+                  "variable": "borewell_density",
+                  "field_type": "mcq",
+                  "label": "Borewell Density",
+                  "question": "Roughly how many borewells or tubewells are there in your village or the surrounding area? Would you say there are very few (fewer than 10), a moderate number (10–50), or a large number (more than 50 within 2–3 km)?",
+                  "required_when_pathway_yes": true,
+                  "show_when": {
+                    "pathway_confirmed": "yes"
+                  },
+                  "choices": [
+                    {
+                      "id": "few",
+                      "label": "Very few (fewer than 10 within 2–3 km)"
+                    },
+                    {
+                      "id": "moderate",
+                      "label": "Moderate (10–50 within 2–3 km)"
+                    },
+                    {
+                      "id": "many",
+                      "label": "More than 50 within 2–3 km"
+                    }
+                  ],
+                  "allow_unknown": {
+                    "id": "unknown",
+                    "label": "Don't know / not applicable in our area"
+                  }
+                },
+                {
+                  "variable": "groundwater_salinity",
+                  "field_type": "mcq",
+                  "label": "Groundwater Salinity",
+                  "question": "Have farmers noticed that borewell or well water has become saltier, leaves white deposits on soil or pipes, or is no longer suitable for certain sensitive crops?",
+                  "required_when_pathway_yes": true,
+                  "show_when": {
+                    "pathway_confirmed": "yes"
+                  },
+                  "choices": [
+                    {
+                      "id": "none",
+                      "label": "No — water quality has not changed; no saltiness or deposits"
+                    },
+                    {
+                      "id": "mild",
+                      "label": "Some salinity or white deposits; still usable for some crops"
+                    },
+                    {
+                      "id": "severe",
+                      "label": "Brackish or salty water; crop damage or unsuitable for irrigation"
+                    }
+                  ],
+                  "allow_unknown": {
+                    "id": "unknown",
+                    "label": "Don't know / not applicable in our area"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "irrigation_challenges",
+              "label": "Irrigation challenges",
+              "field_type": "yes_no",
+              "prompt": "Is \"Irrigation challenges\" a plausible causal explanation for this stress in your area?",
+              "description": "Irrigation infrastructure is present but insufficient, costly, or seasonally fails.",
+              "has_evidence_cards": true,
+              "show_when": {
+                "observed_stress": "water_scarcity",
+                "value": "yes"
+              },
+              "follow_up_mcqs": [
+                {
+                  "variable": "annual_well_depth_m",
+                  "field_type": "mcq",
+                  "label": "Annual Well Depth M",
+                  "question": "Have farmers in your village had to deepen their wells or borewells in the last 5-10 years to find water? If yes, roughly how many metres deeper are they now compared to when the well was first dug or drilled?",
+                  "required_when_pathway_yes": true,
+                  "show_when": {
+                    "pathway_confirmed": "yes"
+                  },
+                  "choices": [
+                    {
+                      "id": "stable",
+                      "label": "Well depth has stayed roughly the same (within ~1 m)"
+                    },
+                    {
+                      "id": "deepening",
+                      "label": "Wells have deepened by more than 2–3 m in the last 5–10 years"
+                    },
+                    {
+                      "id": "failed",
+                      "label": "Springs or shallow wells have dried up permanently or for much longer"
+                    }
+                  ],
+                  "allow_unknown": {
+                    "id": "unknown",
+                    "label": "Don't know / not applicable in our area"
+                  }
+                },
+                {
+                  "variable": "tank_siltation_status",
+                  "field_type": "mcq",
+                  "label": "Tank Siltation Status",
+                  "question": "Are the local tanks, ponds, or check dams in the area visibly silted up, shallower than they used to be, or drying out faster after the monsoon than they did 10 years ago?",
+                  "required_when_pathway_yes": true,
+                  "show_when": {
+                    "pathway_confirmed": "yes"
+                  },
+                  "choices": [
+                    {
+                      "id": "none",
+                      "label": "Tanks and ponds not visibly silted; depth and retention similar to before"
+                    },
+                    {
+                      "id": "moderate",
+                      "label": "Visible siltation or shallower than before; dries somewhat faster"
+                    },
+                    {
+                      "id": "severe",
+                      "label": "Heavily silted, much shallower, or drying out quickly after monsoon"
+                    }
+                  ],
+                  "allow_unknown": {
+                    "id": "unknown",
+                    "label": "Don't know / not applicable in our area"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "rainfed_risk",
+              "label": "Rainfed agriculture risk",
+              "field_type": "yes_no",
+              "prompt": "Is \"Rainfed agriculture risk\" a plausible causal explanation for this stress in your area?",
+              "description": "High dependence on rainfall with minimal irrigation infrastructure makes agriculture vulnerable to erratic monsoons.",
+              "has_evidence_cards": true,
+              "show_when": {
+                "observed_stress": "water_scarcity",
+                "value": "yes"
+              },
+              "follow_up_mcqs": [
+                {
+                  "variable": "irrigated_area_ha",
+                  "field_type": "mcq",
+                  "label": "Irrigated Area Ha",
+                  "question": "What share of the cultivated land in your village or micro-watershed receives any form of irrigation — whether from canals, tanks, borewells, or farm ponds — during the rabi or zaid seasons? Would you estimate it as less than 10%, 10–30%, or more than 30% of total farmland?",
+                  "required_when_pathway_yes": true,
+                  "show_when": {
+                    "pathway_confirmed": "yes"
+                  },
+                  "choices": [
+                    {
+                      "id": "low",
+                      "label": "Less than 10% of cultivated land is irrigated"
+                    },
+                    {
+                      "id": "moderate",
+                      "label": "Between 10% and 30% of cultivated land is irrigated"
+                    },
+                    {
+                      "id": "high",
+                      "label": "More than 30% of cultivated land is irrigated"
+                    }
+                  ],
+                  "allow_unknown": {
+                    "id": "unknown",
+                    "label": "Don't know / not applicable in our area"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "low_yield",
+          "label": "Low crop yield",
+          "field_type": "yes_no",
+          "prompt": "Do people in your area report \"Low crop yield\"?",
+          "description": "Farmers observe declining or stagnant crop yields over years despite similar inputs.",
+          "show_when": {
+            "production_system": "Agriculture",
+            "value": "yes"
+          },
+          "causal_pathways": [
+            {
+              "id": "chemical_dependence",
+              "label": "Chemical Dependence",
+              "field_type": "yes_no",
+              "prompt": "Is \"Chemical Dependence\" a plausible causal explanation for this stress in your area?",
+              "description": "Over-reliance on chemical fertilisers and pesticides leading to input cost escalation, soil health decline, and pest resistance.",
+              "has_evidence_cards": false,
+              "show_when": {
+                "observed_stress": "low_yield",
+                "value": "yes"
+              },
+              "follow_up_mcqs": []
+            },
+            {
+              "id": "monocropping",
+              "label": "Monocropping",
+              "field_type": "yes_no",
+              "prompt": "Is \"Monocropping\" a plausible causal explanation for this stress in your area?",
+              "description": "Continuous cultivation of the same crop depletes specific soil nutrients, increases pest pressure, and reduces resilience.",
+              "has_evidence_cards": false,
+              "show_when": {
+                "observed_stress": "low_yield",
+                "value": "yes"
+              },
+              "follow_up_mcqs": []
+            },
+            {
+              "id": "seed_unavailability",
+              "label": "Seed Unavailability",
+              "field_type": "yes_no",
+              "prompt": "Is \"Seed Unavailability\" a plausible causal explanation for this stress in your area?",
+              "description": "Farmers cannot access quality seeds of preferred or resilient varieties, including traditional/indigenous varieties.",
+              "has_evidence_cards": false,
+              "show_when": {
+                "observed_stress": "low_yield",
+                "value": "yes"
+              },
+              "follow_up_mcqs": []
+            },
+            {
+              "id": "soil_degradation",
+              "label": "Soil Degradation",
+              "field_type": "yes_no",
+              "prompt": "Is \"Soil Degradation\" a plausible causal explanation for this stress in your area?",
+              "description": "Physical, chemical, or biological deterioration of soil reducing its productive capacity.",
+              "has_evidence_cards": false,
+              "show_when": {
+                "observed_stress": "low_yield",
+                "value": "yes"
+              },
+              "follow_up_mcqs": []
+            }
+          ]
+        },
+        {
+          "id": "crop_failure",
+          "label": "Crop failure",
+          "field_type": "yes_no",
+          "prompt": "Do people in your area report \"Crop failure\"?",
+          "description": "Partial or total loss of standing crops in a given season.",
+          "show_when": {
+            "production_system": "Agriculture",
+            "value": "yes"
+          },
+          "causal_pathways": [
+            {
+              "id": "chemical_dependence",
+              "label": "Chemical Dependence",
+              "field_type": "yes_no",
+              "prompt": "Is \"Chemical Dependence\" a plausible causal explanation for this stress in your area?",
+              "description": "Pesticide resistance and input failure contribute to crop loss episodes.",
+              "has_evidence_cards": false,
+              "show_when": {
+                "observed_stress": "crop_failure",
+                "value": "yes"
+              },
+              "follow_up_mcqs": []
+            },
+            {
+              "id": "monocropping",
+              "label": "Monocropping",
+              "field_type": "yes_no",
+              "prompt": "Is \"Monocropping\" a plausible causal explanation for this stress in your area?",
+              "description": "Monoculture increases susceptibility to pest/disease outbreaks causing sudden crop losses.",
+              "has_evidence_cards": false,
+              "show_when": {
+                "observed_stress": "crop_failure",
+                "value": "yes"
+              },
+              "follow_up_mcqs": []
+            },
+            {
+              "id": "seed_unavailability",
+              "label": "Seed Unavailability",
+              "field_type": "yes_no",
+              "prompt": "Is \"Seed Unavailability\" a plausible causal explanation for this stress in your area?",
+              "description": "Use of poor quality or unadapted seeds increases failure risk particularly under stress.",
+              "has_evidence_cards": false,
+              "show_when": {
+                "observed_stress": "crop_failure",
+                "value": "yes"
+              },
+              "follow_up_mcqs": []
+            },
+            {
+              "id": "soil_degradation",
+              "label": "Soil Degradation",
+              "field_type": "yes_no",
+              "prompt": "Is \"Soil Degradation\" a plausible causal explanation for this stress in your area?",
+              "description": "See low_yield > soil_degradation — same variables apply, with higher severity thresholds expected.",
+              "has_evidence_cards": false,
+              "show_when": {
+                "observed_stress": "crop_failure",
+                "value": "yes"
+              },
+              "follow_up_mcqs": []
+            }
+          ]
+        },
+        {
+          "id": "market_access_gap",
+          "label": "Market access gap",
+          "field_type": "yes_no",
+          "prompt": "Do people in your area report \"Market access gap\"?",
+          "description": "Farmers receive poor prices due to remoteness from markets, lack of storage, or monopolistic intermediaries.",
+          "show_when": {
+            "production_system": "Agriculture",
+            "value": "yes"
+          },
+          "causal_pathways": [
+            {
+              "id": "infrastructure_gap",
+              "label": "Infrastructure Gap",
+              "field_type": "yes_no",
+              "prompt": "Is \"Infrastructure Gap\" a plausible causal explanation for this stress in your area?",
+              "description": "Physical distance or absence of market infrastructure prevents remunerative price realisation.",
+              "has_evidence_cards": false,
+              "show_when": {
+                "observed_stress": "market_access_gap",
+                "value": "yes"
+              },
+              "follow_up_mcqs": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Livestock",
+      "label": "Livestock",
+      "field_type": "yes_no",
+      "prompt": "Is \"Livestock\" an important production system in your micro-watershed?",
+      "show_when": null,
+      "observed_stresses": [
+        {
+          "id": "livestock_decline",
+          "label": "Livestock decline",
+          "field_type": "yes_no",
+          "prompt": "Do people in your area report \"Livestock decline\"?",
+          "description": "Decline in livestock population, condition, or productivity; high mortality; distress sale or migration of animals.",
+          "show_when": {
+            "production_system": "Livestock",
+            "value": "yes"
+          },
+          "causal_pathways": [
+            {
+              "id": "fodder_shortage",
+              "label": "Fodder Shortage",
+              "field_type": "yes_no",
+              "prompt": "Is \"Fodder Shortage\" a plausible causal explanation for this stress in your area?",
+              "description": "Insufficient availability of green or dry fodder, especially in rabi and summer seasons.",
+              "has_evidence_cards": false,
+              "show_when": {
+                "observed_stress": "livestock_decline",
+                "value": "yes"
+              },
+              "follow_up_mcqs": []
+            },
+            {
+              "id": "overgrazing",
+              "label": "Overgrazing",
+              "field_type": "yes_no",
+              "prompt": "Is \"Overgrazing\" a plausible causal explanation for this stress in your area?",
+              "description": "Livestock numbers exceed carrying capacity of available grazing land, degrading pastures and causing fodder shortage.",
+              "has_evidence_cards": false,
+              "show_when": {
+                "observed_stress": "livestock_decline",
+                "value": "yes"
+              },
+              "follow_up_mcqs": []
+            },
+            {
+              "id": "pasture_degradation",
+              "label": "Pasture Degradation",
+              "field_type": "yes_no",
+              "prompt": "Is \"Pasture Degradation\" a plausible causal explanation for this stress in your area?",
+              "description": "Community grazing lands and grasslands degraded through encroachment, invasives, or neglect.",
+              "has_evidence_cards": false,
+              "show_when": {
+                "observed_stress": "livestock_decline",
+                "value": "yes"
+              },
+              "follow_up_mcqs": []
+            },
+            {
+              "id": "water_scarcity_livestock",
+              "label": "Water Scarcity Livestock",
+              "field_type": "yes_no",
+              "prompt": "Is \"Water Scarcity Livestock\" a plausible causal explanation for this stress in your area?",
+              "description": "Livestock face water stress particularly in summer months when surface water dries up.",
+              "has_evidence_cards": false,
+              "show_when": {
+                "observed_stress": "livestock_decline",
+                "value": "yes"
+              },
+              "follow_up_mcqs": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "NTFP_Forest_Biodiversity",
+      "label": "NTFP / forest biodiversity",
+      "field_type": "yes_no",
+      "prompt": "Is \"NTFP / forest biodiversity\" an important production system in your micro-watershed?",
+      "show_when": null,
+      "observed_stresses": [
+        {
+          "id": "ntfp_decline",
+          "label": "NTFP decline",
+          "field_type": "yes_no",
+          "prompt": "Do people in your area report \"NTFP decline\"?",
+          "description": "Non-timber forest produce collection declining in quantity or quality; reduced access for dependent communities.",
+          "show_when": {
+            "production_system": "NTFP_Forest_Biodiversity",
+            "value": "yes"
+          },
+          "causal_pathways": [
+            {
+              "id": "forest_degradation",
+              "label": "Forest degradation",
+              "field_type": "yes_no",
+              "prompt": "Is \"Forest degradation\" a plausible causal explanation for this stress in your area?",
+              "description": "Degradation of forest cover reduces NTFP-bearing trees and understory species.",
+              "has_evidence_cards": true,
+              "show_when": {
+                "observed_stress": "ntfp_decline",
+                "value": "yes"
+              },
+              "follow_up_mcqs": [
+                {
+                  "variable": "community_forest_governance_status",
+                  "field_type": "mcq",
+                  "label": "Community Forest Governance Status",
+                  "question": "Does the village have a functioning Van Suraksha Samiti (forest protection committee), Joint Forest Management committee, or Community Forest Resource rights recognised under the Forest Rights Act? Are there active patrols or bylaws against illegal felling and fire?",
+                  "required_when_pathway_yes": true,
+                  "show_when": {
+                    "pathway_confirmed": "yes"
+                  },
+                  "choices": [
+                    {
+                      "id": "active",
+                      "label": "Active JFM/Van Suraksha Samiti or recognised CFR with patrols or bylaws"
+                    },
+                    {
+                      "id": "inactive",
+                      "label": "Committee exists on paper but little enforcement or activity"
+                    },
+                    {
+                      "id": "none",
+                      "label": "No functioning forest governance institution in the village"
+                    }
+                  ],
+                  "allow_unknown": {
+                    "id": "unknown",
+                    "label": "Don't know / not applicable in our area"
+                  }
+                },
+                {
+                  "variable": "forest_fire_frequency",
+                  "field_type": "mcq",
+                  "label": "Forest Fire Frequency",
+                  "question": "How often do forest fires occur in or near the forests used by your community? Have fires become more frequent or more severe in recent years? Do fires typically affect the same areas repeatedly?",
+                  "required_when_pathway_yes": true,
+                  "show_when": {
+                    "pathway_confirmed": "yes"
+                  },
+                  "choices": [
+                    {
+                      "id": "rare",
+                      "label": "Forest fires are rare; no increase in recent years"
+                    },
+                    {
+                      "id": "occasional",
+                      "label": "Occasional fires; frequency or severity increasing"
+                    },
+                    {
+                      "id": "frequent",
+                      "label": "Frequent or repeated fires in the same forest patches"
+                    }
+                  ],
+                  "allow_unknown": {
+                    "id": "unknown",
+                    "label": "Don't know / not applicable in our area"
+                  }
+                },
+                {
+                  "variable": "forest_patch_connectivity",
+                  "field_type": "mcq",
+                  "label": "Forest Patch Connectivity",
+                  "question": "Are the remaining forest patches in your area connected to each other, or are they isolated small patches surrounded by agricultural land? Has this connectivity changed in recent years?",
+                  "required_when_pathway_yes": true,
+                  "show_when": {
+                    "pathway_confirmed": "yes"
+                  },
+                  "choices": [
+                    {
+                      "id": "connected",
+                      "label": "Forest areas remain connected; little new fragmentation"
+                    },
+                    {
+                      "id": "partial",
+                      "label": "Some patches separated by fields, roads, or cleared land"
+                    },
+                    {
+                      "id": "isolated",
+                      "label": "Forest broken into small isolated patches"
+                    }
+                  ],
+                  "allow_unknown": {
+                    "id": "unknown",
+                    "label": "Don't know / not applicable in our area"
+                  }
+                },
+                {
+                  "variable": "ntfp_species_presence",
+                  "field_type": "mcq",
+                  "label": "Ntfp Species Presence",
+                  "question": "Have community members noticed a reduction in the availability of key forest products like mahua flowers, tendu leaves, harra fruit, or achar seeds over the past 5-10 years? Are these species still found in the same areas, or have they become harder to find or disappeared from some patches?",
+                  "required_when_pathway_yes": true,
+                  "show_when": {
+                    "pathway_confirmed": "yes"
+                  },
+                  "choices": [
+                    {
+                      "id": "abundant",
+                      "label": "NTFP species are still common and easy to find"
+                    },
+                    {
+                      "id": "reduced",
+                      "label": "Some species are harder to find than 5–10 years ago"
+                    },
+                    {
+                      "id": "rare",
+                      "label": "Several species that used to be common are now rare or absent"
+                    }
+                  ],
+                  "allow_unknown": {
+                    "id": "unknown",
+                    "label": "Don't know / not applicable in our area"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "encroachment",
+              "label": "Forest encroachment / grazing pressure",
+              "field_type": "yes_no",
+              "prompt": "Is \"Forest encroachment / grazing pressure\" a plausible causal explanation for this stress in your area?",
+              "description": "Forest land encroached for agriculture or settlement, reducing forest extent and community access.",
+              "has_evidence_cards": true,
+              "show_when": {
+                "observed_stress": "ntfp_decline",
+                "value": "yes"
+              },
+              "follow_up_mcqs": [
+                {
+                  "variable": "forest_boundary_demarcation_status",
+                  "field_type": "mcq",
+                  "label": "Forest Boundary Demarcation Status",
+                  "question": "Are the boundaries of the forest land in this area clearly marked on the ground (e.g. with pillars, fencing, or signage)? Have there been any recent disputes about where the forest boundary lies?",
+                  "required_when_pathway_yes": true,
+                  "show_when": {
+                    "pathway_confirmed": "yes"
+                  },
+                  "choices": [
+                    {
+                      "id": "clear",
+                      "label": "Boundaries clearly marked; no recent disputes"
+                    },
+                    {
+                      "id": "partial",
+                      "label": "Some marking exists but incomplete or poorly maintained"
+                    },
+                    {
+                      "id": "absent",
+                      "label": "No clear demarcation or active boundary disputes"
+                    }
+                  ],
+                  "allow_unknown": {
+                    "id": "unknown",
+                    "label": "Don't know / not applicable in our area"
+                  }
+                },
+                {
+                  "variable": "forest_patch_connectivity",
+                  "field_type": "mcq",
+                  "label": "Forest Patch Connectivity",
+                  "question": "Have community members noticed that forest areas near the village have become more broken up or isolated — for example, that patches of forest are now separated by fields or roads that were not there 10–15 years ago?",
+                  "required_when_pathway_yes": true,
+                  "show_when": {
+                    "pathway_confirmed": "yes"
+                  },
+                  "choices": [
+                    {
+                      "id": "connected",
+                      "label": "Forest areas remain connected; little new fragmentation"
+                    },
+                    {
+                      "id": "partial",
+                      "label": "Some patches separated by fields, roads, or cleared land"
+                    },
+                    {
+                      "id": "isolated",
+                      "label": "Forest broken into small isolated patches"
+                    }
+                  ],
+                  "allow_unknown": {
+                    "id": "unknown",
+                    "label": "Don't know / not applicable in our area"
+                  }
+                },
+                {
+                  "variable": "fra_claims_filed_count",
+                  "field_type": "mcq",
+                  "label": "Fra Claims Filed Count",
+                  "question": "Have community members or households in this village filed individual or community forest rights claims under the Forest Rights Act (FRA)? If yes, approximately how many claims have been filed and how many have been recognised?",
+                  "required_when_pathway_yes": true,
+                  "show_when": {
+                    "pathway_confirmed": "yes"
+                  },
+                  "choices": [
+                    {
+                      "id": "none",
+                      "label": "No FRA claims filed by community members"
+                    },
+                    {
+                      "id": "pending",
+                      "label": "Claims filed but mostly pending or rejected"
+                    },
+                    {
+                      "id": "recognized",
+                      "label": "Several claims recognised (individual or community forest rights)"
+                    }
+                  ],
+                  "allow_unknown": {
+                    "id": "unknown",
+                    "label": "Don't know / not applicable in our area"
+                  }
+                },
+                {
+                  "variable": "ntfp_collection_trend_qualitative",
+                  "field_type": "mcq",
+                  "label": "Ntfp Collection Trend Qualitative",
+                  "question": "Can you estimate how much of key NTFPs (e.g., tendu leaf, mahua, amla, bamboo) the community collected this year compared to five years ago? Has the collection area shrunk, or are yields lower even in the same areas?",
+                  "required_when_pathway_yes": true,
+                  "show_when": {
+                    "pathway_confirmed": "yes"
+                  },
+                  "choices": [
+                    {
+                      "id": "little_change",
+                      "label": "Little change — decline under 25% or stable collection"
+                    },
+                    {
+                      "id": "moderate_decline",
+                      "label": "Noticeable decline of about 25–50% in collection volume"
+                    },
+                    {
+                      "id": "severe_decline",
+                      "label": "Severe decline over 50% or access largely blocked"
+                    }
+                  ],
+                  "allow_unknown": {
+                    "id": "unknown",
+                    "label": "Don't know / not applicable in our area"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "forest_fire",
+              "label": "Forest Fire",
+              "field_type": "yes_no",
+              "prompt": "Is \"Forest Fire\" a plausible causal explanation for this stress in your area?",
+              "description": "Recurring forest fires damage mature trees, understory NTFP species, and regeneration.",
+              "has_evidence_cards": false,
+              "show_when": {
+                "observed_stress": "ntfp_decline",
+                "value": "yes"
+              },
+              "follow_up_mcqs": []
+            },
+            {
+              "id": "genetic_erosion",
+              "label": "Genetic Erosion",
+              "field_type": "yes_no",
+              "prompt": "Is \"Genetic Erosion\" a plausible causal explanation for this stress in your area?",
+              "description": "Loss of indigenous crop varieties, tree species, and medicinal plant diversity from landscapes and seed systems.",
+              "has_evidence_cards": false,
+              "show_when": {
+                "observed_stress": "ntfp_decline",
+                "value": "yes"
+              },
+              "follow_up_mcqs": []
+            },
+            {
+              "id": "invasive_species",
+              "label": "Invasive Species",
+              "field_type": "yes_no",
+              "prompt": "Is \"Invasive Species\" a plausible causal explanation for this stress in your area?",
+              "description": "Invasive plants (Lantana, Prosopis, Parthenium) or aquatic weeds outcompete native NTFP species.",
+              "has_evidence_cards": false,
+              "show_when": {
+                "observed_stress": "ntfp_decline",
+                "value": "yes"
+              },
+              "follow_up_mcqs": []
+            }
+          ]
+        },
+        {
+          "id": "wildlife_conflict",
+          "label": "Wildlife conflict",
+          "field_type": "yes_no",
+          "prompt": "Do people in your area report \"Wildlife conflict\"?",
+          "description": "Damage to crops or livestock by wildlife; increased human-wildlife interactions due to habitat compression.",
+          "show_when": {
+            "production_system": "NTFP_Forest_Biodiversity",
+            "value": "yes"
+          },
+          "causal_pathways": [
+            {
+              "id": "habitat_loss_fragmentation",
+              "label": "Habitat Loss Fragmentation",
+              "field_type": "yes_no",
+              "prompt": "Is \"Habitat Loss Fragmentation\" a plausible causal explanation for this stress in your area?",
+              "description": "Reduction and fragmentation of wildlife habitat forces animals into agricultural areas.",
+              "has_evidence_cards": false,
+              "show_when": {
+                "observed_stress": "wildlife_conflict",
+                "value": "yes"
+              },
+              "follow_up_mcqs": []
+            }
+          ]
+        },
+        {
+          "id": "biodiversity_loss",
+          "label": "Biodiversity loss",
+          "field_type": "yes_no",
+          "prompt": "Do people in your area report \"Biodiversity loss\"?",
+          "description": "Decline in plant and animal species richness and abundance within MWS landscapes.",
+          "show_when": {
+            "production_system": "NTFP_Forest_Biodiversity",
+            "value": "yes"
+          },
+          "causal_pathways": [
+            {
+              "id": "forest_fire",
+              "label": "Forest Fire",
+              "field_type": "yes_no",
+              "prompt": "Is \"Forest Fire\" a plausible causal explanation for this stress in your area?",
+              "description": "",
+              "has_evidence_cards": false,
+              "show_when": {
+                "observed_stress": "biodiversity_loss",
+                "value": "yes"
+              },
+              "follow_up_mcqs": []
+            },
+            {
+              "id": "forest_degradation",
+              "label": "Forest degradation",
+              "field_type": "yes_no",
+              "prompt": "Is \"Forest degradation\" a plausible causal explanation for this stress in your area?",
+              "description": "",
+              "has_evidence_cards": false,
+              "show_when": {
+                "observed_stress": "biodiversity_loss",
+                "value": "yes"
+              },
+              "follow_up_mcqs": []
+            },
+            {
+              "id": "encroachment",
+              "label": "Forest encroachment / grazing pressure",
+              "field_type": "yes_no",
+              "prompt": "Is \"Forest encroachment / grazing pressure\" a plausible causal explanation for this stress in your area?",
+              "description": "",
+              "has_evidence_cards": false,
+              "show_when": {
+                "observed_stress": "biodiversity_loss",
+                "value": "yes"
+              },
+              "follow_up_mcqs": []
+            },
+            {
+              "id": "genetic_erosion",
+              "label": "Genetic Erosion",
+              "field_type": "yes_no",
+              "prompt": "Is \"Genetic Erosion\" a plausible causal explanation for this stress in your area?",
+              "description": "",
+              "has_evidence_cards": false,
+              "show_when": {
+                "observed_stress": "biodiversity_loss",
+                "value": "yes"
+              },
+              "follow_up_mcqs": []
+            },
+            {
+              "id": "invasive_species",
+              "label": "Invasive Species",
+              "field_type": "yes_no",
+              "prompt": "Is \"Invasive Species\" a plausible causal explanation for this stress in your area?",
+              "description": "",
+              "has_evidence_cards": false,
+              "show_when": {
+                "observed_stress": "biodiversity_loss",
+                "value": "yes"
+              },
+              "follow_up_mcqs": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Fishery",
+      "label": "Fishery",
+      "field_type": "yes_no",
+      "prompt": "Is \"Fishery\" an important production system in your micro-watershed?",
+      "show_when": null,
+      "observed_stresses": [
+        {
+          "id": "low_fish_productivity",
+          "label": "Low fish productivity",
+          "field_type": "yes_no",
+          "prompt": "Do people in your area report \"Low fish productivity\"?",
+          "description": "Water bodies within MWS produce low fish yields; declining fish species diversity; inequitable access to fishery resources.",
+          "show_when": {
+            "production_system": "Fishery",
+            "value": "yes"
+          },
+          "causal_pathways": [
+            {
+              "id": "water_potential",
+              "label": "Water Potential",
+              "field_type": "yes_no",
+              "prompt": "Is \"Water Potential\" a plausible causal explanation for this stress in your area?",
+              "description": "Tanks and water bodies are under-utilised for fisheries due to seasonal drying, siltation, poor management, or access restrictions.",
+              "has_evidence_cards": false,
+              "show_when": {
+                "observed_stress": "low_fish_productivity",
+                "value": "yes"
+              },
+              "follow_up_mcqs": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Socio_Economic",
+      "label": "Socio-economic livelihoods",
+      "field_type": "yes_no",
+      "prompt": "Is \"Socio-economic livelihoods\" an important production system in your micro-watershed?",
+      "show_when": null,
+      "observed_stresses": [
+        {
+          "id": "economic_hardship",
+          "label": "Economic hardship",
+          "field_type": "yes_no",
+          "prompt": "Do people in your area report \"Economic hardship\"?",
+          "description": "Households face economic distress, inability to meet basic needs, high debt, or livelihood loss.",
+          "show_when": {
+            "production_system": "Socio_Economic",
+            "value": "yes"
+          },
+          "causal_pathways": [
+            {
+              "id": "multi_sector_vulnerability",
+              "label": "Multi-sector vulnerability",
+              "field_type": "yes_no",
+              "prompt": "Is \"Multi-sector vulnerability\" a plausible causal explanation for this stress in your area?",
+              "description": "Economic hardship is a cross-cutting outcome of failures across agriculture, livestock, forest, and fishery production systems combined with poor access to financial services.",
+              "has_evidence_cards": true,
+              "show_when": {
+                "observed_stress": "economic_hardship",
+                "value": "yes"
+              },
+              "follow_up_mcqs": [
+                {
+                  "variable": "household_income_inr",
+                  "field_type": "mcq",
+                  "label": "Household Income Inr",
+                  "question": "What is the approximate average annual household income in this village from all sources (farming, livestock, forest produce, wages, remittances)? Is it below Rs. 50,000, between Rs. 50,000–1,00,000, or above Rs. 1,00,000 per year?",
+                  "required_when_pathway_yes": true,
+                  "show_when": {
+                    "pathway_confirmed": "yes"
+                  },
+                  "choices": [
+                    {
+                      "id": "below_50k",
+                      "label": "Below ₹50,000 per year from farming (or total household income)"
+                    },
+                    {
+                      "id": "50k_to_100k",
+                      "label": "Between ₹50,000 and ₹1,00,000 per year"
+                    },
+                    {
+                      "id": "above_100k",
+                      "label": "Above ₹1,00,000 per year"
+                    }
+                  ],
+                  "allow_unknown": {
+                    "id": "unknown",
+                    "label": "Don't know / not applicable in our area"
+                  }
+                },
+                {
+                  "variable": "migrant_household_percent",
+                  "field_type": "mcq",
+                  "label": "Migrant Household Percent",
+                  "question": "Roughly what proportion of households in this village have one or more members who migrate seasonally or permanently for work outside the village? Would you say it is less than 10%, between 10–30%, or more than 30% of households?",
+                  "required_when_pathway_yes": true,
+                  "show_when": {
+                    "pathway_confirmed": "yes"
+                  },
+                  "choices": [
+                    {
+                      "id": "low",
+                      "label": "Very few households migrate seasonally (roughly under 10%)"
+                    },
+                    {
+                      "id": "moderate",
+                      "label": "A moderate share migrate (roughly 10–30%)"
+                    },
+                    {
+                      "id": "high",
+                      "label": "Many households migrate (roughly over 30%)"
+                    }
+                  ],
+                  "allow_unknown": {
+                    "id": "unknown",
+                    "label": "Don't know / not applicable in our area"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "low_income",
+          "label": "Low income",
+          "field_type": "yes_no",
+          "prompt": "Do people in your area report \"Low income\"?",
+          "description": "Household incomes are insufficient for basic needs; dependence on single livelihood source with no diversification.",
+          "show_when": {
+            "production_system": "Socio_Economic",
+            "value": "yes"
+          },
+          "causal_pathways": [
+            {
+              "id": "small_landholding",
+              "label": "Small landholding pressure",
+              "field_type": "yes_no",
+              "prompt": "Is \"Small landholding pressure\" a plausible causal explanation for this stress in your area?",
+              "description": "Fragmented, small landholdings limit surplus production, mechanisation, and creditworthiness.",
+              "has_evidence_cards": true,
+              "show_when": {
+                "observed_stress": "low_income",
+                "value": "yes"
+              },
+              "follow_up_mcqs": [
+                {
+                  "variable": "household_income_inr",
+                  "field_type": "mcq",
+                  "label": "Household Income Inr",
+                  "question": "What is the approximate total annual household income (from all sources — crops, livestock, wages, government schemes) for a typical farming family in this village? Is it below Rs 60,000, between Rs 60,000–1,20,000, or above Rs 1,20,000 per year?",
+                  "required_when_pathway_yes": true,
+                  "show_when": {
+                    "pathway_confirmed": "yes"
+                  },
+                  "choices": [
+                    {
+                      "id": "below_50k",
+                      "label": "Below ₹50,000 per year from farming (or total household income)"
+                    },
+                    {
+                      "id": "50k_to_100k",
+                      "label": "Between ₹50,000 and ₹1,00,000 per year"
+                    },
+                    {
+                      "id": "above_100k",
+                      "label": "Above ₹1,00,000 per year"
+                    }
+                  ],
+                  "allow_unknown": {
+                    "id": "unknown",
+                    "label": "Don't know / not applicable in our area"
+                  }
+                },
+                {
+                  "variable": "landholding_size_distribution",
+                  "field_type": "mcq",
+                  "label": "Landholding Size Distribution",
+                  "question": "Approximately what proportion of farming households in this village own less than 1 acre (0.4 ha) of land? Would you say it is fewer than one-quarter, about half, or more than three-quarters of households?",
+                  "required_when_pathway_yes": true,
+                  "show_when": {
+                    "pathway_confirmed": "yes"
+                  },
+                  "choices": [
+                    {
+                      "id": "minority",
+                      "label": "Less than one-quarter of farming households own under 1 ha"
+                    },
+                    {
+                      "id": "about_half",
+                      "label": "About half of farming households own under 1 ha"
+                    },
+                    {
+                      "id": "majority",
+                      "label": "More than half (or two-thirds) of households are marginal (<1 ha)"
+                    }
+                  ],
+                  "allow_unknown": {
+                    "id": "unknown",
+                    "label": "Don't know / not applicable in our area"
+                  }
+                },
+                {
+                  "variable": "market_price_crop",
+                  "field_type": "mcq",
+                  "label": "Market Price Crop",
+                  "question": "For the main crop grown here (e.g. cotton, soybean, tur dal), what price did farmers typically receive per quintal in the last harvest season? How does this compare to the government's Minimum Support Price (MSP)?",
+                  "required_when_pathway_yes": true,
+                  "show_when": {
+                    "pathway_confirmed": "yes"
+                  },
+                  "choices": [
+                    {
+                      "id": "near_msp",
+                      "label": "Prices close to government MSP (mandi or procurement)"
+                    },
+                    {
+                      "id": "below_msp",
+                      "label": "Prices significantly below MSP (e.g. farm-gate or trader)"
+                    },
+                    {
+                      "id": "unable_to_sell",
+                      "label": "Unable to sell at all or forced to accept very low prices"
+                    }
+                  ],
+                  "allow_unknown": {
+                    "id": "unknown",
+                    "label": "Don't know / not applicable in our area"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
